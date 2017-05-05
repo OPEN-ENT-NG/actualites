@@ -559,50 +559,50 @@ public class InfoController extends ControllerHelper {
             badRequest(request);
             return;
         }
-        request.pause();
-        UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
-            @Override
-            public void handle(final UserInfos user) {
-                if (user != null) {
-                    infoService.retrieve(infoId, user, new Handler<Either<String, JsonObject>>() {
-                        @Override
-                        public void handle(Either<String, JsonObject> event) {
-                            request.resume();
-                            if(event.right() != null){
-                                JsonObject info = event.right().getValue();
-                                if(info != null && info.containsField("status")){
-                                    if(info.getInteger("status") > 2){
-                                        JsonObject params = new JsonObject()
-                                                .putString("profilUri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
-                                                .putString("username", user.getUsername())
-                                                .putString("resourceUri", pathPrefix + "#/view/thread/" + threadId + "/info/" + infoId);
-                                        DateFormat dfm = new SimpleDateFormat("yyyy-MM-dd");
-                                        String date = info.getString("publication_date");
-                                        if(date != null && !date.trim().isEmpty()){
-                                            try {
-                                                Date publication_date = dfm.parse(date);
-                                                Date timeNow=new Date(System.currentTimeMillis());
-                                                if(publication_date.after(timeNow)){
-                                                    params.putNumber("timeline-publish-date", publication_date.getTime());
-                                                }
-                                            } catch (ParseException e) {
-                                                log.error("An error occured when sharing an info : " + e.getMessage());
-                                            }
-                                        }
-                                        shareJsonSubmit(request, "news.info-shared", false, params, "title");
-                                    } else {
-                                        shareJsonSubmit(request, null, false, null, null);
-                                    }
-                                }
-                            }
-                        }
-                    });
-                } else {
-                    unauthorized(request);
-                }
-            }
-        });
-    }
+		request.pause();
+		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+			@Override
+			public void handle(final UserInfos user) {
+				if (user != null) {
+					infoService.retrieve(infoId, user, new Handler<Either<String, JsonObject>>() {
+						@Override
+						public void handle(Either<String, JsonObject> event) {
+							request.resume();
+							if(event.right() != null){
+								JsonObject info = event.right().getValue();
+								if(info != null && info.containsField("status")){
+									if(info.getInteger("status") > 2){
+										JsonObject params = new JsonObject()
+											.putString("profilUri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
+											.putString("username", user.getUsername())
+											.putString("resourceUri", pathPrefix + "#/view/thread/" + threadId + "/info/" + infoId);
+										DateFormat dfm = new SimpleDateFormat("yyyy-MM-dd");
+										String date = info.getString("publication_date");
+										if(date != null && !date.trim().isEmpty()){
+											try {
+												Date publication_date = dfm.parse(date);
+												Date timeNow=new Date(System.currentTimeMillis());
+												if(publication_date.after(timeNow)){
+													params.putNumber("timeline-publish-date", publication_date.getTime());
+												}
+											} catch (ParseException e) {
+												log.error("An error occured when sharing an info : " +e.getMessage());
+											}
+										}
+										shareJsonSubmit(request, "news.info-shared", false, params, "title");
+									} else {
+										shareJsonSubmit(request, null, false, null, null);
+									}
+								}
+							}
+						}
+					});
+				} else {
+					unauthorized(request);
+				}
+			}
+		});
+	}
 
     @Put("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/share/remove/:"+INFO_ID_PARAMETER)
     @ApiDoc("Remove Share by id.")
