@@ -39,7 +39,7 @@
                     <article reset-guard="switchSelectThread(thread)"
                              ng-class="{ selected: $location.path() === '/view/thread/' + thread._id}">
                         <div>
-                            <img skin-src="/img/illustrations/actualites-default.png" ng-if="!thread.icon" />
+                            <img skin-src="/img/illustrations/news.svg" ng-if="!thread.icon" />
                             <img ng-src="[[thread.icon]]?thumbnail=120x120" ng-if="thread.icon" />
                         </div>
                         <div>
