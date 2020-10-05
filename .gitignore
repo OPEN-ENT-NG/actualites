@@ -11,3 +11,9 @@ node_modules
 .gradle/
 src/main/resources/public/template/entcore/
 package-lock.json
+.classpath
+.project
+.settings/
+bin/
+gradle/
+gradlew*
