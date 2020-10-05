@@ -29,6 +29,9 @@ import net.atos.entng.actualites.services.ThreadService;
 import net.atos.entng.actualites.services.impl.ThreadServiceSqlImpl;
 
 import org.entcore.common.controller.ControllerHelper;
+import org.entcore.common.events.EventHelper;
+import org.entcore.common.events.EventStore;
+import org.entcore.common.events.EventStoreFactory;
 import org.entcore.common.http.filter.ResourceFilter;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.user.UserUtils;
@@ -54,13 +57,15 @@ public class ThreadController extends ControllerHelper {
 	private static final String SCHEMA_THREAD_CREATE = "createThread";
 	private static final String SCHEMA_THREAD_UPDATE = "updateThread";
 
-	private static final String EVENT_TYPE = "NEWS";
 	private static final String RESOURCE_NAME = "thread";
 
 	protected final ThreadService threadService;
+	protected final EventHelper eventHelper;
 
 	public ThreadController(){
 		this.threadService = new ThreadServiceSqlImpl();
+		final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(Actualites.class.getSimpleName());
+		eventHelper = new EventHelper(eventStore);
 	}
 
 	@Get("/threads")
@@ -85,7 +90,8 @@ public class ThreadController extends ControllerHelper {
 				RequestUtils.bodyToJson(request, pathPrefix + SCHEMA_THREAD_CREATE, new Handler<JsonObject>() {
 					@Override
 					public void handle(JsonObject resource) {
-						crudService.create(resource, user, notEmptyResponseHandler(request));
+						final Handler<Either<String,JsonObject>> handler = notEmptyResponseHandler(request);
+						crudService.create(resource, user, eventHelper.onCreateResource(request, RESOURCE_NAME, handler));
 					}
 				});
 			}

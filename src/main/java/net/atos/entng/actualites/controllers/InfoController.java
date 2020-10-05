@@ -44,6 +44,9 @@ import net.atos.entng.actualites.services.impl.ThreadServiceSqlImpl;
 
 import net.atos.entng.actualites.utils.Events;
 import org.entcore.common.controller.ControllerHelper;
+import org.entcore.common.events.EventHelper;
+import org.entcore.common.events.EventStore;
+import org.entcore.common.events.EventStoreFactory;
 import org.entcore.common.http.filter.ResourceFilter;
 import org.entcore.common.notification.NotificationUtils;
 import org.entcore.common.user.UserInfos;
@@ -87,10 +90,13 @@ public class InfoController extends ControllerHelper {
 
     protected final InfoService infoService;
     protected final ThreadService threadService;
+    protected final EventHelper eventHelper;
 
     public InfoController(){
         this.infoService = new InfoServiceSqlImpl();
         this.threadService = new ThreadServiceSqlImpl();
+        final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(Actualites.class.getSimpleName());
+        eventHelper = new EventHelper(eventStore);
     }
 
     @Get("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/:"+Actualites.INFO_RESOURCE_ID)
@@ -191,7 +197,8 @@ public class InfoController extends ControllerHelper {
 					@Override
 					public void handle(JsonObject resource) {
 						resource.put("status", status_list.get(1));
-						infoService.create(resource, user, Events.DRAFT.toString(),notEmptyResponseHandler(request));
+                        final Handler<Either<String, JsonObject>> handler = eventHelper.onCreateResource(request, RESOURCE_NAME, notEmptyResponseHandler(request));
+						infoService.create(resource, user, Events.DRAFT.toString(),handler);
 					}
 				});
 			}
@@ -217,6 +224,7 @@ public class InfoController extends ControllerHelper {
                                     @Override
                                     public void handle(Either<String, JsonObject> event) {
                                         if (event.isRight()) {
+                                            eventHelper.onCreateResource(request, RESOURCE_NAME);
                                             JsonObject info = event.right().getValue();
                                             String infoId = info.getLong("id").toString();
                                             notifyTimeline(request, user, threadId, infoId, title, NEWS_SUBMIT_EVENT_TYPE);
@@ -246,7 +254,8 @@ public class InfoController extends ControllerHelper {
 					@Override
 					public void handle(JsonObject resource) {
 						resource.put("status", status_list.get(3));
-						infoService.create(resource, user, Events.CREATE_AND_PUBLISH.toString(),notEmptyResponseHandler(request));
+						final Handler<Either<String, JsonObject>> handler = eventHelper.onCreateResource(request, RESOURCE_NAME, notEmptyResponseHandler(request));
+						infoService.create(resource, user, Events.CREATE_AND_PUBLISH.toString(), handler);
 					}
 				});
 			}
