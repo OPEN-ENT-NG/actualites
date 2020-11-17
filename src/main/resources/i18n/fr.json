@@ -108,6 +108,7 @@
     "filters.submitted": "A valider",
     "filters.submitted.waiting": "En attente de validation",
     "group.HeadTeacher": "Professeurs principaux de {0}.",
+    "group.Direction": "Directeurs de {0}.",
     "group.Func": "Personnels de fonction {0}.",
     "group.Discipline": "Enseignants de discipline {0}.",
     "group.AdminLocal": "Administrateurs locaux de {0}.",
