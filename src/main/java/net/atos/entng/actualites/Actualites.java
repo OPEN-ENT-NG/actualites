@@ -19,6 +19,7 @@
 
 package net.atos.entng.actualites;
 
+import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.controllers.CommentController;
 import net.atos.entng.actualites.controllers.InfoController;
 import net.atos.entng.actualites.controllers.ThreadController;
@@ -62,7 +63,7 @@ public class Actualites extends BaseServer {
 	public void start() throws Exception {
 		super.start();
 		final EventBus eb = getEventBus(vertx);
-
+		final JsonObject config = config();
 		// Subscribe to events published for transition
 		setRepositoryEvents(new ActualitesRepositoryEvents(config.getBoolean("share-old-groups-to-users", false),vertx));
 
@@ -102,7 +103,7 @@ public class Actualites extends BaseServer {
 		confInfo.setSchema(getSchema());
 
 		// info controller
-		InfoController infoController = new InfoController();
+		InfoController infoController = new InfoController(config);
 		SqlCrudService infoSqlCrudService = new SqlCrudService(getSchema(), INFO_TABLE, INFO_SHARE_TABLE, new JsonArray().add("*"), new JsonArray().add("*"), true);
 		infoController.setCrudService(infoSqlCrudService);
 		infoController.setShareService(new SqlShareService(getSchema(),INFO_SHARE_TABLE, eb, securedActions, null));

@@ -91,12 +91,14 @@ public class InfoController extends ControllerHelper {
     protected final InfoService infoService;
     protected final ThreadService threadService;
     protected final EventHelper eventHelper;
+    protected final boolean optimized;
 
-    public InfoController(){
+    public InfoController(final JsonObject config){
         this.infoService = new InfoServiceSqlImpl();
         this.threadService = new ThreadServiceSqlImpl();
         final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(Actualites.class.getSimpleName());
         eventHelper = new EventHelper(eventStore);
+        optimized = config.getBoolean("optimized-query", true);
     }
 
     @Get("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/:"+Actualites.INFO_RESOURCE_ID)
@@ -122,7 +124,12 @@ public class InfoController extends ControllerHelper {
         UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
             @Override
             public void handle(UserInfos user) {
-                infoService.list(user, arrayResponseHandler(request));
+                if(request.params().contains("optimized")){
+                    final boolean notOptimized = "false".equals(request.params().get("optimized"));
+                    infoService.list(user, !notOptimized, arrayResponseHandler(request));
+                }else{
+                    infoService.list(user, optimized, arrayResponseHandler(request));
+                }
             }
         });
     }
@@ -150,7 +157,12 @@ public class InfoController extends ControllerHelper {
         UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
             @Override
             public void handle(UserInfos user) {
-                infoService.list(user, arrayResponseHandler(request));
+                if(request.params().contains("optimized")){
+                    final boolean notOptimized = "false".equals(request.params().get("optimized"));
+                    infoService.list(user, !notOptimized, arrayResponseHandler(request));
+                }else{
+                    infoService.list(user, optimized, arrayResponseHandler(request));
+                }
             }
         });
     }
