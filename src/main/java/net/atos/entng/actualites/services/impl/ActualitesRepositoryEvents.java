@@ -169,7 +169,15 @@ public class ActualitesRepositoryEvents extends SqlRepositoryEvents {
 
 	@Override
 	public void deleteGroups(JsonArray groups) {
-		if(groups != null && groups.size() > 0) {
+		if(groups == null)
+			return;
+
+		for(int i = groups.size(); i-- > 0;)
+		{
+			if(groups.hasNull(i))
+			groups.remove(i);
+		}
+		if(groups.size() > 0) {
 			final JsonArray gIds = new fr.wseduc.webutils.collections.JsonArray();
 			for (Object o : groups) {
 				if (!(o instanceof JsonObject)) continue;
@@ -197,6 +205,11 @@ public class ActualitesRepositoryEvents extends SqlRepositoryEvents {
 
 	@Override
 	public void deleteUsers(JsonArray users) {
+		for(int i = users.size(); i-- > 0;)
+		{
+			if(users.hasNull(i))
+				users.remove(i);
+		}
         //FIXME: anonymization is not relevant
 		if (users != null && users.size() > 0) {
 			final JsonArray uIds = new fr.wseduc.webutils.collections.JsonArray();
