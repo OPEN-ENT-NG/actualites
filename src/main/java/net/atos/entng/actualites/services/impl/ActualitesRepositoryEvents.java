@@ -175,7 +175,9 @@ public class ActualitesRepositoryEvents extends SqlRepositoryEvents {
 		for(int i = groups.size(); i-- > 0;)
 		{
 			if(groups.hasNull(i))
-			groups.remove(i);
+				groups.remove(i);
+			else if (groups.getJsonObject(i) != null && groups.getJsonObject(i).getString("group") == null)
+				groups.remove(i);
 		}
 		if(groups.size() > 0) {
 			final JsonArray gIds = new fr.wseduc.webutils.collections.JsonArray();
@@ -208,6 +210,8 @@ public class ActualitesRepositoryEvents extends SqlRepositoryEvents {
 		for(int i = users.size(); i-- > 0;)
 		{
 			if(users.hasNull(i))
+				users.remove(i);
+			else if (users.getJsonObject(i) != null && users.getJsonObject(i).getString("id") == null)
 				users.remove(i);
 		}
         //FIXME: anonymization is not relevant
