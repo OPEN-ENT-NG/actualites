@@ -164,7 +164,11 @@ public class QueryHelperSql {
             if(resIds.failed()){
                 handler.handle(new Either.Left<>(resIds.cause().getMessage()));
             }else{
-                final Set<Long>ids = resIds.result();
+                final Set<Long> ids = resIds.result();
+                if(ids.isEmpty()){
+                    handler.handle(new Either.Right<>(new JsonArray()));
+                    return;
+                }
                 final JsonArray jsonIds = new JsonArray(new ArrayList(ids));
                 final String infoIds = Sql.listPrepared(ids.toArray());
                 final Future<Map<Long, String>> futureComments = Future.future();
