@@ -100,6 +100,7 @@
     "actualites.title.new": "Nouvelle actualité",
     "actualites.thread.empty.info": "Ce fil d'actualités ne contient pas encore d'actualité",
     "actualites.thread.thread.counter" : " actualité(s) dans le fil",
+    "actualites.search.return.no.info": "Votre recherche ne retourne aucune actualité",
     "filters.all": "Toutes",
     "filters.headline": "A la une",
     "filters.drafts": "Brouillons",
