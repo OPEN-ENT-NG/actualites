@@ -3,6 +3,7 @@ import { ACTUALITES_CONFIGURATION } from './configuration';
 import { safeApply } from './functions/safeApply';
 import { Info, Thread, Comment, Utils } from './model';
 import * as jQuery from 'jquery'
+import { ARTICLE_TYPES } from './core/constants/article-types.constants';
 import http from "axios";
 
 const model = typedModel as any;
@@ -30,11 +31,23 @@ export const actualiteController = ng.controller('ActualitesController',
                 $scope.ACTUALITES_CONFIGURATION = ACTUALITES_CONFIGURATION;
                 $scope.displayedInfos = null;
                 $scope.infoTimeline = null;
+                $scope.ARTICLE_TYPES = ARTICLE_TYPES;
 
                 model.infos.on('sync', function () {
                     model.infos.deselectAll();
                     safeApply($scope);
                 });
+
+                $scope.numberOfArticlesByThread = (state:string) : number => {
+                    if (!$scope.displayedInfos[state]) { //case where state does not exist in $scope.displayedInfos
+                        return 0;
+                    }
+                    //if no threads are selected ("All threads"), the length of all the articles of the tab is returned
+                    //otherwise only the ones from the selected thread
+                    return (!$scope.currentThread || Object.keys($scope.currentThread).length == 0 || !$scope.currentInfo.thread) ?
+                        $scope.displayedInfos[state].length :
+                        $scope.displayedInfos[state].filter(i => i.thread_id === $scope.currentThread._id).length;
+                };
 
                 route({
                     // Routes viewThread, viewInfo adn viewComment are used by notifications
