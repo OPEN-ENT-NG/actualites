@@ -51,7 +51,8 @@ public class ActualitesRepositoryEvents extends SqlRepositoryEvents {
 	}
 
 	@Override
-	public void exportResources(JsonArray resourcesIds, String exportId, String userId, JsonArray groups, String exportPath, String locale, String host, final Handler<Boolean> handler) {
+	public void exportResources(JsonArray resourcesIds, boolean exportDocuments, boolean exportSharedResources, String exportId, String userId,
+								JsonArray groups, String exportPath, String locale, String host, final Handler<Boolean> handler) {
 
 			final HashMap<String,JsonArray> queries = new HashMap<String, JsonArray>();
 
@@ -79,6 +80,7 @@ public class ActualitesRepositoryEvents extends SqlRepositoryEvents {
 					"SELECT DISTINCT info.* " +
 							"FROM " + infoTable + " " +
 							"LEFT JOIN " + infoSharesTable + " infoS ON info.id = infoS.resource_id " +
+							(exportSharedResources == true ? "" : "AND 0 = 1 ") +
 							"LEFT JOIN " + membersTable + " mem ON infoS.member_id = mem.id " +
 							"WHERE " +
 								(resourcesIds != null ? ("info.id IN " + resourcesList + " AND ") : "") +
@@ -98,6 +100,7 @@ public class ActualitesRepositoryEvents extends SqlRepositoryEvents {
 					"SELECT DISTINCT th.* " +
 							"FROM " + threadTable + " th " +
 							"LEFT JOIN "+ threadSharesTable + " thS ON th.id = thS.resource_id " +
+							(exportSharedResources == true ? "" : "AND 0 = 1 ") +
 							"LEFT JOIN " + membersTable + " mem ON thS.member_id = mem.id " +
 							"WHERE (th.owner = ? " +
 							"OR mem.user_id = ? " +
@@ -113,7 +116,7 @@ public class ActualitesRepositoryEvents extends SqlRepositoryEvents {
 				@Override
 				public void handle(String path) {
 					if (path != null) {
-						exportTables(queries, new JsonArray(), null, path, exported, handler);
+						exportTables(queries, new JsonArray(), null, exportDocuments, path, exported, handler);
 					}
 					else {
 						handler.handle(exported.get());
