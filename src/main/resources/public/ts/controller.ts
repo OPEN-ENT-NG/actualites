@@ -44,7 +44,7 @@ export const actualiteController = ng.controller('ActualitesController',
                     }
                     //if no threads are selected ("All threads"), the length of all the articles of the tab is returned
                     //otherwise only the ones from the selected thread
-                    return (!$scope.currentThread || Object.keys($scope.currentThread).length == 0 || !$scope.currentInfo.thread) ?
+                    return (!$scope.currentThread || Object.keys($scope.currentThread).length == 0) ?
                         $scope.displayedInfos[state].length :
                         $scope.displayedInfos[state].filter(i => i.thread_id === $scope.currentThread._id).length;
                 };
