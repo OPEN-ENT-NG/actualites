@@ -209,7 +209,7 @@ public class QueryHelperSql {
                     subquery.append("  CASE WHEN array_to_json(array_agg(group_id)) IS NULL THEN '[]'::json ELSE array_to_json(array_agg(group_id)) END as groups, ");
                     subquery.append("  json_agg(row_to_json(row(info_shares.member_id, info_shares.action)::actualites.share_tuple)) as shared ");
                     subquery.append("FROM actualites.info_shares ");
-                    subquery.append("INNER JOIN actualites.members ON (info_shares.member_id = members.group_id) ");
+                    subquery.append("LEFT JOIN actualites.members ON (info_shares.member_id = members.group_id) ");
                     subquery.append("WHERE info_shares.resource_id IN ").append(infoIds).append(" ");
                     subquery.append("GROUP BY info_shares.resource_id;");
                     final JsonArray subValues = new JsonArray().addAll(jsonIds);
