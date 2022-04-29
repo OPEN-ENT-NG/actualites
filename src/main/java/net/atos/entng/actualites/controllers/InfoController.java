@@ -192,7 +192,7 @@ public class InfoController extends ControllerHelper {
                         return;
                     }
                 }
-                infoService.listLastPublishedInfos(user, size, arrayResponseHandler(request));
+                infoService.listLastPublishedInfos(user, size, optimized, arrayResponseHandler(request));
             }
         });
     }

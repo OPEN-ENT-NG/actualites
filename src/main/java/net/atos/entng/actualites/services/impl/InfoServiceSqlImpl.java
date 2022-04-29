@@ -19,10 +19,12 @@
 
 package net.atos.entng.actualites.services.impl;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import fr.wseduc.webutils.http.Renders;
+import io.vertx.core.CompositeFuture;
+import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import net.atos.entng.actualites.Actualites;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
@@ -36,6 +38,7 @@ import fr.wseduc.webutils.Either;
 import net.atos.entng.actualites.services.InfoService;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+import org.entcore.common.utils.StopWatch;
 
 import static org.entcore.common.sql.SqlResult.validUniqueResultHandler;
 
@@ -256,7 +259,15 @@ public class InfoServiceSqlImpl implements InfoService {
 	}
 
 	@Override
-	public void listLastPublishedInfos(UserInfos user, int resultSize, Handler<Either<String, JsonArray>> handler) {
+	public void listLastPublishedInfos(UserInfos user, int resultSize, boolean optimized, Handler<Either<String, JsonArray>> handler) {
+		if (optimized) {
+			listLastPublishedInfosOptimized(user, resultSize, handler);
+		} else {
+			listLastPublishedInfosNotOptimized(user, resultSize, handler);
+		}
+	}
+
+	private void listLastPublishedInfosNotOptimized(UserInfos user, int resultSize, Handler<Either<String, JsonArray>> handler) {
 		if (user != null) {
 			String query;
 			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
@@ -292,6 +303,103 @@ public class InfoServiceSqlImpl implements InfoService {
 			values.add(resultSize);
 			Sql.getInstance().prepared(query.toString(), values, SqlResult.parseShared(handler));
 		}
+	}
+
+	private void listLastPublishedInfosOptimized(UserInfos user, int resultSize, Handler<Either<String, JsonArray>> handler) {
+		final StopWatch watch1 = new StopWatch();
+		log.debug("Starting optimized query...");
+		helperSql.getInfosIdsByUnion(user, resultSize).setHandler(resIds -> {
+			log.debug("Infos IDS query..." + watch1.elapsedTimeSeconds());
+			if (resIds.failed()) {
+				handler.handle(new Either.Left<>(resIds.cause().getMessage()));
+			} else {
+				final Set<Long> ids = resIds.result();
+				if (ids.isEmpty()) {
+					handler.handle(new Either.Right<>(new JsonArray()));
+					return;
+				}
+				final JsonArray jsonIds = new JsonArray(new ArrayList(ids));
+				final String infoIds = Sql.listPrepared(ids.toArray());
+				final Promise<Map<Long, JsonArray>> futureShared = Promise.promise();
+
+				//subquery shared and groups
+				{
+					final StringBuilder subquery = new StringBuilder();
+					subquery.append("SELECT info_shares.resource_id as info_id, ");
+					subquery.append("  CASE WHEN array_to_json(array_agg(group_id)) IS NULL THEN '[]'::json ELSE array_to_json(array_agg(group_id)) END as groups, ");
+					subquery.append("  json_agg(row_to_json(row(info_shares.member_id, info_shares.action)::actualites.share_tuple)) as shared ");
+					subquery.append("FROM actualites.info_shares ");
+					subquery.append("LEFT JOIN actualites.members ON (info_shares.member_id = members.group_id) ");
+					subquery.append("WHERE info_shares.resource_id IN ").append(infoIds).append(" ");
+					subquery.append("AND info_shares.action = ? ");
+					subquery.append("GROUP BY info_shares.resource_id;");
+
+					final JsonArray subValues = new JsonArray().addAll(jsonIds).add(RESOURCE_SHARED);
+					final StopWatch watch2 = new StopWatch();
+					Sql.getInstance().prepared(subquery.toString(), subValues, SqlResult.parseShared(rShared -> {
+						log.debug("Infos SHARED query..." + watch2.elapsedTimeSeconds());
+						try{
+							if(rShared.isLeft()){
+								futureShared.fail(rShared.left().getValue());
+							}else{
+								final Map<Long, JsonArray> mapping = new HashMap<>();
+								final JsonArray shared = rShared.right().getValue();
+								for(int i = 0; i < shared.size(); i++){
+									final JsonObject row = shared.getJsonObject(i);
+									mapping.put(row.getLong("info_id"), row.getJsonArray("shared"));
+								}
+								futureShared.complete(mapping);
+							}
+						}catch (Exception e){
+							futureShared.fail(e);
+						}
+					}));
+				}
+				//subquery infos
+				{
+					final StringBuilder subquery = new StringBuilder();
+					subquery.append("SELECT info.id as _id, info.title, users.username, thread.id AS thread_id, thread.title AS thread_title, ");
+					subquery.append("thread.icon AS thread_icon, CASE WHEN info.publication_date > info.modified THEN info.publication_date ");
+					subquery.append("ELSE info.modified END AS date ");
+					subquery.append("FROM actualites.info ");
+					subquery.append("INNER JOIN actualites.thread ON (info.thread_id = thread.id) ");
+					subquery.append("INNER JOIN actualites.users ON (info.owner = users.id) ");
+					subquery.append("WHERE info.id IN ").append(infoIds).append(" ");
+					subquery.append("AND info.status = 3 ");
+					subquery.append("AND (info.publication_date <= LOCALTIMESTAMP OR info.publication_date IS NULL) ");
+					subquery.append("AND (info.expiration_date > LOCALTIMESTAMP OR info.expiration_date IS NULL) ");
+					subquery.append("GROUP BY info.id, users.username, thread.id ORDER BY info.modified DESC;");
+
+					final JsonArray subValues = new JsonArray().addAll(jsonIds);
+					final StopWatch watch3 = new StopWatch();
+					Sql.getInstance().prepared(subquery.toString(), subValues, SqlResult.validResultHandler(rInfos -> {
+						log.debug("Infos FINAL query..." + watch3.elapsedTimeSeconds());
+						try{
+							if(rInfos.isLeft()){
+								handler.handle(rInfos);
+							}else{
+								futureShared.future().onComplete(result -> {
+									try{
+										final Map<Long, JsonArray> shared = result.result();
+										final JsonArray infos = rInfos.right().getValue();
+										for(int i = 0; i < infos.size(); i++){
+											final JsonObject row = infos.getJsonObject(i);
+											final Long _id = row.getLong("_id");
+											row.put("shared", shared.getOrDefault(_id, new JsonArray()));
+										}
+										handler.handle(new Either.Right<>(infos));
+									}catch (Exception e){
+										handler.handle(new Either.Left<>(e.getMessage()));
+									}
+								});
+							}
+						}catch (Exception e){
+							handler.handle(new Either.Left<>(e.getMessage()));
+						}
+					}));
+				}
+			}
+		});
 	}
 
 	@Override

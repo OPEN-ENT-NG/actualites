@@ -113,7 +113,7 @@ public class QueryHelperSql {
         return future;
     }
 
-    private Future<Set<Long>> getInfosIdsByUnion(final UserInfos user){
+    public Future<Set<Long>> getInfosIdsByUnion(final UserInfos user, final Integer limit){
         final List<String> groupsAndUserIds = new ArrayList<>();
         groupsAndUserIds.add(user.getUserId());
         if (user.getGroupsIds() != null) {
@@ -138,11 +138,17 @@ public class QueryHelperSql {
         queryIds.append(" OR ( thread_shares.member_id IN ").append(memberIds);
         queryIds.append("      AND thread_shares.action = '" + THREAD_PUBLISH + "'");
         queryIds.append("    )  AND info.status > 1 ");
+        if (limit != null) {
+            queryIds.append("LIMIT ?");
+        }
         final JsonArray values = new JsonArray()
                 .add(user.getUserId())
                 .addAll(new JsonArray(groupsAndUserIds))
                 .add(user.getUserId())
                 .addAll(new JsonArray(groupsAndUserIds));
+        if (limit != null) {
+            values.add(limit);
+        }
         final Future<Set<Long>> future = Future.future();
         Sql.getInstance().prepared(queryIds.toString(), values, SqlResult.validResultHandler(resIds -> {
             if(resIds.isLeft()){
@@ -159,7 +165,7 @@ public class QueryHelperSql {
     private void fetchInfosOptimzed(final UserInfos user, final Handler<Either<String, JsonArray>> handler){
         final StopWatch watch1 = new StopWatch();
         log.debug("Starting optimized query...");
-        getInfosIdsByUnion(user).setHandler(resIds -> {
+        getInfosIdsByUnion(user, null).setHandler(resIds -> {
             log.debug("Infos IDS query..."+watch1.elapsedTimeSeconds());
             if(resIds.failed()){
                 handler.handle(new Either.Left<>(resIds.cause().getMessage()));

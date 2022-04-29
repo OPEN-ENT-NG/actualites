@@ -54,7 +54,7 @@ public interface InfoService {
 
 	public void listByThreadId(String id, UserInfos user, Handler<Either<String, JsonArray>> handler);
 
-	public void listLastPublishedInfos(UserInfos user, int resultSize, Handler<Either<String, JsonArray>> handler);
+	public void listLastPublishedInfos(UserInfos user, int resultSize, boolean optimized, Handler<Either<String, JsonArray>> handler);
 
 	public void listForLinker(UserInfos user, Handler<Either<String, JsonArray>> handler);
 
