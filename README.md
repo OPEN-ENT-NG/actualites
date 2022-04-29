@@ -1,10 +1,10 @@
 # À propos de l'application Actualités
 
-* Licence : [AGPL v3](http://www.gnu.org/licenses/agpl.txt) - Copyright Conseil Régional Nord Pas de Calais - Picardie, Conseil départemental de l'Essonne, Conseil régional d'Aquitaine-Limousin-Poitou-Charentes
-* Développeur(s) : ATOS
-* Financeur(s) : Région Nord Pas de Calais-Picardie,  Département 91, Région Aquitaine-Limousin-Poitou-Charentes
+* Licence : [AGPL v3](http://www.gnu.org/licenses/agpl.txt) - Copyright Région Hauts-de-France (ex Picardie), Département Essonne, Région Nouvelle Aquitaine (ex Poitou-Charente)
+* Développeur(s) : ATOS, CGI, OPEN DIGITAL EDUCATION
+* Financeur(s) : Région Hauts-de-France (ex Picardie), Département Essonne, Région Nouvelle Aquitaine (ex Poitou-Charente)
 
-* Description : Application de diffusion d'actualités organisées en fil
+* Description : cette appplication permet de créer et diffuser des actualités, organisées en fils d'actualités. Un widget permet de visualiser les dernières actualités publiées depuis le fil de nouveauté de la solution.
 
 # Documentation technique
 ## Construction
