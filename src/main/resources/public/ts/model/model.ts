@@ -59,15 +59,20 @@ export const buildModel = function() {
 
     model.collection(Thread, {
         behaviours: 'actualites',
-        sync: function(){
-            http.get('/actualites/threads').then(function(result){
-                this.load(result.data);
-                this.map(function (thred) {
-                    return thred.setDisplayName();
-                });
-                this.trigger('sync');
-                model.trigger('counter:sync');
-            }.bind(this));
+        _pendingSync : undefined,
+        sync: async function(){
+            if (!this._pendingSync) {
+                this._pendingSync = http.get('/actualites/threads').then(function(result){
+                    this.load(result.data);
+                    this.map(function (thred) {
+                        return thred.setDisplayName();
+                    });
+                    this.trigger('sync');
+                    model.trigger('counter:sync');
+                }.bind(this));
+            }
+            await this._pendingSync;
+            this._pendingSync = undefined;
         },
         removeSelection: async function (){
             let all = this.selection().length;
@@ -159,53 +164,58 @@ export const buildModel = function() {
         beforeThisWeekInfos: [],
         pendings : [],
         drafts : [],
+        _pendingSync : undefined,
         sync: async function(){
-           await http.get('/actualites/infos').then(function(response){
-                let infos = response.data;
-                let that = this;
-                this.all = [];
-                infos.forEach(function(info){
-                    let thread = model.threads.find(function(item){
-                        return item._id === info.thread_id;
+            if (!this._pendingSync) {
+                this._pendingSync = http.get('/actualites/infos').then(function(response){
+                    let infos = response.data;
+                    let that = this;
+                    this.all = [];
+                    infos.forEach(function(info){
+                        let thread = model.threads.find(function(item){
+                            return item._id === info.thread_id;
+                        });
+                        if (!thread){
+                            thread = new Thread();
+                            thread._id = info.thread_id;
+                            thread.title = info.thread_title;
+                            thread.icon = info.thread_icon;
+                            thread.shared = [];
+                            model.threads.push(thread, false);
+                        }
+                        info.thread = thread;
+                        if (info.comments !== '[null]' || info.comments !== null){
+                            info.comments = JSON.parse(info.comments);
+                        } else {
+                            info.comments = undefined;
+                        }
+                        if (info.publication_date) {
+                            info.publication_date = info.publication_date.split('.')[0];
+                            info.hasPublicationDate = true;
+                        }
+                        if (info.expiration_date) {
+                            info.expiration_date = info.expiration_date.split('.')[0];
+                            info.hasExpirationDate = true;
+                        } else {
+                            info.expiration_date = moment();
+                        }
+                        info.created = info.created.split('.')[0];
+                        info.modified = info.modified.split('.')[0];
+                        info.expanded = false;
+                        info.displayComments = false;
+                        that.push(info, false);
                     });
-                    if (!thread){
-                        thread = new Thread();
-                        thread._id = info.thread_id;
-                        thread.title = info.thread_title;
-                        thread.icon = info.thread_icon;
-                        thread.shared = [];
-                        model.threads.push(thread, false);
-                    }
-                    info.thread = thread;
-                    if (info.comments !== '[null]' || info.comments !== null){
-                        info.comments = JSON.parse(info.comments);
-                    } else {
-                        info.comments = undefined;
-                    }
-                    if (info.publication_date) {
-                        info.publication_date = info.publication_date.split('.')[0];
-                        info.hasPublicationDate = true;
-                    }
-                    if (info.expiration_date) {
-                        info.expiration_date = info.expiration_date.split('.')[0];
-                        info.hasExpirationDate = true;
-                    } else {
-                        info.expiration_date = moment();
-                    }
-                    info.created = info.created.split('.')[0];
-                    info.modified = info.modified.split('.')[0];
-                    info.expanded = false;
-                    info.displayComments = false;
-                    that.push(info, false);
-                });
-                this.thisWeekInfos = model.thisWeek(this.all);
-                this.beforeThisWeekInfos = model.beforeThisWeek(this.all);
-                this.pendings = model.pending(this.all);
-                this.drafts = model.draft(this.all);
-                this.headlines = model.headline(this.all);
-                this.trigger('sync');
-                model.trigger('counter:sync');
-            }.bind(this));
+                    this.thisWeekInfos = model.thisWeek(this.all);
+                    this.beforeThisWeekInfos = model.beforeThisWeek(this.all);
+                    this.pendings = model.pending(this.all);
+                    this.drafts = model.draft(this.all);
+                    this.headlines = model.headline(this.all);
+                    this.trigger('sync');
+                    model.trigger('counter:sync');
+                }.bind(this));
+            }
+           await this._pendingSync;
+           this._pendingSync = undefined;
         },
         behaviours: 'actualites'
     });
