@@ -368,7 +368,7 @@ public class InfoServiceSqlImpl implements InfoService {
 					subquery.append("AND info.status = 3 ");
 					subquery.append("AND (info.publication_date <= LOCALTIMESTAMP OR info.publication_date IS NULL) ");
 					subquery.append("AND (info.expiration_date > LOCALTIMESTAMP OR info.expiration_date IS NULL) ");
-					subquery.append("GROUP BY info.id, users.username, thread.id ORDER BY info.modified DESC;");
+					subquery.append("GROUP BY info.id, users.username, thread.id ORDER BY date DESC;");
 
 					final JsonArray subValues = new JsonArray().addAll(jsonIds);
 					final StopWatch watch3 = new StopWatch();
