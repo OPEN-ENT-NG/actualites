@@ -204,9 +204,10 @@ public class InfoServiceSqlImpl implements InfoService {
 	}
 
 	@Override
-	public void list(UserInfos user, boolean optimized, Handler<Either<String, JsonArray>> handler) {
+	public void list(UserInfos user, boolean optimized, final boolean collectComments, final boolean collectShared,
+					 Handler<Either<String, JsonArray>> handler) {
 		if (user != null) {
-			helperSql.fetchInfos(user, optimized, handler);
+			helperSql.fetchInfos(user, optimized, collectComments, collectShared, handler);
 		}else{
 			handler.handle(new Either.Left<>("not authenticated"));
 		}
@@ -320,41 +321,7 @@ public class InfoServiceSqlImpl implements InfoService {
 				}
 				final JsonArray jsonIds = new JsonArray(new ArrayList(ids));
 				final String infoIds = Sql.listPrepared(ids.toArray());
-				final Promise<Map<Long, JsonArray>> futureShared = Promise.promise();
 
-				//subquery shared and groups
-				{
-					final StringBuilder subquery = new StringBuilder();
-					subquery.append("SELECT info_shares.resource_id as info_id, ");
-					subquery.append("  CASE WHEN array_to_json(array_agg(group_id)) IS NULL THEN '[]'::json ELSE array_to_json(array_agg(group_id)) END as groups, ");
-					subquery.append("  json_agg(row_to_json(row(info_shares.member_id, info_shares.action)::actualites.share_tuple)) as shared ");
-					subquery.append("FROM actualites.info_shares ");
-					subquery.append("LEFT JOIN actualites.members ON (info_shares.member_id = members.group_id) ");
-					subquery.append("WHERE info_shares.resource_id IN ").append(infoIds).append(" ");
-					subquery.append("AND info_shares.action = ? ");
-					subquery.append("GROUP BY info_shares.resource_id;");
-
-					final JsonArray subValues = new JsonArray().addAll(jsonIds).add(RESOURCE_SHARED);
-					final StopWatch watch2 = new StopWatch();
-					Sql.getInstance().prepared(subquery.toString(), subValues, SqlResult.parseShared(rShared -> {
-						log.debug("Infos SHARED query..." + watch2.elapsedTimeSeconds());
-						try{
-							if(rShared.isLeft()){
-								futureShared.fail(rShared.left().getValue());
-							}else{
-								final Map<Long, JsonArray> mapping = new HashMap<>();
-								final JsonArray shared = rShared.right().getValue();
-								for(int i = 0; i < shared.size(); i++){
-									final JsonObject row = shared.getJsonObject(i);
-									mapping.put(row.getLong("info_id"), row.getJsonArray("shared"));
-								}
-								futureShared.complete(mapping);
-							}
-						}catch (Exception e){
-							futureShared.fail(e);
-						}
-					}));
-				}
 				//subquery infos
 				{
 					final StringBuilder subquery = new StringBuilder();
@@ -374,27 +341,10 @@ public class InfoServiceSqlImpl implements InfoService {
 					final StopWatch watch3 = new StopWatch();
 					Sql.getInstance().prepared(subquery.toString(), subValues, SqlResult.validResultHandler(rInfos -> {
 						log.debug("Infos FINAL query..." + watch3.elapsedTimeSeconds());
-						try{
-							if(rInfos.isLeft()){
-								handler.handle(rInfos);
-							}else{
-								futureShared.future().onComplete(result -> {
-									try{
-										final Map<Long, JsonArray> shared = result.result();
-										final JsonArray infos = rInfos.right().getValue();
-										for(int i = 0; i < infos.size(); i++){
-											final JsonObject row = infos.getJsonObject(i);
-											final Long _id = row.getLong("_id");
-											row.put("shared", shared.getOrDefault(_id, new JsonArray()));
-										}
-										handler.handle(new Either.Right<>(infos));
-									}catch (Exception e){
-										handler.handle(new Either.Left<>(e.getMessage()));
-									}
-								});
-							}
-						}catch (Exception e){
-							handler.handle(new Either.Left<>(e.getMessage()));
+						if (rInfos.isLeft()) {
+							handler.handle(rInfos);
+						} else {
+							handler.handle(new Either.Right<>(rInfos.right().getValue()));
 						}
 					}));
 				}

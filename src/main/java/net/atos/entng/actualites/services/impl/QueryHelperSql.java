@@ -4,6 +4,7 @@ import fr.wseduc.webutils.Either;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
@@ -20,9 +21,10 @@ public class QueryHelperSql {
     private static Logger log = LoggerFactory.getLogger(QueryHelperSql.class);
     private static final String THREAD_PUBLISH = "net-atos-entng-actualites-controllers-InfoController|publish";
 
-    public void fetchInfos(final UserInfos user, final boolean optimized, final Handler<Either<String, JsonArray>> handler){
+    public void fetchInfos(final UserInfos user, final boolean optimized,  final boolean collectComments,
+                           final boolean collectShared, final Handler<Either<String, JsonArray>> handler){
         if(optimized){
-            fetchInfosOptimzed(user, handler);
+            fetchInfosOptimzed(user, collectComments, collectShared, handler);
         } else{
             fetchInfosNotOptimzed(user, handler);
         }
@@ -166,7 +168,8 @@ public class QueryHelperSql {
         return future;
     }
 
-    private void fetchInfosOptimzed(final UserInfos user, final Handler<Either<String, JsonArray>> handler){
+    private void fetchInfosOptimzed(final UserInfos user, final boolean collectComments, final boolean collectShared,
+                                    final Handler<Either<String, JsonArray>> handler){
         final StopWatch watch1 = new StopWatch();
         log.debug("Starting optimized query...");
         getInfosIdsByUnion(user, null).setHandler(resIds -> {
@@ -181,10 +184,10 @@ public class QueryHelperSql {
                 }
                 final JsonArray jsonIds = new JsonArray(new ArrayList(ids));
                 final String infoIds = Sql.listPrepared(ids.toArray());
-                final Future<Map<Long, String>> futureComments = Future.future();
-                final Future<Map<Long, JsonArray>> futureShared = Future.future();
+                final Promise<Map<Long, String>> futureComments = Promise.promise();
+                final Promise<Map<Long, JsonArray>> futureShared = Promise.promise();
                 //subquery comments
-                {
+                if (collectComments) {
                     final StringBuilder subquery = new StringBuilder();
                     subquery.append("SELECT cr.info_id as info_id, json_agg(cr.*) as comments  FROM (");
                     subquery.append("  SELECT comment.id as _id, comment.comment, comment.owner, comment.created, comment.modified, users.username, comment.info_id");
@@ -211,9 +214,11 @@ public class QueryHelperSql {
                             futureComments.fail(e);
                         }
                     }));
+                } else {
+                    futureComments.complete();
                 }
                 //subquery shared and groups
-                {
+                if (collectShared) {
                     final StringBuilder subquery = new StringBuilder();
                     subquery.append("SELECT info_shares.resource_id as info_id, ");
                     subquery.append("  CASE WHEN array_to_json(array_agg(group_id)) IS NULL THEN '[]'::json ELSE array_to_json(array_agg(group_id)) END as groups, ");
@@ -242,6 +247,8 @@ public class QueryHelperSql {
                             futureShared.fail(e);
                         }
                     }));
+                } else {
+                    futureShared.complete();
                 }
                 //subquery infos
                 {
@@ -261,19 +268,25 @@ public class QueryHelperSql {
                             if(rInfos.isLeft()){
                                 handler.handle(rInfos);
                             }else{
-                                CompositeFuture.all(futureComments, futureShared).setHandler(rAll->{
-                                    try{
-                                        final Map<Long, String> comments = futureComments.result();
-                                        final Map<Long, JsonArray> shared = futureShared.result();
+                                CompositeFuture.all(futureComments.future(), futureShared.future()).onComplete(rAll -> {
+                                    try {
                                         final JsonArray infos = rInfos.right().getValue();
-                                        for(int i = 0; i < infos.size(); i++){
-                                            final JsonObject row = infos.getJsonObject(i);
-                                            final Long _id = row.getLong("_id");
-                                            row.put("shared", shared.getOrDefault(_id, new JsonArray()));
-                                            row.put("comments", comments.getOrDefault(_id, "[]"));
+                                        if (collectComments || collectShared) {
+                                            final Map<Long, String> comments = futureComments.future().result();
+                                            final Map<Long, JsonArray> shared = futureShared.future().result();
+                                            for (int i = 0; i < infos.size(); i++){
+                                                final JsonObject row = infos.getJsonObject(i);
+                                                final Long _id = row.getLong("_id");
+                                                if (collectComments) {
+                                                    row.put("comments", comments.getOrDefault(_id, "[]"));
+                                                }
+                                                if (collectShared) {
+                                                    row.put("shared", shared.getOrDefault(_id, new JsonArray()));
+                                                }
+                                            }
                                         }
                                         handler.handle(new Either.Right<>(infos));
-                                    }catch (Exception e){
+                                    } catch (Exception e){
                                         handler.handle(new Either.Left<>(e.getMessage()));
                                     }
                                 });

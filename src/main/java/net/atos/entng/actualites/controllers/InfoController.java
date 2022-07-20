@@ -126,9 +126,9 @@ public class InfoController extends ControllerHelper {
             public void handle(UserInfos user) {
                 if(request.params().contains("optimized")){
                     final boolean notOptimized = "false".equals(request.params().get("optimized"));
-                    infoService.list(user, !notOptimized, arrayResponseHandler(request));
+                    infoService.list(user, !notOptimized, true, true, arrayResponseHandler(request));
                 }else{
-                    infoService.list(user, optimized, arrayResponseHandler(request));
+                    infoService.list(user, optimized, true, true, arrayResponseHandler(request));
                 }
             }
         });
@@ -159,9 +159,9 @@ public class InfoController extends ControllerHelper {
             public void handle(UserInfos user) {
                 if(request.params().contains("optimized")){
                     final boolean notOptimized = "false".equals(request.params().get("optimized"));
-                    infoService.list(user, !notOptimized, arrayResponseHandler(request));
+                    infoService.list(user, !notOptimized, false, false, arrayResponseHandler(request));
                 }else{
-                    infoService.list(user, optimized, arrayResponseHandler(request));
+                    infoService.list(user, optimized, false, false, arrayResponseHandler(request));
                 }
             }
         });

@@ -50,7 +50,8 @@ public interface InfoService {
 	
 	public void retrieve(String id, UserInfos user, Handler<Either<String, JsonObject>> handler);
 
-	public void list(UserInfos user, boolean optimized, Handler<Either<String, JsonArray>> handler);
+	public void list(UserInfos user, boolean optimized, final boolean collectComments, final boolean collectShared,
+					 Handler<Either<String, JsonArray>> handler);
 
 	public void listByThreadId(String id, UserInfos user, Handler<Either<String, JsonArray>> handler);
 
