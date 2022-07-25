@@ -21,10 +21,9 @@ public class QueryHelperSql {
     private static Logger log = LoggerFactory.getLogger(QueryHelperSql.class);
     private static final String THREAD_PUBLISH = "net-atos-entng-actualites-controllers-InfoController|publish";
 
-    public void fetchInfos(final UserInfos user, final boolean optimized,  final boolean collectComments,
-                           final boolean collectShared, final Handler<Either<String, JsonArray>> handler){
+    public void fetchInfos(final UserInfos user, final boolean optimized, final Handler<Either<String, JsonArray>> handler){
         if(optimized){
-            fetchInfosOptimzed(user, collectComments, collectShared, handler);
+            fetchInfosOptimzed(user, handler);
         } else{
             fetchInfosNotOptimzed(user, handler);
         }
@@ -155,25 +154,21 @@ public class QueryHelperSql {
         if (limit != null) {
             values.add(limit);
         }
-        final Future<Set<Long>> future = Future.future();
+        final Promise<Set<Long>> promise = Promise.promise();
         Sql.getInstance().prepared(queryIds.toString(), values, SqlResult.validResultHandler(resIds -> {
             if(resIds.isLeft()){
-                future.fail(resIds.left().getValue());
+                promise.fail(resIds.left().getValue());
             }else{
                 final JsonArray resultIds = resIds.right().getValue();
                 final Set<Long> ids = resultIds.stream().map(e-> ((JsonObject)e).getLong("id")).collect(Collectors.toSet());
-                future.complete(ids);
+                promise.complete(ids);
             }
         }));
-        return future;
+        return promise.future();
     }
 
-    private void fetchInfosOptimzed(final UserInfos user, final boolean collectComments, final boolean collectShared,
-                                    final Handler<Either<String, JsonArray>> handler){
-        final StopWatch watch1 = new StopWatch();
-        log.debug("Starting optimized query...");
-        getInfosIdsByUnion(user, null).setHandler(resIds -> {
-            log.debug("Infos IDS query..."+watch1.elapsedTimeSeconds());
+    private void fetchInfosOptimzed(final UserInfos user, final Handler<Either<String, JsonArray>> handler){
+        getInfosIdsByUnion(user, null).onComplete(resIds -> {
             if(resIds.failed()){
                 handler.handle(new Either.Left<>(resIds.cause().getMessage()));
             }else{
@@ -184,76 +179,10 @@ public class QueryHelperSql {
                 }
                 final JsonArray jsonIds = new JsonArray(new ArrayList(ids));
                 final String infoIds = Sql.listPrepared(ids.toArray());
-                final Promise<Map<Long, String>> futureComments = Promise.promise();
-                final Promise<Map<Long, JsonArray>> futureShared = Promise.promise();
-                //subquery comments
-                if (collectComments) {
-                    final StringBuilder subquery = new StringBuilder();
-                    subquery.append("SELECT cr.info_id as info_id, json_agg(cr.*) as comments  FROM (");
-                    subquery.append("  SELECT comment.id as _id, comment.comment, comment.owner, comment.created, comment.modified, users.username, comment.info_id");
-                    subquery.append("  FROM actualites.comment INNER JOIN actualites.users ON comment.owner = users.id ");
-                    subquery.append("  WHERE comment.info_id IN ").append(infoIds).append(" ORDER BY comment.modified ASC");
-                    subquery.append(") cr GROUP BY cr.info_id;");
-                    final JsonArray subValues = new JsonArray().addAll(jsonIds);
-                    final StopWatch watch2 = new StopWatch();
-                    Sql.getInstance().prepared(subquery.toString(), subValues, SqlResult.validResultHandler(rComments->{
-                        log.debug("Infos COMMENTS query..."+watch2.elapsedTimeSeconds());
-                        try{
-                            if(rComments.isLeft()){
-                                futureComments.fail(rComments.left().getValue());
-                            }else{
-                                final Map<Long, String> mapping = new HashMap<>();
-                                final JsonArray comments = rComments.right().getValue();
-                                for(int i = 0; i < comments.size(); i++){
-                                    final JsonObject row = comments.getJsonObject(i);
-                                    mapping.put(row.getLong("info_id"), row.getString("comments"));
-                                }
-                                futureComments.complete(mapping);
-                            }
-                        }catch (Exception e){
-                            futureComments.fail(e);
-                        }
-                    }));
-                } else {
-                    futureComments.complete();
-                }
-                //subquery shared and groups
-                if (collectShared) {
-                    final StringBuilder subquery = new StringBuilder();
-                    subquery.append("SELECT info_shares.resource_id as info_id, ");
-                    subquery.append("  CASE WHEN array_to_json(array_agg(group_id)) IS NULL THEN '[]'::json ELSE array_to_json(array_agg(group_id)) END as groups, ");
-                    subquery.append("  json_agg(row_to_json(row(info_shares.member_id, info_shares.action)::actualites.share_tuple)) as shared ");
-                    subquery.append("FROM actualites.info_shares ");
-                    subquery.append("LEFT JOIN actualites.members ON (info_shares.member_id = members.group_id) ");
-                    subquery.append("WHERE info_shares.resource_id IN ").append(infoIds).append(" ");
-                    subquery.append("GROUP BY info_shares.resource_id;");
-                    final JsonArray subValues = new JsonArray().addAll(jsonIds);
-                    final StopWatch watch2 = new StopWatch();
-                    Sql.getInstance().prepared(subquery.toString(), subValues, SqlResult.parseShared(rShared->{
-                        log.debug("Infos SHARED query..."+watch2.elapsedTimeSeconds());
-                        try{
-                            if(rShared.isLeft()){
-                                futureShared.fail(rShared.left().getValue());
-                            }else{
-                                final Map<Long, JsonArray> mapping = new HashMap<>();
-                                final JsonArray shared = rShared.right().getValue();
-                                for(int i = 0; i < shared.size(); i++){
-                                    final JsonObject row = shared.getJsonObject(i);
-                                    mapping.put(row.getLong("info_id"), row.getJsonArray("shared"));
-                                }
-                                futureShared.complete(mapping);
-                            }
-                        }catch (Exception e){
-                            futureShared.fail(e);
-                        }
-                    }));
-                } else {
-                    futureShared.complete();
-                }
                 //subquery infos
                 {
                     final StringBuilder subquery = new StringBuilder();
-                    subquery.append("SELECT info.id as _id, info.title, info.content, info.status, info.publication_date, info.expiration_date, info.is_headline, ");
+                    subquery.append("SELECT info.id as _id, info.title, info.content, info.status, info.publication_date, info.expiration_date, info.is_headline, info.number_of_comments, ");
                     subquery.append("  info.thread_id, info.created, info.modified, info.owner, users.username, thread.title AS thread_title, thread.icon AS thread_icon ");
                     subquery.append("FROM actualites.info ");
                     subquery.append("INNER JOIN actualites.thread ON (info.thread_id = thread.id) ");
@@ -261,43 +190,40 @@ public class QueryHelperSql {
                     subquery.append("WHERE info.id IN ").append(infoIds).append(" ");
                     subquery.append("GROUP BY info.id, users.username, thread.id ORDER BY info.modified DESC;");
                     final JsonArray subValues = new JsonArray().addAll(jsonIds);
-                    final StopWatch watch2 = new StopWatch();
-                    Sql.getInstance().prepared(subquery.toString(), subValues, SqlResult.validResultHandler(rInfos->{
-                        log.debug("Infos FINAL query..."+watch2.elapsedTimeSeconds());
-                        try{
-                            if(rInfos.isLeft()){
-                                handler.handle(rInfos);
-                            }else{
-                                CompositeFuture.all(futureComments.future(), futureShared.future()).onComplete(rAll -> {
-                                    try {
-                                        final JsonArray infos = rInfos.right().getValue();
-                                        if (collectComments || collectShared) {
-                                            final Map<Long, String> comments = futureComments.future().result();
-                                            final Map<Long, JsonArray> shared = futureShared.future().result();
-                                            for (int i = 0; i < infos.size(); i++){
-                                                final JsonObject row = infos.getJsonObject(i);
-                                                final Long _id = row.getLong("_id");
-                                                if (collectComments) {
-                                                    row.put("comments", comments.getOrDefault(_id, "[]"));
-                                                }
-                                                if (collectShared) {
-                                                    row.put("shared", shared.getOrDefault(_id, new JsonArray()));
-                                                }
-                                            }
-                                        }
-                                        handler.handle(new Either.Right<>(infos));
-                                    } catch (Exception e){
-                                        handler.handle(new Either.Left<>(e.getMessage()));
-                                    }
-                                });
-                            }
-                        }catch (Exception e){
-                            handler.handle(new Either.Left<>(e.getMessage()));
-                        }
-                    }));
+                    Sql.getInstance().prepared(subquery.toString(), subValues, SqlResult.validResultHandler(handler));
                 }
             }
         });
+    }
+
+    public void fetchComments(final Long infoId, final Handler<Either<String, JsonArray>> handler) {
+        final StringBuilder subquery = new StringBuilder();
+        subquery.append("SELECT comment.id as _id, comment.comment, comment.owner, comment.created, comment.modified, users.username, comment.info_id ");
+        subquery.append("FROM actualites.comment INNER JOIN actualites.users ON comment.owner = users.id ");
+        subquery.append("WHERE comment.info_id = ? ORDER BY comment.modified ASC");
+        final JsonArray values = new JsonArray().add(infoId);
+        Sql.getInstance().prepared(subquery.toString(), values, SqlResult.validResultHandler(handler));
+    }
+
+    public void fetchShared(final Long infoId, final Handler<Either<String, JsonArray>> handler) {
+        final StringBuilder subquery = new StringBuilder();
+        subquery.append("SELECT COALESCE(array_to_json(array_agg(group_id)), '[]'::JSON) as groups, ");
+        subquery.append("COALESCE(json_agg(row_to_json(row(info_shares.member_id, info_shares.action)::actualites.share_tuple)), '[]'::JSON) as shared ");
+        subquery.append("FROM actualites.info_shares ");
+        subquery.append("LEFT JOIN actualites.members ON (info_shares.member_id = members.group_id) ");
+        subquery.append("WHERE info_shares.resource_id = ? ");
+        final JsonArray values = new JsonArray().add(infoId);
+        Sql.getInstance().prepared(subquery.toString(), values, SqlResult.parseShared(parsed -> {
+            if (parsed.isRight()) {
+                try {
+                    handler.handle(new Either.Right<>(parsed.right().getValue().getJsonObject(0).getJsonArray("shared")));
+                } catch (Exception e) {
+                    handler.handle(new Either.Left<>(e.getMessage()));
+                }
+            } else {
+                handler.handle(parsed);
+            }
+        }));
     }
 
     private void fetchInfosNotOptimzed(final UserInfos user, final Handler<Either<String, JsonArray>> handler){

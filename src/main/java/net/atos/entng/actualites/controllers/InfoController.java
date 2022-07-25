@@ -126,12 +126,44 @@ public class InfoController extends ControllerHelper {
             public void handle(UserInfos user) {
                 if(request.params().contains("optimized")){
                     final boolean notOptimized = "false".equals(request.params().get("optimized"));
-                    infoService.list(user, !notOptimized, true, true, arrayResponseHandler(request));
+                    infoService.list(user, !notOptimized, arrayResponseHandler(request));
                 }else{
-                    infoService.list(user, optimized, true, true, arrayResponseHandler(request));
+                    infoService.list(user, optimized, arrayResponseHandler(request));
                 }
             }
         });
+    }
+
+    @Get("/infos/:"+Actualites.INFO_RESOURCE_ID+"/comments")
+    @ApiDoc("Get infos comments.")
+    @ResourceFilter(InfoFilter.class)
+    @SecuredAction(value = "info.read", type = ActionType.RESOURCE)
+    public void getInfoComments(final HttpServerRequest request) {
+        final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
+        Long id;
+        try {
+            id = Long.parseLong(infoId);
+        } catch (NumberFormatException nfe) {
+            badRequest(request);
+            return;
+        }
+        infoService.listComments(id, arrayResponseHandler(request));
+    }
+
+    @Get("/infos/:"+Actualites.INFO_RESOURCE_ID+"/shared")
+    @ApiDoc("Get infos shared.")
+    @ResourceFilter(InfoFilter.class)
+    @SecuredAction(value = "info.read", type = ActionType.RESOURCE)
+    public void getInfoShared(final HttpServerRequest request) {
+        final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
+        Long id;
+        try {
+            id = Long.parseLong(infoId);
+        } catch (NumberFormatException nfe) {
+            badRequest(request);
+            return;
+        }
+        infoService.listShared(id, arrayResponseHandler(request));
     }
 
     @Get("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/infos")
@@ -159,9 +191,9 @@ public class InfoController extends ControllerHelper {
             public void handle(UserInfos user) {
                 if(request.params().contains("optimized")){
                     final boolean notOptimized = "false".equals(request.params().get("optimized"));
-                    infoService.list(user, !notOptimized, false, false, arrayResponseHandler(request));
+                    infoService.list(user, !notOptimized,arrayResponseHandler(request));
                 }else{
-                    infoService.list(user, optimized, false, false, arrayResponseHandler(request));
+                    infoService.list(user, optimized, arrayResponseHandler(request));
                 }
             }
         });

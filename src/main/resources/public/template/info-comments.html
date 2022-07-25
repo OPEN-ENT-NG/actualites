@@ -1,3 +1,6 @@
+<div ng-if="!info.allow('comment') && info.comments.all.length == 0" class="centered-text comment">
+	<em><i18n>actualites.info.no.comment</i18n></em>
+</div>
 <article class="row comment" ng-repeat="comment in info.comments.all">
 	<div class="lower-title">
 		<em>[[formatDate(comment.modified)]]</em>, <i18n>actualites.info.label.author</i18n>

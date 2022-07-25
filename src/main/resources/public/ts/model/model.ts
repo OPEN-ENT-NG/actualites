@@ -184,11 +184,6 @@ export const buildModel = function() {
                             model.threads.push(thread, false);
                         }
                         info.thread = thread;
-                        if (info.comments !== '[null]' || info.comments !== null){
-                            info.comments = JSON.parse(info.comments);
-                        } else {
-                            info.comments = undefined;
-                        }
                         if (info.publication_date) {
                             info.publication_date = info.publication_date.split('.')[0];
                             info.hasPublicationDate = true;

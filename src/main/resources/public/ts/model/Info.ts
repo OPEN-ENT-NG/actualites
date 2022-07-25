@@ -1,4 +1,4 @@
-import { Collection, $, idiom as lang, _, Model, moment, notify, model as typedModel } from 'entcore';
+import { Collection, $, idiom as lang, _, Model, moment, notify, model as typedModel, Behaviours } from 'entcore';
 import http from 'axios';
 import { Thread, Utils, Comment } from './index';
 import { ACTUALITES_CONFIGURATION } from '../configuration';
@@ -28,6 +28,9 @@ export class Info extends Model {
     tmpComments: any;
     edit: boolean;
     expanded: boolean;
+    displayComments: boolean;
+    number_of_comments: number;
+    shared: any;
 
     constructor (data?) {
         super();
@@ -213,6 +216,7 @@ export class Info extends Model {
                     created: moment(),
                     modified: moment()
                 }));
+                info.number_of_comments++;
             });
     }
 
@@ -220,7 +224,28 @@ export class Info extends Model {
         var info = this;
         await http.delete('/actualites/info/' + this._id + '/comment/' + comment._id).then(function () {
             info.comments.splice(index, 1);
+            info.number_of_comments--;
         });
+    }
+
+    async loadCommentsAndShared () {
+        var info = this;
+        let p1, p2;
+        if (info.number_of_comments > 0 && info.comments && info.comments.all.length == 0) {
+            p1 = http.get('/actualites/infos/' + this._id + '/comments').then(obj => {
+                info.comments.load(obj.data);
+            });
+        } else { p1 = Promise.resolve(); }
+        if (!info.shared) {
+            p2 = http.get('/actualites/infos/' + this._id + '/shared').then(obj => {
+                info.shared = obj.data;
+                Behaviours.findRights('actualites', info);
+            });
+        } else { p2 = Promise.resolve(); }
+
+        await Promise.all([p1, p2]);
+        info.displayComments = true;
+        info.expanded = true;
     }
 
     allow (action) {

@@ -148,7 +148,9 @@ public class InfoFilter implements ResourcesProvider {
 		return ("net.atos.entng.actualites.controllers.InfoController|getInfo".equals(binding.getServiceMethod()) ||
 				 "net.atos.entng.actualites.controllers.CommentController|comment".equals(binding.getServiceMethod()) ||
 				 "net.atos.entng.actualites.controllers.CommentController|updateComment".equals(binding.getServiceMethod()) ||
-				 "net.atos.entng.actualites.controllers.CommentController|deleteComment".equals(binding.getServiceMethod() )
+				 "net.atos.entng.actualites.controllers.CommentController|deleteComment".equals(binding.getServiceMethod()) ||
+				 "net.atos.entng.actualites.controllers.InfoController|getInfoComments".equals(binding.getServiceMethod()) ||
+				 "net.atos.entng.actualites.controllers.InfoController|getInfoShared".equals(binding.getServiceMethod())
 				);
 	}
 

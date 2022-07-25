@@ -33,10 +33,9 @@
                         [[getInfoDate(info)]]
                         <span class="warning-text" translate content="[[getState(info)]]"></span>
                     </em>
-                    <div class="cell right-magnet"
-                         ng-if="info.allow('comment') || info.comments.length() > 0">
-                        <a ng-click="info.displayComments = true; info.expanded = true;" ng-show="!info.displayComments">
-                            <i18n>actualites.info.label.comments</i18n> ([[info.comments.all.length]])
+                    <div class="cell right-magnet">
+                        <a ng-click="info.loadCommentsAndShared()" ng-show="!info.displayComments">
+                            <i18n>actualites.info.label.comments</i18n> ([[info.number_of_comments]])
                         </a>
                         <a ng-click="info.displayComments = false" ng-show="info.displayComments">
                             <i18n>actualites.info.label.comments.close</i18n>

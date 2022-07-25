@@ -204,13 +204,22 @@ public class InfoServiceSqlImpl implements InfoService {
 	}
 
 	@Override
-	public void list(UserInfos user, boolean optimized, final boolean collectComments, final boolean collectShared,
-					 Handler<Either<String, JsonArray>> handler) {
+	public void list(UserInfos user, boolean optimized, Handler<Either<String, JsonArray>> handler) {
 		if (user != null) {
-			helperSql.fetchInfos(user, optimized, collectComments, collectShared, handler);
+			helperSql.fetchInfos(user, optimized, handler);
 		}else{
 			handler.handle(new Either.Left<>("not authenticated"));
 		}
+	}
+
+	@Override
+	public void listComments(Long infoId, Handler<Either<String, JsonArray>> handler) {
+		helperSql.fetchComments(infoId, handler);
+	}
+
+	@Override
+	public void listShared(Long infoId, Handler<Either<String, JsonArray>> handler) {
+		helperSql.fetchShared(infoId, handler);
 	}
 
 	@Override
