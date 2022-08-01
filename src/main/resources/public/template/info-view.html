@@ -34,7 +34,7 @@
                         <span class="warning-text" translate content="[[getState(info)]]"></span>
                     </em>
                     <div class="cell right-magnet">
-                        <a ng-click="info.loadCommentsAndShared()" ng-show="!info.displayComments">
+                        <a ng-click="loadCommentsAndShared(info)" ng-show="!info.displayComments">
                             <i18n>actualites.info.label.comments</i18n> ([[info.number_of_comments]])
                         </a>
                         <a ng-click="info.displayComments = false" ng-show="info.displayComments">

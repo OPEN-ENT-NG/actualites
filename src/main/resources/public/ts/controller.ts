@@ -1032,6 +1032,11 @@ export const actualiteController = ng.controller('ActualitesController',
                 }
             };
 
+            $scope.loadCommentsAndShared = async function (info) {
+                await info.loadCommentsAndShared();
+                safeApply($scope);
+            };
+
             $scope.saveInfo = async(infoSend:Info):Promise<void> =>{
                 if(!infoSend) return;
                 await infoSend.save();
