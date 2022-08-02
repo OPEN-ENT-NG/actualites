@@ -228,7 +228,7 @@ export class Info extends Model {
         });
     }
 
-    async loadCommentsAndShared () {
+    async loadCommentsAndShared (displayComments: boolean, expanded: boolean) {
         var info = this;
         let p1, p2;
         if (info.number_of_comments > 0 && info.comments && info.comments.all.length == 0) {
@@ -244,8 +244,8 @@ export class Info extends Model {
         } else { p2 = Promise.resolve(); }
 
         await Promise.all([p1, p2]);
-        info.displayComments = true;
-        info.expanded = true;
+        info.displayComments = displayComments;
+        info.expanded = expanded;
     }
 
     allow (action) {

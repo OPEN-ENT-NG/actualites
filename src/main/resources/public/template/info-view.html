@@ -13,7 +13,7 @@
                     <i class="star accent-color" ng-if="info.is_headline"></i>
                     [[info.title]]
                 </h2>
-                <div ng-click="info.expanded = !info.expanded; info.displayComments = !info.displayComments">
+                <div ng-click="loadCommentsAndShared(info, !info.expanded, !info.displayComments)">
                     <div ng-show="!info.expanded">
                         <div class="cell twelve info-preview">
                             <div class="twelve cell" bind-html="info.preview">
@@ -34,7 +34,7 @@
                         <span class="warning-text" translate content="[[getState(info)]]"></span>
                     </em>
                     <div class="cell right-magnet">
-                        <a ng-click="loadCommentsAndShared(info)" ng-show="!info.displayComments">
+                        <a ng-click="loadCommentsAndShared(info, true, true)" ng-show="!info.displayComments">
                             <i18n>actualites.info.label.comments</i18n> ([[info.number_of_comments]])
                         </a>
                         <a ng-click="info.displayComments = false" ng-show="info.displayComments">
