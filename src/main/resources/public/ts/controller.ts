@@ -12,6 +12,23 @@ export const actualiteController = ng.controller('ActualitesController',
     ['$scope', 'route', '$location',
         ($scope, route, $location) => {
 
+            function isInfoToDisplay(info) {
+                var _b = typeof info !== "undefined";
+                if(_b && $scope.currentThread && Object.keys($scope.currentThread).length > 0) {
+                    // Hide infos from other threads
+                    _b = info.thread_id === $scope.currentThread._id;
+                }
+                
+                if( _b ) {
+                    // Hide drafts from other contributors, unless shared with the current user;
+                    _b = info.status!==$scope.getStatusNumber(ACTUALITES_CONFIGURATION.infoFilter.DRAFT) 
+                        || info.owner === model.me.userId
+                        || (info.shared && (info.shared as any[]).findIndex(share=> share && share.userId===model.me.userId) >= 0 );
+                }
+
+                return _b;
+            }
+
             model.infos.scope = $scope;
             template.open('info-read', 'info-read');
 
@@ -42,11 +59,7 @@ export const actualiteController = ng.controller('ActualitesController',
                     if (!$scope.displayedInfos[state]) { //case where state does not exist in $scope.displayedInfos
                         return 0;
                     }
-                    //if no threads are selected ("All threads"), the length of all the articles of the tab is returned
-                    //otherwise only the ones from the selected thread
-                    return (!$scope.currentThread || Object.keys($scope.currentThread).length == 0) ?
-                        $scope.displayedInfos[state].length :
-                        $scope.displayedInfos[state].filter(i => i.thread_id === $scope.currentThread._id).length;
+                    return $scope.displayedInfos[state].filter(i => isInfoToDisplay(i)).length;
                 };
 
                 route({
@@ -629,12 +642,7 @@ export const actualiteController = ng.controller('ActualitesController',
 
             $scope.filterByThreads = function(unpublished){
                 return function(info){
-                    var _b = true;
-
-                    if($scope.currentThread && Object.keys($scope.currentThread).length > 0) {
-                        _b = info.thread_id === $scope.currentThread._id;
-                    }
-
+                    var _b = isInfoToDisplay(info);
                     if(!_b) return false;
 
                     switch ($scope.findParam('filter')) {
