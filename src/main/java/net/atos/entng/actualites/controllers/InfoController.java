@@ -417,22 +417,18 @@ public class InfoController extends ControllerHelper {
 					@Override
 					public void handle(JsonObject body) {
 						final String title = body.getString("title");
-						Handler<Either<String, JsonObject>> handler = new Handler<Either<String, JsonObject>>() {
-							@Override
-							public void handle(Either<String, JsonObject> event) {
-								if (event.isRight()) {
-									notifyTimeline(request, user, threadId, infoId, title, NEWS_SUBMIT_EVENT_TYPE);
-									renderJson(request, event.right().getValue(), 200);
-								} else {
-									JsonObject error = new JsonObject().put("error", event.left().getValue());
-									renderJson(request, error, 400);
-								}
-							}
+						Handler<Either<String, JsonObject>> handler = event -> {
+                            if (event.isRight()) {
+                                notifyTimeline(request, user, threadId, infoId, title, NEWS_SUBMIT_EVENT_TYPE);
+                                renderJson(request, event.right().getValue(), 200);
+                            } else {
+                                JsonObject error = new JsonObject().put("error", event.left().getValue());
+                                renderJson(request, error, 400);
+                            }
 						};
 						JsonObject resource = new JsonObject();
 						resource.put("status", status_list.get(2));
-						infoService.update(infoId, resource, user, Events.SUBMIT.toString(),
-                                notEmptyResponseHandler(request));
+						infoService.update(infoId, resource, user, Events.SUBMIT.toString(),handler);
 					}
 				});
 			}
@@ -453,22 +449,18 @@ public class InfoController extends ControllerHelper {
 					@Override
 					public void handle(JsonObject body) {
 						final String title = body.getString("title");
-						Handler<Either<String, JsonObject>> handler = new Handler<Either<String, JsonObject>>() {
-							@Override
-							public void handle(Either<String, JsonObject> event) {
-								if (event.isRight()) {
-									// notifyTimeline(request, user, threadId, infoId, title, NEWS_UNSUBMIT_EVENT_TYPE);
-									renderJson(request, event.right().getValue(), 200);
-								} else {
-									JsonObject error = new JsonObject().put("error", event.left().getValue());
-									renderJson(request, error, 400);
-								}
-							}
+						Handler<Either<String, JsonObject>> handler = event -> {
+                            if (event.isRight()) {
+                                // notifyTimeline(request, user, threadId, infoId, title, NEWS_UNSUBMIT_EVENT_TYPE);
+                                renderJson(request, event.right().getValue(), 200);
+                            } else {
+                                JsonObject error = new JsonObject().put("error", event.left().getValue());
+                                renderJson(request, error, 400);
+                            }
 						};
 						JsonObject resource = new JsonObject();
 						resource.put("status", status_list.get(1));
-						infoService.update(infoId, resource, user, Events.UNPUBLISH.toString(),
-                                notEmptyResponseHandler(request));
+						infoService.update(infoId, resource, user, Events.UNPUBLISH.toString(), handler);
 					}
 				});
 			}
