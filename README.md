@@ -29,7 +29,7 @@ Déclarer l'application dans la liste :
         "main" : "net.atos.entng.actualites.Actualites",
         "port" : 8022,
 		"sql" : true,
-        "mongodb" : false,
+        "mongodb" : true,
         "neo4j" : false,
         "app-name" : "Actualites",
         "app-address" : "/actualites",
