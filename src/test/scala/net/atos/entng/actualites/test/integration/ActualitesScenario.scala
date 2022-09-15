@@ -240,9 +240,14 @@ object ActualitesScenario {
 
   // The teacher (news owner) shares read right with the student on the news
   .exec(http("Share Read permission with Student as a Person")
-    .put("/actualites/thread/${threadId}/info/share/json/${infoId}")
-    .bodyPart(StringBodyPart("userId", "${studentId}"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-InfoController|getInfo"))
+    .put("/actualites/thread/${threadId}/info/share/resource/${infoId}")
+    .body(StringBody("""{
+      "bookmarks" : {},
+      "users": {"${studentId}": [
+        "net-atos-entng-actualites-controllers-InfoController|getInfo"
+      ]},
+      "groups" : {}
+    }"""))
     .check(status.is(200)))
   // Publish the news, so that the student can read it
   .exec(http("Info Publish")
@@ -329,11 +334,17 @@ object ActualitesScenario {
 
   // The teacher (news owner) shares comment right with the student on the news
   .exec(http("Share Comment permission with Student as a Person")
-    .put("/actualites/thread/${threadId}/info/share/json/${infoId}")
-    .bodyPart(StringBodyPart("userId", "${studentId}"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-CommentController|comment"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-CommentController|deleteComment"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-CommentController|updateComment"))
+    .put("/actualites/thread/${threadId}/info/share/resource/${infoId}")
+    .body(StringBody("""{
+      "bookmarks" : {},
+      "users": {"${studentId}": [
+        "net-atos-entng-actualites-controllers-InfoController|getInfo",
+        "net-atos-entng-actualites-controllers-CommentController|comment",
+        "net-atos-entng-actualites-controllers-CommentController|deleteComment",
+        "net-atos-entng-actualites-controllers-CommentController|updateComment"
+      ]},
+      "groups" : {}
+    }"""))
     .check(status.is(200)))
   .exec(http("Logout 5 - teacher")
     .get("""/auth/logout""")
@@ -372,18 +383,23 @@ object ActualitesScenario {
 
   // The teacher (thread owner) shares contrib right with the student on the thread
   .exec(http("Share Contrib permission with Student as a Person")
-    .put("/actualites/thread/share/json/${threadId}")
-    .bodyPart(StringBodyPart("userId", "${studentId}"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-InfoController|createDraft"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-InfoController|createPending"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-InfoController|listInfosByThreadId"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-InfoController|shareInfo"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-InfoController|shareInfoRemove"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-InfoController|shareInfoSubmit"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-InfoController|submit"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-InfoController|unsubmit"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-InfoController|updateDraft"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-ThreadController|getThread"))
+    .put("/actualites/thread/share/resource/${threadId}")
+    .body(StringBody("""{
+      "bookmarks" : {},
+      "users": {"${studentId}": [
+        "net-atos-entng-actualites-controllers-InfoController|createDraft",
+        "net-atos-entng-actualites-controllers-InfoController|createPending",
+        "net-atos-entng-actualites-controllers-InfoController|listInfosByThreadId",
+        "net-atos-entng-actualites-controllers-InfoController|shareInfo",
+        "net-atos-entng-actualites-controllers-InfoController|shareInfoRemove",
+        "net-atos-entng-actualites-controllers-InfoController|shareInfoSubmit",
+        "net-atos-entng-actualites-controllers-InfoController|submit",
+        "net-atos-entng-actualites-controllers-InfoController|unsubmit",
+        "net-atos-entng-actualites-controllers-InfoController|updateDraft",
+        "net-atos-entng-actualites-controllers-ThreadController|getThread"
+      ]},
+      "groups" : {}
+    }"""))
     .check(status.is(200)))
   .exec(http("Logout 7 - teacher")
     .get("""/auth/logout""")
@@ -426,9 +442,14 @@ object ActualitesScenario {
       ))
   // Contributor chooses recipients and submits his piece of news. He can't publish it
   /*.exec(http("Info share read")
-    .put("/actualites/thread/${threadId}/info/share/json/${studentContribInfoId}")
-    .bodyPart(StringBodyPart("userId", "${teacherId}"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-InfoController|getInfo"))
+    .put("/actualites/thread/${threadId}/info/share/resource/${studentContribInfoId}")
+    .body(StringBody("""{
+      "bookmarks" : {},
+      "users": {"${teacherId}": [
+        "net-atos-entng-actualites-controllers-InfoController|getInfo"
+      ]},
+      "groups" : {}
+    }"""))
     .check(status.is(200)))*/
   .exec(http("Info Submit")
     .put("/actualites/thread/${threadId}/info/${studentContribInfoId}/submit")
@@ -468,9 +489,14 @@ object ActualitesScenario {
     .check(status.is(302)))
   // A contributor cannot change recipients once the news is published, but he can see them
   .exec(http("Info share read")
-    .put("/actualites/thread/${threadId}/info/share/json/${studentContribInfoId}")
-    .bodyPart(StringBodyPart("userId", "dummyUserId"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-InfoController|getInfo"))
+    .put("/actualites/thread/${threadId}/info/share/resource/${studentContribInfoId}")
+    .body(StringBody("""{
+      "bookmarks" : {},
+      "users": {"dummyUserId": [
+        "net-atos-entng-actualites-controllers-InfoController|getInfo"
+      ]},
+      "groups" : {}
+    }"""))
     .check(status.is(401)))
   .exec(http("Get share json")
     .get("/actualites/thread/${threadId}/info/share/json/${studentContribInfoId}")
@@ -513,14 +539,29 @@ object ActualitesScenario {
 
   // The teacher (thread owner) shares publish right with the student on the thread
   .exec(http("Share publish permission with Student as a Person")
-    .put("/actualites/thread/share/json/${threadId}")
-    .bodyPart(StringBodyPart("userId", "${studentId}"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-InfoController|createPublished"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-InfoController|publish"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-InfoController|unpublish"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-InfoController|updatePending"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-InfoController|updatePublished"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-InfoController|getInfoTimeline"))
+    .put("/actualites/thread/share/resource/${threadId}")
+    .body(StringBody("""{
+      "bookmarks" : {},
+      "users": {"${studentId}": [
+        "net-atos-entng-actualites-controllers-InfoController|createDraft",
+        "net-atos-entng-actualites-controllers-InfoController|createPending",
+        "net-atos-entng-actualites-controllers-InfoController|listInfosByThreadId",
+        "net-atos-entng-actualites-controllers-InfoController|shareInfo",
+        "net-atos-entng-actualites-controllers-InfoController|shareInfoRemove",
+        "net-atos-entng-actualites-controllers-InfoController|shareInfoSubmit",
+        "net-atos-entng-actualites-controllers-InfoController|submit",
+        "net-atos-entng-actualites-controllers-InfoController|unsubmit",
+        "net-atos-entng-actualites-controllers-InfoController|updateDraft",
+        "net-atos-entng-actualites-controllers-InfoController|createPublished",
+        "net-atos-entng-actualites-controllers-InfoController|publish",
+        "net-atos-entng-actualites-controllers-InfoController|unpublish",
+        "net-atos-entng-actualites-controllers-InfoController|updatePending",
+        "net-atos-entng-actualites-controllers-InfoController|updatePublished",
+        "net-atos-entng-actualites-controllers-InfoController|getInfoTimeline",
+        "net-atos-entng-actualites-controllers-ThreadController|getThread"
+      ]},
+      "groups" : {}
+    }"""))
     .check(status.is(200)))
   .exec(http("Logout 9 - teacher")
     .get("""/auth/logout""")
@@ -598,14 +639,35 @@ object ActualitesScenario {
 
   // The teacher (thread owner) shares manage right with the student on the thread
   .exec(http("Share manage permission with Student as a Person")
-    .put("/actualites/thread/share/json/${threadId}")
-    .bodyPart(StringBodyPart("userId", "${studentId}"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-ThreadController|shareThreadSubmit"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-ThreadController|deleteThread"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-ThreadController|shareThread"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-ThreadController|shareThreadRemove"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-ThreadController|updateThread"))
-    .bodyPart(StringBodyPart("actions", "net-atos-entng-actualites-controllers-InfoController|delete"))
+    .put("/actualites/thread/share/resource/${threadId}")
+    .body(StringBody("""{
+      "bookmarks" : {},
+      "users": {"${studentId}": [
+        "net-atos-entng-actualites-controllers-ThreadController|getThread",
+        "net-atos-entng-actualites-controllers-ThreadController|shareThreadSubmit",
+        "net-atos-entng-actualites-controllers-ThreadController|deleteThread",
+        "net-atos-entng-actualites-controllers-ThreadController|shareThread",
+        "net-atos-entng-actualites-controllers-ThreadController|shareThreadRemove",
+        "net-atos-entng-actualites-controllers-ThreadController|updateThread",
+        "net-atos-entng-actualites-controllers-InfoController|createPublished",
+        "net-atos-entng-actualites-controllers-InfoController|publish",
+        "net-atos-entng-actualites-controllers-InfoController|unpublish",
+        "net-atos-entng-actualites-controllers-InfoController|updatePending",
+        "net-atos-entng-actualites-controllers-InfoController|updatePublished",
+        "net-atos-entng-actualites-controllers-InfoController|getInfoTimeline",
+        "net-atos-entng-actualites-controllers-InfoController|createDraft",
+        "net-atos-entng-actualites-controllers-InfoController|createPending",
+        "net-atos-entng-actualites-controllers-InfoController|listInfosByThreadId",
+        "net-atos-entng-actualites-controllers-InfoController|shareInfo",
+        "net-atos-entng-actualites-controllers-InfoController|shareInfoRemove",
+        "net-atos-entng-actualites-controllers-InfoController|shareInfoSubmit",
+        "net-atos-entng-actualites-controllers-InfoController|submit",
+        "net-atos-entng-actualites-controllers-InfoController|unsubmit",
+        "net-atos-entng-actualites-controllers-InfoController|updateDraft",
+        "net-atos-entng-actualites-controllers-InfoController|delete"
+      ]},
+      "groups" : {}
+    }"""))
     .check(status.is(200)))
 
   .exec(http("Info Submit")
