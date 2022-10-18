@@ -129,6 +129,8 @@ public class InfoServiceSqlImpl implements InfoService {
 				} else {
 					String error = "[Actualites@%s::update] Error in date format";
 					log.error(String.format(error, this.getClass().getSimpleName()));
+					handler.handle(new Either.Left<>("error.date.format"));
+					return;
 				}
 			} else {
 				sb.append(" = ?, ");
