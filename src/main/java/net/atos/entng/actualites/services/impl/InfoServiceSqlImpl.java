@@ -123,8 +123,8 @@ public class InfoServiceSqlImpl implements InfoService {
 		JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
 		for (String attr : data.fieldNames()) {
 			sb.append(attr);
-			if (attr.contains("date")) {
-				if (isDateFormatOK(data.getString(attr))) {
+			if (Boolean.TRUE.equals(attr.contains("date"))) {
+				if (Boolean.TRUE.equals(isDateFormatOK(data.getString(attr)))) {
 					sb.append("= to_timestamp(?, 'YYYY-MM-DDThh24:mi:ss'),");
 				} else {
 					String error = "[Actualites@%s::update] Error in date format";
