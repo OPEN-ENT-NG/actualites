@@ -19,12 +19,11 @@
 
 package net.atos.entng.actualites.services.impl;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import fr.wseduc.webutils.http.Renders;
-import io.vertx.core.CompositeFuture;
-import io.vertx.core.Future;
-import io.vertx.core.Promise;
 import net.atos.entng.actualites.Actualites;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
@@ -96,6 +95,23 @@ public class InfoServiceSqlImpl implements InfoService {
 		}));
 	}
 
+	/**
+	 * Check if the date format is correct for PostgresSQL
+	 * @param date	The date to check
+	 * @return	True is the date match the format, false otherwise.
+	 */
+	private boolean isDateFormatOK(String date) {
+		if (date == null)
+			return true;
+		try {
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYY-MM-DD'T'HH:mm:ss.SSS");
+			simpleDateFormat.parse(date);
+		} catch (ParseException e) {
+			return false;
+		}
+		return true;
+	}
+
 	@Override
 	public void update(String id, JsonObject data, UserInfos user, String eventStatus, Handler<Either<String, JsonObject>> handler) {
 		SqlStatementsBuilder s = new SqlStatementsBuilder();
@@ -108,7 +124,12 @@ public class InfoServiceSqlImpl implements InfoService {
 		for (String attr : data.fieldNames()) {
 			sb.append(attr);
 			if (attr.contains("date")) {
-				sb.append("= to_timestamp(?, 'YYYY-MM-DD hh24:mi:ss'),");
+				if (isDateFormatOK(data.getString(attr))) {
+					sb.append("= to_timestamp(?, 'YYYY-MM-DDThh24:mi:ss'),");
+				} else {
+					String error = "[Actualites@%s::update] Error in date format";
+					log.error(String.format(error, this.getClass().getSimpleName()));
+				}
 			} else {
 				sb.append(" = ?, ");
 			}
