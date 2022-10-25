@@ -1040,8 +1040,8 @@ export const actualiteController = ng.controller('ActualitesController',
                 }
             };
 
-            $scope.loadCommentsAndShared = async function (info, displayComments: boolean, expanded: boolean) {
-                await info.loadCommentsAndShared(displayComments, expanded);
+            $scope.loadCommentsAndShared = async function (info, displayComments: boolean) {
+                await info.loadCommentsAndShared(displayComments);
                 safeApply($scope);
             };
 

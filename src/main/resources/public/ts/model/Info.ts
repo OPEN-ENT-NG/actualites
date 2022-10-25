@@ -228,7 +228,7 @@ export class Info extends Model {
         });
     }
 
-    async loadCommentsAndShared (displayComments: boolean, expanded: boolean) {
+    async loadCommentsAndShared (displayComments: boolean) {
         var info = this;
         let p1, p2;
         if (info.number_of_comments > 0 && info.comments && info.comments.all.length == 0) {
@@ -245,7 +245,7 @@ export class Info extends Model {
 
         await Promise.all([p1, p2]);
         info.displayComments = displayComments;
-        info.expanded = expanded;
+        info.expanded = !info.expanded;
     }
 
     allow (action) {
