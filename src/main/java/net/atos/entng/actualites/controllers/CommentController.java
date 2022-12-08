@@ -24,6 +24,7 @@ import static org.entcore.common.http.response.DefaultResponseHandler.notEmptyRe
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.wseduc.webutils.Utils;
@@ -142,65 +143,19 @@ public class CommentController extends ControllerHelper {
 
 	private void notifyTimeline(final HttpServerRequest request, final UserInfos user, final String infoId, final String commentId, final String title, final String commentText, final String eventType){
 		if (eventType.equals(NEWS_COMMENT_EVENT_TYPE)) {
-			infoService.getSharedWithIds(infoId, new Handler<Either<String, JsonArray>>() {
+			infoService.retrieve(infoId, new Handler<Either<String, JsonObject>>() {
 				@Override
-				public void handle(Either<String, JsonArray> event) {
+				public void handle(Either<String, JsonObject> event) {
 					if (event.isRight()) {
 						// get all ids
-						JsonArray shared = event.right().getValue();
-						extractUserIds(request, shared, user, infoId, commentId, title, commentText, "news.news-comment");
-					}
-				}
-			});
-		}
-	}
-
-	private void extractUserIds(final HttpServerRequest request, final JsonArray shared, final UserInfos user, final String infoId, final String commentId, final String title, final String commentText, final String notificationName){
-		final List<String> ids = new ArrayList<String>();
-		if (shared.size() > 0) {
-			JsonObject jo = null;
-			String groupId = null;
-			String id = null;
-			final AtomicInteger remaining = new AtomicInteger(shared.size());
-			// Extract shared with
-			for(int i=0; i<shared.size(); i++){
-				jo = shared.getJsonObject(i);
-				if(jo.containsKey("userId")){
-					id = jo.getString("userId");
-					if(!ids.contains(id) && !(user.getUserId().equals(id))){
-						ids.add(id);
-					}
-					remaining.getAndDecrement();
-				}
-				else{
-					if(jo.containsKey("groupId")){
-						groupId = jo.getString("groupId");
-						if (groupId != null) {
-							UserUtils.findUsersInProfilsGroups(groupId, eb, user.getUserId(), false, new Handler<JsonArray>() {
-								@Override
-								public void handle(JsonArray event) {
-									if (event != null) {
-										String userId = null;
-										for (Object o : event) {
-											if (!(o instanceof JsonObject)) continue;
-											userId = ((JsonObject) o).getString("id");
-											if(!ids.contains(userId) && !(user.getUserId().equals(userId))){
-												ids.add(userId);
-											}
-										}
-									}
-									if (remaining.decrementAndGet() < 1) {
-										sendNotify(request, ids, user, infoId, commentId, title, commentText, notificationName);
-									}
-								}
-							});
+						JsonObject info = event.right().getValue();
+						String infoOwner = info.getString("owner");
+						if (infoOwner != null) {
+							sendNotify(request, Collections.singletonList(infoOwner), user, infoId, commentId, title, commentText, "news.news-comment");
 						}
 					}
 				}
-			}
-			if (remaining.get() < 1) {
-				sendNotify(request, ids, user, infoId, commentId, title, commentText, notificationName);
-			}
+			});
 		}
 	}
 
