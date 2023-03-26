@@ -266,5 +266,19 @@ public class ThreadController extends ControllerHelper {
 		renderView(request, new JsonObject().put("printThreadId", request.params().get("actualites")), "print.html", null);
 	}
 
+	@Get("/threads/list")
+	@ApiDoc("Get Threads and shares.")
+	@SecuredAction("actualites.threads.listthreads")
+	public void listThread(final HttpServerRequest request) {
+		UserUtils.getUserInfos(eb, request, user -> {
+			if (user != null) {
+				threadService.list(user)
+					.onSuccess(threads -> render(request, threads))
+					.onFailure(ex -> renderError(request));
+			} else {
+				unauthorized(request);
+			}
+		});
+	}
 
 }
