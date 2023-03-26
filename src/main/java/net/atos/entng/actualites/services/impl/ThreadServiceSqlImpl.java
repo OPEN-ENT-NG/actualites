@@ -25,12 +25,16 @@ import java.util.List;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
 import org.entcore.common.user.UserInfos;
+
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import fr.wseduc.webutils.Either;
 import net.atos.entng.actualites.services.ThreadService;
+import net.atos.entng.actualites.to.Threads;
 
 public class ThreadServiceSqlImpl implements ThreadService {
 
@@ -148,6 +152,14 @@ public class ThreadServiceSqlImpl implements ThreadService {
 				}
 			}
 		});
+	}
+
+	@Override
+	public Future<Threads> list(UserInfos user) {
+		final Promise<Threads> promise = Promise.promise();
+		// TODO implémente moi @Valentun
+
+		return promise.future();
 	}
 
 }
