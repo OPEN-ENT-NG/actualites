@@ -277,7 +277,7 @@ public class ThreadController extends ControllerHelper {
 	public void listThreadsV2(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
-				threadService.list(user)
+				threadService.list(securedActions, user)
 					.onSuccess(threads -> render(request, threads))
 					.onFailure(ex -> renderError(request));
 			} else {
