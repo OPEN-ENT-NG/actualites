@@ -26,10 +26,11 @@ import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import fr.wseduc.webutils.Either;
-
+import fr.wseduc.webutils.security.SecuredAction;
 import net.atos.entng.actualites.to.NewsThread;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ThreadService {
 
@@ -41,6 +42,6 @@ public interface ThreadService {
 
 	public void getPublishSharedWithIds(String threadId, Handler<Either<String, JsonArray>> handler);
 
-	Future<List<NewsThread>> list(UserInfos user);
+	Future<List<NewsThread>> list(Map<String, SecuredAction> securedActions, UserInfos user);
 
 }

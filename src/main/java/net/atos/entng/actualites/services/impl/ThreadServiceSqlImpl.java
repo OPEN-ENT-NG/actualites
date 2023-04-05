@@ -20,12 +20,16 @@
 package net.atos.entng.actualites.services.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import net.atos.entng.actualites.to.NewsThreadOwner;
+import net.atos.entng.actualites.to.Rights;
+
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
 import org.entcore.common.user.UserInfos;
@@ -37,8 +41,11 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import fr.wseduc.webutils.Either;
+import fr.wseduc.webutils.security.SecuredAction;
 import net.atos.entng.actualites.services.ThreadService;
 import net.atos.entng.actualites.to.NewsThread;
+
+import static fr.wseduc.webutils.Utils.isNotEmpty;
 
 public class ThreadServiceSqlImpl implements ThreadService {
 
@@ -176,7 +183,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 	 * @return the list of the threads visible by the user
 	 */
 	@Override
-	public Future<List<NewsThread>> list(UserInfos user) {
+	public Future<List<NewsThread>> list(Map<String, SecuredAction> securedActions, UserInfos user) {
 		final Promise<List<NewsThread>> promise = Promise.promise();
 		if (user == null) {
 			promise.fail("user not provided");
@@ -205,7 +212,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 					"    WHERE tsh.member_id IN " + ids + " " +
 					"    GROUP BY t.id, tsh.member_id " +
 					") SELECT t.id, t.owner, u.username AS owner_name, u.deleted as owner_deleted, t.title, t.icon," +
-					"    t.created, t.modified, max(thread_for_user.rights) " + // note : we can use max() here only because the rights are inclusive of each other
+					"    t.created, t.modified, array_to_string(max(thread_for_user.rights), ',') as rights " + // note : we can use max() here only because the rights are inclusive of each other
 					"    FROM " + threadsTable + " AS t " +
 					"        LEFT JOIN thread_for_user ON thread_for_user.id = t.id " +
 					"        LEFT JOIN " + usersTable + " AS u ON t.owner = u.id " +
@@ -238,13 +245,22 @@ public class ThreadServiceSqlImpl implements ThreadService {
 									row.getString("owner_name"),
 									row.getBoolean("owner_deleted")
 							);
+							final String rightsString = row.getString("rights");
+							final List<String> rawRights;
+							if (isNotEmpty(rightsString)) {
+								rawRights = Arrays.asList(rightsString.split(","));
+							} else {
+								rawRights = new ArrayList<>();
+							}
 							return new NewsThread(
-									row.getInteger("id"),
-									row.getString("title"),
-									row.getString("icon"),
-									row.getString("created"),
-									row.getString("modified"),
-									owner);
+										row.getInteger("id"),
+										row.getString("title"),
+										row.getString("icon"),
+										row.getString("created"),
+										row.getString("modified"),
+										owner,
+										Rights.fromRawRights(securedActions, rawRights)
+									);
 						}).collect(Collectors.toList());
 						promise.complete(pojo);
 					} catch (Exception e) {

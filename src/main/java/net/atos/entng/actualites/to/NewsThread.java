@@ -1,5 +1,10 @@
 package net.atos.entng.actualites.to;
 
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class NewsThread {
 
     private final String title;
@@ -16,13 +21,16 @@ public class NewsThread {
 
     private final NewsThreadOwner owner;
 
-    public NewsThread(int id, String title, String icon, String created, String modified, NewsThreadOwner owner) {
+    private final Rights rights;
+
+    public NewsThread(int id, String title, String icon, String created, String modified, NewsThreadOwner owner, Rights rights) {
         this.id = id;
         this.title = title;
         this.icon = icon;
         this.created = created;
         this.modified = modified;
         this.owner = owner;
+        this.rights = rights;
     }
 
     public String getTitle() {
@@ -48,4 +56,15 @@ public class NewsThread {
     public String getModified() {
         return modified;
     }
+
+    @JsonIgnore
+    public Rights geRights() {
+        return rights;
+    }
+
+    @JsonProperty("rights")
+    public Set<String> getShareDisplayNames() {
+        return rights.getShareDisplayNames();
+    }
+
 }
