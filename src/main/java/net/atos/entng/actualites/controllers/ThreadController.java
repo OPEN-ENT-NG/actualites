@@ -267,9 +267,14 @@ public class ThreadController extends ControllerHelper {
 	}
 
 	@Get("/threads/list")
-	@ApiDoc("Get Threads and shares.")
+	@ApiDoc("Get threads visible from the current user." +
+			"This includes" +
+			" - Threads created by the user" +
+			" - Threads shared to the user or one of its groups" +
+			" - Threads containing news that are shared to the user or one of its groups" +
+			"The ensemble of threads returned by this method contain every visible news to the user.")
 	@SecuredAction("actualites.threads.listthreads")
-	public void listThread(final HttpServerRequest request) {
+	public void listThreadsV2(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
 				threadService.list(user)
