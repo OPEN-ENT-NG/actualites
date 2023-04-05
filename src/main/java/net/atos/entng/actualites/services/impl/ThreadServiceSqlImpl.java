@@ -205,13 +205,14 @@ public class ThreadServiceSqlImpl implements ThreadService {
 					"    WHERE tsh.member_id IN " + ids + " " +
 					"    GROUP BY t.id, tsh.member_id " +
 					") SELECT t.id, t.owner, u.username AS owner_name, u.deleted as owner_deleted, t.title, t.icon," +
-					"    t.created, t.modified, thread_for_user.rights " +
+					"    t.created, t.modified, max(thread_for_user.rights) " + // note : we can use max() here only because the rights are inclusive of each other
 					"    FROM " + threadsTable + " AS t " +
 					"        LEFT JOIN thread_for_user ON thread_for_user.id = t.id " +
 					"        LEFT JOIN " + usersTable + " AS u ON t.owner = u.id " +
 					"    WHERE t.owner = ? " +
 					"       OR t.id IN (SELECT id from thread_with_info_for_user) " +
 					"       OR t.id IN (SELECT id from thread_for_user) " +
+					"	 GROUP BY t.id, t.owner, owner_name, owner_deleted, t.title, t.icon, t.created, t.modified " +
 					"    ORDER BY t.title ";
 			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
 			for(String value : groupsAndUserIds){
