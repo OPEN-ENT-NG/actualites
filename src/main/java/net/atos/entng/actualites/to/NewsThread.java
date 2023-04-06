@@ -58,7 +58,7 @@ public class NewsThread {
     }
 
     @JsonIgnore
-    public Rights geRights() {
+    public Rights getRights() {
         return rights;
     }
 
