@@ -212,7 +212,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 					"    WHERE tsh.member_id IN " + ids + " " +
 					"    GROUP BY t.id, tsh.member_id " +
 					") SELECT t.id, t.owner, u.username AS owner_name, u.deleted as owner_deleted, t.title, t.icon," +
-					"    t.created, t.modified, array_to_string(max(thread_for_user.rights), ',') as rights " + // note : we can use max() here only because the rights are inclusive of each other
+					"    t.created, t.modified, max(thread_for_user.rights) as rights " + // note : we can use max() here only because the rights are inclusive of each other
 					"    FROM " + threadsTable + " AS t " +
 					"        LEFT JOIN thread_for_user ON thread_for_user.id = t.id " +
 					"        LEFT JOIN " + usersTable + " AS u ON t.owner = u.id " +
@@ -245,13 +245,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 									row.getString("owner_name"),
 									row.getBoolean("owner_deleted")
 							);
-							final String rightsString = row.getString("rights");
-							final List<String> rawRights;
-							if (isNotEmpty(rightsString)) {
-								rawRights = Arrays.asList(rightsString.split(","));
-							} else {
-								rawRights = new ArrayList<>();
-							}
+							final List<String> rawRights = SqlResult.sqlArrayToList(row.getJsonArray("rights"), String.class);
 							return new NewsThread(
 										row.getInteger("id"),
 										row.getString("title"),
