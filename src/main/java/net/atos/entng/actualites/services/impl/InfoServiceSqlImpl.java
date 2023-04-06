@@ -24,7 +24,10 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import fr.wseduc.webutils.http.Renders;
+import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import net.atos.entng.actualites.Actualites;
+import net.atos.entng.actualites.to.News;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
 import org.entcore.common.sql.SqlStatementsBuilder;
@@ -480,5 +483,16 @@ public class InfoServiceSqlImpl implements InfoService {
         Sql.getInstance().prepared(query, new fr.wseduc.webutils.collections.JsonArray().add(infoId),
                 SqlResult.validResultHandler(handler));
     }
+
+	@Override
+	public Future<List<News>> listPaginated(UserInfos user, int page, int pageSize, Optional<Integer> threadId) {
+		final Promise<List<News>> promise = Promise.promise();
+		if (user == null) {
+			promise.fail("user not provided");
+		} else {
+			promise.complete(Arrays.asList(new News(page + "/" + pageSize + " of " + threadId.toString())));
+		}
+		return promise.future();
+	}
 
 }

@@ -20,10 +20,15 @@
 package net.atos.entng.actualites.services;
 
 import fr.wseduc.webutils.Either;
+import io.vertx.core.Future;
+import net.atos.entng.actualites.to.News;
 import org.entcore.common.user.UserInfos;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface InfoService {
 
@@ -72,5 +77,7 @@ public interface InfoService {
 	public void getRevisions(Long infoId, Handler<Either<String, JsonArray>> handler);
 
 	public void getOwnerInfo(String infoId, Handler<Either<String, JsonObject>> handler);
+
+	public Future<List<News>> listPaginated(UserInfos user, int page, int pageSize, Optional<Integer> threadId);
 
 }
