@@ -939,7 +939,7 @@ public class InfoController extends ControllerHelper {
 
                 // 2. Call service
 
-                infoService.listPaginated(user, page, pageSize, threadId)
+                infoService.listPaginated(securedActions, user, page, pageSize, threadId)
                         .onSuccess(news -> render(request, news))
                         .onFailure(ex -> renderError(request));
             } else {

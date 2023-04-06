@@ -1,11 +1,11 @@
 package net.atos.entng.actualites.to;
 
-public class NewsThreadOwner {
+public class ResourceOwner {
     private final String id;
     private final String displayName;
     private final boolean deleted;
 
-    public NewsThreadOwner(String id, String displayName, boolean deleted) {
+    public ResourceOwner(String id, String displayName, boolean deleted) {
         this.id = id;
         this.displayName = displayName;
         this.deleted = deleted;

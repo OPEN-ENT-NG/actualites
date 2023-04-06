@@ -22,12 +22,14 @@ package net.atos.entng.actualites.services.impl;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import fr.wseduc.webutils.http.Renders;
+import fr.wseduc.webutils.security.SecuredAction;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import net.atos.entng.actualites.Actualites;
-import net.atos.entng.actualites.to.News;
+import net.atos.entng.actualites.to.*;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
 import org.entcore.common.sql.SqlStatementsBuilder;
@@ -485,12 +487,100 @@ public class InfoServiceSqlImpl implements InfoService {
     }
 
 	@Override
-	public Future<List<News>> listPaginated(UserInfos user, int page, int pageSize, Optional<Integer> threadId) {
+	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, Optional<Integer> threadId) {
 		final Promise<List<News>> promise = Promise.promise();
 		if (user == null) {
 			promise.fail("user not provided");
 		} else {
-			promise.complete(Arrays.asList(new News(page + "/" + pageSize + " of " + threadId.toString())));
+
+			// 1. Get all ids corresponding to the user
+
+			List<String> groupsAndUserIds = new ArrayList<>();
+			groupsAndUserIds.add(user.getUserId());
+			if (user.getGroupsIds() != null) {
+				groupsAndUserIds.addAll(user.getGroupsIds());
+			}
+
+			// 2. Prepare SQL request
+
+			final String ids = Sql.listPrepared(groupsAndUserIds.toArray());
+			String whereClause =
+					"i.owner = ? " +
+					"OR i.id IN (SELECT id from info_for_user) ";
+			if (threadId.isPresent()) {
+				whereClause = "i.thread_id = ? AND ( " + whereClause + ") ";
+			}
+			String query =
+					"WITH info_for_user AS ( SELECT i.id, array_agg(DISTINCT ish.action) AS rights " +
+					"    FROM actualites.info AS i " +
+					"        JOIN actualites.info_shares AS ish ON i.id = ish.resource_id " +
+					"    WHERE " +
+					"        ish.member_id IN " + ids + " " +
+					"    GROUP BY i.id " +
+					") SELECT i.id, i.thread_id, i.title, i.content, i.status, i.owner, u.username AS owner_name," +
+					"        u.deleted as owner_deleted, i.created, i.modified, i.publication_date," +
+					"        i.expiration_date, i.is_headline, i.number_of_comments, max(info_for_user.rights) as rights " +
+					"    FROM actualites.info AS i " +
+					"        LEFT JOIN info_for_user ON info_for_user.id = i.id " +
+					"        LEFT JOIN actualites.users AS u ON i.owner = u.id " +
+					"    WHERE " + whereClause +
+					"    GROUP BY i.id, i.thread_id, i.title, i.content, i.status, i.owner, owner_name, owner_deleted," +
+					"        i.created, i.modified, i.publication_date, i.expiration_date, i.is_headline," +
+					"        i.number_of_comments " +
+					"    ORDER BY i.modified DESC " +
+					"    OFFSET ? " +
+					"    LIMIT ? ";
+			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
+			for(String value : groupsAndUserIds){
+				values.add(value);
+			}
+			if (threadId.isPresent()) {
+				values.add(threadId.get());
+			}
+			values.add(user.getUserId());
+			values.add(page * pageSize);
+			values.add(pageSize);
+
+			// 3. Retrieve & parse data
+
+			Sql.getInstance().prepared(query, values, (sqlResult) -> {
+				final Either<String, JsonArray> result = SqlResult.validResult(sqlResult);
+				if (result.isLeft()) {
+					promise.fail(result.left().getValue());
+				} else {
+					try {
+
+						List<News> pojo = result.right().getValue().stream().filter(row -> row instanceof JsonObject).map(o -> {
+							final JsonObject row = (JsonObject)o;
+							final ResourceOwner owner = new ResourceOwner(
+									row.getString("owner"),
+									row.getString("owner_name"),
+									row.getBoolean("owner_deleted")
+							);
+							final List<String> rawRights = SqlResult.sqlArrayToList(row.getJsonArray("rights"), String.class);
+							return new News(
+									row.getInteger("id"),
+									row.getInteger("thread_id"),
+									row.getString("title"),
+									row.getString("content"),
+									NewsStatus.fromOrdinal(row.getInteger("status")),
+									owner,
+									row.getString("created"),
+									row.getString("modified"),
+									row.getString("publication_date"),
+									row.getString("expiration_date"),
+									row.getBoolean("is_headline"),
+									row.getInteger("number_of_comments"),
+									Rights.fromRawRights(securedActions, rawRights)
+							);
+						}).collect(Collectors.toList());
+						promise.complete(pojo);
+					} catch (Exception e) {
+						log.error("Failed to parse JsonObject", e);
+						promise.fail(e);
+					}
+				}
+			});
 		}
 		return promise.future();
 	}

@@ -19,11 +19,11 @@ public class NewsThread {
     // Caution: String is used to store ISO date because we won't manipulate data in most cases
     private final String modified;
 
-    private final NewsThreadOwner owner;
+    private final ResourceOwner owner;
 
     private final Rights rights;
 
-    public NewsThread(int id, String title, String icon, String created, String modified, NewsThreadOwner owner, Rights rights) {
+    public NewsThread(int id, String title, String icon, String created, String modified, ResourceOwner owner, Rights rights) {
         this.id = id;
         this.title = title;
         this.icon = icon;
@@ -41,7 +41,7 @@ public class NewsThread {
         return id;
     }
 
-    public NewsThreadOwner getOwner() {
+    public ResourceOwner getOwner() {
         return owner;
     }
 
