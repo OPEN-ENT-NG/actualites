@@ -20,14 +20,13 @@
 package net.atos.entng.actualites.services.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
-import net.atos.entng.actualites.to.NewsThreadOwner;
+import net.atos.entng.actualites.to.ResourceOwner;
 import net.atos.entng.actualites.to.Rights;
 
 import org.entcore.common.sql.Sql;
@@ -44,8 +43,6 @@ import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.security.SecuredAction;
 import net.atos.entng.actualites.services.ThreadService;
 import net.atos.entng.actualites.to.NewsThread;
-
-import static fr.wseduc.webutils.Utils.isNotEmpty;
 
 public class ThreadServiceSqlImpl implements ThreadService {
 
@@ -240,7 +237,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 					try {
 						List<NewsThread> pojo = result.right().getValue().stream().filter(row -> row instanceof JsonObject).map(o -> {
 							final JsonObject row = (JsonObject)o;
-							final NewsThreadOwner owner = new NewsThreadOwner(
+							final ResourceOwner owner = new ResourceOwner(
 									row.getString("owner"),
 									row.getString("owner_name"),
 									row.getBoolean("owner_deleted")
