@@ -916,7 +916,7 @@ public class InfoController extends ControllerHelper {
 
                 int page = 0;
                 int pageSize = LIST_DEFAULT_PAGE_SIZE;
-                Optional<Integer> threadId = Optional.empty();
+                Integer threadId = null;
 
                 try {
                     if (request.params().contains("page")) {
@@ -929,7 +929,7 @@ public class InfoController extends ControllerHelper {
                         if (pageSize > LIST_MAX_PAGE_SIZE) throw new IllegalArgumentException("page size maximum exceeded");
                     }
                     if (request.params().contains("threadId")) {
-                        threadId = Optional.of(Integer.parseInt(request.params().get("threadId")));
+                        threadId = new Integer(request.params().get("threadId"));
                     }
 
                 } catch (IllegalArgumentException e) {
