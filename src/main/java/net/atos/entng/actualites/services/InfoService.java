@@ -80,6 +80,6 @@ public interface InfoService {
 
 	public void getOwnerInfo(String infoId, Handler<Either<String, JsonObject>> handler);
 
-	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, Optional<Integer> threadId);
+	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, Integer threadId);
 
 }

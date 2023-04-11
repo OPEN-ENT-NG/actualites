@@ -487,7 +487,7 @@ public class InfoServiceSqlImpl implements InfoService {
     }
 
 	@Override
-	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, Optional<Integer> threadId) {
+	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, Integer threadId) {
 		final Promise<List<News>> promise = Promise.promise();
 		if (user == null) {
 			promise.fail("user not provided");
@@ -505,9 +505,9 @@ public class InfoServiceSqlImpl implements InfoService {
 
 			final String ids = Sql.listPrepared(groupsAndUserIds.toArray());
 			String whereClause =
-					"i.owner = ? " +
-					"OR i.id IN (SELECT id from info_for_user) ";
-			if (threadId.isPresent()) {
+					"i.status = " + NewsStatus.PUBLISHED.ordinal() + " " + // PENDING or PUBLISHED
+					"AND (i.owner = ? OR i.id IN (SELECT id from info_for_user)) ";
+			if (threadId != null) {
 				whereClause = "i.thread_id = ? AND ( " + whereClause + ") ";
 			}
 			String query =
@@ -534,8 +534,8 @@ public class InfoServiceSqlImpl implements InfoService {
 			for(String value : groupsAndUserIds){
 				values.add(value);
 			}
-			if (threadId.isPresent()) {
-				values.add(threadId.get());
+			if (threadId != null) {
+				values.add(threadId.intValue());
 			}
 			values.add(user.getUserId());
 			values.add(page * pageSize);
