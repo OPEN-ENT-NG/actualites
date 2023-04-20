@@ -25,10 +25,8 @@ import org.entcore.common.sql.SqlResult;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.utils.StringUtils;
 import io.vertx.core.Handler;
-import io.vertx.core.eventbus.Message;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
@@ -38,45 +36,40 @@ public class CommentFilter extends InfoFilter  {
 
 	@Override
 	public void authorize(final HttpServerRequest request, final Binding binding, final UserInfos user, final Handler<Boolean> handler) {
-
-		super.authorize(request, binding, user, new Handler<Boolean>() {
-			@Override
-			public void handle(Boolean event) {
-
-                if(event.booleanValue()){
+		super.authorize(request, binding, user, authorized -> {
+            request.pause();
+            String commentId = request.params().get("id");
+            String infoId = request.params().get("infoid");
+            if(StringUtils.isEmpty(commentId) || StringUtils.isEmpty(infoId)) {
+                log.error("Comment id or info id is null or empty. Impossible to delete comment.");
+                handler.handle(false);
+            } else {
+                StringBuilder query = new StringBuilder();
+                JsonArray values = new JsonArray();
+                if(authorized){
                     // The owner of the news has the right to delete the comment
-                    // Or Users who has the right to publish a news on the thread has the right to delete the comment
-                    handler.handle(true);
+                    // Or Users who have the right to publish a news on the thread have the right to delete the comment
+                    // Then checking that the comment is linked to the news
+                    query.append("SELECT count(*)")
+                            .append(" FROM actualites.comment AS c")
+                            .append(" WHERE c.id = ? ")
+                            .append(" AND c.info_id = ? ");
+                    values.add(Sql.parseId(commentId)).add(Sql.parseId(infoId));
                 } else {
-                    request.pause();
-
-                    String id = request.params().get("id");
-                    if(StringUtils.isEmpty(id)) {
-                        log.error("id comment is null or emply for delete comment infoid : " + request.params().get("infoid"));
-                        handler.handle(false);
-                    } else {
-                        // The owner of the comment has the right to delete the comment
-                        StringBuilder query = new StringBuilder();
-                        query.append("SELECT count(*)")
-                                .append(" FROM actualites.comment AS c")
-                                .append(" WHERE c.owner = ? ")
-                                .append(" AND c.id = ? ");
-                        JsonArray values = new JsonArray().add(user.getUserId()).add(Sql.parseId(id));
-
-                        // Execute
-                        Sql.getInstance().prepared(query.toString(), values, new Handler<Message<JsonObject>>() {
-                            @Override
-                            public void handle(Message<JsonObject> message) {
-                                request.resume();
-                                Long count = SqlResult.countResult(message);
-                                handler.handle(count != null && count > 0);
-                            }
-                        });
-                    }
+                    // The owner of the comment has the right to delete the comment
+                    query.append("SELECT count(*)")
+                            .append(" FROM actualites.comment AS c")
+                            .append(" WHERE c.owner = ? ")
+                            .append(" AND c.id = ? ");
+                    values.add(user.getUserId()).add(Sql.parseId(commentId));
                 }
-			}
-		});
-
-
+                // Execute
+                Sql.getInstance().prepared(query.toString(), values, message -> {
+                    request.resume();
+                    Long count = SqlResult.countResult(message);
+                    handler.handle(count != null && count > 0);
+                });
+            }
+        });
 	}
 }
