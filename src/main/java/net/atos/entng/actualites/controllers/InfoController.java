@@ -947,4 +947,27 @@ public class InfoController extends ControllerHelper {
             }
         });
     }
+
+    @Get("/info/:"+Actualites.INFO_RESOURCE_ID)
+    @ApiDoc("Get info from its id.")
+    @ResourceFilter(InfoFilter.class)
+    @SecuredAction(value = "info.read", type = ActionType.RESOURCE)
+    public void getSingleInfo(final HttpServerRequest request) {
+        // TODO IMPROVE : Security on Infos visibles by statuses / dates is not enforced
+        UserUtils.getUserInfos(eb, request, user -> {
+            if (user != null) {
+                // 1. Parse args
+                final int infoId = Integer.parseInt(request.params().get(Actualites.INFO_RESOURCE_ID));
+                // 2. Call service
+                infoService.getFromId(securedActions, user, infoId)
+                        .onSuccess(news -> render(request, news))
+                        .onFailure(ex -> renderError(request));
+
+            } else {
+                unauthorized(request);
+            }
+        });
+    }
 }
+
+

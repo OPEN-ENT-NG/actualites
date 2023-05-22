@@ -51,6 +51,11 @@ public class InfoServiceSqlImpl implements InfoService {
 	protected static final Logger log = LoggerFactory.getLogger(Renders.class);
 	private static final String THREAD_PUBLISH = "net-atos-entng-actualites-controllers-InfoController|publish";
 	private static final String RESOURCE_SHARED = "net-atos-entng-actualites-controllers-InfoController|getInfo";
+	private final String threadsTable = "actualites.thread";
+	private final String threadsSharesTable = "actualites.thread_shares";
+	private final String infosTable = "actualites.info";
+	private final String infosSharesTable = "actualites.info_shares";
+	private final String usersTable = "actualites.users";
 	private final QueryHelperSql helperSql = new QueryHelperSql();
 	/**
 	 * Format object to create a new revision
@@ -512,17 +517,17 @@ public class InfoServiceSqlImpl implements InfoService {
 			}
 			String query =
 					"WITH info_for_user AS ( SELECT i.id, array_agg(DISTINCT ish.action) AS rights " +
-					"    FROM actualites.info AS i " +
-					"        JOIN actualites.info_shares AS ish ON i.id = ish.resource_id " +
+					"    FROM " + infosTable + " AS i " +
+					"        JOIN " + infosSharesTable + " AS ish ON i.id = ish.resource_id " +
 					"    WHERE " +
 					"        ish.member_id IN " + ids + " " +
 					"    GROUP BY i.id " +
 					") SELECT i.id, i.thread_id, i.title, i.content, i.status, i.owner, u.username AS owner_name," +
 					"        u.deleted as owner_deleted, i.created, i.modified, i.publication_date," +
 					"        i.expiration_date, i.is_headline, i.number_of_comments, max(info_for_user.rights) as rights " +
-					"    FROM actualites.info AS i " +
+					"    FROM " + infosTable + " AS i " +
 					"        LEFT JOIN info_for_user ON info_for_user.id = i.id " +
-					"        LEFT JOIN actualites.users AS u ON i.owner = u.id " +
+					"        LEFT JOIN " + usersTable + " AS u ON i.owner = u.id " +
 					"    WHERE " + whereClause +
 					"    GROUP BY i.id, i.thread_id, i.title, i.content, i.status, i.owner, owner_name, owner_deleted," +
 					"        i.created, i.modified, i.publication_date, i.expiration_date, i.is_headline," +
@@ -584,5 +589,118 @@ public class InfoServiceSqlImpl implements InfoService {
 		}
 		return promise.future();
 	}
+
+	public Future<NewsComplete> getFromId(Map<String, SecuredAction> securedActions, UserInfos user, int infoId) {
+		final Promise<NewsComplete> promise = Promise.promise();
+		if (user == null) {
+			promise.fail("user not provided");
+		} else {
+
+			// 1. Get all ids corresponding to the user
+
+			List<String> groupsAndUserIds = new ArrayList<>();
+			groupsAndUserIds.add(user.getUserId());
+			if (user.getGroupsIds() != null) {
+				groupsAndUserIds.addAll(user.getGroupsIds());
+			}
+
+			// 2. Prepare SQL request
+
+			final String ids = Sql.listPrepared(groupsAndUserIds.toArray());
+			String query =
+					"WITH " +
+							"info_for_user AS ( " +
+							"	 SELECT i.id, array_agg(DISTINCT ish.action) AS rights " +
+							"    FROM " +
+							"		 " + infosTable + " AS i " +
+							"      	 JOIN " + infosSharesTable + " AS ish ON i.id = ish.resource_id " +
+							"    WHERE " +
+							"        ish.member_id IN " + ids + " " +
+							"    GROUP BY i.id " +
+							"), " +
+							"thread_for_user AS ( " +
+							"	 SELECT t.id, t.title, t.icon, array_agg(DISTINCT tsh.action) AS rights " +
+							"    FROM " + threadsTable + " AS t " +
+							"        INNER JOIN " + threadsSharesTable + " AS tsh ON t.id = tsh.resource_id " +
+							"    WHERE tsh.member_id IN " + ids + " " +
+							"    GROUP BY t.id, tsh.member_id " +
+							") " +
+							"SELECT i.id, i.thread_id, t.title AS thread_title, t.icon as thread_icon, i.title, " +
+							"		 i.content, i.status, i.owner, u.username AS owner_name," +
+							"        u.deleted as owner_deleted, i.created, i.modified, i.publication_date," +
+							"        i.expiration_date, i.is_headline, i.number_of_comments, " +
+							"		 max(info_for_user.rights) as rights, " +
+							"        max(t.rights) as thread_rights" +
+							"    FROM " + infosTable + " AS i " +
+							"        LEFT JOIN info_for_user ON info_for_user.id = i.id " +
+							"        LEFT JOIN " + usersTable + " AS u ON i.owner = u.id " +
+							"		 LEFT JOIN thread_for_user AS t ON i.thread_id = t.id " +
+							"    WHERE i.id = ? AND ( i.owner = ? OR i.id IN (SELECT id from info_for_user) ) " +
+							"    GROUP BY i.id, i.thread_id, thread_title, thread_icon, i.title, i.content, i.status, " +
+							"		 i.owner, owner_name, owner_deleted," +
+							"        i.created, i.modified, i.publication_date, i.expiration_date, i.is_headline," +
+							"        i.number_of_comments " +
+							"    ORDER BY i.modified DESC ";
+			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
+			for(String value : groupsAndUserIds){
+				values.add(value);
+			}
+			for(String value : groupsAndUserIds){
+				values.add(value);
+			}
+			values.add(infoId);
+			values.add(user.getUserId());
+
+			// 3. Retrieve & parse data
+
+			Sql.getInstance().prepared(query, values, (sqlResult) -> {
+				final Either<String, JsonArray> result = SqlResult.validResult(sqlResult);
+				if (result.isLeft()) {
+					promise.fail(result.left().getValue());
+				} else {
+					try {
+
+						NewsComplete pojo = result.right().getValue().stream().filter(row -> row instanceof JsonObject).map(o -> {
+							final JsonObject row = (JsonObject)o;
+							final ResourceOwner owner = new ResourceOwner(
+									row.getString("owner"),
+									row.getString("owner_name"),
+									row.getBoolean("owner_deleted")
+							);
+							final List<String> rawRights = SqlResult.sqlArrayToList(row.getJsonArray("rights"), String.class);
+							final List<String> rawThreadRights = SqlResult.sqlArrayToList(row.getJsonArray("thread_rights"), String.class);
+							final NewsThreadInfo thread = new NewsThreadInfo(
+									row.getInteger("thread_id"),
+									row.getString("thread_title"),
+									row.getString("thread_icon"),
+									Rights.fromRawRights(securedActions, rawThreadRights)
+							);
+							return new NewsComplete(
+									row.getInteger("id"),
+									thread,
+									row.getString("title"),
+									row.getString("content"),
+									NewsStatus.fromOrdinal(row.getInteger("status")),
+									owner,
+									row.getString("created"),
+									row.getString("modified"),
+									row.getString("publication_date"),
+									row.getString("expiration_date"),
+									row.getBoolean("is_headline"),
+									row.getInteger("number_of_comments"),
+									Rights.fromRawRights(securedActions, rawRights)
+							);
+						}).collect(Collectors.toList()).get(0);
+						promise.complete(pojo);
+					} catch (Exception e) {
+						log.error("Failed to parse JsonObject", e);
+						promise.fail(e);
+					}
+				}
+			});
+		}
+		return promise.future();
+	}
+
 
 }
