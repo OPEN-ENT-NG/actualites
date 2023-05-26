@@ -41,7 +41,7 @@ export class Info extends Model {
                 this[key] = data[key];
             }
             this.preview = '<p>' + $('<div>' + data.content + '</div>').text().substring(0, 500);
-            if ( this.preview.length > 500 ) {
+            if ( this.preview.length > 502) {
                 this.preview = this.preview + '... <strong class="read-more-link"><a>' + lang.translate('actualites.info.read.more') + '</a></strong>';
             }
             this.preview = this.preview + '</p>';
