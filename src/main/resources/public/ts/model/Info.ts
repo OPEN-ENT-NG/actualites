@@ -31,20 +31,23 @@ export class Info extends Model {
     displayComments: boolean;
     number_of_comments: number;
     shared: any;
+    hasReadMore : boolean;
 
     constructor (data?) {
         super();
         var that = this;
+        const readMoreText = '... <strong class="read-more-link"><a>' + lang.translate('actualites.info.read.more') + '</a></strong>';
         this.newComment = new Comment();
         if (data){
             for (let key in data) {
                 this[key] = data[key];
             }
-            this.preview = '<p>' + $('<div>' + data.content + '</div>').text().substring(0, 500);
-            if ( this.preview.length > 502) {
-                this.preview = this.preview + '... <strong class="read-more-link"><a>' + lang.translate('actualites.info.read.more') + '</a></strong>';
+            this.preview = $('<div>' + data.content + '</div>').text().substring(0, 500);
+            if ( this.preview.length == 500) {
+                this.preview = this.preview + readMoreText;
+                this.hasReadMore = true;
             }
-            this.preview = this.preview + '</p>';
+            this.preview = '<p>' + this.preview + '</p>';
         } else {
             this.status = ACTUALITES_CONFIGURATION.infoStatus.DRAFT;
         }
