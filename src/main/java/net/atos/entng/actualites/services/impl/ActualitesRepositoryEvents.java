@@ -77,16 +77,23 @@ public class ActualitesRepositoryEvents extends SqlRepositoryEvents {
 			}
 
 			String queryInfo =
-					"SELECT DISTINCT info.* " +
-							"FROM " + infoTable + " " +
-							"LEFT JOIN " + infoSharesTable + " infoS ON info.id = infoS.resource_id " +
-							(exportSharedResources == true ? "" : "AND 0 = 1 ") +
-							"LEFT JOIN " + membersTable + " mem ON infoS.member_id = mem.id " +
-							"WHERE " +
-								(resourcesIds != null ? ("info.id IN " + resourcesList + " AND ") : "") +
-								"(info.owner = ? " +
-								"OR mem.user_id = ? " +
-							((groups != null && !groups.isEmpty()) ? "OR mem.group_id IN " + Sql.listPrepared(groups.getList()) : "") + ")";
+					"(" +
+						"SELECT DISTINCT info.* " +
+						"FROM " + infoTable + " " +
+						"WHERE " +
+							(resourcesIds != null ? ("info.id IN " + resourcesList + " AND ") : "") +
+							"(info.owner = ? )" +
+					") UNION (" +
+						"SELECT DISTINCT info.* " +
+						"FROM " + infoTable + " " +
+						"LEFT JOIN " + infoSharesTable + " infoS ON info.id = infoS.resource_id " +
+						(exportSharedResources == true ? "" : "AND 0 = 1 ") +
+						"LEFT JOIN " + membersTable + " mem ON infoS.member_id = mem.id " +
+						"WHERE " +
+							(resourcesIds != null ? ("info.id IN " + resourcesList + " AND ") : "") +
+							"(mem.user_id = ? " +
+							((groups != null && !groups.isEmpty()) ? "OR mem.group_id IN " + Sql.listPrepared(groups.getList()) : "") + ")" +
+					")";
 			queries.put(infoTable,new SqlStatementsBuilder().prepared(queryInfo, resourcesIdsAndParams).build());
 
 			String queryInfoRevision =
