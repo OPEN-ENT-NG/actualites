@@ -56,6 +56,7 @@ public class InfoServiceSqlImpl implements InfoService {
 	private final String infosTable = "actualites.info";
 	private final String infosSharesTable = "actualites.info_shares";
 	private final String usersTable = "actualites.users";
+	private static final String THREAD_PUBLISH_RIGHT = "net-atos-entng-actualites-controllers-InfoController|publish";
 	private final QueryHelperSql helperSql = new QueryHelperSql();
 	/**
 	 * Format object to create a new revision
@@ -510,41 +511,70 @@ public class InfoServiceSqlImpl implements InfoService {
 
 			final String ids = Sql.listPrepared(groupsAndUserIds.toArray());
 			String whereClause =
-					"i.status = " + NewsStatus.PUBLISHED.ordinal() + " " + // PENDING or PUBLISHED
-					"AND (i.owner = ? OR i.id IN (SELECT id from info_for_user)) ";
+					"(i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) " + // Publish date crossed
+					"AND " +
+					"(i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL) " + // Expiration date not crossed
+					"AND " +
+					"(i.status = " + NewsStatus.PUBLISHED.ordinal() + ") " + // PUBLISHED
+					"AND ( " +
+					"	 i.owner = ? " + // user is owner of info
+					"	 OR " +
+					"	 i.id IN (SELECT id from info_for_user) " + // info is shared to the user
+					" 	 OR " +
+					"    t.owner = ?" + // user is owner of thread
+					"    OR " +
+					"    t.id IN (SELECT id FROM thread_for_user) " + // thread is shared to the user with publish rights
+					") ";
 			if (threadId != null) {
 				whereClause = "i.thread_id = ? AND ( " + whereClause + ") ";
 			}
 			String query =
-					"WITH info_for_user AS ( SELECT i.id, array_agg(DISTINCT ish.action) AS rights " +
-					"    FROM " + infosTable + " AS i " +
-					"        JOIN " + infosSharesTable + " AS ish ON i.id = ish.resource_id " +
-					"    WHERE " +
-					"        ish.member_id IN " + ids + " " +
-					"    GROUP BY i.id " +
-					") SELECT i.id, i.thread_id, i.title, i.content, i.status, i.owner, u.username AS owner_name," +
-					"        u.deleted as owner_deleted, i.created, i.modified, i.publication_date," +
+					"WITH " +
+					"	 info_for_user AS ( " + // Every info owned of shared to the user
+					"		 SELECT i.id, array_agg(DISTINCT ish.action) AS rights " +
+					"    	 FROM " + infosTable + " AS i " +
+					"        	 JOIN " + infosSharesTable + " AS ish ON i.id = ish.resource_id " +
+					"    	 WHERE " +
+					"        	 ish.member_id IN " + ids + " " +
+					"    	 GROUP BY i.id " +
+					"	 ), " +
+					"	 thread_for_user AS ( " + // Every thread owned of shared to the user with publish rights
+					"	 	 SELECT t.id " +
+					"    	 FROM " + threadsTable + " AS t " +
+					"        	 INNER JOIN " + threadsSharesTable + " AS tsh ON t.id = tsh.resource_id " +
+					"    	 WHERE tsh.member_id IN " + ids + " " +
+					"		 	AND tsh.action = '" + THREAD_PUBLISH_RIGHT + "' " +
+					"    	 GROUP BY t.id, tsh.member_id " +
+					"	 ) " +
+					"SELECT i.id, i.thread_id, i.title, i.content, i.status, i.owner, u.username AS owner_name, " +
+					"        u.deleted as owner_deleted, i.created, i.modified, i.publication_date, " +
 					"        i.expiration_date, i.is_headline, i.number_of_comments, max(info_for_user.rights) as rights " +
 					"    FROM " + infosTable + " AS i " +
 					"        LEFT JOIN info_for_user ON info_for_user.id = i.id " +
+					" 		 LEFT JOIN thread_for_user ON thread_for_user.id = i.thread_id " +
 					"        LEFT JOIN " + usersTable + " AS u ON i.owner = u.id " +
+					" 		 LEFT JOIN " + threadsTable + " AS t ON t.id = i.thread_id " +
 					"    WHERE " + whereClause +
-					"    GROUP BY i.id, i.thread_id, i.title, i.content, i.status, i.owner, owner_name, owner_deleted," +
-					"        i.created, i.modified, i.publication_date, i.expiration_date, i.is_headline," +
+					"    GROUP BY i.id, i.thread_id, i.title, i.content, i.status, i.owner, owner_name, owner_deleted, " +
+					"        i.created, i.modified, i.publication_date, i.expiration_date, i.is_headline, " +
 					"        i.number_of_comments " +
 					"    ORDER BY i.modified DESC " +
 					"    OFFSET ? " +
 					"    LIMIT ? ";
 			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
 			for(String value : groupsAndUserIds){
-				values.add(value);
+				values.add(value); // for info_for_user
+			}
+			for(String value : groupsAndUserIds){
+				values.add(value); // for thread_for_user
 			}
 			if (threadId != null) {
-				values.add(threadId.intValue());
+				values.add(threadId.intValue()); // for thread filtering
 			}
-			values.add(user.getUserId());
-			values.add(page * pageSize);
-			values.add(pageSize);
+			values.add(user.getUserId()); // for info owning clause
+			values.add(user.getUserId()); // for thread owning clause
+			values.add(page * pageSize); // offset clause
+			values.add(pageSize); // limit clause
 
 			// 3. Retrieve & parse data
 
