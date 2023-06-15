@@ -24,10 +24,10 @@ public class NewsComplete {
     private final String expirationDate;
     private final boolean isHeadline;
     private final int numberOfComments;
-    private final Rights rights;
+    private final Rights sharedRights;
     private final String title;
 
-    public NewsComplete(int id, NewsThreadInfo thread, String title, String content, NewsStatus status, ResourceOwner owner, String created, String modified, String publicationDate, String expirationDate, boolean isHeadline, int numberOfComments, Rights rights) {
+    public NewsComplete(int id, NewsThreadInfo thread, String title, String content, NewsStatus status, ResourceOwner owner, String created, String modified, String publicationDate, String expirationDate, boolean isHeadline, int numberOfComments, Rights sharedRights) {
         this.id = id;
         this.thread = thread;
         this.content = content;
@@ -39,7 +39,7 @@ public class NewsComplete {
         this.expirationDate = expirationDate;
         this.isHeadline = isHeadline;
         this.numberOfComments = numberOfComments;
-        this.rights = rights;
+        this.sharedRights = sharedRights;
         this.title = title;
     }
 
@@ -48,13 +48,13 @@ public class NewsComplete {
     }
 
     @JsonIgnore
-    public Rights getRights() {
-        return rights;
+    public Rights getSharedRights() {
+        return sharedRights;
     }
 
-    @JsonProperty("rights")
+    @JsonProperty("sharedRights")
     public Set<String> getShareDisplayNames() {
-        return rights.getShareDisplayNames();
+        return sharedRights.getShareDisplayNames();
     }
 
     public int getId() {

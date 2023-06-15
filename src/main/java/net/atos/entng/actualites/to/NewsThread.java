@@ -21,16 +21,16 @@ public class NewsThread {
 
     private final ResourceOwner owner;
 
-    private final Rights rights;
+    private final Rights sharedRights;
 
-    public NewsThread(int id, String title, String icon, String created, String modified, ResourceOwner owner, Rights rights) {
+    public NewsThread(int id, String title, String icon, String created, String modified, ResourceOwner owner, Rights sharedRights) {
         this.id = id;
         this.title = title;
         this.icon = icon;
         this.created = created;
         this.modified = modified;
         this.owner = owner;
-        this.rights = rights;
+        this.sharedRights = sharedRights;
     }
 
     public String getTitle() {
@@ -58,13 +58,13 @@ public class NewsThread {
     }
 
     @JsonIgnore
-    public Rights getRights() {
-        return rights;
+    public Rights getSharedRights() {
+        return sharedRights;
     }
 
-    @JsonProperty("rights")
+    @JsonProperty("sharedRights")
     public Set<String> getShareDisplayNames() {
-        return rights.getShareDisplayNames();
+        return sharedRights.getShareDisplayNames();
     }
 
 }

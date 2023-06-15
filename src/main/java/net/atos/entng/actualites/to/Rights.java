@@ -13,7 +13,7 @@ import fr.wseduc.webutils.security.SecuredAction;
 public class Rights {
 
     public static final List<String> ALLOWED_SHARING_RIGHTS = Arrays
-            .asList("read", "contrib", "manager", "publish", "comment");
+            .asList(/*"read", */"contrib", "manager", "publish", "comment"); // read right is not included in response
 
     private final Set<SecuredAction> actions;
 

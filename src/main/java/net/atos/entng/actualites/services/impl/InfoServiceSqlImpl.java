@@ -637,40 +637,45 @@ public class InfoServiceSqlImpl implements InfoService {
 			// 2. Prepare SQL request
 
 			final String ids = Sql.listPrepared(groupsAndUserIds.toArray());
+
 			String query =
 					"WITH " +
-							"info_for_user AS ( " +
-							"	 SELECT i.id, array_agg(DISTINCT ish.action) AS rights " +
-							"    FROM " +
-							"		 " + infosTable + " AS i " +
-							"      	 JOIN " + infosSharesTable + " AS ish ON i.id = ish.resource_id " +
-							"    WHERE " +
-							"        ish.member_id IN " + ids + " " +
-							"    GROUP BY i.id " +
-							"), " +
-							"thread_for_user AS ( " +
-							"	 SELECT t.id, t.title, t.icon, array_agg(DISTINCT tsh.action) AS rights " +
-							"    FROM " + threadsTable + " AS t " +
-							"        INNER JOIN " + threadsSharesTable + " AS tsh ON t.id = tsh.resource_id " +
-							"    WHERE tsh.member_id IN " + ids + " " +
-							"    GROUP BY t.id, tsh.member_id " +
-							") " +
-							"SELECT i.id, i.thread_id, t.title AS thread_title, t.icon as thread_icon, i.title, " +
-							"		 i.content, i.status, i.owner, u.username AS owner_name," +
-							"        u.deleted as owner_deleted, i.created, i.modified, i.publication_date," +
-							"        i.expiration_date, i.is_headline, i.number_of_comments, " +
-							"		 max(info_for_user.rights) as rights, " +
-							"        max(t.rights) as thread_rights" +
-							"    FROM " + infosTable + " AS i " +
-							"        LEFT JOIN info_for_user ON info_for_user.id = i.id " +
-							"        LEFT JOIN " + usersTable + " AS u ON i.owner = u.id " +
-							"		 LEFT JOIN thread_for_user AS t ON i.thread_id = t.id " +
-							"    WHERE i.id = ? AND ( i.owner = ? OR i.id IN (SELECT id from info_for_user) ) " +
-							"    GROUP BY i.id, i.thread_id, thread_title, thread_icon, i.title, i.content, i.status, " +
-							"		 i.owner, owner_name, owner_deleted," +
-							"        i.created, i.modified, i.publication_date, i.expiration_date, i.is_headline," +
-							"        i.number_of_comments " +
-							"    ORDER BY i.modified DESC ";
+					"	 info_for_user AS ( " + // Every info owned of shared to the user
+					"		 SELECT i.id, array_agg(DISTINCT ish.action) AS rights " +
+					"    	 FROM " + infosTable + " AS i " +
+					"        	 JOIN " + infosSharesTable + " AS ish ON i.id = ish.resource_id " +
+					"    	 WHERE " +
+					"        	 ish.member_id IN " + ids + " " +
+					"    	 GROUP BY i.id " +
+					"	 ), " +
+					"	 thread_for_user AS ( " + // Every thread owned of shared to the user with publish rights
+					"	 	 SELECT t.id, array_agg(DISTINCT tsh.action) AS rights" +
+					"    	 FROM " + threadsTable + " AS t " +
+					"        	 INNER JOIN " + threadsSharesTable + " AS tsh ON t.id = tsh.resource_id " +
+					"    	 WHERE tsh.member_id IN " + ids + " " +
+					"    	 GROUP BY t.id, tsh.member_id " +
+					"	 ) " +
+					"SELECT i.id, i.title, i.content, i.created, i.modified, i.is_headline, i.number_of_comments, " + // info data
+					"        i.status, i.publication_date, i.expiration_date, " + // info publication data
+					"		 i.owner, u.username AS owner_name, u.deleted AS owner_deleted, " + // info owner data
+					"		 i.thread_id, t.title AS thread_title, t.icon AS thread_icon, " +
+					"		 t.owner AS thread_owner, ut.username AS thread_owner_name, ut.deleted AS thread_owner_deleted, " + // thread owner data
+					"		 max(info_for_user.rights) AS rights, " + // info rights
+					"		 max(thread_for_user.rights) AS thread_rights " + // thread rights
+					"    FROM " + infosTable + " AS i " +
+					"        LEFT JOIN info_for_user ON info_for_user.id = i.id " +
+					" 		 LEFT JOIN thread_for_user ON thread_for_user.id = i.thread_id " +
+					"        LEFT JOIN " + usersTable + " AS u ON i.owner = u.id " +
+					" 		 LEFT JOIN " + threadsTable + " AS t ON t.id = i.thread_id " +
+					"        LEFT JOIN " + usersTable + " AS ut ON t.owner = ut.id " +
+					"    WHERE " +
+					"		 i.id = ? " + // get info from id
+					"    GROUP BY i.id, i.title, i.content, i.created, i.modified, i.is_headline, i.number_of_comments, " +
+					"        i.status, i.publication_date, i.expiration_date, " +
+					"        i.owner, owner_name, owner_deleted, " +
+					" 		 i.thread_id, thread_title, thread_icon, " +
+					"		 thread_owner, thread_owner_name, thread_owner_deleted";
+
 			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
 			for(String value : groupsAndUserIds){
 				values.add(value);
@@ -679,7 +684,6 @@ public class InfoServiceSqlImpl implements InfoService {
 				values.add(value);
 			}
 			values.add(infoId);
-			values.add(user.getUserId());
 
 			// 3. Retrieve & parse data
 
@@ -699,10 +703,16 @@ public class InfoServiceSqlImpl implements InfoService {
 							);
 							final List<String> rawRights = SqlResult.sqlArrayToList(row.getJsonArray("rights"), String.class);
 							final List<String> rawThreadRights = SqlResult.sqlArrayToList(row.getJsonArray("thread_rights"), String.class);
+							final ResourceOwner threadOwner = new ResourceOwner(
+									row.getString("thread_owner"),
+									row.getString("thread_owner_name"),
+									row.getBoolean("thread_owner_deleted")
+							);
 							final NewsThreadInfo thread = new NewsThreadInfo(
 									row.getInteger("thread_id"),
 									row.getString("thread_title"),
 									row.getString("thread_icon"),
+									threadOwner,
 									Rights.fromRawRights(securedActions, rawThreadRights)
 							);
 							return new NewsComplete(
