@@ -266,5 +266,24 @@ public class ThreadController extends ControllerHelper {
 		renderView(request, new JsonObject().put("printThreadId", request.params().get("actualites")), "print.html", null);
 	}
 
+	@Get("/threads/list")
+	@ApiDoc("Get threads visible from the current user." +
+			"This includes" +
+			" - Threads created by the user" +
+			" - Threads shared to the user or one of its groups" +
+			" - Threads containing news that are shared to the user or one of its groups" +
+			"The ensemble of threads returned by this method contain every visible news to the user.")
+	@SecuredAction("actualites.threads.listthreads")
+	public void listThreadsV2(final HttpServerRequest request) {
+		UserUtils.getUserInfos(eb, request, user -> {
+			if (user != null) {
+				threadService.list(securedActions, user)
+					.onSuccess(threads -> render(request, threads))
+					.onFailure(ex -> renderError(request));
+			} else {
+				unauthorized(request);
+			}
+		});
+	}
 
 }

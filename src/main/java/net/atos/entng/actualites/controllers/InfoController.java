@@ -27,10 +27,7 @@ import static org.entcore.common.user.UserUtils.getUserInfos;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import net.atos.entng.actualites.Actualites;
@@ -903,4 +900,74 @@ public class InfoController extends ControllerHelper {
             notFound(request, "No platform sharing configuration found");
         }
     }
+
+    private static final int LIST_MAX_PAGE_SIZE = 50;
+    private static final int LIST_DEFAULT_PAGE_SIZE = 20;
+
+    @Get("/list")
+    @ApiDoc("List infos with pagination. Accept custom page size. Params threadId can be used to restrict the list to this thread.")
+    @SecuredAction("actualites.infos.list.page")
+    public void listInfosPagined(final HttpServerRequest request) {
+        // TODO IMPROVE : Security on Infos visibles by statuses / dates is not enforced
+        UserUtils.getUserInfos(eb, request, user -> {
+            if (user != null) {
+
+                // 1. Parse args
+
+                int page = 0;
+                int pageSize = LIST_DEFAULT_PAGE_SIZE;
+                Integer threadId = null;
+
+                try {
+                    if (request.params().contains("page")) {
+                        page = Integer.parseInt(request.params().get("page"));
+                        if (page < 0) throw new IllegalArgumentException("page number must be positive");
+                    }
+                    if (request.params().contains("pageSize")) {
+                        pageSize = Integer.parseInt(request.params().get("pageSize"));
+                        if (pageSize <= 0) throw new IllegalArgumentException("page size must be positive non-zero");
+                        if (pageSize > LIST_MAX_PAGE_SIZE) throw new IllegalArgumentException("page size maximum exceeded");
+                    }
+                    if (request.params().contains("threadId")) {
+                        threadId = new Integer(request.params().get("threadId"));
+                    }
+
+                } catch (IllegalArgumentException e) {
+                    badRequest(request);
+                    return;
+                }
+
+                // 2. Call service
+
+                infoService.listPaginated(securedActions, user, page, pageSize, threadId)
+                        .onSuccess(news -> render(request, news))
+                        .onFailure(ex -> renderError(request));
+            } else {
+                unauthorized(request);
+            }
+        });
+    }
+
+    @Get("/info/:"+Actualites.INFO_RESOURCE_ID)
+    @ApiDoc("Get info from its id.")
+    @ResourceFilter(InfoFilter.class)
+    @SecuredAction(value = "info.read", type = ActionType.RESOURCE)
+    public void getSingleInfo(final HttpServerRequest request) {
+        // TODO IMPROVE : Security on Infos visibles by statuses / dates is not enforced
+        UserUtils.getUserInfos(eb, request, user -> {
+            if (user != null) {
+                // 1. Parse args
+                final int infoId = Integer.parseInt(request.params().get(Actualites.INFO_RESOURCE_ID));
+                // 2. Call service
+                infoService.getFromId(securedActions, user, infoId)
+                        .onSuccess(news -> render(request, news))
+                        .onFailure(ex -> renderError(request));
+
+            } else {
+                unauthorized(request);
+            }
+        });
+    }
 }
+
+

@@ -21,18 +21,38 @@ package net.atos.entng.actualites.services.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
+import net.atos.entng.actualites.to.ResourceOwner;
+import net.atos.entng.actualites.to.Rights;
 
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
 import org.entcore.common.user.UserInfos;
+
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import fr.wseduc.webutils.Either;
+import fr.wseduc.webutils.security.SecuredAction;
 import net.atos.entng.actualites.services.ThreadService;
+import net.atos.entng.actualites.to.NewsThread;
 
 public class ThreadServiceSqlImpl implements ThreadService {
+
+	private static final Logger log = LoggerFactory.getLogger(ThreadServiceSqlImpl.class);
+
+	private final String threadsTable = "actualites.thread";
+	private final String threadsSharesTable = "actualites.thread_shares";
+	private final String infosTable = "actualites.info";
+	private final String infosSharesTable = "actualites.info_shares";
+	private final String usersTable = "actualites.users";
 
 	@Override
 	public void retrieve(String id, Handler<Either<String, JsonObject>> handler) {
@@ -148,6 +168,100 @@ public class ThreadServiceSqlImpl implements ThreadService {
 				}
 			}
 		});
+	}
+
+
+	/**
+	 * List threads visible by the given user. It includes :
+	 * - threads created by the user
+	 * - threads shared to the user or with one of its groups
+	 * - threads containing news that are shared to the user or one of its groups
+	 * @param user info about the user (needed for groups)
+	 * @return the list of the threads visible by the user
+	 */
+	@Override
+	public Future<List<NewsThread>> list(Map<String, SecuredAction> securedActions, UserInfos user) {
+		final Promise<List<NewsThread>> promise = Promise.promise();
+		if (user == null) {
+			promise.fail("user not provided");
+		} else {
+			// 1. Get all ids corresponding to the user
+
+			List<String> groupsAndUserIds = new ArrayList<>();
+			groupsAndUserIds.add(user.getUserId());
+			if (user.getGroupsIds() != null) {
+				groupsAndUserIds.addAll(user.getGroupsIds());
+			}
+
+			// 2. Prepare SQL request
+
+			final String ids = Sql.listPrepared(groupsAndUserIds.toArray());
+			String query =
+					"WITH thread_with_info_for_user AS ( " +
+					"    SELECT DISTINCT i.thread_id AS id " +
+					"    FROM " + infosTable + " AS i " +
+					"        INNER JOIN " + infosSharesTable + " AS ish ON i.id = ish.resource_id " +
+					"    WHERE ish.member_id IN " + ids + " " +
+					"), thread_for_user AS ( " +
+					"    SELECT t.id, array_agg(DISTINCT tsh.action) AS rights " +
+					"    FROM " + threadsTable + " AS t " +
+					"        INNER JOIN " + threadsSharesTable + " AS tsh ON t.id = tsh.resource_id " +
+					"    WHERE tsh.member_id IN " + ids + " " +
+					"    GROUP BY t.id, tsh.member_id " +
+					") SELECT t.id, t.owner, u.username AS owner_name, u.deleted as owner_deleted, t.title, t.icon," +
+					"    t.created, t.modified, max(thread_for_user.rights) as rights " + // note : we can use max() here only because the rights are inclusive of each other
+					"    FROM " + threadsTable + " AS t " +
+					"        LEFT JOIN thread_for_user ON thread_for_user.id = t.id " +
+					"        LEFT JOIN " + usersTable + " AS u ON t.owner = u.id " +
+					"    WHERE t.owner = ? " +
+					"       OR t.id IN (SELECT id from thread_with_info_for_user) " +
+					"       OR t.id IN (SELECT id from thread_for_user) " +
+					"	 GROUP BY t.id, t.owner, owner_name, owner_deleted, t.title, t.icon, t.created, t.modified " +
+					"    ORDER BY t.title ";
+			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
+			for(String value : groupsAndUserIds){
+				values.add(value);
+			}
+			for(String value : groupsAndUserIds){
+				values.add(value);
+			}
+			values.add(user.getUserId());
+
+			// 3. Retrieve & parse data
+
+			Sql.getInstance().prepared(query, values, (sqlResult) -> {
+				final Either<String, JsonArray> result = SqlResult.validResult(sqlResult);
+				if (result.isLeft()) {
+					promise.fail(result.left().getValue());
+				} else {
+					try {
+						List<NewsThread> pojo = result.right().getValue().stream().filter(row -> row instanceof JsonObject).map(o -> {
+							final JsonObject row = (JsonObject)o;
+							final ResourceOwner owner = new ResourceOwner(
+									row.getString("owner"),
+									row.getString("owner_name"),
+									row.getBoolean("owner_deleted")
+							);
+							final List<String> rawRights = SqlResult.sqlArrayToList(row.getJsonArray("rights"), String.class);
+							return new NewsThread(
+										row.getInteger("id"),
+										row.getString("title"),
+										row.getString("icon"),
+										row.getString("created"),
+										row.getString("modified"),
+										owner,
+										Rights.fromRawRights(securedActions, rawRights)
+									);
+						}).collect(Collectors.toList());
+						promise.complete(pojo);
+					} catch (Exception e) {
+						log.error("Failed to parse JsonObject", e);
+						promise.fail(e);
+					}
+				}
+			});
+		}
+		return promise.future();
 	}
 
 }
