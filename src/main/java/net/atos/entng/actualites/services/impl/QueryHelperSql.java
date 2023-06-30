@@ -200,7 +200,7 @@ public class QueryHelperSql {
         final StringBuilder subquery = new StringBuilder();
         subquery.append("SELECT comment.id as _id, comment.comment, comment.owner, comment.created, comment.modified, users.username, comment.info_id ");
         subquery.append("FROM actualites.comment INNER JOIN actualites.users ON comment.owner = users.id ");
-        subquery.append("WHERE comment.info_id = ? ORDER BY comment.modified ASC");
+        subquery.append("WHERE comment.info_id = ? ORDER BY comment.created ASC");
         final JsonArray values = new JsonArray().add(infoId);
         Sql.getInstance().prepared(subquery.toString(), values, SqlResult.validResultHandler(handler));
     }
