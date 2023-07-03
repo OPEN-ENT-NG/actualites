@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+import net.atos.entng.actualites.to.NewsStatus;
 import net.atos.entng.actualites.to.ResourceOwner;
 import net.atos.entng.actualites.to.Rights;
 
@@ -201,7 +202,14 @@ public class ThreadServiceSqlImpl implements ThreadService {
 					"    SELECT DISTINCT i.thread_id AS id " +
 					"    FROM " + infosTable + " AS i " +
 					"        INNER JOIN " + infosSharesTable + " AS ish ON i.id = ish.resource_id " +
-					"    WHERE ish.member_id IN " + ids + " " +
+					"    WHERE " +
+					"		 ish.member_id IN " + ids + " " +
+					"		 AND " +
+					"		 (i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) " + // Publish date crossed
+					"		 AND " +
+					"		 (i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL) " + // Expiration date not crossed
+					"		 AND " +
+					"		 (i.status = " + NewsStatus.PUBLISHED.ordinal() + ") " + // PUBLISHED
 					"), thread_for_user AS ( " +
 					"    SELECT t.id, array_agg(DISTINCT tsh.action) AS rights " +
 					"    FROM " + threadsTable + " AS t " +
