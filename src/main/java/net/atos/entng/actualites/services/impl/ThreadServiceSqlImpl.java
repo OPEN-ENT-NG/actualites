@@ -201,9 +201,13 @@ public class ThreadServiceSqlImpl implements ThreadService {
 					"WITH thread_with_info_for_user AS ( " +
 					"    SELECT DISTINCT i.thread_id AS id " +
 					"    FROM " + infosTable + " AS i " +
-					"        INNER JOIN " + infosSharesTable + " AS ish ON i.id = ish.resource_id " +
+					"        LEFT JOIN " + infosSharesTable + " AS ish ON i.id = ish.resource_id " +
 					"    WHERE " +
-					"		 ish.member_id IN " + ids + " " +
+					"		 ( " +
+					"			 ish.member_id IN " + ids + " " +
+					"			 OR " +
+					"			 i.owner = ? " +
+					"		 ) " +
 					"		 AND " +
 					"		 (i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) " + // Publish date crossed
 					"		 AND " +
@@ -225,11 +229,12 @@ public class ThreadServiceSqlImpl implements ThreadService {
 					"       OR t.id IN (SELECT id from thread_with_info_for_user) " +
 					"       OR t.id IN (SELECT id from thread_for_user) " +
 					"	 GROUP BY t.id, t.owner, owner_name, owner_deleted, t.title, t.icon, t.created, t.modified " +
-					"    ORDER BY t.title ";
+					"    ORDER BY t.title";
 			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
 			for(String value : groupsAndUserIds){
 				values.add(value);
 			}
+			values.add(user.getUserId());
 			for(String value : groupsAndUserIds){
 				values.add(value);
 			}
