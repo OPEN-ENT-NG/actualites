@@ -352,7 +352,7 @@ public class InfoServiceSqlImpl implements InfoService {
 	private void listLastPublishedInfosOptimized(UserInfos user, int resultSize, Handler<Either<String, JsonArray>> handler) {
 		final StopWatch watch1 = new StopWatch();
 		log.debug("Starting optimized query...");
-		helperSql.getInfosIdsByUnion(user, resultSize).setHandler(resIds -> {
+		helperSql.getInfosIdsByUnion(user, resultSize).onComplete(resIds -> {
 			log.debug("Infos IDS query..." + watch1.elapsedTimeSeconds());
 			if (resIds.failed()) {
 				handler.handle(new Either.Left<>(resIds.cause().getMessage()));

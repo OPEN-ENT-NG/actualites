@@ -22,6 +22,9 @@ package net.atos.entng.actualites.services.impl;
 import static fr.wseduc.webutils.Utils.handlerToAsyncHandler;
 import static org.entcore.common.neo4j.Neo4jResult.validResultHandler;
 
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.eventbus.Message;
 import net.atos.entng.actualites.services.UserService;
 
 import io.vertx.core.Handler;
@@ -49,7 +52,13 @@ public class UserServiceDirectoryImpl implements UserService {
 				.put("userIds", userIds)
 				.put("groupIds", groupIds);
 
-		eb.send(DIRECTORY_ADDRESS, action, handlerToAsyncHandler(validResultHandler(handler)));
+		Future<Message<JsonObject>> eventBusRequest = eb.request(DIRECTORY_ADDRESS, action);
+		Handler<AsyncResult<Message<JsonObject>>> resultHandler = handlerToAsyncHandler(validResultHandler(handler));
+		eventBusRequest.onComplete(result -> {
+			if (resultHandler != null) {
+				resultHandler.handle(result);
+			}
+		});
 	}
 
 }

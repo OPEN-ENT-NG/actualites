@@ -37,8 +37,8 @@ public class QueryHelperSql {
             groupsAndUserIds.addAll(user.getGroupsIds());
         }
         final String memberIds = Sql.listPrepared(groupsAndUserIds.toArray());
-        final Future<Set<Long>> futureOwner = Future.future();
-        final Future<Set<Long>> futureInfoShare = Future.future();
+        final Promise<Set<Long>> promiseOwner = Promise.promise();
+        final Promise<Set<Long>> promiseInfoShare = Promise.promise();
         {
             final StringBuilder queryIds = new StringBuilder();
             queryIds.append("SELECT id FROM actualites.info WHERE info.owner = ? ");
@@ -46,14 +46,14 @@ public class QueryHelperSql {
             Sql.getInstance().prepared(queryIds.toString(), values, SqlResult.validResultHandler(resIds -> {
                 try{
                     if(resIds.isLeft()){
-                        futureOwner.fail(resIds.left().getValue());
+                        promiseOwner.fail(resIds.left().getValue());
                     }else{
                         final JsonArray res = resIds.right().getValue();
                         final Set<Long> ids = res.stream().map(e-> ((JsonObject)e).getLong("id")).collect(Collectors.toSet());
-                        futureOwner.complete(ids);
+                        promiseOwner.complete(ids);
                     }
                 }catch (Exception e){
-                    futureOwner.fail(e);
+                    promiseOwner.fail(e);
                 }
             }));
         }
@@ -69,14 +69,14 @@ public class QueryHelperSql {
             Sql.getInstance().prepared(queryIds.toString(), values, SqlResult.validResultHandler(resIds -> {
                 try{
                     if(resIds.isLeft()){
-                        futureInfoShare.fail(resIds.left().getValue());
+                        promiseInfoShare.fail(resIds.left().getValue());
                     }else{
                         final JsonArray res = resIds.right().getValue();
                         final Set<Long> ids = res.stream().map(e-> ((JsonObject)e).getLong("id")).collect(Collectors.toSet());
-                        futureInfoShare.complete(ids);
+                        promiseInfoShare.complete(ids);
                     }
                 }catch (Exception e){
-                    futureInfoShare.fail(e);
+                    promiseInfoShare.fail(e);
                 }
             }));
         }
@@ -89,29 +89,29 @@ public class QueryHelperSql {
         queryIds.append("      AND thread_shares.action = '" + THREAD_PUBLISH + "'");
         queryIds.append("    )  AND info.status > 1 ");
         final JsonArray values = new JsonArray().add(user.getUserId()).addAll(new JsonArray(groupsAndUserIds));
-        final Future<Set<Long>> future = Future.future();
+        final Promise<Set<Long>> promiseInfoIds = Promise.promise();
         Sql.getInstance().prepared(queryIds.toString(), values, SqlResult.validResultHandler(resIds -> {
             try{
                 if(resIds.isLeft()){
-                    future.fail(resIds.left().getValue());
+                    promiseInfoIds.fail(resIds.left().getValue());
                 }else{
-                    CompositeFuture.all(futureOwner, futureInfoShare).setHandler(r->{
+                    CompositeFuture.all(promiseOwner.future(), promiseInfoShare.future()).onComplete(r->{
                         if(r.failed()){
-                            future.fail(r.cause());
+                            promiseInfoIds.fail(r.cause());
                             return;
                         }
                         final JsonArray res = resIds.right().getValue();
                         final Set<Long> ids = res.stream().map(e-> ((JsonObject)e).getLong("id")).collect(Collectors.toSet());
-                        ids.addAll(futureOwner.result());
-                        ids.addAll(futureInfoShare.result());
-                        future.complete(ids);
+                        ids.addAll(promiseOwner.future().result());
+                        ids.addAll(promiseInfoShare.future().result());
+                        promiseInfoIds.complete(ids);
                     });
                 }
             }catch (Exception e){
-                futureInfoShare.fail(e);
+                promiseInfoShare.fail(e);
             }
         }));
-        return future;
+        return promiseInfoIds.future();
     }
 
     public Future<Set<Long>> getInfosIdsByUnion(final UserInfos user, final Integer limit){
