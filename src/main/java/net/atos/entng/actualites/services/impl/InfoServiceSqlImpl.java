@@ -88,7 +88,7 @@ public class InfoServiceSqlImpl implements InfoService {
 					SqlStatementsBuilder s = new SqlStatementsBuilder();
 
 					String userQuery = "SELECT "+ Actualites.NEWS_SCHEMA + ".merge_users(?,?)";
-					s.prepared(userQuery, new fr.wseduc.webutils.collections.JsonArray().add(user.getUserId()).add(user.getUsername()));
+					s.prepared(userQuery, new JsonArray().add(user.getUserId()).add(user.getUsername()));
 
 					data.put("owner", user.getUserId()).put("id", infoId);
 					s.insert(Actualites.NEWS_SCHEMA + "." + Actualites.INFO_TABLE, data, "id");
@@ -128,10 +128,10 @@ public class InfoServiceSqlImpl implements InfoService {
 		SqlStatementsBuilder s = new SqlStatementsBuilder();
 
 		String userQuery = "SELECT "+ Actualites.NEWS_SCHEMA + ".merge_users(?,?)";
-		s.prepared(userQuery, new fr.wseduc.webutils.collections.JsonArray().add(user.getUserId()).add(user.getUsername()));
+		s.prepared(userQuery, new JsonArray().add(user.getUserId()).add(user.getUsername()));
 
 		StringBuilder sb = new StringBuilder();
-		JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
+		JsonArray values = new JsonArray();
 		for (String attr : data.fieldNames()) {
 			sb.append(attr);
 			if (Boolean.TRUE.equals(attr.contains("date"))) {
@@ -166,7 +166,7 @@ public class InfoServiceSqlImpl implements InfoService {
 	@Override
 	public void retrieve(String id, Handler<Either<String, JsonObject>> handler) {
 			String query;
-			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
+			JsonArray values = new JsonArray();
 			query = "SELECT i.id as _id, i.title, i.content, i.status, i.publication_date, i.expiration_date, i.is_headline, i.thread_id, i.created, i.modified" +
 				", i.owner, u.username, t.title AS thread_title, t.icon AS thread_icon" +
 				", (SELECT json_agg(cr.*) FROM (" +
@@ -195,7 +195,7 @@ public class InfoServiceSqlImpl implements InfoService {
 	public void retrieve(String id, UserInfos user, Handler<Either<String, JsonObject>> handler) {
 		if (user != null) {
 			String query;
-			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
+			JsonArray values = new JsonArray();
 			List<String> groupsAndUserIds = new ArrayList<>();
 			groupsAndUserIds.add(user.getUserId());
 			if (user.getGroupsIds() != null) {
@@ -260,7 +260,7 @@ public class InfoServiceSqlImpl implements InfoService {
 	public void listByThreadId(String id, UserInfos user, Handler<Either<String, JsonArray>> handler) {
 		if (user != null) {
 			String query;
-			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
+			JsonArray values = new JsonArray();
 			List<String> groupsAndUserIds = new ArrayList<>();
 			groupsAndUserIds.add(user.getUserId());
 			if (user.getGroupsIds() != null) {
@@ -314,7 +314,7 @@ public class InfoServiceSqlImpl implements InfoService {
 	private void listLastPublishedInfosNotOptimized(UserInfos user, int resultSize, Handler<Either<String, JsonArray>> handler) {
 		if (user != null) {
 			String query;
-			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
+			JsonArray values = new JsonArray();
 			List<String> groupsAndUserIds = new ArrayList<>();
 			groupsAndUserIds.add(user.getUserId());
 			if (user.getGroupsIds() != null) {
@@ -352,7 +352,7 @@ public class InfoServiceSqlImpl implements InfoService {
 	private void listLastPublishedInfosOptimized(UserInfos user, int resultSize, Handler<Either<String, JsonArray>> handler) {
 		final StopWatch watch1 = new StopWatch();
 		log.debug("Starting optimized query...");
-		helperSql.getInfosIdsByUnion(user, resultSize).setHandler(resIds -> {
+		helperSql.getInfosIdsByUnion(user, resultSize).onComplete(resIds -> {
 			log.debug("Infos IDS query..." + watch1.elapsedTimeSeconds());
 			if (resIds.failed()) {
 				handler.handle(new Either.Left<>(resIds.cause().getMessage()));
@@ -399,7 +399,7 @@ public class InfoServiceSqlImpl implements InfoService {
 	public void listForLinker(UserInfos user, Handler<Either<String, JsonArray>> handler) {
 		if (user != null) {
 			String query;
-			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
+			JsonArray values = new JsonArray();
 			List<String> groupsAndUserIds = new ArrayList<>();
 			groupsAndUserIds.add(user.getUserId());
 			if (user.getGroupsIds() != null) {
@@ -438,7 +438,7 @@ public class InfoServiceSqlImpl implements InfoService {
 		this.retrieve(infoId, new Handler<Either<String, JsonObject>>() {
 			@Override
 			public void handle(Either<String, JsonObject> event) {
-				JsonArray sharedWithIds = new fr.wseduc.webutils.collections.JsonArray();
+				JsonArray sharedWithIds = new JsonArray();
 				if (event.isRight()) {
 					try {
 						JsonObject info = event.right().getValue();
@@ -455,7 +455,7 @@ public class InfoServiceSqlImpl implements InfoService {
 							handler.handle(new Either.Right<String, JsonArray>(sharedWithIds));
 						}
 						else {
-							handler.handle(new Either.Right<String, JsonArray>(new fr.wseduc.webutils.collections.JsonArray()));
+							handler.handle(new Either.Right<String, JsonArray>(new JsonArray()));
 						}
 					}
 					catch (Exception e) {
@@ -475,7 +475,7 @@ public class InfoServiceSqlImpl implements InfoService {
 			String query = "SELECT info.owner FROM actualites." + Actualites.INFO_TABLE + " WHERE" +
 					" id = ?;";
 
-			Sql.getInstance().prepared(query, new fr.wseduc.webutils.collections.JsonArray().add(Long.parseLong(infoId)),
+			Sql.getInstance().prepared(query, new JsonArray().add(Long.parseLong(infoId)),
 					SqlResult.validUniqueResultHandler(handler));
 		}
 	}
@@ -488,7 +488,7 @@ public class InfoServiceSqlImpl implements InfoService {
                 "INNER JOIN "+ Actualites.NEWS_SCHEMA +".users on (info_revision.owner = users.id) " +
                 "WHERE info_id = ? " +
                 "ORDER BY created DESC;";
-        Sql.getInstance().prepared(query, new fr.wseduc.webutils.collections.JsonArray().add(infoId),
+        Sql.getInstance().prepared(query, new JsonArray().add(infoId),
                 SqlResult.validResultHandler(handler));
     }
 
@@ -561,7 +561,7 @@ public class InfoServiceSqlImpl implements InfoService {
 					"    ORDER BY i.modified DESC " +
 					"    OFFSET ? " +
 					"    LIMIT ? ";
-			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
+			JsonArray values = new JsonArray();
 			for(String value : groupsAndUserIds){
 				values.add(value); // for info_for_user
 			}
@@ -676,7 +676,7 @@ public class InfoServiceSqlImpl implements InfoService {
 					" 		 i.thread_id, thread_title, thread_icon, " +
 					"		 thread_owner, thread_owner_name, thread_owner_deleted";
 
-			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
+			JsonArray values = new JsonArray();
 			for(String value : groupsAndUserIds){
 				values.add(value);
 			}

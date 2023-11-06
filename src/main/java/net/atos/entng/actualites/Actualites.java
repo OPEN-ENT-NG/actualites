@@ -19,6 +19,7 @@
 
 package net.atos.entng.actualites;
 
+import io.vertx.core.Promise;
 import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.controllers.CommentController;
 import net.atos.entng.actualites.controllers.InfoController;
@@ -60,8 +61,8 @@ public class Actualites extends BaseServer {
 	public final static String SHARE_CONF_KEY = "share";
 
 	@Override
-	public void start() throws Exception {
-		super.start();
+	public void start(Promise<Void> startPromise) throws Exception {
+		super.start(startPromise);
 		final EventBus eb = getEventBus(vertx);
 		final JsonObject config = config();
 		// Subscribe to events published for transition

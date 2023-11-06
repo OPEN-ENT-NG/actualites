@@ -17,3 +17,6 @@ package-lock.json
 bin/
 gradle/
 gradlew*
+.env
+target
+dependency-reduced-pom.xml
