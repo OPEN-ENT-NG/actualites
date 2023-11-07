@@ -17,3 +17,5 @@ package-lock.json
 bin/
 gradle/
 gradlew*
+.env
+target
