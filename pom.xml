@@ -71,5 +71,11 @@
             <version>${gatlingHighchartsVersion}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.scopt</groupId>
+            <artifactId>scopt_2.11</artifactId>
+            <version>3.5.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
