@@ -64,6 +64,12 @@
             <artifactId>tests</artifactId>
             <version>${entCoreVersion}</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.github.scopt</groupId>
+                    <artifactId>scopt_2.11</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.gatling.highcharts</groupId>
