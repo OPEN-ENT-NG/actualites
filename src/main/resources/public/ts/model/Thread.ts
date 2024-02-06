@@ -104,14 +104,13 @@ export class Thread extends Model {
         }
     }
 
-    remove (callback?) {
-        http.delete('/actualites/thread/' + this._id).then(async function () {
-            if (typeof callback === 'function') {
-                callback();
-            } else {
-                await model.infos.sync();
-            }
-        });
+    async remove (callback?) {
+        await http.delete('/actualites/thread/' + this._id);
+        if (typeof callback === 'function') {
+            callback();
+        } else {
+            await model.infos.sync();
+        }
     }
 
     canPublish () {
