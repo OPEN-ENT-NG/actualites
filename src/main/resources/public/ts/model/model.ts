@@ -75,8 +75,7 @@ export const buildModel = function() {
             this._pendingSync = undefined;
         },
         removeSelection: async function (){
-            let all = this.selection().length;
-            for(let thread of this.selection()){
+            for (let thread of this.selection()) {
                 await thread.remove();
             }
         },

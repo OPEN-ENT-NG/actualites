@@ -105,11 +105,11 @@ export class Thread extends Model {
     }
 
     remove (callback?) {
-        http.delete('/actualites/thread/' + this._id).then(function(){
-            if (typeof callback === 'function'){
+        http.delete('/actualites/thread/' + this._id).then(async function () {
+            if (typeof callback === 'function') {
                 callback();
             } else {
-                model.infos.sync();
+                await model.infos.sync();
             }
         });
     }
