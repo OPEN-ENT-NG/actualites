@@ -94,6 +94,7 @@
     "actualites.threads.title": "Fils d'actualités",
     "actualites.threads.title.admin": "Gestion des fils d'actualités",
     "actualites.threads.trash": "Corbeille",
+    "actualites.thread.delete.error": "Impossible de supprimer le fil d'actualités",
     "actualites.title": "Actualités",
     "actualites.title.admin": "Administration des actualités",
     "actualites.title.edition": "Gestion des actualités",

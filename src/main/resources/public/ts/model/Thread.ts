@@ -1,4 +1,4 @@
-import { Collection, model as typedModel, Model } from 'entcore';
+import {Collection, model as typedModel, Model, notify} from 'entcore';
 import http from 'axios';
 import { ACTUALITES_CONFIGURATION } from '../configuration';
 
@@ -104,14 +104,17 @@ export class Thread extends Model {
         }
     }
 
-    remove (callback?) {
-        http.delete('/actualites/thread/' + this._id).then(function(){
-            if (typeof callback === 'function'){
+    async remove (callback?) {
+        try {
+            await http.delete('/actualites/thread/' + this._id);
+            if (typeof callback === 'function') {
                 callback();
             } else {
-                model.infos.sync();
+                await model.infos.sync();
             }
-        });
+        } catch (e) {
+            notify.error('actualites.thread.delete.error');
+        }
     }
 
     canPublish () {
