@@ -31,6 +31,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import net.atos.entng.actualites.Actualites;
 import net.atos.entng.actualites.constants.Field;
 import net.atos.entng.actualites.filters.InfoFilter;
@@ -401,12 +402,14 @@ public class InfoController extends ControllerHelper {
         final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
         UserUtils.getAuthenticatedUserInfos(eb, request)
             .compose(user -> {
+                Promise<Void> promise = Promise.promise();
                 crudService.delete(infoId, user, event -> {
                     if (event.isLeft()) {
-                        Future.failedFuture(event.left().getValue());
+                       promise.fail(event.left().getValue());
                     }
+                    promise.complete();
                 });
-                return Future.succeededFuture();
+                return promise.future();
             })
             .compose(result -> timelineMongo.getNotification(threadId, infoId))
             .compose(timelineMongo::deleteNotification)
