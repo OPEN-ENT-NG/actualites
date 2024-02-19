@@ -22,10 +22,10 @@ public class TimelineMongoImpl extends MongoDbCrudService implements TimelineMon
     private final MongoDb mongo;
     private static final Logger log = LoggerFactory.getLogger(TimelineMongoImpl.class);
 
-    public TimelineMongoImpl(final String collection) {
+    public TimelineMongoImpl(final String collection, MongoDb mongo) {
         super(collection);
         this.collection = collection;
-        this.mongo = MongoDb.getInstance();
+        this.mongo = mongo;
     }
 
     public Future<JsonObject> getNotification(String threadId, String infoId) {

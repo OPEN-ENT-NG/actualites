@@ -55,7 +55,11 @@ compileTestJava {
 dependencies {
   compileOnly "io.vertx:vertx-core:$vertxVersion"
   compile "org.entcore:common:$entCoreVersion"
+  testCompile "io.vertx:vertx-unit:$vertxVersion"
+  testCompile "junit:junit:$junitVersion"
   testCompile "org.entcore:tests:$entCoreVersion"
+  testCompile "org.mockito:mockito-core:$mockitoVersion"
+  testCompile "io.vertx:vertx-codegen:$vertxVersion"
   testCompile 'io.gatling.highcharts:gatling-charts-highcharts:2.2.2'
 }
 
