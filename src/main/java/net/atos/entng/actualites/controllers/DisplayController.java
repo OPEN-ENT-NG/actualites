@@ -21,6 +21,7 @@ package net.atos.entng.actualites.controllers;
 
 import java.util.Map;
 
+import fr.wseduc.security.ActionType;
 import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.Actualites;
 
@@ -28,6 +29,8 @@ import org.entcore.common.events.EventStore;
 import org.entcore.common.events.EventStoreFactory;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
+import org.entcore.common.http.filter.ResourceFilter;
+import org.entcore.common.http.filter.SuperAdminFilter;
 import org.vertx.java.core.http.RouteMatcher;
 
 
@@ -55,4 +58,10 @@ public class DisplayController extends BaseController {
 		eventStore.createAndStoreEvent(ActualitesEvent.ACCESS.name(), request);
 	}
 
+	@Get("/config")
+	@SecuredAction(value = "", type = ActionType.RESOURCE)
+	@ResourceFilter(SuperAdminFilter.class)
+	public void getConfig(final HttpServerRequest request) {
+		renderJson(request, config);
+	}
 }
