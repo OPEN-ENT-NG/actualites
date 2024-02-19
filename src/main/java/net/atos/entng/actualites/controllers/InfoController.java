@@ -30,15 +30,19 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.vertx.core.Future;
 import net.atos.entng.actualites.Actualites;
+import net.atos.entng.actualites.constants.Field;
 import net.atos.entng.actualites.filters.InfoFilter;
 import net.atos.entng.actualites.filters.ThreadFilter;
 import net.atos.entng.actualites.services.ConfigService;
 import net.atos.entng.actualites.services.InfoService;
 import net.atos.entng.actualites.services.ThreadService;
+import net.atos.entng.actualites.services.TimelineMongo;
 import net.atos.entng.actualites.services.impl.InfoServiceSqlImpl;
 import net.atos.entng.actualites.services.impl.ThreadServiceSqlImpl;
 
+import net.atos.entng.actualites.services.impl.TimelineMongoImpl;
 import net.atos.entng.actualites.utils.Events;
 import org.entcore.common.controller.ControllerHelper;
 import org.entcore.common.events.EventHelper;
@@ -87,12 +91,14 @@ public class InfoController extends ControllerHelper {
 
     protected final InfoService infoService;
     protected final ThreadService threadService;
+    protected final TimelineMongo timelineMongo;
     protected final EventHelper eventHelper;
     protected final boolean optimized;
 
     public InfoController(final JsonObject config){
         this.infoService = new InfoServiceSqlImpl();
         this.threadService = new ThreadServiceSqlImpl();
+        this.timelineMongo = new TimelineMongoImpl(Field.TIMELINE_COLLECTION);
         final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(Actualites.class.getSimpleName());
         eventHelper = new EventHelper(eventStore);
         optimized = config.getBoolean("optimized-query", true);
@@ -392,12 +398,25 @@ public class InfoController extends ControllerHelper {
     @SecuredAction(value = "thread.manager", type = ActionType.RESOURCE)
     public void delete(final HttpServerRequest request) {
         final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
-        UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
-            @Override
-            public void handle(final UserInfos user) {
-                crudService.delete(infoId, user, notEmptyResponseHandler(request));
-            }
-        });
+        final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
+        UserUtils.getAuthenticatedUserInfos(eb, request)
+            .compose(user -> {
+                crudService.delete(infoId, user, event -> {
+                    if (event.isLeft()) {
+                        Future.failedFuture(event.left().getValue());
+                    }
+                });
+                return Future.succeededFuture();
+            })
+            .compose(result -> timelineMongo.getNotification(threadId, infoId))
+            .compose(timelineMongo::deleteNotification)
+            .onSuccess(success -> ok(request))
+            .onFailure(failure -> {
+                String message = String.format("[ACTUALITES@%s::delete] Failed to delete info : %s",
+                        this.getClass().getSimpleName(), failure.getMessage());
+                log.error(message);
+                badRequest(request);
+            });
     }
 
 	@Put("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/:"+Actualites.INFO_RESOURCE_ID+"/submit")
