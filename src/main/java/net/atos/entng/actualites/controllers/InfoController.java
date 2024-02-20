@@ -19,26 +19,29 @@
 
 package net.atos.entng.actualites.controllers;
 
-import static org.entcore.common.http.response.DefaultResponseHandler.arrayResponseHandler;
-import static org.entcore.common.http.response.DefaultResponseHandler.defaultResponseHandler;
-import static org.entcore.common.http.response.DefaultResponseHandler.notEmptyResponseHandler;
-import static org.entcore.common.user.UserUtils.getUserInfos;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-
+import fr.wseduc.mongodb.MongoDb;
+import fr.wseduc.rs.*;
+import fr.wseduc.security.ActionType;
+import fr.wseduc.security.SecuredAction;
+import fr.wseduc.webutils.Either;
+import fr.wseduc.webutils.I18n;
+import fr.wseduc.webutils.request.RequestUtils;
+import io.vertx.core.Handler;
+import io.vertx.core.Promise;
+import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.Actualites;
+import net.atos.entng.actualites.constants.Field;
 import net.atos.entng.actualites.filters.InfoFilter;
 import net.atos.entng.actualites.filters.ThreadFilter;
 import net.atos.entng.actualites.services.ConfigService;
 import net.atos.entng.actualites.services.InfoService;
 import net.atos.entng.actualites.services.ThreadService;
+import net.atos.entng.actualites.services.TimelineMongo;
 import net.atos.entng.actualites.services.impl.InfoServiceSqlImpl;
 import net.atos.entng.actualites.services.impl.ThreadServiceSqlImpl;
-
+import net.atos.entng.actualites.services.impl.TimelineMongoImpl;
 import net.atos.entng.actualites.utils.Events;
 import org.entcore.common.controller.ControllerHelper;
 import org.entcore.common.events.EventHelper;
@@ -48,21 +51,18 @@ import org.entcore.common.http.filter.ResourceFilter;
 import org.entcore.common.notification.NotificationUtils;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.user.UserUtils;
-import io.vertx.core.Handler;
-import io.vertx.core.http.HttpServerRequest;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
 
-import fr.wseduc.rs.ApiDoc;
-import fr.wseduc.rs.Delete;
-import fr.wseduc.rs.Get;
-import fr.wseduc.rs.Post;
-import fr.wseduc.rs.Put;
-import fr.wseduc.security.ActionType;
-import fr.wseduc.security.SecuredAction;
-import fr.wseduc.webutils.Either;
-import fr.wseduc.webutils.I18n;
-import fr.wseduc.webutils.request.RequestUtils;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.entcore.common.http.response.DefaultResponseHandler.*;
+import static org.entcore.common.user.UserUtils.getUserInfos;
 
 public class InfoController extends ControllerHelper {
 
@@ -87,12 +87,14 @@ public class InfoController extends ControllerHelper {
 
     protected final InfoService infoService;
     protected final ThreadService threadService;
+    protected final TimelineMongo timelineMongo;
     protected final EventHelper eventHelper;
     protected final boolean optimized;
 
     public InfoController(final JsonObject config){
         this.infoService = new InfoServiceSqlImpl();
         this.threadService = new ThreadServiceSqlImpl();
+        this.timelineMongo = new TimelineMongoImpl(Field.TIMELINE_COLLECTION, MongoDb.getInstance());
         final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(Actualites.class.getSimpleName());
         eventHelper = new EventHelper(eventStore);
         optimized = config.getBoolean("optimized-query", true);
@@ -392,12 +394,27 @@ public class InfoController extends ControllerHelper {
     @SecuredAction(value = "thread.manager", type = ActionType.RESOURCE)
     public void delete(final HttpServerRequest request) {
         final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
-        UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
-            @Override
-            public void handle(final UserInfos user) {
-                crudService.delete(infoId, user, notEmptyResponseHandler(request));
-            }
-        });
+        final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
+        UserUtils.getAuthenticatedUserInfos(eb, request)
+            .compose(user -> {
+                Promise<Void> promise = Promise.promise();
+                crudService.delete(infoId, user, event -> {
+                    if (event.isLeft()) {
+                       promise.fail(event.left().getValue());
+                    }
+                    promise.complete();
+                });
+                return promise.future();
+            })
+            .compose(result -> timelineMongo.getNotification(threadId, infoId))
+            .compose(timelineMongo::deleteNotification)
+            .onSuccess(success -> ok(request))
+            .onFailure(failure -> {
+                String message = String.format("[ACTUALITES@%s::delete] Failed to delete info : %s",
+                        this.getClass().getSimpleName(), failure.getMessage());
+                log.error(message);
+                badRequest(request);
+            });
     }
 
 	@Put("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/:"+Actualites.INFO_RESOURCE_ID+"/submit")

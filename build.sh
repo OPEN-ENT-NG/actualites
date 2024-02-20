@@ -105,6 +105,10 @@ buildGradle () {
   fi
 }
 
+testGradle() {
+  docker-compose run --rm -u "$USER_UID:$GROUP_GID" gradle gradle test --no-build-cache --rerun-tasks
+}
+
 publish () {
   if [ -e "?/.gradle" ] && [ ! -e "?/.gradle/gradle.properties" ]
   then
@@ -148,6 +152,9 @@ do
       ;;
     publish)
       publish
+      ;;
+    testGradle)
+      testGradle
       ;;
     *)
       echo "Invalid argument : $param"
