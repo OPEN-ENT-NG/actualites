@@ -119,7 +119,7 @@ Behaviours.register('actualites', {
         var workflow = { };
         var actualitesWorkflow = actualitesBehaviours.workflow;
         for (var prop in actualitesWorkflow){
-            if (model.me.hasWorkflow(actualitesWorkflow[prop])){
+            if (model && model.me.hasWorkflow(actualitesWorkflow[prop])){
                 workflow[prop] = true;
             }
         }
