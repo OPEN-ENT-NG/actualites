@@ -17,7 +17,7 @@
         <web-utils.version>3.0-b2school-SNAPSHOT</web-utils.version>
         <jacksonDatabindVersion>2.15.2</jacksonDatabindVersion>
         <entCoreVersion>5.0-b2school-SNAPSHOT</entCoreVersion>
-        <gatlingHighchartsVersion>2.2.2</gatlingHighchartsVersion>
+        <gatlingHighchartsVersion>2.3.1</gatlingHighchartsVersion>
     </properties>
 
     <scm>
