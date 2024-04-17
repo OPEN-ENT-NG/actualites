@@ -161,6 +161,7 @@ object ActualitesScenario {
     .check(status.is(200),
         jsonPath("$.status").find.is("1")
       ))
+
   .exec(http("Logout 1 - teacher")
     .get("""/auth/logout""")
     .check(status.is(302)))
@@ -728,4 +729,74 @@ object ActualitesScenario {
   .exec(http("Logout 12 - student")
     .get("""/auth/logout""")
     .check(status.is(302)))
+
+
+  val scnCommentSecurity =
+    exec(http("Login teacher")
+      .post("""/auth/login""")
+      .formParam("""email""", """${teacherLogin}""")
+      .formParam("""password""", """blipblop""")
+      .check(status.is(302)))
+      // Create a public thread with one info and share it to the student
+      .exec(http("Public Thread Create")
+        .post("/actualites/thread")
+        .body(StringBody("""{"title" : "public thread", "mode" : 0}"""))
+        .check(status.is(200),
+          jsonPath("$.id").find.saveAs("pubThreadId")
+        ))
+      .exec(http("Public Info Create")
+        .post("/actualites/thread/${pubThreadId}/info")
+        .body(StringBody("""{"thread_id" : ${pubThreadId}, "title" : "public thread", "content": "public info", "status": 42}""")) // status to check it is ignored
+        .check(status.is(200),
+          jsonPath("$.id").find.saveAs("pubInfoId")
+        ))
+      .exec(http("Public Info Submit")
+        .put("/actualites/thread/${pubThreadId}/info/${pubInfoId}/submit")
+        .body(StringBody("""{"title" : "public thread", "owner": {"userId": "${teacherId}"}}"""))
+        .check(status.is(200)))
+      .exec(http("Public Info Publish")
+        .put("/actualites/thread/${pubThreadId}/info/${pubInfoId}/publish")
+        .body(StringBody("""{"title" : "public thread", "owner": "${teacherId}", "username": "${teacherLogin}" }"""))
+        .check(status.is(200)))
+      .exec(http("Share Comment permission with Student as a Person for the public thread")
+        .put("/actualites/thread/${pubThreadId}/info/share/resource/${pubInfoId}")
+        .body(StringBody("""{
+        "bookmarks" : {},
+        "users": {"${studentId}": [
+            "net-atos-entng-actualites-controllers-InfoController|getInfo",
+            "net-atos-entng-actualites-controllers-InfoController|getInfoComments",
+            "net-atos-entng-actualites-controllers-InfoController|getInfoShared",
+            "net-atos-entng-actualites-controllers-CommentController|deleteComment",
+            "net-atos-entng-actualites-controllers-CommentController|comment",
+            "net-atos-entng-actualites-controllers-CommentController|updateComment"
+        ]},
+        "groups" : {}
+      }""")).check(status.is(200)))
+      .exec(http("Private Info Create")
+        .post("/actualites/thread/${pubThreadId}/info")
+        .body(StringBody("""{"thread_id" : ${pubThreadId}, "title" : "private thread", "content": "private info", "status": 42}"""))
+        .check(status.is(200),
+          jsonPath("$.id").find.saveAs("privInfoId")
+        ))
+      .exec(http("Private Info Submit")
+        .put("/actualites/thread/${pubThreadId}/info/${privInfoId}/submit")
+        .body(StringBody("""{"title" : "private thread", "owner": {"userId": "${teacherId}"}}"""))
+        .check(status.is(200)))
+      .exec(http("Private Info Publish")
+        .put("/actualites/thread/${pubThreadId}/info/${privInfoId}/publish")
+        .body(StringBody("""{"title" : "private thread", "owner": "${teacherId}", "username": "${teacherLogin}" }"""))
+        .check(status.is(200)))
+      .exec(http("Logout pub thread - teacher")
+        .get("""/auth/logout""")
+        .check(status.is(302)))
+      .exec(http("Login pub thread - student")
+        .post("""/auth/login""")
+        .formParam("""email""", """${studentLogin}""")
+        .formParam("""password""", """blipblop""")
+        .check(status.is(302)))
+      .exec(http("Try to comment unshared info")
+        .put("/actualites/info/${pubInfoId}/comment")
+        .body(StringBody("""{"info_id" : ${privInfoId}, "title" : "info not shared", "comment" : "comment that should not be accepted"}"""))
+        .check(status.is(403)))
 }
+
