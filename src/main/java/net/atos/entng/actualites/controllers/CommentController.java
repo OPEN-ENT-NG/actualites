@@ -22,12 +22,9 @@ package net.atos.entng.actualites.controllers;
 
 import static org.entcore.common.http.response.DefaultResponseHandler.notEmptyResponseHandler;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import fr.wseduc.webutils.Utils;
 import net.atos.entng.actualites.Actualites;
 import net.atos.entng.actualites.filters.CommentFilter;
 import net.atos.entng.actualites.filters.InfoFilter;
@@ -42,7 +39,6 @@ import org.entcore.common.user.UserInfos;
 import org.entcore.common.user.UserUtils;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpServerRequest;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import fr.wseduc.rs.ApiDoc;
@@ -84,24 +80,31 @@ public class CommentController extends ControllerHelper {
 				RequestUtils.bodyToJson(request, pathPrefix + SCHEMA_COMMENT_CREATE, new Handler<JsonObject>() {
 					@Override
 					public void handle(JsonObject resource) {
-						final String commentText = resource.getString("comment");
-						final String title = resource.getString("title");
-						resource.remove("title");
-						Handler<Either<String, JsonObject>> handler = new Handler<Either<String, JsonObject>>() {
-							@Override
-							public void handle(Either<String, JsonObject> event) {
-								if (event.isRight()) {
-									JsonObject comment = event.right().getValue();
-									String commentId = comment.getLong("id").toString();
-									notifyTimeline(request, user, infoId, commentId, title, commentText, NEWS_COMMENT_EVENT_TYPE);
-									renderJson(request, event.right().getValue(), 200);
-								} else {
-									JsonObject error = new JsonObject().put("error", event.left().getValue());
-									renderJson(request, error, 400);
+						final int infoIdFromBody = resource.getInteger("info_id", -1);
+						if(infoIdFromBody == Integer.parseInt(infoId)) {
+							final String commentText = resource.getString("comment");
+							final String title = resource.getString("title");
+							resource.remove("title");
+							Handler<Either<String, JsonObject>> handler = new Handler<Either<String, JsonObject>>() {
+								@Override
+								public void handle(Either<String, JsonObject> event) {
+									if (event.isRight()) {
+										JsonObject comment = event.right().getValue();
+										String commentId = comment.getLong("id").toString();
+										notifyTimeline(request, user, infoId, commentId, title, commentText, NEWS_COMMENT_EVENT_TYPE);
+										renderJson(request, event.right().getValue(), 200);
+									} else {
+										JsonObject error = new JsonObject().put("error", event.left().getValue());
+										renderJson(request, error, 400);
+									}
 								}
-							}
-						};
-						crudService.create(resource, user, handler);
+							};
+							crudService.create(resource, user, handler);
+						} else {
+							log.warn("User {0} tried to post a comment for info {1} by using a different id {2}",
+								user.getLogin(), infoIdFromBody, infoId);
+							forbidden(request);
+						}
 					}
 				});
 			}
@@ -117,10 +120,18 @@ public class CommentController extends ControllerHelper {
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
 			public void handle(final UserInfos user) {
-						RequestUtils.bodyToJson(request, pathPrefix + SCHEMA_COMMENT_UPDATE, new Handler<JsonObject>() {
+							RequestUtils.bodyToJson(request, pathPrefix + SCHEMA_COMMENT_UPDATE, new Handler<JsonObject>() {
 							@Override
 							public void handle(JsonObject resource) {
-								crudService.update(commentId, resource, user, notEmptyResponseHandler(request));
+								final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
+								final int infoIdFromBody = resource.getInteger("info_id", -1);
+								if(infoIdFromBody == Integer.parseInt(infoId)) {
+									crudService.update(commentId, resource, user, notEmptyResponseHandler(request));
+								} else {
+									log.warn("User {0} tried to post a comment for info {1} by using a different id {2}",
+										user.getLogin(), infoIdFromBody, infoId);
+									forbidden(request);
+								}
 							}
 						});
 					}
