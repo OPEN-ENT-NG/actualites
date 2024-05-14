@@ -19,3 +19,6 @@
   .group("Actualites Scenario - shared manage") {
     net.atos.entng.actualites.test.integration.ActualitesScenario.scnManage
   }
+  .group("Actualites Scenario - comment security") {
+    net.atos.entng.actualites.test.integration.ActualitesScenario.scnCommentSecurity
+  }
