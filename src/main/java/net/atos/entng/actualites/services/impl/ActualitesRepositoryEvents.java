@@ -190,7 +190,7 @@ public class ActualitesRepositoryEvents extends SqlRepositoryEvents {
 				groups.remove(i);
 		}
 		if(groups.size() > 0) {
-			final JsonArray gIds = new fr.wseduc.webutils.collections.JsonArray();
+			final JsonArray gIds = new JsonArray();
 			for (Object o : groups) {
 				if (!(o instanceof JsonObject)) continue;
 				final JsonObject j = (JsonObject) o;
@@ -226,7 +226,7 @@ public class ActualitesRepositoryEvents extends SqlRepositoryEvents {
 		}
         //FIXME: anonymization is not relevant
 		if (users != null && users.size() > 0) {
-			final JsonArray uIds = new fr.wseduc.webutils.collections.JsonArray();
+			final JsonArray uIds = new JsonArray();
 			for (Object u : users) {
 				if (!(u instanceof JsonObject)) continue;
 				final JsonObject j = (JsonObject) u;
@@ -253,7 +253,7 @@ public class ActualitesRepositoryEvents extends SqlRepositoryEvents {
 									 " ) a" +
 									 " WHERE actualites.thread.id = a.id" +
 									 " AND a.managers = 0"
-								  	  , new fr.wseduc.webutils.collections.JsonArray().add(MANAGE_RIGHT_ACTION));
+								  	  , new JsonArray().add(MANAGE_RIGHT_ACTION));
 			Sql.getInstance().transaction(statementsBuilder.build(), SqlResult.validRowsResultHandler(new Handler<Either<String, JsonObject>>() {
 				@Override
 				public void handle(Either<String, JsonObject> event) {
