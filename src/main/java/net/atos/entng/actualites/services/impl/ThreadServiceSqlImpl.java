@@ -58,7 +58,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 	@Override
 	public void retrieve(String id, Handler<Either<String, JsonObject>> handler) {
 		String query;
-		JsonArray values = new JsonArray();
+		JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
 		if (id != null) {
 			query = "SELECT t.id as _id, t.title, t.icon, t.mode, t.created, t.modified, t.owner, u.username" +
 				", json_agg(row_to_json(row(ts.member_id, ts.action)::actualites.share_tuple)) as shared" +
@@ -78,7 +78,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 	@Override
 	public void retrieve(String id, UserInfos user, Handler<Either<String, JsonObject>> handler) {
 		String query;
-		JsonArray values = new JsonArray();
+		JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
 		if (id != null && user != null) {
 			List<String> groupsAndUserIds = new ArrayList<>();
 			groupsAndUserIds.add(user.getUserId());
@@ -109,7 +109,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 	@Override
 	public void list(UserInfos user, Handler<Either<String, JsonArray>> handler) {
 		String query;
-		JsonArray values = new JsonArray();
+		JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
 		if (user != null) {
 			List<String> gu = new ArrayList<>();
 			gu.add(user.getUserId());
@@ -128,7 +128,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 				" OR t.owner = ? " +
 				" GROUP BY t.id, u.username" +
 				" ORDER BY t.modified DESC";
-			values = new JsonArray(gu).add(user.getUserId());
+			values = new fr.wseduc.webutils.collections.JsonArray(gu).add(user.getUserId());
 			Sql.getInstance().prepared(query, values, SqlResult.parseShared(handler));
 		}
 	}
@@ -138,7 +138,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 		this.retrieve(threadId, new Handler<Either<String, JsonObject>>() {
 			@Override
 			public void handle(Either<String, JsonObject> event) {
-				JsonArray sharedWithIds = new JsonArray();
+				JsonArray sharedWithIds = new fr.wseduc.webutils.collections.JsonArray();
 				if (event.isRight()) {
 					try {
 						JsonObject thread = event.right().getValue();
@@ -157,7 +157,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 							handler.handle(new Either.Right<String, JsonArray>(sharedWithIds));
 						}
 						else {
-							handler.handle(new Either.Right<String, JsonArray>(new JsonArray()));
+							handler.handle(new Either.Right<String, JsonArray>(new fr.wseduc.webutils.collections.JsonArray()));
 						}
 					}
 					catch (Exception e) {
@@ -230,7 +230,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 					"       OR t.id IN (SELECT id from thread_for_user) " +
 					"	 GROUP BY t.id, t.owner, owner_name, owner_deleted, t.title, t.icon, t.created, t.modified " +
 					"    ORDER BY t.title";
-			JsonArray values = new JsonArray();
+			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
 			for(String value : groupsAndUserIds){
 				values.add(value);
 			}
