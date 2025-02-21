@@ -1,10 +1,10 @@
 {
   "name": "actualites",
-  "version": "2.0.2",
+  "version": "2.0.2-dev.0",
   "description": "News tool for ENT Core.",
   "main": "gulpfile.js",
   "dependencies": {
-    "entcore": "4.8.11",
+    "entcore": "dev",
     "entcore-toolkit": "^1.0.1",
     "@types/core-js": "0.9.42",
     "awesome-typescript-loader": "3.2.1",
