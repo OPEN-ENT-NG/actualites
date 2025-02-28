@@ -88,8 +88,18 @@ Behaviours.register('actualites', {
             if (!resource.myRights){
                 resource.myRights = {};
             }
+            const hasAdmlRightsFor = (behaviour, structureId) => {
+                // Adml have rights on these behaviours
+                return ['editThread', 'deleteThread', 'manager', 'share'].indexOf(behaviour)>=0 &&
+                       model.me.functions &&
+                       model.me.functions.ADMIN_LOCAL &&
+                       model.me.functions.ADMIN_LOCAL.scope &&
+                       model.me.functions.ADMIN_LOCAL.scope.indexOf(structureId)>=0;
+            }
             for (var behaviour in actualitesBehaviours.resources){
-                if (model.me.hasRight(resource, actualitesBehaviours.resources[behaviour]) || model.me.userId === resource.owner){
+                if (model.me.hasRight(resource, actualitesBehaviours.resources[behaviour]) 
+                    || model.me.userId === resource.owner
+                    || hasAdmlRightsFor(behaviour, resource.structure_id)){
                     if (resource.myRights[behaviour] !== undefined){
                         resource.myRights[behaviour] = resource.myRights[behaviour] && actualitesBehaviours.resources[behaviour];
                     } else {
