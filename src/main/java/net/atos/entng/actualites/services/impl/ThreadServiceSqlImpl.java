@@ -20,6 +20,7 @@
 package net.atos.entng.actualites.services.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -44,6 +45,8 @@ import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.security.SecuredAction;
 import net.atos.entng.actualites.services.ThreadService;
 import net.atos.entng.actualites.to.NewsThread;
+
+import static org.entcore.common.user.DefaultFunctions.ADMIN_LOCAL;
 
 public class ThreadServiceSqlImpl implements ThreadService {
 
@@ -71,7 +74,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 				" GROUP BY t.id, u.username" +
 				" ORDER BY t.modified DESC";
 			values.add(Sql.parseId(id));
-			Sql.getInstance().prepared(query.toString(), values, SqlResult.parseSharedUnique(handler));
+			Sql.getInstance().prepared(query, values, SqlResult.parseSharedUnique(handler));
 		}
 	}
 	
@@ -85,7 +88,11 @@ public class ThreadServiceSqlImpl implements ThreadService {
 			if (user.getGroupsIds() != null) {
 				groupsAndUserIds.addAll(user.getGroupsIds());
 			}
-			query = "SELECT t.id as _id, t.title, t.icon, t.mode, t.created, t.modified, t.owner, u.username" +
+			// Structures which the user is an ADML of.
+			final List<String> admlStructuresIds = user.isADML() 
+				? user.getFunctions().get(ADMIN_LOCAL).getScope() 
+				: Collections.EMPTY_LIST;
+			query = "SELECT t.id as _id, t.title, t.icon, t.mode, t.created, t.modified, t.structure_id, t.owner, u.username" +
 				", json_agg(row_to_json(row(ts.member_id, ts.action)::actualites.share_tuple)) as shared" +
 				", array_to_json(array_agg(group_id)) as groups" +
 				" FROM actualites.thread AS t" +
@@ -94,11 +101,15 @@ public class ThreadServiceSqlImpl implements ThreadService {
 				" LEFT JOIN actualites.members AS m ON (ts.member_id = m.id AND m.group_id IS NOT NULL)" +
 				" WHERE t.id = ? " +
 				" AND (ts.member_id IN " + Sql.listPrepared(groupsAndUserIds.toArray()) +
+				( admlStructuresIds.isEmpty() ? "" : " OR t.structure_id IN "+ Sql.listPrepared(admlStructuresIds)) +
 				" OR t.owner = ?) " +
 				" GROUP BY t.id, u.username" +
 				" ORDER BY t.modified DESC";
 			values.add(Sql.parseId(id));
 			for(String value : groupsAndUserIds){
+				values.add(value);
+			}
+			for(String value : admlStructuresIds){
 				values.add(value);
 			}
 			values.add(user.getUserId());
@@ -108,16 +119,20 @@ public class ThreadServiceSqlImpl implements ThreadService {
 
 	@Override
 	public void list(UserInfos user, Handler<Either<String, JsonArray>> handler) {
-		String query;
-		JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
 		if (user != null) {
+			String query;
+			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
 			List<String> gu = new ArrayList<>();
 			gu.add(user.getUserId());
 			if (user.getGroupsIds() != null) {
 				gu.addAll(user.getGroupsIds());
 			}
+			// Structures which the user is an ADML of.
+			final List<String> admlStructuresIds = user.isADML() 
+				? user.getFunctions().get(ADMIN_LOCAL).getScope() 
+				: Collections.EMPTY_LIST;
 			final Object[] groupsAndUserIds = gu.toArray();
-			query = "SELECT t.id as _id, t.title, t.icon, t.mode, t.created, t.modified, t.owner, u.username" +
+			query = "SELECT t.id as _id, t.title, t.icon, t.mode, t.created, t.modified, t.structure_id, t.owner, u.username" +
 				", json_agg(row_to_json(row(ts.member_id, ts.action)::actualites.share_tuple)) as shared" +
 				", array_to_json(array_agg(group_id)) as groups" +
 				" FROM actualites.thread AS t" +
@@ -126,9 +141,13 @@ public class ThreadServiceSqlImpl implements ThreadService {
 				" LEFT JOIN actualites.members AS m ON (ts.member_id = m.id AND m.group_id IS NOT NULL)" +
 				" WHERE ts.member_id IN " + Sql.listPrepared(groupsAndUserIds) +
 				" OR t.owner = ? " +
+				( admlStructuresIds.isEmpty() ? "" : " OR t.structure_id IN "+ Sql.listPrepared(admlStructuresIds)) +
 				" GROUP BY t.id, u.username" +
 				" ORDER BY t.modified DESC";
 			values = new fr.wseduc.webutils.collections.JsonArray(gu).add(user.getUserId());
+			for(String value : admlStructuresIds){
+				values.add(value);
+			}
 			Sql.getInstance().prepared(query, values, SqlResult.parseShared(handler));
 		}
 	}
@@ -221,14 +240,14 @@ public class ThreadServiceSqlImpl implements ThreadService {
 					"    WHERE tsh.member_id IN " + ids + " " +
 					"    GROUP BY t.id, tsh.member_id " +
 					") SELECT t.id, t.owner, u.username AS owner_name, u.deleted as owner_deleted, t.title, t.icon," +
-					"    t.created, t.modified, max(thread_for_user.rights) as rights " + // note : we can use max() here only because the rights are inclusive of each other
+					"    t.created, t.modified, t.structure_id, max(thread_for_user.rights) as rights " + // note : we can use max() here only because the rights are inclusive of each other
 					"    FROM " + threadsTable + " AS t " +
 					"        LEFT JOIN thread_for_user ON thread_for_user.id = t.id " +
 					"        LEFT JOIN " + usersTable + " AS u ON t.owner = u.id " +
 					"    WHERE t.owner = ? " +
 					"       OR t.id IN (SELECT id from thread_with_info_for_user) " +
 					"       OR t.id IN (SELECT id from thread_for_user) " +
-					"	 GROUP BY t.id, t.owner, owner_name, owner_deleted, t.title, t.icon, t.created, t.modified " +
+					"	 GROUP BY t.id, t.owner, owner_name, owner_deleted, t.title, t.icon, t.created, t.modified, t.structure_id " +
 					"    ORDER BY t.title";
 			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
 			for(String value : groupsAndUserIds){
@@ -262,6 +281,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 										row.getString("icon"),
 										row.getString("created"),
 										row.getString("modified"),
+										row.getString("structure_id"),
 										owner,
 										Rights.fromRawRights(securedActions, rawRights)
 									);
