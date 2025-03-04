@@ -50,16 +50,16 @@ clean () {
     rm -f yarn.lock
     mvn clean
   else
-    docker-compose run --rm maven mvn $MVN_OPTS clean
+    docker compose run --rm maven mvn $MVN_OPTS clean
   fi
 }
 
 install () {
-  docker-compose run --rm maven mvn $MVN_OPTS install -DskipTests
+  docker compose run --rm maven mvn $MVN_OPTS install -DskipTests
 }
 
 test () {
-  docker-compose run --rm maven mvn $MVN_OPTS test
+  docker compose run --rm maven mvn $MVN_OPTS test
 }
 
 buildNode () {
@@ -82,14 +82,14 @@ buildNode () {
           if [ "$NO_DOCKER" = "true" ] ; then
             yarn install --no-bin-links && yarn upgrade entcore && node_modules/gulp/bin/gulp.js build
           else
-            docker-compose run --rm -u "$USER_UID:$GROUP_GID" node sh -c "yarn install --no-bin-links --legacy-peer-deps --force && yarn upgrade entcore && node_modules/gulp/bin/gulp.js build"
+            docker compose run --rm -u "$USER_UID:$GROUP_GID" node sh -c "yarn install --no-bin-links --legacy-peer-deps --force && yarn upgrade entcore && node_modules/gulp/bin/gulp.js build"
           fi
           ;;
         *)
           if [ "$NO_DOCKER" = "true" ] ; then
             yarn install && yarn upgrade entcore && node_modules/gulp/bin/gulp.js build
           else
-            docker-compose run --rm -u "$USER_UID:$GROUP_GID" node sh -c "yarn install --legacy-peer-deps --force && yarn upgrade entcore && node_modules/gulp/bin/gulp.js build"
+            docker compose run --rm -u "$USER_UID:$GROUP_GID" node sh -c "yarn install --legacy-peer-deps --force && yarn upgrade entcore && node_modules/gulp/bin/gulp.js build"
           fi
       esac
   else
@@ -99,35 +99,35 @@ buildNode () {
           if [ "$NO_DOCKER" = "true" ] ; then
             yarn install && yarn upgrade entcore && node_modules/gulp/bin/gulp.js build
           else
-            docker-compose run --rm -u "$USER_UID:$GROUP_GID" node sh -c "yarn install --no-bin-links --legacy-peer-deps --force && npm rm --no-save entcore && yarn install --no-save entcore@dev && node_modules/gulp/bin/gulp.js build"
+            docker compose run --rm -u "$USER_UID:$GROUP_GID" node sh -c "yarn install --no-bin-links --legacy-peer-deps --force && npm rm --no-save entcore && yarn install --no-save entcore@dev && node_modules/gulp/bin/gulp.js build"
           fi
           ;;
         *)
           if [ "$NO_DOCKER" = "true" ] ; then
             yarn install --no-bin-links && yarn upgrade entcore && node_modules/gulp/bin/gulp.js build
           else
-            docker-compose run --rm -u "$USER_UID:$GROUP_GID" node sh -c "yarn install --legacy-peer-deps --force && npm rm --no-save entcore && yarn install --no-save entcore@dev && node_modules/gulp/bin/gulp.js build"
+            docker compose run --rm -u "$USER_UID:$GROUP_GID" node sh -c "yarn install --legacy-peer-deps --force && npm rm --no-save entcore && yarn install --no-save entcore@dev && node_modules/gulp/bin/gulp.js build"
           fi
       esac
   fi
 }
 
 publish() {
-  version=`docker-compose run --rm maven mvn $MVN_OPTS help:evaluate -Dexpression=project.version -q -DforceStdout`
+  version=`docker compose run --rm maven mvn $MVN_OPTS help:evaluate -Dexpression=project.version -q -DforceStdout`
   level=`echo $version | cut -d'-' -f3`
   case "$level" in
     *SNAPSHOT) export nexusRepository='snapshots' ;;
     *)         export nexusRepository='releases' ;;
   esac
 
-  docker-compose run --rm  maven mvn -DrepositoryId=ode-$nexusRepository -DskipTests --settings /var/maven/.m2/settings.xml deploy
+  docker compose run --rm  maven mvn -DrepositoryId=ode-$nexusRepository -DskipTests --settings /var/maven/.m2/settings.xml deploy
 }
 
 watch () {
   if [ "$NO_DOCKER" = "true" ] ; then
     node_modules/gulp/bin/gulp.js watch --springboard=../recette
   else
-    docker-compose run --rm -u "$USER_UID:$GROUP_GID" node sh -c "node_modules/gulp/bin/gulp.js watch --springboard=/home/node/$SPRINGBOARD"
+    docker compose run --rm -u "$USER_UID:$GROUP_GID" node sh -c "node_modules/gulp/bin/gulp.js watch --springboard=/home/node/$SPRINGBOARD"
   fi
 }
 
