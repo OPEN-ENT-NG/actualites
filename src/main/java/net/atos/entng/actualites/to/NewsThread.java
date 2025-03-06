@@ -19,16 +19,19 @@ public class NewsThread {
     // Caution: String is used to store ISO date because we won't manipulate data in most cases
     private final String modified;
 
+    private final String structure_id;
+
     private final ResourceOwner owner;
 
     private final Rights sharedRights;
 
-    public NewsThread(int id, String title, String icon, String created, String modified, ResourceOwner owner, Rights sharedRights) {
+    public NewsThread(int id, String title, String icon, String created, String modified, String structure_id, ResourceOwner owner, Rights sharedRights) {
         this.id = id;
         this.title = title;
         this.icon = icon;
         this.created = created;
         this.modified = modified;
+        this.structure_id = structure_id;
         this.owner = owner;
         this.sharedRights = sharedRights;
     }
@@ -55,6 +58,10 @@ public class NewsThread {
 
     public String getModified() {
         return modified;
+    }
+
+    public String getStructureId() {
+        return structure_id;
     }
 
     @JsonIgnore
