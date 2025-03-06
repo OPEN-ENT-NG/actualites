@@ -104,7 +104,7 @@ public class ActualitesRepositoryEvents extends SqlRepositoryEvents {
 
 
 			String queryThread =
-					"SELECT DISTINCT th.* " +
+					"SELECT DISTINCT th.id, th.title, th.icon, th.mode, th.owner, th.created, th.modified " +
 							"FROM " + threadTable + " th " +
 							"LEFT JOIN "+ threadSharesTable + " thS ON th.id = thS.resource_id " +
 							(exportSharedResources == true ? "" : "AND 0 = 1 ") +
