@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
@@ -47,6 +46,8 @@ import net.atos.entng.actualites.services.ThreadService;
 import net.atos.entng.actualites.to.NewsThread;
 
 import static org.entcore.common.user.DefaultFunctions.ADMIN_LOCAL;
+import static java.util.stream.Collectors.toList;
+
 
 public class ThreadServiceSqlImpl implements ThreadService {
 
@@ -297,4 +298,54 @@ public class ThreadServiceSqlImpl implements ThreadService {
 		return promise.future();
 	}
 
+    public Future<Void> attachThreadsWithNullStructureToDefault() {
+		// 1. Get IDs of owner of threads without a structure.
+		return getIdsOfOwnersForNullStructure()
+		// 2. Get structure infos of threads owners.
+		.compose(ids -> getDefaultStructureOfUsers(ids))
+		// 3. Assign a default structure to eligible threads.
+		.compose(map -> assignDefaultOwnerStructure(map));
+	}
+
+	/** Get IDs of owner of threads without a structure. */
+    private Future<List<String>> getIdsOfOwnersForNullStructure() {
+		final Promise<List<String>> promise = Promise.promise();
+		String query =
+			" SELECT DISTINCT t.owner AS id " +
+			" FROM " + threadsTable + " AS t " +
+			" WHERE t.owner IS NOT NULL AND t.structure_id IS NULL ";
+		Sql.getInstance().prepared(query, new fr.wseduc.webutils.collections.JsonArray(), (sqlResult) -> {
+			final Either<String, JsonArray> result = SqlResult.validResult(sqlResult);
+			if (result.isLeft()) {
+				promise.fail(result.left().getValue());
+			} else {
+				try {
+					final List<String> ids = result.right().getValue()
+						.stream()
+						.filter(row -> row instanceof JsonObject)
+						.map(JsonObject.class::cast)
+						.map(row -> row.getString("id"))
+						.collect(toList());
+					promise.complete(ids);
+				} catch (Exception e) {
+					promise.fail(e);
+				}
+			}
+		});
+		return promise.future();
+	}
+
+	/** Retrieve the default structure of users. */
+	private Future<Map<String, String>> getDefaultStructureOfUsers(final List<String> ids) {
+		final Promise<Map<String, String>> promise = Promise.promise();
+		
+		return promise.future();
+	}
+
+	/** Set the structure ID of threads with their owner's default one. */
+	private Future<Void> assignDefaultOwnerStructure(final Map<String, String> defaultOwnerStructures) {
+		final Promise<Void> promise = Promise.promise();
+
+		return promise.future();
+	}
 }
