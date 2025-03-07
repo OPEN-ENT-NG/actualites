@@ -1,6 +1,6 @@
 -- WB-1402
 
--- Allow NULL values for column thread.user_id and modify FK constraint => ON DELETE SET NULL
+-- Allow NULL values for column thread.owner and modify FK constraint => ON DELETE SET NULL
 -- *** Opération potentiellement longue ***
 ALTER TABLE actualites.thread 
 	DROP CONSTRAINT type_owner_fk,
