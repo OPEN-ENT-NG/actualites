@@ -21,6 +21,7 @@ package net.atos.entng.actualites.services.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,8 +46,13 @@ import fr.wseduc.webutils.security.SecuredAction;
 import net.atos.entng.actualites.services.ThreadService;
 import net.atos.entng.actualites.to.NewsThread;
 
+import static fr.wseduc.webutils.Utils.handlerToAsyncHandler;
+
 import static org.entcore.common.user.DefaultFunctions.ADMIN_LOCAL;
+
 import static java.util.stream.Collectors.toList;
+
+import io.vertx.core.eventbus.EventBus;
 
 
 public class ThreadServiceSqlImpl implements ThreadService {
@@ -58,6 +64,16 @@ public class ThreadServiceSqlImpl implements ThreadService {
 	private final String infosTable = "actualites.info";
 	private final String infosSharesTable = "actualites.info_shares";
 	private final String usersTable = "actualites.users";
+
+	private EventBus eb;
+
+	public ThreadServiceSqlImpl() {
+	}
+
+	public ThreadServiceSqlImpl setEventBus(EventBus eb) {
+		this.eb = eb;
+		return this;
+	}	
 
 	@Override
 	public void retrieve(String id, Handler<Either<String, JsonObject>> handler) {
@@ -286,7 +302,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 										owner,
 										Rights.fromRawRights(securedActions, rawRights)
 									);
-						}).collect(Collectors.toList());
+						}).collect(toList());
 						promise.complete(pojo);
 					} catch (Exception e) {
 						log.error("Failed to parse JsonObject", e);
@@ -337,15 +353,49 @@ public class ThreadServiceSqlImpl implements ThreadService {
 
 	/** Retrieve the default structure of users. */
 	private Future<Map<String, String>> getDefaultStructureOfUsers(final List<String> ids) {
-		final Promise<Map<String, String>> promise = Promise.promise();
-		
-		return promise.future();
+		return loadUsersDetails(ids)
+			.map( results -> {
+				final Map<String, String> map = new HashMap<>(results.size());
+				results.stream()
+					.filter(row -> row instanceof JsonObject)
+					.map(JsonObject.class::cast)
+					.forEach(result -> {
+						// TODO debug
+						map.put(result.getString("id"), result.getString("sturcture"));
+					});
+				return map;
+			});
 	}
+
+    /**
+     * Loads additional details about users.
+     * @param eb the event bus
+     * @param userIndex the user index
+     * @return a Future representing the completion of the operation
+     */
+    private Future<JsonArray> loadUsersDetails(final List<String> ids) {
+		Promise<JsonArray> promise = Promise.promise();
+		JsonObject action = new JsonObject()
+			.put("action", "list-users")
+			.put("userIds", new JsonArray(ids))
+			//.put("itself", Boolean.FALSE)
+			//.put("excludeUserId", userId)
+		;
+		eb.request("directory", action, handlerToAsyncHandler(event -> {
+			JsonArray res = event.body().getJsonArray("result", new JsonArray());
+			if ("ok".equals(event.body().getString("status")) && res != null) {
+				promise.complete(res);
+			} else {
+				promise.fail(event.body().getString("message"));
+			}
+		}));
+		return promise.future();
+    }
 
 	/** Set the structure ID of threads with their owner's default one. */
 	private Future<Void> assignDefaultOwnerStructure(final Map<String, String> defaultOwnerStructures) {
 		final Promise<Void> promise = Promise.promise();
-
+		promise.fail("TODO");
 		return promise.future();
 	}
 }

@@ -96,7 +96,7 @@ public class Actualites extends BaseServer {
 		confThread.setSchema(getSchema());
 
 		// thread controller
-		ThreadController threadController = new ThreadController();
+		ThreadController threadController = new ThreadController(eb);
 		SqlCrudService threadSqlCrudService = new SqlCrudService(getSchema(), THREAD_TABLE, THREAD_SHARE_TABLE, new JsonArray().add("*"), new JsonArray().add("*"), true);
 		threadController.setCrudService(threadSqlCrudService);
 		threadController.setShareService(new SqlShareService(getSchema(),THREAD_SHARE_TABLE, eb, securedActions, null));
@@ -131,7 +131,7 @@ public class Actualites extends BaseServer {
 
 	@Override
 	protected Future<Void> postSqlMigration() {
-		final ThreadService threadService = new ThreadServiceSqlImpl();
+		final ThreadService threadService = new ThreadServiceSqlImpl().setEventBus(getEventBus(vertx));
 		return threadService.attachThreadsWithNullStructureToDefault();
 	}
 
