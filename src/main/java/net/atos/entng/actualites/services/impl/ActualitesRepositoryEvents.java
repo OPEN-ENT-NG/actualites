@@ -239,22 +239,9 @@ public class ActualitesRepositoryEvents extends SqlRepositoryEvents {
 			statementsBuilder.prepared("DELETE FROM actualites.info_shares WHERE member_id IN " + Sql.listPrepared(uIds.getList()), uIds);
 			// Delete users (Set deleted = true in users table)
 			statementsBuilder.prepared("UPDATE actualites.users SET deleted = true WHERE id IN " + Sql.listPrepared(uIds.getList()), uIds);
-			// WB-1402 Threads are now attached to a structure, with AMDLs having management rights. Do not delete them anymore.
-			// // Delete all threads where the owner is deleted and no manager rights shared on these resources
-			// // Cascade delete : the news that belong to these threads will be deleted too
-			// // thus, no need to delete news that do not have a manager because the thread owner is still there
-			// statementsBuilder.prepared("DELETE FROM actualites.thread" +
-			// 						  " USING (" +
-			// 							  " SELECT DISTINCT t.id, count(ts.member_id) AS managers" +
-			// 							  " FROM actualites.thread AS t" +
-			// 							  " LEFT OUTER JOIN actualites.thread_shares AS ts ON t.id = ts.resource_id AND ts.action = ?" +
-			// 							  " LEFT OUTER JOIN actualites.users AS u ON t.owner = u.id" +
-			// 							  " WHERE u.deleted = true" +
-			// 							  " GROUP BY t.id" +
-			// 						 " ) a" +
-			// 						 " WHERE actualites.thread.id = a.id" +
-			// 						 " AND a.managers = 0"
-			// 					  	  , new fr.wseduc.webutils.collections.JsonArray().add(MANAGE_RIGHT_ACTION));
+			// WB-1402 Do not delete anymore the threads whose owner is deleted and no manager rights are shared on.
+			// Because threads are now attached to a structure, with AMDLs having management rights.
+
 			Sql.getInstance().transaction(statementsBuilder.build(), SqlResult.validRowsResultHandler(new Handler<Either<String, JsonObject>>() {
 				@Override
 				public void handle(Either<String, JsonObject> event) {
