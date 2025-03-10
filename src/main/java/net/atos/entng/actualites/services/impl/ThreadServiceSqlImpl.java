@@ -33,6 +33,7 @@ import net.atos.entng.actualites.to.Rights;
 
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
+import org.entcore.common.sql.SqlStatementsBuilder;
 import org.entcore.common.user.UserInfos;
 
 import io.vertx.core.Future;
@@ -47,7 +48,7 @@ import net.atos.entng.actualites.services.ThreadService;
 import net.atos.entng.actualites.to.NewsThread;
 
 import static fr.wseduc.webutils.Utils.handlerToAsyncHandler;
-
+import static fr.wseduc.webutils.Utils.isNotEmpty;
 import static org.entcore.common.user.DefaultFunctions.ADMIN_LOCAL;
 
 import static java.util.stream.Collectors.toList;
@@ -314,6 +315,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 		return promise.future();
 	}
 
+	@Override
     public Future<Void> attachThreadsWithNullStructureToDefault() {
 		// 1. Get IDs of owner of threads without a structure.
 		return getIdsOfOwnersForNullStructure()
@@ -351,36 +353,39 @@ public class ThreadServiceSqlImpl implements ThreadService {
 		return promise.future();
 	}
 
-	/** Retrieve the default structure of users. */
+	/** 
+	 * Retrieve the one and only structure that some users are attached to.
+	 * Users with no (or many) structures will have no mapping in the resulting Map.
+	 * @return a future Map of <User ID, Structure ID>
+	 */
 	private Future<Map<String, String>> getDefaultStructureOfUsers(final List<String> ids) {
-		return loadUsersDetails(ids)
+		return getUsersStructures(ids)
 			.map( results -> {
 				final Map<String, String> map = new HashMap<>(results.size());
 				results.stream()
 					.filter(row -> row instanceof JsonObject)
 					.map(JsonObject.class::cast)
 					.forEach(result -> {
-						// TODO debug
-						map.put(result.getString("id"), result.getString("sturcture"));
+						final String userId = result.getString("userId");
+						final JsonArray structures = result.getJsonArray("structures");
+						if(userId!=null && structures!=null && structures.size()==1) {
+							map.put(userId, structures.getJsonObject(0).getString("id"));
+						}
 					});
 				return map;
 			});
 	}
 
     /**
-     * Loads additional details about users.
-     * @param eb the event bus
-     * @param userIndex the user index
-     * @return a Future representing the completion of the operation
+     * Get structure details for a list of users.
+     * @param ids a list of user IDs
+     * @return a Future array of JsonObjects such as { userId: "ID of the user", structures: [{id: "ID of the structure"}] }
      */
-    private Future<JsonArray> loadUsersDetails(final List<String> ids) {
+    private Future<JsonArray> getUsersStructures(final List<String> ids) {
 		Promise<JsonArray> promise = Promise.promise();
 		JsonObject action = new JsonObject()
-			.put("action", "list-users")
-			.put("userIds", new JsonArray(ids))
-			//.put("itself", Boolean.FALSE)
-			//.put("excludeUserId", userId)
-		;
+			.put("action", "getUsersStructures")
+			.put("userIds", new JsonArray(ids));
 		eb.request("directory", action, handlerToAsyncHandler(event -> {
 			JsonArray res = event.body().getJsonArray("result", new JsonArray());
 			if ("ok".equals(event.body().getString("status")) && res != null) {
@@ -394,8 +399,40 @@ public class ThreadServiceSqlImpl implements ThreadService {
 
 	/** Set the structure ID of threads with their owner's default one. */
 	private Future<Void> assignDefaultOwnerStructure(final Map<String, String> defaultOwnerStructures) {
-		final Promise<Void> promise = Promise.promise();
-		promise.fail("TODO");
-		return promise.future();
+		final JsonArray userIds = new fr.wseduc.webutils.collections.JsonArray();
+		final JsonArray structureIds = new fr.wseduc.webutils.collections.JsonArray();
+		if(defaultOwnerStructures!=null && !defaultOwnerStructures.isEmpty()) {
+			defaultOwnerStructures.entrySet().forEach(set -> {
+				final String key = set.getKey();
+				final String value = set.getValue();
+				if(isNotEmpty(key) && isNotEmpty(value)) {
+					userIds.add(key);
+					structureIds.add(value);
+				}
+			});
+		}
+		if(!userIds.isEmpty() && !structureIds.isEmpty()) {
+			final Promise<Void> promise = Promise.promise();
+			SqlStatementsBuilder builder = new SqlStatementsBuilder();
+			String query =
+				"UPDATE " + threadsTable + " SET structure_id = mapped.s_id " +
+				"FROM (SELECT unnest"+Sql.arrayPrepared(userIds)+" AS u_id, unnest"+Sql.arrayPrepared(structureIds)+" AS s_id) AS mapped " +
+				"WHERE owner = mapped.u_id AND structure_id IS NULL ";
+			
+			final JsonArray values = new fr.wseduc.webutils.collections.JsonArray()
+				.addAll(userIds)
+				.addAll(structureIds);
+			builder.prepared(query, values);
+
+			Sql.getInstance().transaction(builder.build(), SqlResult.validUniqueResultHandler(0, res -> {
+				if(res.isLeft()){
+					promise.tryFail(res.left().getValue());
+				} else {
+					promise.complete();
+				}
+			}));
+			return promise.future();
+		}
+		return Future.succeededFuture();
 	}
 }

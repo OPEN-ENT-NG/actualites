@@ -130,9 +130,9 @@ public class Actualites extends BaseServer {
 	}
 
 	@Override
-	protected Future<Void> postSqlMigration() {
+	protected Future<Void> postSqlScripts() {
 		final ThreadService threadService = new ThreadServiceSqlImpl().setEventBus(getEventBus(vertx));
-		return threadService.attachThreadsWithNullStructureToDefault();
+		return super.postSqlScripts().compose(Void -> threadService.attachThreadsWithNullStructureToDefault());
 	}
 
 }
