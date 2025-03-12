@@ -23,6 +23,9 @@ import static org.entcore.common.http.response.DefaultResponseHandler.arrayRespo
 import static org.entcore.common.http.response.DefaultResponseHandler.defaultResponseHandler;
 import static org.entcore.common.http.response.DefaultResponseHandler.notEmptyResponseHandler;
 import static org.entcore.common.user.UserUtils.getUserInfos;
+
+import java.util.List;
+
 import net.atos.entng.actualites.Actualites;
 import net.atos.entng.actualites.filters.ThreadFilter;
 import net.atos.entng.actualites.services.ThreadService;
@@ -33,8 +36,10 @@ import org.entcore.common.events.EventHelper;
 import org.entcore.common.events.EventStore;
 import org.entcore.common.events.EventStoreFactory;
 import org.entcore.common.http.filter.ResourceFilter;
+import org.entcore.common.http.filter.SuperAdminFilter;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.user.UserUtils;
+
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonArray;
@@ -50,6 +55,7 @@ import fr.wseduc.security.SecuredAction;
 import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.I18n;
 import fr.wseduc.webutils.request.RequestUtils;
+import io.vertx.core.eventbus.EventBus;
 
 public class ThreadController extends ControllerHelper {
 
@@ -59,11 +65,15 @@ public class ThreadController extends ControllerHelper {
 
 	private static final String RESOURCE_NAME = "thread";
 
+	private static final String ADMC_TASK = "admcTask";
+	private static final String TASK_ATTACH = "autoAttachToStructures";
+	
+
 	protected final ThreadService threadService;
 	protected final EventHelper eventHelper;
 
-	public ThreadController(){
-		this.threadService = new ThreadServiceSqlImpl();
+	public ThreadController(EventBus eb){
+		this.threadService = new ThreadServiceSqlImpl().setEventBus(eb);
 		final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(Actualites.class.getSimpleName());
 		eventHelper = new EventHelper(eventStore);
 	}
@@ -80,6 +90,29 @@ public class ThreadController extends ControllerHelper {
 		});
 	}
 
+	@Post("/threads/admc")
+	@ApiDoc("Launch a maintenance task."+
+		"Task \"autoAttachToStructures\": attaches threads without a structure to their owner's structure, when a single one exists.")
+	@SecuredAction(value = "", type = ActionType.RESOURCE)
+	@ResourceFilter(SuperAdminFilter.class)
+	public void admcTask(final HttpServerRequest request) {
+		RequestUtils.bodyToJson(request, pathPrefix + ADMC_TASK, (JsonObject resource) -> {
+			switch(resource.getString("task")) {
+				case TASK_ATTACH: {
+					this.threadService.attachThreadsWithNullStructureToDefault()
+					.onSuccess(Void -> ok(request))
+					.onFailure(throwable -> {
+						renderError(request, null, 500, throwable.getMessage());
+					});
+					return;
+				}
+
+				default: break;
+			}
+			badRequest(request);
+        });
+	}
+
 	@Post("/thread")
 	@ApiDoc("Create a new Thread.")
 	@SecuredAction("actualites.create")
@@ -90,6 +123,14 @@ public class ThreadController extends ControllerHelper {
 				RequestUtils.bodyToJson(request, pathPrefix + SCHEMA_THREAD_CREATE, new Handler<JsonObject>() {
 					@Override
 					public void handle(JsonObject resource) {
+						// WB-1402 auto-attach the thread to this user's structure, iif only one exists.
+						final List<String> structures = user.getStructures();
+						if(structures!=null && structures.size() == 1) {
+							String structure_id = structures.get(0);
+							if(structure_id!=null && structure_id.length()>0) {
+								resource.put("structure_id", structure_id);
+							}
+						}
 						final Handler<Either<String,JsonObject>> handler = notEmptyResponseHandler(request);
 						crudService.create(resource, user, eventHelper.onCreateResource(request, RESOURCE_NAME, handler));
 					}
