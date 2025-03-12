@@ -29,6 +29,8 @@ import net.atos.entng.actualites.services.ConfigService;
 import net.atos.entng.actualites.services.impl.ActualitesRepositoryEvents;
 
 import net.atos.entng.actualites.services.impl.ActualitesSearchingEvents;
+import net.atos.entng.actualites.services.impl.ThreadServiceSqlImpl;
+
 import org.entcore.common.http.BaseServer;
 import org.entcore.common.http.filter.ShareAndOwner;
 import org.entcore.common.service.impl.SqlCrudService;
@@ -36,11 +38,15 @@ import org.entcore.common.service.impl.SqlSearchService;
 import org.entcore.common.share.impl.SqlShareService;
 import org.entcore.common.sql.SqlConf;
 import org.entcore.common.sql.SqlConfs;
+
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonArray;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.vertx.core.Future;
+import net.atos.entng.actualites.services.ThreadService;
 
 public class Actualites extends BaseServer {
 	public final static String NEWS_SCHEMA = "actualites";
@@ -90,7 +96,7 @@ public class Actualites extends BaseServer {
 		confThread.setSchema(getSchema());
 
 		// thread controller
-		ThreadController threadController = new ThreadController();
+		ThreadController threadController = new ThreadController(eb);
 		SqlCrudService threadSqlCrudService = new SqlCrudService(getSchema(), THREAD_TABLE, THREAD_SHARE_TABLE, new JsonArray().add("*"), new JsonArray().add("*"), true);
 		threadController.setCrudService(threadSqlCrudService);
 		threadController.setShareService(new SqlShareService(getSchema(),THREAD_SHARE_TABLE, eb, securedActions, null));
@@ -121,6 +127,12 @@ public class Actualites extends BaseServer {
 		commentController.setCrudService(commentSqlCrudService);
 		addController(commentController);
 
+	}
+
+	@Override
+	protected Future<Void> postSqlScripts() {
+		final ThreadService threadService = new ThreadServiceSqlImpl().setEventBus(getEventBus(vertx));
+		return super.postSqlScripts().compose(Void -> threadService.attachThreadsWithNullStructureToDefault());
 	}
 
 }
