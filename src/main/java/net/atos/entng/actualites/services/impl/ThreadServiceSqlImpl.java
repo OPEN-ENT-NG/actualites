@@ -383,17 +383,21 @@ public class ThreadServiceSqlImpl implements ThreadService {
      */
     private Future<JsonArray> getUsersStructures(final List<String> ids) {
 		Promise<JsonArray> promise = Promise.promise();
-		JsonObject action = new JsonObject()
-			.put("action", "getUsersStructures")
-			.put("userIds", new JsonArray(ids));
-		eb.request("directory", action, handlerToAsyncHandler(event -> {
-			JsonArray res = event.body().getJsonArray("result", new JsonArray());
-			if ("ok".equals(event.body().getString("status")) && res != null) {
-				promise.complete(res);
-			} else {
-				promise.fail(event.body().getString("message"));
-			}
-		}));
+		if(ids==null || ids.isEmpty()) {
+			promise.complete(new JsonArray());
+		} else {
+			JsonObject action = new JsonObject()
+				.put("action", "getUsersStructures")
+				.put("userIds", new JsonArray(ids));
+			eb.request("directory", action, handlerToAsyncHandler(event -> {
+				JsonArray res = event.body().getJsonArray("result", new JsonArray());
+				if ("ok".equals(event.body().getString("status")) && res != null) {
+					promise.complete(res);
+				} else {
+					promise.fail(event.body().getString("message"));
+				}
+			}));
+		}
 		return promise.future();
     }
 
