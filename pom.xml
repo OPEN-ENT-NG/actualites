@@ -85,5 +85,11 @@
             <version>${gatlingHighchartsVersion}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.opendigitaleducation</groupId>
+            <artifactId>explorer</artifactId>
+            <version>2.2.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>
