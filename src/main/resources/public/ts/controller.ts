@@ -553,7 +553,7 @@ export const actualiteController = ng.controller('ActualitesController',
                         return 'actualites.edition.status.5' ;
                     }
                     if (info.owner !== model.me.userId){
-                        return 'actualites.edition.status.empty';
+                        return '';
                     }
                 }
                 return 'actualites.edition.status.' + info.status;
