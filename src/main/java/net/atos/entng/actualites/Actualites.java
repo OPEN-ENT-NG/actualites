@@ -19,16 +19,9 @@
 
 package net.atos.entng.actualites;
 
-import io.vertx.core.Promise;
-import io.vertx.core.json.JsonObject;
-import net.atos.entng.actualites.controllers.CommentController;
-import net.atos.entng.actualites.controllers.InfoController;
-import net.atos.entng.actualites.controllers.ThreadController;
-import net.atos.entng.actualites.controllers.DisplayController;
-import net.atos.entng.actualites.services.ConfigService;
-import net.atos.entng.actualites.services.impl.ActualitesRepositoryEvents;
+import java.util.ArrayList;
+import java.util.List;
 
-import net.atos.entng.actualites.services.impl.ActualitesSearchingEvents;
 import org.entcore.common.http.BaseServer;
 import org.entcore.common.http.filter.ShareAndOwner;
 import org.entcore.common.service.impl.SqlCrudService;
@@ -36,11 +29,18 @@ import org.entcore.common.service.impl.SqlSearchService;
 import org.entcore.common.share.impl.SqlShareService;
 import org.entcore.common.sql.SqlConf;
 import org.entcore.common.sql.SqlConfs;
+
+import io.vertx.core.Promise;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonArray;
-
-import java.util.ArrayList;
-import java.util.List;
+import io.vertx.core.json.JsonObject;
+import net.atos.entng.actualites.controllers.CommentController;
+import net.atos.entng.actualites.controllers.DisplayController;
+import net.atos.entng.actualites.controllers.InfoController;
+import net.atos.entng.actualites.controllers.ThreadController;
+import net.atos.entng.actualites.services.ConfigService;
+import net.atos.entng.actualites.services.impl.ActualitesRepositoryEvents;
+import net.atos.entng.actualites.services.impl.ActualitesSearchingEvents;
 
 public class Actualites extends BaseServer {
 	public final static String NEWS_SCHEMA = "actualites";
@@ -62,7 +62,14 @@ public class Actualites extends BaseServer {
 
 	@Override
 	public void start(Promise<Void> startPromise) throws Exception {
-		super.start(startPromise);
+		final Promise<Void> promise = Promise.promise();
+		super.start(promise);
+		promise.future()
+			.onSuccess(x -> init(startPromise))
+			.onFailure(ex -> log.error("Error when start Actualites server super classes", ex));
+	}
+
+	public void init(Promise<Void> startPromise) {
 		final EventBus eb = getEventBus(vertx);
 		final JsonObject config = config();
 		// Subscribe to events published for transition
@@ -120,7 +127,7 @@ public class Actualites extends BaseServer {
 		SqlCrudService commentSqlCrudService = new SqlCrudService(getSchema(), COMMENT_TABLE);
 		commentController.setCrudService(commentSqlCrudService);
 		addController(commentController);
-
+		startPromise.tryComplete();
 	}
 
 }
