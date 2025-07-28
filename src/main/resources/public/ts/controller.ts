@@ -317,6 +317,19 @@ export const actualiteController = ng.controller('ActualitesController',
                     limit: 8
                 };
                 $scope.allowAcces=false;
+		        $scope.selectedStructureOption = null;
+                $scope.structureOptions = [];
+                if(model.me.structures 
+                        && model.me.structureNames 
+                        && model.me.structures.length === model.me.structureNames.length
+                    ) {
+                    for(let i=0; i<model.me.structures.length; i++) {
+                        $scope.structureOptions.push({
+                            id: model.me.structures[i],
+                            name: model.me.structureNames[i]
+                        });
+                    }
+                }
 
                 $scope.startDate = new Date();
                 $scope.appPrefix = 'actualites';
@@ -591,6 +604,11 @@ export const actualiteController = ng.controller('ActualitesController',
             $scope.editSelectedThread = function(){
                 $scope.currentThread = model.threads.selection()[0];
                 template.open('main', 'thread-edit');
+            };
+
+            $scope.setThreadStructure = function(option) {
+                $scope.selectedStructureOption = option;
+                if($scope.currentThread) $scope.currentThread.structure_id = option.id;
             };
 
             $scope.saveThread = async function(){

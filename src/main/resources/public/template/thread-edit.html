@@ -14,9 +14,20 @@
 				<image-select ng-model="currentThread.icon" default="/img/illustrations/news.svg" thumbnails="[{ width: 290, height: 290 }]"></image-select>
 			</div>
 
-			<div class="margin-two height-two">
+			<div class="margin-two height-one">
 				<div class="twelve cell horizontal-spacing">
 					<input type="text" class="twelve cell right-magnet" ng-model="currentThread.title" required i18n-placeholder="thread.title"/>
+				</div>
+			</div>
+
+			<div class="margin-two height-one" ng-if="!currentThread.structure_id">
+				<div class="four cell horizontal-spacing">
+					<i18n>thread.structure.label</i18n>
+				</div>
+				<div class="height cell horizontal-spacing">
+					<select-list placeholder="thread.structure.label" display="selectedStructureOption" display-as="name">
+						<opt ng-repeat="option in structureOptions" value="option.id" ng-click="setThreadStructure(option.id)">[[option.name]]</opt>
+					</select-list>
 				</div>
 			</div>
 
