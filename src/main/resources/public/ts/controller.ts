@@ -317,6 +317,19 @@ export const actualiteController = ng.controller('ActualitesController',
                     limit: 8
                 };
                 $scope.allowAcces=false;
+		        $scope.selectedStructureOption = undefined;
+                $scope.structureOptions = [];
+                if(model.me.structures 
+                        && model.me.structureNames 
+                        && model.me.structures.length === model.me.structureNames.length
+                    ) {
+                    for(let i=0; i<model.me.structures.length; i++) {
+                        $scope.structureOptions.push({
+                            id: model.me.structures[i],
+                            name: model.me.structureNames[i]
+                        });
+                    }
+                }
 
                 $scope.startDate = new Date();
                 $scope.appPrefix = 'actualites';
@@ -593,6 +606,11 @@ export const actualiteController = ng.controller('ActualitesController',
                 template.open('main', 'thread-edit');
             };
 
+            $scope.setThreadStructure = function(option) {
+                $scope.selectedStructureOption = option;
+                $scope.currentThread.structure_id = option.id;
+            };
+
             $scope.saveThread = async function(){
                 await $scope.currentThread.save();
                 await model.syncAll();
@@ -602,6 +620,13 @@ export const actualiteController = ng.controller('ActualitesController',
             };
 
             $scope.cancelEditThread = function(){
+	            if($scope.selectedStructureOption) {
+                    if($scope.currentThread.data && $scope.currentThread.data.structure_id!==undefined){
+                        // Reset structure_id to previous state.
+	            	    $scope.currentThread.structure_id = $scope.currentThread.data.structure_id;
+                    }
+                    $scope.selectedStructureOption = undefined;
+	       	    }
                 $scope.currentThread = undefined;
                 template.open('main', 'threads-view');
             };

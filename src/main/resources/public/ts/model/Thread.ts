@@ -14,6 +14,7 @@ export class Thread extends Model {
     title: string;
     mode: any;
     icon: string;
+    structure_id?: string;
     data: any;
 
     constructor (data?) {
@@ -69,18 +70,19 @@ export class Thread extends Model {
     }
 
     toJSON () {
+        let json = {
+            mode: this.mode,
+            title: this.title,
+            icon: undefined,
+            structure_id: undefined,
+        };
         if (this.icon){
-            return {
-                mode: this.mode,
-                title: this.title,
-                icon: this.icon
-            };
-        } else {
-            return {
-                mode: this.mode,
-                title: this.title
-            };
+            json.icon = this.icon;
         }
+        if (this.structure_id){
+            json.structure_id = this.structure_id;
+        }
+        return json;
     }
 
     async saveModifications () {
