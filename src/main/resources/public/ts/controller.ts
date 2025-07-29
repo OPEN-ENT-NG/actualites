@@ -317,7 +317,7 @@ export const actualiteController = ng.controller('ActualitesController',
                     limit: 8
                 };
                 $scope.allowAcces=false;
-		        $scope.selectedStructureOption = null;
+		        $scope.selectedStructureOption = undefined;
                 $scope.structureOptions = [];
                 if(model.me.structures 
                         && model.me.structureNames 
@@ -620,6 +620,10 @@ export const actualiteController = ng.controller('ActualitesController',
             };
 
             $scope.cancelEditThread = function(){
+	            if($scope.selectedStructureOption) {
+	            	$scope.currentThread.structure_id = null;
+	            	$scope.selectedStructureOption = undefined;
+	       	    }
                 $scope.currentThread = undefined;
                 template.open('main', 'threads-view');
             };

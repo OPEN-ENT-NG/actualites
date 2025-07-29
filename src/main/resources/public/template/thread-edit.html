@@ -25,8 +25,8 @@
 					<i18n>thread.structure.label</i18n>
 				</div>
 				<div class="height cell horizontal-spacing">
-					<select-list placeholder="thread.structure.label" display="selectedStructureOption" display-as="name">
-						<opt ng-repeat="option in structureOptions" value="option.id" ng-click="setThreadStructure(option.id)">[[option.name]]</opt>
+					<select-list placeholder="thread.structure.placeholder" display="selectedStructureOption" display-as="name">
+						<opt ng-repeat="option in structureOptions" value="option.id" ng-click="setThreadStructure(option)">[[option.name]]</opt>
 					</select-list>
 				</div>
 			</div>
