@@ -329,6 +329,10 @@ export const actualiteController = ng.controller('ActualitesController',
                             name: model.me.structureNames[i]
                         });
                     }
+                    if($scope.structureOptions.length===1) {
+                        // Auto-select this structure (it will also hide the selecting component)
+                        $scope.selectedStructureOption = $scope.structureOptions[0];
+                    }
                 }
 
                 $scope.startDate = new Date();
@@ -608,7 +612,7 @@ export const actualiteController = ng.controller('ActualitesController',
 
             $scope.setThreadStructure = function(option) {
                 $scope.selectedStructureOption = option;
-                if($scope.currentThread) $scope.currentThread.structure_id = option.id;
+                $scope.currentThread.structure_id = option.id;
             };
 
             $scope.saveThread = async function(){
