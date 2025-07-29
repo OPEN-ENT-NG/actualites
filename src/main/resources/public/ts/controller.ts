@@ -625,8 +625,13 @@ export const actualiteController = ng.controller('ActualitesController',
 
             $scope.cancelEditThread = function(){
 	            if($scope.selectedStructureOption) {
-	            	$scope.currentThread.structure_id = null;
-	            	$scope.selectedStructureOption = undefined;
+                    if($scope.currentThread.data && $scope.currentThread.data.structure_id!==undefined){
+                        // Reser structure_id to previous state.
+	            	    $scope.currentThread.structure_id = $scope.currentThread.data.structure_id;
+                    }
+                    if(!$scope.currentThread.structure_id && $scope.structureOptions.length>1) {
+                        $scope.selectedStructureOption = undefined;
+                    }
 	       	    }
                 $scope.currentThread = undefined;
                 template.open('main', 'threads-view');
