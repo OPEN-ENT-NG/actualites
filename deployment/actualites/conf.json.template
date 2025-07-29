@@ -16,15 +16,6 @@
         "integration-mode" : "HTTP",
         "app-registry.port" : 8012,
         "mode" : "${mode}",
-        "entcore.port" : 8009,
-        "publicConf": {
-          <% if ("true".equals(xitiSwitch)) { %>
-            "xiti": {
-              "ID_SERVICE": {
-                "default": ""
-              }
-            }
-          <% } %>
-        }
+        "entcore.port" : 8009
       }
     }
