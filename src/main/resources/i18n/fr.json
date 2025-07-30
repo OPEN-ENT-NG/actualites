@@ -146,6 +146,8 @@
   "thread.owner": "Propriétaire : ",
   "thread.publish": "Publier",
   "thread.read": "Lire",
+  "thread.structure.label": "Structure de rattachement :",
+  "thread.structure.placeholder": "Choisir",
   "thread.title": "Titre du fil d'actualités",
   "thread.title.edit": "Modifier le fil d'actualités",
   "thread.title.new": "Nouveau fil",
