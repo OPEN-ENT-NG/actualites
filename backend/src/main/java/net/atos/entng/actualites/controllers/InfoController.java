@@ -34,6 +34,7 @@ import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.Actualites;
 import net.atos.entng.actualites.constants.Field;
 import net.atos.entng.actualites.filters.InfoFilter;
+import net.atos.entng.actualites.filters.InfoNewFilter;
 import net.atos.entng.actualites.filters.ThreadFilter;
 import net.atos.entng.actualites.services.*;
 import net.atos.entng.actualites.services.impl.ThreadServiceSqlImpl;
@@ -110,6 +111,24 @@ public class InfoController extends ControllerHelper {
                 infoService.retrieve(infoId, user, originalContent, notEmptyResponseHandler(request));
             }
         });
+    }
+
+    @Get("/api/v2/infos/:"+Actualites.INFO_RESOURCE_ID)
+    @ApiDoc("Retrieve : retrieve an Info in thread by thread and by id")
+    @ResourceFilter(value = InfoNewFilter.class, arguments = "v2")
+    @SecuredAction(value = "info.read", type = ActionType.RESOURCE,
+            override = "info.read")
+    public void getInfoV2(final HttpServerRequest request) {
+        getInfoComments(request);
+    }
+
+    @Get("/api/v1/infos/:"+Actualites.INFO_RESOURCE_ID)
+    @ApiDoc("Retrieve : retrieve an Info in thread by thread and by id")
+    @ResourceFilter(value = InfoNewFilter.class, arguments = "v1")
+    @SecuredAction(value = "info.read", type = ActionType.RESOURCE,
+                    override = "net.atos.entng.actualites.controllers.InfoController|getInfoComments")
+    public void getInfoV1(final HttpServerRequest request) {
+        getInfoComments(request);
     }
 
     @Get("/infos")
@@ -920,7 +939,7 @@ public class InfoController extends ControllerHelper {
 
     @Get("/list")
     @ApiDoc("List infos with pagination. Accept custom page size. Params threadId can be used to restrict the list to this thread.")
-    @SecuredAction("actualites.infos.list.page")
+    @SecuredAction(value = "actualites.infos.list.page", override = "net.atos.entng.actualites.controllers.InfoController|listInfos")
     public void listInfosPagined(final HttpServerRequest request) {
         // TODO IMPROVE : Security on Infos visibles by statuses / dates is not enforced
         UserUtils.getUserInfos(eb, request, user -> {
