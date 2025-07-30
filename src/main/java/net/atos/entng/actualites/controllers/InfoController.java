@@ -22,6 +22,7 @@ package net.atos.entng.actualites.controllers;
 import fr.wseduc.mongodb.MongoDb;
 import fr.wseduc.rs.*;
 import fr.wseduc.security.ActionType;
+import fr.wseduc.security.PreAuthorize;
 import fr.wseduc.security.SecuredAction;
 import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.I18n;
@@ -34,6 +35,7 @@ import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.Actualites;
 import net.atos.entng.actualites.constants.Field;
 import net.atos.entng.actualites.filters.InfoFilter;
+import net.atos.entng.actualites.filters.InfoNewFilter;
 import net.atos.entng.actualites.filters.ThreadFilter;
 import net.atos.entng.actualites.services.ConfigService;
 import net.atos.entng.actualites.services.InfoService;
@@ -105,6 +107,21 @@ public class InfoController extends ControllerHelper {
     @ResourceFilter(InfoFilter.class)
     @SecuredAction(value = "info.read", type = ActionType.RESOURCE)
     public void getInfo(final HttpServerRequest request) {
+        // TODO IMPROVE @SecuredAction : Security on Info as a resource
+        final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
+        UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+            @Override
+            public void handle(final UserInfos user) {
+                infoService.retrieve(infoId, user, notEmptyResponseHandler(request));
+            }
+        });
+    }
+
+    @Get("/ap/v1/infos/:"+Actualites.INFO_RESOURCE_ID)
+    @ApiDoc("Retrieve : retrieve an Info in thread by thread and by id")
+    @PreAuthorize( value="hasRight('infos.read')", clazz = InfoNewFilter.class)
+    @SecuredAction(value = "", type = ActionType.PRE_AUTHORIZE)
+    public void getInfoV1(final HttpServerRequest request) {
         // TODO IMPROVE @SecuredAction : Security on Info as a resource
         final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
         UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
