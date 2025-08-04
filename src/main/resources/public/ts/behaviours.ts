@@ -99,7 +99,9 @@ Behaviours.register('actualites', {
             for (var behaviour in actualitesBehaviours.resources){
                 if (model.me.hasRight(resource, actualitesBehaviours.resources[behaviour]) 
                     || model.me.userId === resource.owner
-                    || hasAdmlRightsFor(behaviour, resource.structure_id)){
+                    // TODO code to be activated soon
+                    // || hasAdmlRightsFor(behaviour, resource.structure_id)
+                    ){
                     if (resource.myRights[behaviour] !== undefined){
                         resource.myRights[behaviour] = resource.myRights[behaviour] && actualitesBehaviours.resources[behaviour];
                     } else {
