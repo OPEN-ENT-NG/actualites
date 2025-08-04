@@ -7,17 +7,11 @@
 			"type": "string"
 		},
 		"icon": {
-			"type": "string"
-		},
-		"structure_id": {
-			"type": "string"
+			"type": "string",
+			"optional": true
 		},
 		"mode": {
 			"type": "integer"
 		}
-	},
-	"required": [
-		"title",
-		"mode"
-	]
+	}
 }

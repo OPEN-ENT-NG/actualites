@@ -9,9 +9,6 @@
 		"icon": {
 			"type": "string"
 		},
-		"structure_id": {
-			"type": "string"
-		},
 		"mode": {
 			"type": "integer"
 		}

@@ -149,8 +149,6 @@
   "thread.title": "Titre du fil d'actualités",
   "thread.title.edit": "Modifier le fil d'actualités",
   "thread.title.new": "Nouveau fil",
-  "thread.structure.label": "Structure de rattachement :",
-  "thread.structure.placeholder": "Choisir",
   "title.missing": "Veuillez renseigner le titre.",
   "unpublish": "Dépublier",
   "unsubmit": "Marquer comme brouillon",
