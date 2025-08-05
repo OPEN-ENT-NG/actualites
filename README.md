@@ -12,7 +12,7 @@
 ## Construction
 
 <pre>
-		gradle copyMod
+		./build.sh clean init install
 </pre>
 
 ## Déployer dans ent-core
@@ -20,7 +20,7 @@
 
 ## Configuration
 
-Dans le fichier `/actualites/deployment/actualites/conf.json.template` :
+Dans le fichier `/actualites/backend/deployment/actualites/conf.json.template` :
 
 
 Déclarer l'application dans la liste :
@@ -121,15 +121,4 @@ Pour manipulations spécifiques, des classes de Service sont utilisées :
 
 
 Des jsonschemas permettent de vérifier les données reçues par le serveur, ils se trouvent dans le dossier "src/main/resources/jsonschema".
-
-## Modèle front-end
-
-Le modèle Front-end manipule 2 objets model :
- * `Thread` correspondant à un fil d'actualités.
- * `Info` correspondant à une Actualité. Comprenant un champ `status` représentant l'état de publication.
-
-Il y a 2 Collections globales :
- * `model.threads` : objets `Thread` synchronisée depuis le serveur.
- * `model.infos` : objets `Info` synchronisée depuis le serveur.
-
 
