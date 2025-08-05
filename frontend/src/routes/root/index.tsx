@@ -29,7 +29,7 @@ export const Root = () => {
 
   if (!init) return <LoadingScreen position={false} />;
 
-  return init ? <Layout>Boilerplate</Layout> : null;
+  return init ? <Layout>actualites</Layout> : null;
 };
 
 export default Root;
