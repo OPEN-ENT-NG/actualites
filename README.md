@@ -12,21 +12,21 @@
 * Description : cette appplication permet de créer et diffuser des actualités, organisées en fils d'actualités. Un widget permet de visualiser les dernières actualités publiées depuis le fil de nouveauté de la solution.
 
 # Documentation technique
+
 ## Construction
 
 <pre>
-		./build.sh clean init install
+		./build.sh
 </pre>
 
 ## Déployer dans ent-core
-
 
 ## Configuration
 
 Dans le fichier `/actualites/backend/deployment/actualites/conf.json.template` :
 
-
 Déclarer l'application dans la liste :
+
 <pre>
     {
       "name": "net.atos~actualites~0.4-SNAPSHOT",
@@ -51,8 +51,8 @@ Déclarer l'application dans la liste :
     }
 </pre>
 
-
 Associer une route d'entée à la configuration du module proxy intégré (`"name": "net.atos~actualites~0.4-SNAPSHOT"`) :
+
 <pre>
 	{
 		"location": "/actualites",
@@ -60,8 +60,8 @@ Associer une route d'entée à la configuration du module proxy intégré (`"nam
 	}
 </pre>
 
-
 Déclarer l'application dans la liste des widgets :
+
 <pre>
 	{
 		"name": "actualites",
@@ -70,7 +70,6 @@ Déclarer l'application dans la liste des widgets :
 		"i18n": "/actualites/i18n"
 	}
 </pre>
-
 
 # Présentation du module
 
@@ -91,37 +90,40 @@ Les données du module sont stockées dans une base PostgreSQL, dans le schéma 
 Les scripts sql se trouvent dans le dossier "src/main/resources/sql".
 
 3 tables représentent le modèle relationnel applicatif :
- * `thread` : Fil d'actualités
- * `info` : Actualité
- * `comment` : Commentaire d'actulités
- 
+
+- `thread` : Fil d'actualités
+- `info` : Actualité
+- `comment` : Commentaire d'actulités
+
 Une `info` appartient à un `thread` et un `thread` peut avoir plusieurs objects `info`.
 Un `comment` appartient à une `info` et une `info` peut avoir plusieurs objects `comment`.
 
 Les tables `thread` et `info` sont liées à des tables de partage pour implémenter le fonctionnement du framework Ent-core
- * `thread_shares`
- * `info_shares`
+
+- `thread_shares`
+- `info_shares`
 
 ## Modèle serveur
 
 Le module serveur utilise 4 contrôleurs de déclaration :
- * `DisplayController` : Point d'entrée à l'application
- * `ThreadController` : Routage des vues, sécurité globale et déclaration des APIs de manipulation des fils d'actualités (Thread)
- * `InfoController` : Routage des vues, sécurité globale et déclaration des APIs de manipulation des actualités (Info)
- * `CommentController` : Routage des vues, sécurité globale et déclaration des APIs de manipulation des commentaires (Comment)
-Et 2 filters :
- * `ThreadFilter` : sécurité d'accès aux Fils d'actualités (Thread)
- * `InfoFilter` : sécurité d'accès aux actualités (Info)
+
+- `DisplayController` : Point d'entrée à l'application
+- `ThreadController` : Routage des vues, sécurité globale et déclaration des APIs de manipulation des fils d'actualités (Thread)
+- `InfoController` : Routage des vues, sécurité globale et déclaration des APIs de manipulation des actualités (Info)
+- `CommentController` : Routage des vues, sécurité globale et déclaration des APIs de manipulation des commentaires (Comment)
+  Et 2 filters :
+- `ThreadFilter` : sécurité d'accès aux Fils d'actualités (Thread)
+- `InfoFilter` : sécurité d'accès aux actualités (Info)
 
 Les contrôleurs étendent les classes du framework Ent-core exploitant les CrudServices de base.
 Pour manipulations spécifiques, des classes de Service sont utilisées :
- * `ThreadService` : concernant les fils d'actualités
- * `InfoService` : concernant les Actualités
 
- Le module serveur met en œuvre deux évènements issus du framework Ent-core  :
- * `ActualitesRepositoryEvents` : Logique de changement d'année scolaire
- * `ActualitesSearchingEvents` : Logique de recherche
+- `ThreadService` : concernant les fils d'actualités
+- `InfoService` : concernant les Actualités
 
+Le module serveur met en œuvre deux évènements issus du framework Ent-core :
+
+- `ActualitesRepositoryEvents` : Logique de changement d'année scolaire
+- `ActualitesSearchingEvents` : Logique de recherche
 
 Des jsonschemas permettent de vérifier les données reçues par le serveur, ils se trouvent dans le dossier "src/main/resources/jsonschema".
-
