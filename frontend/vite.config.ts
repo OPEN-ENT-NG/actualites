@@ -41,9 +41,9 @@ export default ({ mode }: { mode: string }) => {
       };
 
   return defineConfig({
-    base: mode === 'production' ? '/boilerplate' : '',
+    base: mode === 'production' ? '/actualites' : '',
     root: __dirname,
-    cacheDir: './node_modules/.vite/boilerplate',
+    cacheDir: './node_modules/.vite/actualites',
 
     resolve: {
       alias: {
@@ -71,7 +71,7 @@ export default ({ mode }: { mode: string }) => {
         '^/(?=auth|appregistry|cas|userbook|directory|communication|conversation|portal|session|timeline|workspace|infra)':
           proxyObj,
         '/explorer': proxyObj,
-        '/boilerplate': proxyObj,
+        '/actualites': proxyObj,
       },
       port: 4200,
       headers,
@@ -110,7 +110,7 @@ export default ({ mode }: { mode: string }) => {
       setupFiles: ['./src/mocks/setup.ts'],
       reporters: ['default'],
       coverage: {
-        reportsDirectory: './coverage/boilerplate',
+        reportsDirectory: './coverage/actualites',
         provider: 'v8',
       },
       server: {
