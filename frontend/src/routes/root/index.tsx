@@ -10,8 +10,13 @@ export const loader = async () => {
 
   // Check if the URL is an old format (angular root with hash) and redirect to the new format
   if (hashLocation) {
-    const isPath = matchPath('/view/:id', hashLocation);
+    const isDefault = matchPath('/default', hashLocation);
+    if (isDefault) {
+      // Suppress unused hash but do not reload the page
+      return '';
+    }
 
+    const isPath = matchPath('/view/:id', hashLocation);
     if (isPath) {
       // Redirect to the new format
       const redirectPath = `/id/${isPath?.params.id}`;
