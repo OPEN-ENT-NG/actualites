@@ -22,7 +22,7 @@ i18n
     },
     defaultNS: 'common',
     // you can add name of the app directly in the ns array
-    ns: ['common', 'boilerplate'],
+    ns: ['common', 'actualites'],
     fallbackLng: 'fr',
     lng: 'fr',
     interpolation: {
