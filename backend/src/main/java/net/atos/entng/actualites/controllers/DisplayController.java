@@ -52,7 +52,7 @@ public class DisplayController extends BaseController {
 	@Get("")
 	@SecuredAction("actualites.view")
 	public void view(final HttpServerRequest request) {
-		renderView(request);
+		renderView(request, new JsonObject(), "index.html", null);
 
 		// Create event "access to application Actualites" and store it in MongoDB, for module "statistics"
 		eventStore.createAndStoreEvent(ActualitesEvent.ACCESS.name(), request);

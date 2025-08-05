@@ -304,6 +304,7 @@ public class ThreadController extends ControllerHelper {
 	@ApiDoc("Print thread by id")
 	@SecuredAction(value = "", type = ActionType.AUTHENTICATED)
 	public void print(HttpServerRequest request) {
+		// TODO remplacer par renderView(request, new JsonObject(), "index.html", null); ?
 		renderView(request, new JsonObject().put("printThreadId", request.params().get("actualites")), "print.html", null);
 	}
 
