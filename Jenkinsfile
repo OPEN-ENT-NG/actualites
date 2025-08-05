@@ -2,26 +2,27 @@
 
 pipeline {
   agent any
-    stages {
-      stage("Initialization") {
-        steps {
-          script {
-            def version = sh(returnStdout: true, script: 'docker compose run --rm maven mvn $MVN_OPTS help:evaluate -Dexpression=project.version -q -DforceStdout')
-            buildName "${env.GIT_BRANCH.replace("origin/", "")}@${version}"
-          }
-        }
-      }
-      stage('Build') {
-        steps {
-          checkout scm
-          sh './build.sh init clean install publish'
+
+  stages {
+    stage('Frontend') {
+      steps {
+        dir('frontend') {
+          sh './build.sh clean init build'
         }
       }
     }
-  post {
-    cleanup {
-      sh 'docker compose down'
+    
+    stage('Backend') {
+      steps {
+        dir('backend') {
+          sh 'mkdir -p ./src/main/resources/public/ || TRUE'
+          sh 'find ./src/main/resources/public/ -maxdepth 1 -type f -exec rm -f {} +'
+          sh 'cp -R ../frontend/dist/* ./src/main/resources/'
+          sh 'mv ./src/main/resources/*.html ./src/main/resources/view'
+          sh './build.sh clean build publish'
+          sh 'rm -rf ../frontend/dist'
+        }
+      }
     }
   }
 }
-
