@@ -7,6 +7,20 @@ then
   mkdir node_modules
 fi
 
+# Params
+NO_DOCKER=""
+for i in "$@"
+do
+case $i in
+  --no-docker*)
+  NO_DOCKER="true"
+  shift
+  ;;
+  *)
+  ;;
+esac
+done
+
 case `uname -s` in
   MINGW* | Darwin*)
     USER_UID=1000
@@ -20,119 +34,58 @@ case `uname -s` in
     fi
 esac
 
-# Options
-NO_DOCKER=""
-SPRINGBOARD="recette"
-for i in "$@"
-do
-case $i in
-  -s=*|--springboard=*)
-  SPRINGBOARD="${i#*=}"
-  shift
-  ;;
-  --no-docker*)
-  NO_DOCKER="true"
-  shift
-  ;;
-  *)
-  ;;
-esac
-done
-
 init() {
   me=`id -u`:`id -g`
   echo "DEFAULT_DOCKER_USER=$me" > .env
 }
 
 clean () {
+  echo "Cleaning..."
   if [ "$NO_DOCKER" = "true" ] ; then
-    rm -rf node_modules
-    rm -f yarn.lock
     mvn clean
   else
     docker compose run --rm maven mvn $MVN_OPTS clean
   fi
+  echo "Clean done!"
 }
 
-install () {
-  docker compose run --rm maven mvn $MVN_OPTS install -DskipTests
+build () {
+  echo "Building..."
+  if [ "$NO_DOCKER" = "true" ] ; then
+    mvn install -DskipTests  -Dmaven.test.skip=true
+  else
+    docker compose run --rm maven mvn $MVN_OPTS install -DskipTests  -Dmaven.test.skip=true
+  fi
+  echo "Build done!"
 }
 
 test () {
   docker compose run --rm maven mvn $MVN_OPTS test
 }
 
-buildNode () {
-  #jenkins
-  echo "[buildNode] Get branch name from jenkins env..."
-  BRANCH_NAME=`echo $GIT_BRANCH | sed -e "s|origin/||g"`
-  if [ "$BRANCH_NAME" = "" ]; then
-    echo "[buildNode] Get branch name from git..."
-    BRANCH_NAME=`git branch | sed -n -e "s/^\* \(.*\)/\1/p"`
-  fi
-  if [ ! -z "$FRONT_TAG" ]; then
-    echo "[buildNode] Get tag name from jenkins param... $FRONT_TAG"
-    BRANCH_NAME="$FRONT_TAG"
-  fi
-  if [ "$BRANCH_NAME" = "" ]; then
-    echo "[buildNode] Branch name should not be empty!"
-    exit -1
-  fi
-
-  if [ "$BRANCH_NAME" = 'master' ]; then
-      echo "[buildNode] Use entcore version from package.json ($BRANCH_NAME)"
-      case `uname -s` in
-        MINGW*)
-          if [ "$NO_DOCKER" = "true" ] ; then
-            yarn install --no-bin-links && yarn upgrade entcore && node_modules/gulp/bin/gulp.js build
-          else
-            docker compose run --rm -u "$USER_UID:$GROUP_GID" node sh -c "yarn install --no-bin-links --legacy-peer-deps --force && yarn upgrade entcore && node_modules/gulp/bin/gulp.js build"
-          fi
-          ;;
-        *)
-          if [ "$NO_DOCKER" = "true" ] ; then
-            yarn install && yarn upgrade entcore && node_modules/gulp/bin/gulp.js build
-          else
-            docker compose run --rm -u "$USER_UID:$GROUP_GID" node sh -c "yarn install --legacy-peer-deps --force && yarn upgrade entcore && node_modules/gulp/bin/gulp.js build"
-          fi
-      esac
-  else
-      echo "[buildNode] Use entcore tag $BRANCH_NAME"
-      case `uname -s` in
-        MINGW*)
-          if [ "$NO_DOCKER" = "true" ] ; then
-            yarn install && yarn upgrade entcore && node_modules/gulp/bin/gulp.js build
-          else
-            docker compose run --rm -u "$USER_UID:$GROUP_GID" node sh -c "yarn install --no-bin-links --legacy-peer-deps --force && npm rm --no-save entcore && yarn install --no-save entcore@dev && node_modules/gulp/bin/gulp.js build"
-          fi
-          ;;
-        *)
-          if [ "$NO_DOCKER" = "true" ] ; then
-            yarn install --no-bin-links && yarn upgrade entcore && node_modules/gulp/bin/gulp.js build
-          else
-            docker compose run --rm -u "$USER_UID:$GROUP_GID" node sh -c "yarn install --legacy-peer-deps --force && npm rm --no-save entcore && yarn install --no-save entcore@dev && node_modules/gulp/bin/gulp.js build"
-          fi
-      esac
-  fi
-}
-
 publish() {
-  version=`docker compose run --rm maven mvn $MVN_OPTS help:evaluate -Dexpression=project.version -q -DforceStdout`
-  level=`echo $version | cut -d'-' -f3`
-  case "$level" in
-    *SNAPSHOT) export nexusRepository='snapshots' ;;
-    *)         export nexusRepository='releases' ;;
-  esac
-
-  docker compose run --rm  maven mvn -DrepositoryId=ode-$nexusRepository -DskipTests --settings /var/maven/.m2/settings.xml deploy
-}
-
-watch () {
+  echo "Publishing..."
   if [ "$NO_DOCKER" = "true" ] ; then
-    node_modules/gulp/bin/gulp.js watch --springboard=../recette
+    version=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`
+    level=`echo $version | cut -d'-' -f3`
+    case "$level" in
+      *SNAPSHOT) export nexusRepository='snapshots' ;;
+      *)         export nexusRepository='releases' ;;
+    esac
+
+    mvn -DrepositoryId=ode-$nexusRepository -DskipTests deploy
   else
-    docker compose run --rm -u "$USER_UID:$GROUP_GID" node sh -c "node_modules/gulp/bin/gulp.js watch --springboard=/home/node/$SPRINGBOARD"
+    version=`docker compose run --rm maven mvn $MVN_OPTS help:evaluate -Dexpression=project.version -q -DforceStdout`
+    level=`echo $version | cut -d'-' -f3`
+    case "$level" in
+      *SNAPSHOT) export nexusRepository='snapshots' ;;
+      *)         export nexusRepository='releases' ;;
+    esac
+
+    docker compose run --rm  maven mvn -DrepositoryId=ode-$nexusRepository -DskipTests --settings /var/maven/.m2/settings.xml deploy
   fi
+  echo "Publish done!"
+
 }
 
 for param in "$@"
@@ -144,11 +97,8 @@ do
     clean)
       clean
       ;;
-    buildNode)
-      buildNode
-      ;;
-    install)
-      buildNode && install
+    build)
+      build
       ;;
     test)
       test
@@ -159,9 +109,6 @@ do
     publish)
       publish
       ;;
-    testGradle)
-      testGradle
-      ;;
     *)
       echo "Invalid argument : $param"
   esac
@@ -169,4 +116,3 @@ do
     exit 1
   fi
 done
-
