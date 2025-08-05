@@ -8,7 +8,7 @@ export const mainNav = ng.directive("mainNav", function () {
       var maxWidth = ui.breakpoints.tablette;
       if (!ui.breakpoints.checkMaxWidth(maxWidth)) {
         angular.element($elem).css({
-          "position": "absolute",
+          position: "absolute",
           "max-height": "100vh",
           "overflow-y": "auto",
         });
