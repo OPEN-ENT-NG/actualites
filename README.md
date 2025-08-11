@@ -1,7 +1,7 @@
 # À propos de l'application Actualités
 
 * Licence : [AGPL v3](http://www.gnu.org/licenses/agpl.txt) - Copyright Région Hauts-de-France (ex Picardie), Département Essonne, Région Nouvelle Aquitaine (ex Poitou-Charente)
-* Développeur(s) : ATOS, CGI, OPEN DIGITAL EDUCATION
+* Développeur(s) : ATOS, CGI, Edifice
 * Financeur(s) : Région Hauts-de-France (ex Picardie), Département Essonne, Région Nouvelle Aquitaine (ex Poitou-Charente)
 
 * Description : cette appplication permet de créer et diffuser des actualités, organisées en fils d'actualités. Un widget permet de visualiser les dernières actualités publiées depuis le fil de nouveauté de la solution.
