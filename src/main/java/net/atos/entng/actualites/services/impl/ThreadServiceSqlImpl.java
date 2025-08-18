@@ -49,6 +49,7 @@ import net.atos.entng.actualites.to.NewsThread;
 
 import static fr.wseduc.webutils.Utils.handlerToAsyncHandler;
 import static fr.wseduc.webutils.Utils.isNotEmpty;
+import static org.entcore.common.user.DefaultFunctions.ADMIN_LOCAL;
 
 import static java.util.stream.Collectors.toList;
 
@@ -106,9 +107,9 @@ public class ThreadServiceSqlImpl implements ThreadService {
 				groupsAndUserIds.addAll(user.getGroupsIds());
 			}
 			// Structures which the user is an ADML of.
-			// final List<String> admlStructuresIds = user.isADML() 
-			// 	? user.getFunctions().get(ADMIN_LOCAL).getScope() 
-			// 	: Collections.EMPTY_LIST;
+			final List<String> admlStructuresIds = user.isADML() 
+				? user.getFunctions().get(ADMIN_LOCAL).getScope() 
+				: Collections.EMPTY_LIST;
 			query = "SELECT t.id as _id, t.title, t.icon, t.mode, t.created, t.modified, t.structure_id, t.owner, u.username" +
 				", json_agg(row_to_json(row(ts.member_id, ts.action)::actualites.share_tuple)) as shared" +
 				", array_to_json(array_agg(group_id)) as groups" +
@@ -118,13 +119,15 @@ public class ThreadServiceSqlImpl implements ThreadService {
 				" LEFT JOIN actualites.members AS m ON (ts.member_id = m.id AND m.group_id IS NOT NULL)" +
 				" WHERE t.id = ? " +
 				" AND (ts.member_id IN " + Sql.listPrepared(groupsAndUserIds.toArray()) +
-				// TODO code to be activated soon
-				//( admlStructuresIds.isEmpty() ? "" : " OR t.structure_id IN "+ Sql.listPrepared(admlStructuresIds)) +
+				( admlStructuresIds.isEmpty() ? "" : " OR t.structure_id IN "+ Sql.listPrepared(admlStructuresIds)) +
 				" OR t.owner = ?) " +
 				" GROUP BY t.id, u.username" +
 				" ORDER BY t.modified DESC";
 			values.add(Sql.parseId(id));
 			for(String value : groupsAndUserIds){
+				values.add(value);
+			}
+			for(String value : admlStructuresIds){
 				values.add(value);
 			}
 			values.add(user.getUserId());
@@ -142,11 +145,10 @@ public class ThreadServiceSqlImpl implements ThreadService {
 			if (user.getGroupsIds() != null) {
 				gu.addAll(user.getGroupsIds());
 			}
-			// TODO code to be activated soon
-			// // Structures which the user is an ADML of.
-			// final List<String> admlStructuresIds = user.isADML() 
-			// 	? user.getFunctions().get(ADMIN_LOCAL).getScope() 
-			// 	: Collections.EMPTY_LIST;
+			// Structures which the user is an ADML of.
+			final List<String> admlStructuresIds = user.isADML() 
+				? user.getFunctions().get(ADMIN_LOCAL).getScope() 
+				: Collections.EMPTY_LIST;
 			final Object[] groupsAndUserIds = gu.toArray();
 			query = "SELECT t.id as _id, t.title, t.icon, t.mode, t.created, t.modified, t.structure_id, t.owner, u.username" +
 				", json_agg(row_to_json(row(ts.member_id, ts.action)::actualites.share_tuple)) as shared" +
@@ -157,15 +159,13 @@ public class ThreadServiceSqlImpl implements ThreadService {
 				" LEFT JOIN actualites.members AS m ON (ts.member_id = m.id AND m.group_id IS NOT NULL)" +
 				" WHERE ts.member_id IN " + Sql.listPrepared(groupsAndUserIds) +
 				" OR t.owner = ? " +
-				// TODO code to be activated soon
-				//( admlStructuresIds.isEmpty() ? "" : " OR t.structure_id IN "+ Sql.listPrepared(admlStructuresIds)) +
+				( admlStructuresIds.isEmpty() ? "" : " OR t.structure_id IN "+ Sql.listPrepared(admlStructuresIds)) +
 				" GROUP BY t.id, u.username" +
 				" ORDER BY t.modified DESC";
 			values = new fr.wseduc.webutils.collections.JsonArray(gu).add(user.getUserId());
-			// TODO code to be activated soon
-			// for(String value : admlStructuresIds){
-			// 	values.add(value);
-			// }
+			for(String value : admlStructuresIds){
+				values.add(value);
+			}
 			Sql.getInstance().prepared(query, values, SqlResult.parseShared(handler));
 		}
 	}

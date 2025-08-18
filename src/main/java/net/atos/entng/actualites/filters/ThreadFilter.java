@@ -20,8 +20,10 @@
 package net.atos.entng.actualites.filters;
 
 import static org.entcore.common.sql.Sql.parseId;
+import static org.entcore.common.user.DefaultFunctions.ADMIN_LOCAL;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import net.atos.entng.actualites.controllers.ThreadController;
@@ -62,11 +64,10 @@ public class ThreadFilter implements ResourcesProvider {
 			if (user.getGroupsIds() != null) {
 				groupsAndUserIds.addAll(user.getGroupsIds());
 			}
-			// TODO code to be activated soon
-			// // Structures which the user is an ADML of.
-			// final List<String> admlStructuresIds = user.isADML() 
-			// 	? user.getFunctions().get(ADMIN_LOCAL).getScope() 
-			// 	: Collections.EMPTY_LIST;
+			// Structures which the user is an ADML of.
+			final List<String> admlStructuresIds = user.isADML() 
+				? user.getFunctions().get(ADMIN_LOCAL).getScope() 
+				: Collections.EMPTY_LIST;
 			// Query
 			StringBuilder query = new StringBuilder();
 			JsonArray values = new JsonArray();
@@ -77,10 +78,9 @@ public class ThreadFilter implements ResourcesProvider {
 				.append(" AND (")
 				.append("   (ts.member_id IN "+ Sql.listPrepared(groupsAndUserIds) +" AND ts.action = ?)")
 				.append("   OR t.owner = ?");
-			// TODO code to be activated soon
-			// if(!admlStructuresIds.isEmpty()) {
-			// 	query.append("   OR t.structure_id IN "+ Sql.listPrepared(admlStructuresIds));
-			// }
+			if(!admlStructuresIds.isEmpty()) {
+				query.append("   OR t.structure_id IN "+ Sql.listPrepared(admlStructuresIds));
+			}
 			query.append(" )");
 			values.add(Sql.parseId(id));
 			for(String value : groupsAndUserIds){
@@ -88,10 +88,9 @@ public class ThreadFilter implements ResourcesProvider {
 			}
 			values.add(sharedMethod);
 			values.add(user.getUserId());
-			// TODO code to be activated soon
-			// for(String value : admlStructuresIds){
-			// 	values.add(value);
-			// }
+			for(String value : admlStructuresIds){
+				values.add(value);
+			}
 
 			// Execute
 			Sql.getInstance().prepared(query.toString(), values, new Handler<Message<JsonObject>>() {

@@ -1,5 +1,5 @@
-import { Behaviours, _, model } from 'entcore';
 import http from 'axios';
+import { Behaviours, _, model } from 'entcore';
 
 const actualitesBehaviours = {
     resources: {
@@ -99,8 +99,7 @@ Behaviours.register('actualites', {
             for (var behaviour in actualitesBehaviours.resources){
                 if (model.me.hasRight(resource, actualitesBehaviours.resources[behaviour]) 
                     || model.me.userId === resource.owner
-                    // TODO code to be activated soon
-                    // || hasAdmlRightsFor(behaviour, resource.structure_id)
+                    || hasAdmlRightsFor(behaviour, resource.structure_id)
                     ){
                     if (resource.myRights[behaviour] !== undefined){
                         resource.myRights[behaviour] = resource.myRights[behaviour] && actualitesBehaviours.resources[behaviour];
