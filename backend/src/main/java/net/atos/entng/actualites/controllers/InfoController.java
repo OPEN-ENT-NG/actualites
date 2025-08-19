@@ -126,7 +126,7 @@ public class InfoController extends ControllerHelper {
     @ApiDoc("Retrieve : retrieve an Info in thread by thread and by id")
     @ResourceFilter(value = InfoNewFilter.class, arguments = "v1")
     @SecuredAction(value = "info.read", type = ActionType.RESOURCE,
-                    override = "net.atos.entng.actualites.controllers.InfoController|getInfoComments")
+                    right = "net.atos.entng.actualites.controllers.InfoController|getInfoComments")
     public void getInfoV1(final HttpServerRequest request) {
         getInfoComments(request);
     }
@@ -939,7 +939,7 @@ public class InfoController extends ControllerHelper {
 
     @Get("/list")
     @ApiDoc("List infos with pagination. Accept custom page size. Params threadId can be used to restrict the list to this thread.")
-    @SecuredAction(value = "actualites.infos.list.page", override = "net.atos.entng.actualites.controllers.InfoController|listInfos")
+    @SecuredAction(value = "actualites.infos.list.page", right = "net.atos.entng.actualites.controllers.InfoController|listInfos")
     public void listInfosPagined(final HttpServerRequest request) {
         // TODO IMPROVE : Security on Infos visibles by statuses / dates is not enforced
         UserUtils.getUserInfos(eb, request, user -> {

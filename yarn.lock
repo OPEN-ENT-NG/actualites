@@ -495,7 +495,7 @@ axios@0.16.2:
 
 axios@^0.15.2, axios@^0.15.3:
   version "0.15.3"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.15.3.tgz#2c9d638b2e191a08ea1d6cc988eadd6ba5bdc053"
+  resolved "https://registry.npmjs.org/axios/-/axios-0.15.3.tgz"
   integrity sha512-w3/VNaraEcDri16lbemQWQGKfaFk9O0IZkzKlLeF5r6WWDv9TkcXkP+MWkRK8FbxwfozY/liI+qtvhV295t3HQ==
   dependencies:
     follow-redirects "1.0.0"
@@ -1695,9 +1695,9 @@ entcore-toolkit@^1.0.0, entcore-toolkit@^1.0.1:
     typescript "2.1.1"
 
 entcore@develop-b2school:
-  version "4.8.12-develop-b2school.202504161053"
-  resolved "https://registry.yarnpkg.com/entcore/-/entcore-4.8.12-develop-b2school.202504161053.tgz#77370caa6dbb2fd0bba147aa3fde77acab3968b7"
-  integrity sha512-YDKjOihQL1DCUD0XvlLB7w30MKmmiWKWQ5LbBccKKIm/bqP+LGTlgHHirZV00ptQrU0jXHNAxCgCIOfVKiadtQ==
+  version "4.8.14-develop-b2school.202508181151"
+  resolved "https://registry.yarnpkg.com/entcore/-/entcore-4.8.14-develop-b2school.202508181151.tgz#663151e4db874988af8a5bf3ccf6eb04d38dd681"
+  integrity sha512-+5cbTpii2JIRuN4MOFFXXyzUaPbrsr+tB+kNYyV37T6fEWZlQw+xu+WniP36QLpbobOkpE39EfCYRD5CekgCjw==
   dependencies:
     angular "1.8.3"
     angular-route "1.8.3"
@@ -3692,7 +3692,7 @@ merge2@1.1.0:
 
 merge2@^1.0.2, merge2@^1.0.3:
   version "1.4.1"
-  resolved "https://registry.yarnpkg.com/merge2/-/merge2-1.4.1.tgz#4368892f885e907455a6fd7dc55c0c9d404990ae"
+  resolved "https://registry.npmjs.org/merge2/-/merge2-1.4.1.tgz"
   integrity sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==
 
 micromatch@^2.1.5:
