@@ -120,7 +120,7 @@ public class InfoController extends ControllerHelper {
     @ApiDoc("Retrieve : retrieve an Info in thread by thread and by id")
     @ResourceFilter(value = InfoNewFilter.class, arguments = "v2")
     @SecuredAction(value = "info.read", type = ActionType.RESOURCE,
-            override = "info.read")
+            right = "info.read")
     public void getInfoV2(final HttpServerRequest request) {
         getInfoComments(request);
     }
