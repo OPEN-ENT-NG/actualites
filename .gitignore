@@ -1,4 +1,15 @@
 .DS_Store
 .idea
+.vscode
 .gradle
 .pnpm-store
+
+# Ignore some files in React-based frontends
+.pnpm-store
+frontend/.env*
+
+# Ignore resources files in "backend/public" folders
+backend/**/resources/public/*.*
+# Ignore HTML files in "backend/view" folders
+backend/**/resources/view/*.html
+
