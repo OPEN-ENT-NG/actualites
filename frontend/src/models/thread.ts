@@ -21,7 +21,7 @@ export interface Thread {
   _id: number;
   title: string;
   /** URL of the icon of this trhead.*/
-  icon: string;
+  icon: string | null;
   /** Publish mode. */
   mode: ThreadMode;
   /** Creation date, formatted as 'YYYY-MM-DDTHH:mm:ss' */
@@ -43,4 +43,34 @@ export interface Thread {
         }]
      */
   shared?: Array<any>;
+}
+
+export type ThreadId = Thread['_id'];
+
+export interface ThreadShares {
+  actions: Array<{
+    name: Array<string>;
+    displayName: string;
+    type: 'RESOURCE';
+  }>;
+  groups: {
+    visibles: Array<{
+      id: string;
+      name: string;
+      groupDisplayName: null | string;
+      structureName: string;
+    }>;
+    checked: { [right: string]: Array<string> };
+  };
+  users: {
+    visibles: Array<{
+      id: string;
+      login: string;
+      username: string;
+      lastName: string;
+      firstName: string;
+      profile: string;
+    }>;
+    checked: { [right: string]: Array<string> };
+  };
 }
