@@ -1,10 +1,6 @@
 .idea
 actualites.iml
-src/main/resources/view
-src/main/resources/public/dist
-src/main/resources/public/temp
 src/main/resources/public/js
-src/main/resources/public/view
 rev-manifest.json
 build/
 node_modules
