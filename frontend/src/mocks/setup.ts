@@ -8,6 +8,7 @@ import { ReactElement } from 'react';
 import { afterAll, afterEach, beforeAll } from 'vitest';
 import '../i18n';
 import { Providers } from '../providers';
+import { MockedProviders } from './mockedProvider';
 import { server } from './server';
 
 // Enable API mocking before tests.
@@ -23,6 +24,8 @@ afterEach(() => server.resetHandlers());
 
 // Disable API mocking after the tests are done.
 afterAll(() => server.close());
+
+export const wrapper = MockedProviders;
 
 const customRender = (
   ui: ReactElement,
