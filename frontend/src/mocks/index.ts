@@ -160,3 +160,125 @@ export const mockThreadShare = {
     },
   },
 };
+
+export const mockInfos = [
+  {
+    id: 466,
+    threadId: 229,
+    content:
+      '<div class="ng-scope" style="text-align: center;">Je passe à React !</div>',
+    status: 'PUBLISHED',
+    owner: {
+      id: '8f437f63-1115-44c3-a3a3-33531ae80d90',
+      displayName: 'Catherine',
+      deleted: false,
+    },
+    created: '2025-08-07T16:40:58.693',
+    modified: '2025-08-07T16:40:58.693',
+    publicationDate: '2025-08-07T00:00:00.000',
+    expirationDate: '2025-08-28T00:00:00.000',
+    numberOfComments: 0,
+    title: 'Bientôt',
+    headline: true,
+    sharedRights: [],
+  },
+  {
+    id: 575,
+    threadId: 176,
+    content: '<div>coucou</div>',
+    status: 'PUBLISHED',
+    owner: {
+      id: '9154558e-1c94-4fc6-8347-1c493e422ad6',
+      displayName: 'Luc',
+      deleted: false,
+    },
+    created: '2025-08-22T15:43:08.152',
+    modified: '2025-08-22T15:43:08.152',
+    publicationDate: null,
+    expirationDate: null,
+    numberOfComments: 0,
+    title: 'coucou',
+    headline: false,
+    sharedRights: [],
+  },
+];
+
+export const mockInfoShare = {
+  actions: [
+    {
+      name: [
+        'net-atos-entng-actualites-controllers-CommentController|deleteComment',
+        'net-atos-entng-actualites-controllers-CommentController|updateComment',
+        'net-atos-entng-actualites-controllers-CommentController|comment',
+      ],
+      displayName: 'info.comment',
+      type: 'RESOURCE',
+    },
+    {
+      name: [
+        'net-atos-entng-actualites-controllers-InfoController|getSingleInfo',
+        'net-atos-entng-actualites-controllers-InfoController|getInfo',
+        'net-atos-entng-actualites-controllers-InfoController|getInfoComments',
+        'net-atos-entng-actualites-controllers-InfoController|getInfoShared',
+      ],
+      displayName: 'info.read',
+      type: 'RESOURCE',
+    },
+  ],
+  groups: {
+    visibles: [
+      {
+        id: '1347-1429810574274',
+        name: 'Enseignants du groupe 1COM1.',
+        groupDisplayName: null,
+        structureName: 'LYCEE PAUL',
+      },
+    ],
+    checked: {
+      '1347-1429810574274': [
+        'net-atos-entng-actualites-controllers-CommentController|deleteComment',
+        'net-atos-entng-actualites-controllers-InfoController|getInfo',
+        'net-atos-entng-actualites-controllers-InfoController|getSingleInfo',
+        'net-atos-entng-actualites-controllers-InfoController|getInfoComments',
+        'net-atos-entng-actualites-controllers-CommentController|updateComment',
+        'net-atos-entng-actualites-controllers-InfoController|getInfoShared',
+        'net-atos-entng-actualites-controllers-CommentController|comment',
+      ],
+    },
+  },
+  users: {
+    visibles: [
+      {
+        id: '70bf848d-222f-419a-af2b-9096ac9ec9ca',
+        login: 'jack.doe',
+        username: 'Jack',
+        lastName: 'Doe',
+        firstName: 'Jack',
+        profile: 'Student',
+      },
+    ],
+    checked: {},
+  },
+};
+
+export const mockInfoRevisions = [
+  {
+    _id: 551,
+    created: '2024-07-31T12:11:49.696',
+    title: 'Bonne rentrée 2025 à tous !',
+    content: '<div>Chères tous, Cordialement,</div>\n',
+    user_id: '13f1e9f7-7192-4f75-9a6b-c1c7eefe0280',
+    eventname: 'UPDATE',
+    username: 'Patrick',
+  },
+  {
+    _id: 549,
+    created: '2024-07-30T17:34:05.159',
+    title: 'Bonne rentrée 2025 à tous !',
+    content:
+      '<div>Chères familles, chers enseignants, chers élèves..., Cordialement,</div>',
+    user_id: '13f1e9f7-7192-4f75-9a6b-c1c7eefe0280',
+    eventname: 'CREATE_AND_PUBLISH',
+    username: 'Patrick',
+  },
+];

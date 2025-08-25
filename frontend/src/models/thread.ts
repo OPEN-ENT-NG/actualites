@@ -17,8 +17,10 @@ export enum ThreadTypes {
   LATEST = 0,
 }
 
+export type ThreadId = number;
+
 export interface Thread {
-  _id: number;
+  _id: ThreadId;
   title: string;
   /** URL of the icon of this trhead.*/
   icon: string | null;
@@ -43,34 +45,4 @@ export interface Thread {
         }]
      */
   shared?: Array<any>;
-}
-
-export type ThreadId = Thread['_id'];
-
-export interface ThreadShares {
-  actions: Array<{
-    name: Array<string>;
-    displayName: string;
-    type: 'RESOURCE';
-  }>;
-  groups: {
-    visibles: Array<{
-      id: string;
-      name: string;
-      groupDisplayName: null | string;
-      structureName: string;
-    }>;
-    checked: { [right: string]: Array<string> };
-  };
-  users: {
-    visibles: Array<{
-      id: string;
-      login: string;
-      username: string;
-      lastName: string;
-      firstName: string;
-      profile: string;
-    }>;
-    checked: { [right: string]: Array<string> };
-  };
 }

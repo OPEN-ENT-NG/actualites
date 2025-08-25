@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { mockThreads, mockThreadShare } from '~/mocks';
-import { ThreadMode } from '~/models/thread';
 import { threadService } from '.';
+import { ThreadMode } from '../../models/thread';
 
 describe('Thread GET Methods', () => {
   test('makes a GET request to get threads', async () => {

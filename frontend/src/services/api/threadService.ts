@@ -1,13 +1,13 @@
 import { odeServices } from '@edifice.io/client';
-import { Thread, ThreadId, ThreadMode, ThreadShares } from '~/models/thread';
 import { baseUrl } from '.';
+import { Share } from '../../models/share';
+import { Thread, ThreadId, ThreadMode } from '../../models/thread';
 
 export const createThreadService = () => {
   return {
     /**
-     * Search for user/group/bookmark.
-     * @param search search string
-     * @returns a list of Visible objects
+     * Get all threads.
+     * @returns an array of Thread objects
      */
     getThreads() {
       return odeServices.http().get<Thread[]>(`${baseUrl}/threads`);
@@ -28,7 +28,7 @@ export const createThreadService = () => {
     getShare(threadId: ThreadId) {
       return odeServices
         .http()
-        .get<ThreadShares>(`${baseUrl}/thread/share/json/${threadId}`);
+        .get<Share>(`${baseUrl}/thread/share/json/${threadId}`);
     },
   };
 };
