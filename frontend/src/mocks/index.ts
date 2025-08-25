@@ -205,6 +205,25 @@ export const mockInfos = [
   },
 ];
 
+export const mockOriginalInfo = {
+  _id: 575,
+  title: 'coucou',
+  content: '<div>coucou</div>',
+  status: 3,
+  publication_date: null,
+  expiration_date: null,
+  is_headline: false,
+  thread_id: 176,
+  created: '2025-08-22T15:43:08.152',
+  modified: '2025-08-22T15:43:08.152',
+  owner: '9154558e-1c94-4fc6-8347-1c493e422ad6',
+  username: 'Luc',
+  thread_title: 'Le périscolaire',
+  thread_icon: '/workspace/document/c6f373b2-46f4-47f4-8238-7fb4373f301d',
+  comments: null,
+  shared: [],
+};
+
 export const mockInfoShare = {
   actions: [
     {

@@ -1,5 +1,10 @@
 import { describe, expect, test } from 'vitest';
-import { mockInfoRevisions, mockInfos, mockInfoShare } from '~/mocks';
+import {
+  mockInfoRevisions,
+  mockInfos,
+  mockInfoShare,
+  mockOriginalInfo,
+} from '~/mocks';
 import { InfoStatus } from '~/models/info';
 import { infoService } from '.';
 
@@ -23,6 +28,13 @@ describe('Info GET Methods', () => {
 
     expect(response).toBeDefined();
     expect(response).toStrictEqual(mockInfoRevisions);
+  });
+
+  test('makes a GET request to get original info', async () => {
+    const response = await infoService.getOriginalFormat(229, 466);
+
+    expect(response).toBeDefined();
+    expect(response).toStrictEqual(mockOriginalInfo);
   });
 });
 

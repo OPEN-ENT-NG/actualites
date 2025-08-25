@@ -26,9 +26,9 @@ export interface Info {
   /** Modification date, formatted as 'YYYY-MM-DDTHH:mm:ss' */
   modified: string;
   /** Publication date, formatted as 'YYYY-MM-DDTHH:mm:ss' */
-  publicationDate: string;
+  publicationDate: string | null;
   /** Expiration date, formatted as 'YYYY-MM-DDTHH:mm:ss' */
-  expirationDate: string;
+  expirationDate: string | null;
   numberOfComments: number;
   title: string;
   headline: boolean;
@@ -55,4 +55,31 @@ export interface InfoRevision {
   user_id: string;
   eventname: InfoRevisionEvent;
   username: string;
+}
+
+export interface OriginalInfo {
+  _id: number;
+  title: string;
+  content: string;
+  contentVersion: 0 | 1;
+  status: 0 | 1 | 2 | 3; // see InfoStatus enum
+  publication_date: string | null;
+  expiration_date: string | null;
+  is_headline: boolean;
+  thread_id: ThreadId;
+  created: string;
+  modified: string;
+  owner: string;
+  username: string;
+  thread_title: string;
+  thread_icon: string;
+  comments: Array<{
+    _id: InfoId;
+    comment: string;
+    owner: string;
+    created: string;
+    modified: string;
+    username: string;
+  }> | null;
+  shared: [];
 }

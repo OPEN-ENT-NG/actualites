@@ -1,6 +1,11 @@
 import { http, HttpResponse } from 'msw';
 import { baseUrl } from '~/services';
-import { mockInfoRevisions, mockInfos, mockInfoShare } from '..';
+import {
+  mockInfoRevisions,
+  mockInfos,
+  mockInfoShare,
+  mockOriginalInfo,
+} from '..';
 
 /**
  * MSW Handlers
@@ -71,5 +76,16 @@ export const infoHandlers = [
   //// Get info's revisions
   http.get<{ infoId: string }>(`${baseUrl}/info/:infoId/timeline`, async () =>
     HttpResponse.json(mockInfoRevisions, { status: 200 }),
+  ),
+  //// Get original info
+  http.get<{ threadId: string; infoId: string }>(
+    `${baseUrl}/thread/:threadId/info/:infoId`,
+    async ({ request }) => {
+      const url = new URL(request.url);
+      if (!url.searchParams.get('originalFormat')) {
+        return new HttpResponse('Bad Request', { status: 400 });
+      }
+      return HttpResponse.json(mockOriginalInfo, { status: 200 });
+    },
   ),
 ];

@@ -1,6 +1,12 @@
 import { odeServices } from '@edifice.io/client';
 import { baseUrl } from '.';
-import { Info, InfoId, InfoRevision, InfoStatus } from '../../models/info';
+import {
+  Info,
+  InfoId,
+  InfoRevision,
+  InfoStatus,
+  OriginalInfo,
+} from '../../models/info';
 import { Share } from '../../models/share';
 import { ThreadId } from '../../models/thread';
 
@@ -155,6 +161,14 @@ export const createInfoService = () => {
       return odeServices
         .http()
         .get<InfoRevision[]>(`${baseUrl}/info/${infoId}/timeline`);
+    },
+
+    getOriginalFormat(threadId: ThreadId, infoId: InfoId) {
+      return odeServices
+        .http()
+        .get<OriginalInfo>(
+          `${baseUrl}/thread/${threadId}/info/${infoId}?originalFormat=true`,
+        );
     },
   };
 };
