@@ -141,7 +141,7 @@ export const createInfoService = () => {
      */
     delete(threadId: ThreadId, infoId: InfoId) {
       return odeServices.http().delete<{
-        id: InfoId;
+        rows: number;
       }>(`${baseUrl}/thread/${threadId}/info/${infoId}`);
     },
 

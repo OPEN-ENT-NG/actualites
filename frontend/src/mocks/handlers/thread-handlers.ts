@@ -29,7 +29,7 @@ export const threadHandlers = [
   ),
   //// Update a thread
   http.put<
-    object,
+    { threadId: string },
     {
       mode: ThreadMode;
       title: string;
@@ -47,7 +47,7 @@ export const threadHandlers = [
     );
   }),
   //// Delete a thread
-  http.delete<object>(`${baseUrl}/thread/:threadId`, async () =>
+  http.delete<{ threadId: string }>(`${baseUrl}/thread/:threadId`, async () =>
     HttpResponse.json(
       {
         rows: 1,
@@ -57,7 +57,7 @@ export const threadHandlers = [
   ),
   //// Get thread's share
   http.get<
-    object,
+    { threadId: string },
     {
       mode: ThreadMode;
       title: string;

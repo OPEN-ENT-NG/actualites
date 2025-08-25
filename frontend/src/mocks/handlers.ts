@@ -1,4 +1,5 @@
 import { HttpResponse, http } from 'msw';
+import { infoHandlers } from './handlers/info-handlers';
 import { threadHandlers } from './handlers/thread-handlers';
 
 /**
@@ -230,4 +231,8 @@ const defaultHandlers = [
  * MSW Handlers
  * Mock HTTP methods for your own application
  */
-export const handlers = [...defaultHandlers, ...threadHandlers];
+export const handlers = [
+  ...defaultHandlers,
+  ...threadHandlers,
+  ...infoHandlers,
+];
