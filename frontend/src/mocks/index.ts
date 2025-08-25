@@ -167,6 +167,7 @@ export const mockInfos = [
     threadId: 229,
     content:
       '<div class="ng-scope" style="text-align: center;">Je passe à React !</div>',
+    contentVersion: 1,
     status: 'PUBLISHED',
     owner: {
       id: '8f437f63-1115-44c3-a3a3-33531ae80d90',
@@ -186,6 +187,7 @@ export const mockInfos = [
     id: 575,
     threadId: 176,
     content: '<div>coucou</div>',
+    contentVersion: 1,
     status: 'PUBLISHED',
     owner: {
       id: '9154558e-1c94-4fc6-8347-1c493e422ad6',
@@ -266,7 +268,8 @@ export const mockInfoRevisions = [
     _id: 551,
     created: '2024-07-31T12:11:49.696',
     title: 'Bonne rentrée 2025 à tous !',
-    content: '<div>Chères tous, Cordialement,</div>\n',
+    content: '<div>Cher.e.s tou.te.s, Cordialement,</div>',
+    contentVersion: 1,
     user_id: '13f1e9f7-7192-4f75-9a6b-c1c7eefe0280',
     eventname: 'UPDATE',
     username: 'Patrick',
@@ -276,7 +279,8 @@ export const mockInfoRevisions = [
     created: '2024-07-30T17:34:05.159',
     title: 'Bonne rentrée 2025 à tous !',
     content:
-      '<div>Chères familles, chers enseignants, chers élèves..., Cordialement,</div>',
+      '<div>Chères familles, chers enseignants, chers élèves... Cordialement,</div>\n',
+    contentVersion: 0,
     user_id: '13f1e9f7-7192-4f75-9a6b-c1c7eefe0280',
     eventname: 'CREATE_AND_PUBLISH',
     username: 'Patrick',
