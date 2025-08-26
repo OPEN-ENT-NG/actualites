@@ -62,7 +62,7 @@ export const createInfoService = () => {
       infoId: InfoId,
       infoStatus: InfoStatus,
       payload: {
-        // thread_id: ThreadId; // FIXME is uncommenting useful, or dangerous ?
+        // thread_id: ThreadId; // FIXME Is uncommenting this line useful, or dangerous ?
         title: string;
         content: string;
         is_headline: boolean;
@@ -151,7 +151,7 @@ export const createInfoService = () => {
       }>(`${baseUrl}/thread/${threadId}/info/${infoId}`);
     },
 
-    getShare(threadId: ThreadId, infoId: InfoId) {
+    getShares(threadId: ThreadId, infoId: InfoId) {
       return odeServices
         .http()
         .get<Share>(`${baseUrl}/thread/${threadId}/info/share/json/${infoId}`);

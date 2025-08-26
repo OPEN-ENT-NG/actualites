@@ -25,7 +25,7 @@ export const createThreadService = () => {
     delete(threadId: ThreadId) {
       return odeServices.http().delete<void>(`${baseUrl}/thread/${threadId}`);
     },
-    getShare(threadId: ThreadId) {
+    getShares(threadId: ThreadId) {
       return odeServices
         .http()
         .get<Share>(`${baseUrl}/thread/share/json/${threadId}`);

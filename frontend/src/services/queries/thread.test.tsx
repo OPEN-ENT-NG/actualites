@@ -6,7 +6,7 @@ import { threadService } from '../api';
 import {
   useCreateThread,
   useDeleteThread,
-  useShareThread,
+  useThreadShares,
   useThreads,
   useUpdateThread,
 } from './thread';
@@ -90,10 +90,10 @@ describe('Thread Queries', () => {
     });
   });
 
-  test('useShareThread hook to get thread share', async () => {
-    const serviceSpy = vi.spyOn(threadService, 'getShare');
+  test('useThreadShares hook to get thread share', async () => {
+    const serviceSpy = vi.spyOn(threadService, 'getShares');
 
-    renderHook(() => useShareThread(1).data, {
+    renderHook(() => useThreadShares(1).data, {
       wrapper,
     });
 

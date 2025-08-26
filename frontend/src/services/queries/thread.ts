@@ -4,10 +4,9 @@ import { threadService } from '../api';
 
 export const threadQueryKeys = {
   all: () => ['threads'] as const,
-  thread: (threadId: ThreadId) => [...threadQueryKeys.all(), threadId],
+  thread: (threadId?: ThreadId) => [...threadQueryKeys.all(), threadId],
   share: (threadId: ThreadId) => [
-    ...threadQueryKeys.all(),
-    threadId,
+    ...threadQueryKeys.thread(threadId),
     'share',
     'json',
   ],
@@ -37,14 +36,14 @@ export const threadQueryOptions = {
   getShares(threadId: ThreadId) {
     return queryOptions({
       queryKey: threadQueryKeys.share(threadId),
-      queryFn: () => threadService.getShare(threadId),
+      queryFn: () => threadService.getShares(threadId),
       staleTime: 5 * 60 * 1000, // 5 minutes
     });
   },
 };
 
 export const useThreads = () => useQuery(threadQueryOptions.getThreads());
-export const useShareThread = (threadId: ThreadId) =>
+export const useThreadShares = (threadId: ThreadId) =>
   useQuery(threadQueryOptions.getShares(threadId));
 
 export const useCreateThread = () =>
