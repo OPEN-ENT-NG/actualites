@@ -1,5 +1,8 @@
 import { Thread } from '~/models/thread';
 
+//---------------------------------------
+//--------------- THREADS ---------------
+//---------------------------------------
 export const mockThreads: Array<Thread> = [
   {
     _id: 1,
@@ -161,6 +164,9 @@ export const mockThreadShare = {
   },
 };
 
+//---------------------------------------
+//---------------- INFOS ----------------
+//---------------------------------------
 export const mockInfos = [
   {
     id: 466,
@@ -303,5 +309,20 @@ export const mockInfoRevisions = [
     user_id: '13f1e9f7-7192-4f75-9a6b-c1c7eefe0280',
     eventname: 'CREATE_AND_PUBLISH',
     username: 'Patrick',
+  },
+];
+
+//---------------------------------------
+//--------------- COMMENTS --------------
+//---------------------------------------
+export const mockComments = [
+  {
+    _id: 1,
+    comment: 'Trop bien !',
+    owner: '28f06d0d-e6f6-41b9-91db-4c1c813d355f',
+    created: '2025-08-26T11:47:34.115',
+    modified: '2025-08-26T11:47:34.115',
+    username: 'Michael',
+    info_id: 123,
   },
 ];
