@@ -39,7 +39,7 @@ export const infoQueryKeys = {
 
   revisions: (options: { infoId: InfoId }) => [
     ...infoQueryKeys.info(options),
-    'reisions',
+    'revisions',
   ],
 
   originalFormat: (options: { threadId: ThreadId; infoId: InfoId }) => [

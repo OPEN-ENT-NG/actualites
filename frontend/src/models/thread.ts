@@ -22,7 +22,7 @@ export type ThreadId = number;
 export interface Thread {
   _id: ThreadId;
   title: string;
-  /** URL of the icon of this trhead.*/
+  /** URL of the icon of this thread.*/
   icon: string | null;
   /** Publish mode. */
   mode: ThreadMode;

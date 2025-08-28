@@ -73,9 +73,9 @@ export const createInfoService = () => {
       const action =
         infoStatus === InfoStatus.DRAFT
           ? 'draft'
-          : InfoStatus.PENDING
+          : infoStatus === InfoStatus.PENDING
             ? 'pending'
-            : InfoStatus.PUBLISHED
+            : infoStatus === InfoStatus.PUBLISHED
               ? 'published'
               : null;
       if (!action) throw new Error('Cannot update a trashed Info');

@@ -1,7 +1,6 @@
 import { queryOptions, useMutation, useQuery } from '@tanstack/react-query';
 import { CommentId } from '~/models/comments';
 import { InfoId } from '~/models/info';
-import { ThreadId } from '~/models/thread';
 import { commentService } from '../api';
 
 /**
@@ -68,7 +67,7 @@ export const useDeleteComment = () =>
       commentId,
       infoId,
     }: {
-      commentId: ThreadId;
+      commentId: CommentId;
       infoId: InfoId;
     }) => commentService.delete(infoId, commentId),
   });
