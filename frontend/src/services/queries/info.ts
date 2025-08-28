@@ -79,7 +79,6 @@ export const infoQueryOptions = {
     return queryOptions({
       queryKey: infoQueryKeys.share({ threadId, infoId }),
       queryFn: () => infoService.getShares(threadId, infoId),
-      staleTime: 5 * 60 * 1000, // 5 minutes
     });
   },
 
@@ -87,7 +86,6 @@ export const infoQueryOptions = {
     return queryOptions({
       queryKey: infoQueryKeys.revisions({ infoId }),
       queryFn: () => infoService.getRevisions(infoId),
-      staleTime: 5 * 60 * 1000, // 5 minutes
     });
   },
 
@@ -95,7 +93,6 @@ export const infoQueryOptions = {
     return queryOptions({
       queryKey: infoQueryKeys.originalFormat({ infoId, threadId }),
       queryFn: () => infoService.getOriginalFormat(threadId, infoId),
-      staleTime: 5 * 60 * 1000, // 5 minutes
     });
   },
 };

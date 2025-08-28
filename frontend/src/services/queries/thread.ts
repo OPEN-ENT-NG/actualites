@@ -23,7 +23,6 @@ export const threadQueryOptions = {
     return queryOptions({
       queryKey: threadQueryKeys.all(),
       queryFn: () => threadService.getThreads(),
-      staleTime: 5 * 60 * 1000, // 5 minutes
     });
   },
 
@@ -37,7 +36,6 @@ export const threadQueryOptions = {
     return queryOptions({
       queryKey: threadQueryKeys.share(threadId),
       queryFn: () => threadService.getShares(threadId),
-      staleTime: 5 * 60 * 1000, // 5 minutes
     });
   },
 };

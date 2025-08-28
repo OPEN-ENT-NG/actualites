@@ -30,7 +30,6 @@ export const commentQueryOptions = {
     return queryOptions({
       queryKey: commentQueryKeys.all(options),
       queryFn: () => commentService.getComments(options.infoId),
-      staleTime: 5 * 60 * 1000, // 5 minutes
     });
   },
 };
