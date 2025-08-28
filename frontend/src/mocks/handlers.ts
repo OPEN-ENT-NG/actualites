@@ -1,4 +1,5 @@
 import { HttpResponse, http } from 'msw';
+import { actualitesHandlers } from './handlers/actualites-handlers';
 import { commentHandlers } from './handlers/comment-handlers';
 import { infoHandlers } from './handlers/info-handlers';
 import { threadHandlers } from './handlers/thread-handlers';
@@ -14,7 +15,7 @@ const defaultHandlers = [
   }),
 
   http.get('/i18n', () => {
-    return HttpResponse.json({ status: 200 });
+    return HttpResponse.json({}, { status: 200 });
   }),
 
   http.get('/userbook/api/person', () => {
@@ -234,6 +235,7 @@ const defaultHandlers = [
  */
 export const handlers = [
   ...defaultHandlers,
+  ...actualitesHandlers,
   ...threadHandlers,
   ...infoHandlers,
   ...commentHandlers,
