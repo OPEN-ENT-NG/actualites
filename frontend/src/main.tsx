@@ -13,18 +13,25 @@ import '@edifice.io/bootstrap/dist/index.css';
 const rootElement = document.getElementById('root');
 const root = createRoot(rootElement!);
 
-if (process.env.NODE_ENV !== 'production') {
-  import('@axe-core/react').then((axe) => {
-    axe.default(React, root, 1000);
-  });
+async function deferRender() {
+  if (process.env.NODE_ENV === 'production') {
+    return Promise.resolve();
+  } else {
+    const { worker } = await import('./mocks/browser');
+    await worker.start();
+    const axe = await import('@axe-core/react');
+    return await axe.default(React, root, 1000);
+  }
 }
 
-root.render(
-  <StrictMode>
-    <Providers>
-      <EdificeThemeProvider>
-        <RouterProvider router={router(queryClient)} />
-      </EdificeThemeProvider>
-    </Providers>
-  </StrictMode>,
-);
+deferRender().then(() => {
+  root.render(
+    <StrictMode>
+      <Providers>
+        <EdificeThemeProvider>
+          <RouterProvider router={router(queryClient)} />
+        </EdificeThemeProvider>
+      </Providers>
+    </StrictMode>,
+  );
+});
