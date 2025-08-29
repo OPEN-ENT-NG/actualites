@@ -50,7 +50,7 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
                 },
               },
               {
-                path: 'infos/:info/edit',
+                path: 'infos/:info',
                 async lazy() {
                   const { loader, Threads: Component } = await import(
                     '~/routes/pages/Threads'
@@ -60,6 +60,13 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
                     Component,
                   };
                 },
+                children: [
+                  {
+                    path: '',
+                    index: true,
+                  },
+                  { path: 'edit' },
+                ],
               },
             ],
           },

@@ -22,11 +22,18 @@ export const loader = async () => {
         // Suppress unused hash but do not reload the page
         redirectPath = `/threads`;
       } else {
-        const isPath = matchPath('/view/thread/:id', hashLocation);
+        const isPathWithInfo = matchPath(
+          '/view/thread/:threadId/info/:infoId',
+          hashLocation,
+        );
+        const isPathWithThread = matchPath('/view/thread/:id', hashLocation);
 
-        if (isPath) {
+        if (isPathWithInfo) {
           // Redirect to the new format
-          redirectPath = `/id/${isPath?.params.id}`;
+          redirectPath = `/${isPathWithInfo?.params.threadId}/infos/${isPathWithInfo?.params.infoId}`;
+        } else if (isPathWithThread) {
+          // Redirect to the new format
+          redirectPath = `/${isPathWithThread?.params.id}`;
         }
       }
     }
