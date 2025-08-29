@@ -1,9 +1,9 @@
-/*
- * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- This is a starter file and can be deleted.
- * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- Delete this file and get started with your project!
- * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- */
+import { createCommentService } from './commentService';
+import { createInfoService } from './infoService';
+import { createThreadService } from './threadService';
 
-export const baseUrl = '/app';
+export const baseUrl = '/actualites';
+
+export const threadService = createThreadService();
+export const infoService = createInfoService();
+export const commentService = createCommentService();
