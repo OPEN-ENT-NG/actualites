@@ -1,6 +1,6 @@
 import { Layout, LoadingScreen, useEdificeClient } from '@edifice.io/react';
 
-import { matchPath } from 'react-router-dom';
+import { matchPath, Outlet } from 'react-router-dom';
 
 import { basename } from '..';
 
@@ -9,17 +9,29 @@ export const loader = async () => {
   const hashLocation = location.hash.substring(1);
 
   // Check if the URL is an old format (angular root with hash) and redirect to the new format
+  let redirectPath;
   if (hashLocation) {
-    const isDefault = matchPath('/default', hashLocation);
-    if (isDefault) {
-      // Suppress unused hash but do not reload the page
-      return '';
+    const hasDefaultFilter = matchPath('/default?filter=:filter', hashLocation);
+
+    if (hasDefaultFilter) {
+      redirectPath = `/threads/${hasDefaultFilter?.params.filter}`;
+    } else {
+      const isDefault = matchPath('/default', hashLocation);
+
+      if (isDefault) {
+        // Suppress unused hash but do not reload the page
+        redirectPath = `/threads`;
+      } else {
+        const isPath = matchPath('/view/thread/:id', hashLocation);
+
+        if (isPath) {
+          // Redirect to the new format
+          redirectPath = `/id/${isPath?.params.id}`;
+        }
+      }
     }
 
-    const isPath = matchPath('/view/:id', hashLocation);
-    if (isPath) {
-      // Redirect to the new format
-      const redirectPath = `/id/${isPath?.params.id}`;
+    if (redirectPath) {
       location.replace(
         location.origin + basename.replace(/\/$/g, '') + redirectPath,
       );
@@ -34,7 +46,12 @@ export const Root = () => {
 
   if (!init) return <LoadingScreen position={false} />;
 
-  return init ? <Layout>actualites</Layout> : null;
+  return init ? (
+    <Layout>
+      actualites
+      <Outlet />
+    </Layout>
+  ) : null;
 };
 
 export default Root;
