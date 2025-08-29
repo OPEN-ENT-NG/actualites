@@ -1,4 +1,5 @@
-import { Thread } from '~/models/thread';
+import { InfoStatus } from '~/models/info';
+import { Thread, ThreadMode } from '~/models/thread';
 
 //---------------------------------------
 //--------------- THREADS ---------------
@@ -8,7 +9,7 @@ export const mockThreads: Array<Thread> = [
     _id: 1,
     title: 'Pour la rentrée',
     icon: null,
-    mode: 0,
+    mode: 0 as ThreadMode,
     created: '2025-08-07T16:33:54.698',
     modified: '2025-08-07T16:33:54.698',
     structure_id: 'de8743c1-97f0-408c-b5ec-ec735ad65fd8',
@@ -35,7 +36,7 @@ export const mockThreads: Array<Thread> = [
     _id: 2,
     title: 'Menus de la Cantine',
     icon: '/workspace/document/c6f373b2-46f4-47f4-8238-7fb4373f301d',
-    mode: 0,
+    mode: 0 as ThreadMode,
     created: '2018-10-16T16:33:21.772',
     modified: '2018-10-16T16:33:21.772',
     structure_id: null,
@@ -174,7 +175,7 @@ export const mockInfos = [
     content:
       '<div class="ng-scope" style="text-align: center;">Je passe à React !</div>',
     contentVersion: 1,
-    status: 'PUBLISHED',
+    status: 'PUBLISHED' as InfoStatus,
     owner: {
       id: '8f437f63-1115-44c3-a3a3-33531ae80d90',
       displayName: 'Catherine',
@@ -194,7 +195,7 @@ export const mockInfos = [
     threadId: 176,
     content: '<div>coucou</div>',
     contentVersion: 1,
-    status: 'PUBLISHED',
+    status: 'PUBLISHED' as InfoStatus,
     owner: {
       id: '9154558e-1c94-4fc6-8347-1c493e422ad6',
       displayName: 'Luc',

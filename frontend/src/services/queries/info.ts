@@ -4,7 +4,7 @@ import { ThreadId } from '~/models/thread';
 import { infoService } from '../api';
 import { threadQueryKeys } from './thread';
 
-export const PAGE_SIZE = 20;
+export const DEFAULT_PAGE_SIZE = 20;
 
 /*********************************************************************************
  * Info Query Keys always follow this format :
@@ -55,14 +55,11 @@ export const infoQueryOptions = {
   /**
    * @returns Query options for fetching a page of infos, optionnally from a given thread.
    */
-  getInfos(options: { page: number; threadId?: ThreadId }) {
+  getInfos(options: { page: number; pageSize: number; threadId?: ThreadId }) {
     return queryOptions({
       queryKey: infoQueryKeys.pageFromThread(options),
       queryFn: () => {
-        return infoService.getInfos({
-          ...options,
-          pageSize: PAGE_SIZE,
-        });
+        return infoService.getInfos(options);
       },
       staleTime: Infinity, // will be unvalidated manually when needed only
     });
@@ -99,8 +96,8 @@ export const infoQueryOptions = {
 
 //*******************************************************************************
 // Hooks
-export const useInfos = (page: number) =>
-  useQuery(infoQueryOptions.getInfos({ page }));
+export const useInfos = (page: number, pageSize = DEFAULT_PAGE_SIZE) =>
+  useQuery(infoQueryOptions.getInfos({ page, pageSize }));
 
 export const useInfoShares = (threadId: ThreadId, infoId: InfoId) =>
   useQuery(infoQueryOptions.getShares(threadId, infoId));
