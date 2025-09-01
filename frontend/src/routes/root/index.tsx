@@ -1,7 +1,8 @@
-import { LoadingScreen, useEdificeClient } from '@edifice.io/react';
+import { Layout, LoadingScreen, useEdificeClient } from '@edifice.io/react';
 
 import { matchPath } from 'react-router-dom';
 
+import { InfoList } from '~/components';
 import { basename } from '..';
 
 /** Check old format URL and redirect if needed */
@@ -52,6 +53,12 @@ export const Root = () => {
   const { init } = useEdificeClient();
 
   if (!init) return <LoadingScreen position={false} />;
+
+  return (
+    <Layout>
+      <InfoList />
+    </Layout>
+  );
 };
 
 export default Root;
