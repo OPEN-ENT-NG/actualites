@@ -5,3 +5,4 @@
  This folder should contain all features in an app
  * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
+export * from './infos/useInfoList';
