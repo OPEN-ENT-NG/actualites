@@ -1,4 +1,4 @@
-import { Layout, LoadingScreen, useEdificeClient } from '@edifice.io/react';
+import { LoadingScreen, useEdificeClient } from '@edifice.io/react';
 
 import { matchPath } from 'react-router-dom';
 
@@ -9,20 +9,39 @@ export const loader = async () => {
   const hashLocation = location.hash.substring(1);
 
   // Check if the URL is an old format (angular root with hash) and redirect to the new format
+  let redirectPath;
   if (hashLocation) {
-    const isDefault = matchPath('/default', hashLocation);
-    if (isDefault) {
-      // Suppress unused hash but do not reload the page
-      return '';
+    const hasDefaultFilter = matchPath('/default?filter=:filter', hashLocation);
+
+    if (hasDefaultFilter) {
+      redirectPath = `/threads/${hasDefaultFilter?.params.filter}`;
+    } else {
+      const isDefault = matchPath('/default', hashLocation);
+
+      if (isDefault) {
+        // Suppress unused hash but do not reload the page
+        redirectPath = `/threads`;
+      } else {
+        const isPathWithInfo = matchPath(
+          '/view/thread/:threadId/info/:infoId',
+          hashLocation,
+        );
+        const isPathWithThread = matchPath('/view/thread/:id', hashLocation);
+
+        if (isPathWithInfo) {
+          // Redirect to the new format
+          redirectPath = `/${isPathWithInfo?.params.threadId}/infos/${isPathWithInfo?.params.infoId}`;
+        } else if (isPathWithThread) {
+          // Redirect to the new format
+          redirectPath = `/${isPathWithThread?.params.id}`;
+        }
+      }
     }
 
-    const isPath = matchPath('/view/:id', hashLocation);
-    if (isPath) {
-      // Redirect to the new format
-      const redirectPath = `/id/${isPath?.params.id}`;
-      location.replace(
-        location.origin + basename.replace(/\/$/g, '') + redirectPath,
-      );
+    if (redirectPath) {
+      const newUrl =
+        window.location.origin + basename.replace(/\/$/g, '') + redirectPath;
+      window.history.replaceState(null, '', newUrl);
     }
   }
 
@@ -33,8 +52,6 @@ export const Root = () => {
   const { init } = useEdificeClient();
 
   if (!init) return <LoadingScreen position={false} />;
-
-  return init ? <Layout>actualites</Layout> : null;
 };
 
 export default Root;
