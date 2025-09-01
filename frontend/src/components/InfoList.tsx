@@ -22,7 +22,7 @@ export const InfoList = () => {
   return (
     <div>
       <header>
-        <span>Segmented control à mettre ici =&gt; </span>
+        <span>Mettre le Segmented Control à la place de =&gt; </span>
         <Button onClick={reload}>Recharger</Button>
       </header>
 
