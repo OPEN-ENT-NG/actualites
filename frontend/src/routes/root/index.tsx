@@ -2,7 +2,7 @@ import { Layout, LoadingScreen, useEdificeClient } from '@edifice.io/react';
 
 import { matchPath } from 'react-router-dom';
 
-import { InfoList } from '~/components/InfoList';
+import { InfoList } from '~/components';
 import { basename } from '..';
 
 /** Check old format URL and redirect if needed */

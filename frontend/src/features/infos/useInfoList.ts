@@ -17,8 +17,8 @@ export function useInfoList(pageSize: number) {
 
   return {
     infos,
-    hasMore: infosQuery.data && infosQuery.data.length >= pageSize,
-    viewMore: () => {
+    hasNextPage: infosQuery.data && infosQuery.data.length >= pageSize,
+    loadNextPage: () => {
       setPage((previous) => previous + 1);
     },
     isLoading: infosQuery.isLoading,

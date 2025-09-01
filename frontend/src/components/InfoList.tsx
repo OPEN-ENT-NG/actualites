@@ -1,25 +1,43 @@
-import { LoadingScreen } from '@edifice.io/react';
+import { Button } from '@edifice.io/react';
+import { useRef } from 'react';
 import { useInfoList } from '~/features';
+import { useInfiniteScroll } from '~/hooks/useInfiniteScroll';
 import { DEFAULT_PAGE_SIZE } from '~/services/queries/info';
-import { InfoCard } from './InfoCard';
+import { InfoCard, InfoCardSkeleton } from '.';
 
 export const InfoList = () => {
-  const { infos, hasMore, viewMore, isLoading, reload } =
+  const loadNextRef = useRef<HTMLElement>(null);
+
+  const { infos, hasNextPage, loadNextPage, isLoading, reload } =
     useInfoList(DEFAULT_PAGE_SIZE);
+
+  useInfiniteScroll({
+    callback: () => {
+      loadNextPage();
+      return Promise.resolve();
+    },
+    elementRef: loadNextRef,
+  });
 
   return (
     <div>
       <header>
-        <button onClick={reload}>Recharger</button>
+        <span>Segmented control à mettre ici =&gt; </span>
+        <Button onClick={reload}>Recharger</Button>
       </header>
+
       {infos.map((info) => (
-        <InfoCard info={info}></InfoCard>
+        <InfoCard key={info.id} info={info}></InfoCard>
       ))}
       <br />
       {isLoading ? (
-        <LoadingScreen />
-      ) : hasMore ? (
-        <button onClick={viewMore}>Voir plus...</button>
+        <>
+          <InfoCardSkeleton />
+          <InfoCardSkeleton />
+          <InfoCardSkeleton />
+        </>
+      ) : hasNextPage ? (
+        <InfoCardSkeleton ref={loadNextRef} />
       ) : (
         <></>
       )}
