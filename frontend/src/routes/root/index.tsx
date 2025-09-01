@@ -1,6 +1,6 @@
-import { Layout, LoadingScreen, useEdificeClient } from '@edifice.io/react';
+import { LoadingScreen, useEdificeClient } from '@edifice.io/react';
 
-import { matchPath, Outlet } from 'react-router-dom';
+import { matchPath } from 'react-router-dom';
 
 import { basename } from '..';
 
@@ -39,9 +39,9 @@ export const loader = async () => {
     }
 
     if (redirectPath) {
-      location.replace(
-        location.origin + basename.replace(/\/$/g, '') + redirectPath,
-      );
+      const newUrl =
+        window.location.origin + basename.replace(/\/$/g, '') + redirectPath;
+      window.history.replaceState(null, '', newUrl);
     }
   }
 
@@ -52,13 +52,6 @@ export const Root = () => {
   const { init } = useEdificeClient();
 
   if (!init) return <LoadingScreen position={false} />;
-
-  return init ? (
-    <Layout>
-      actualites
-      <Outlet />
-    </Layout>
-  ) : null;
 };
 
 export default Root;
