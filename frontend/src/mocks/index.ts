@@ -186,7 +186,7 @@ export const mockInfos = [
     publicationDate: '2025-08-07T00:00:00.000',
     expirationDate: '2025-08-28T00:00:00.000',
     numberOfComments: 0,
-    title: 'Bientôt',
+    title: 'Bientôt', // Ne pas modifier, sert pour les tests
     headline: true,
     sharedRights: [],
   },
