@@ -32,7 +32,7 @@ export interface Info {
   numberOfComments: number;
   title: string;
   headline: boolean;
-  sharedRights: [];
+  sharedRights: any[];
 }
 
 export enum InfoRevisionEvent {
