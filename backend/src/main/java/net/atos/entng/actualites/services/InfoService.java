@@ -31,7 +31,6 @@ import io.vertx.core.json.JsonObject;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public interface InfoService {
 
@@ -53,6 +52,8 @@ public interface InfoService {
 	 * @param handler result handler
 	 */
 	public void update(String id, JsonObject data, UserInfos user, String eventStatus, Handler<Either<String, JsonObject>> handler);
+
+	void transformerUpdate(News newsComplete);
 
 	public void retrieve(String id, Handler<Either<String, JsonObject>> handler);
 	
@@ -83,6 +84,6 @@ public interface InfoService {
 
 	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, Integer threadId);
 
-	public Future<NewsComplete> getFromId(Map<String, SecuredAction> securedActions, UserInfos user, int infoId);
+	public Future<NewsComplete> getFromId(Map<String, SecuredAction> securedActions, UserInfos user, int infoId, boolean originalContent);
 
 }

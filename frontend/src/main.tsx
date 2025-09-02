@@ -14,9 +14,9 @@ const rootElement = document.getElementById('root');
 const root = createRoot(rootElement!);
 
 if (process.env.NODE_ENV !== 'production') {
-  import('@axe-core/react').then((axe) => {
-    axe.default(React, root, 1000);
-  });
+ // import('@axe-core/react').then((axe) => {
+ //   axe.default(React, root, 1000);
+ // });
 }
 
 root.render(

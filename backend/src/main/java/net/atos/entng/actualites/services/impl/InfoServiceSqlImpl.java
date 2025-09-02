@@ -19,30 +19,33 @@
 
 package net.atos.entng.actualites.services.impl;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
-
+import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.http.Renders;
 import fr.wseduc.webutils.security.SecuredAction;
 import io.vertx.core.Future;
+import io.vertx.core.Handler;
 import io.vertx.core.Promise;
+import io.vertx.core.impl.logging.Logger;
+import io.vertx.core.impl.logging.LoggerFactory;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.Actualites;
+import net.atos.entng.actualites.services.InfoService;
 import net.atos.entng.actualites.to.*;
+import net.atos.entng.actualites.utils.Events;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
 import org.entcore.common.sql.SqlStatementsBuilder;
 import org.entcore.common.user.UserInfos;
-import io.vertx.core.Handler;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
-
-import fr.wseduc.webutils.Either;
-import net.atos.entng.actualites.services.InfoService;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
 import org.entcore.common.utils.StopWatch;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.entcore.common.sql.SqlResult.validUniqueResultHandler;
 
@@ -58,6 +61,11 @@ public class InfoServiceSqlImpl implements InfoService {
 	private final String usersTable = "actualites.users";
 	private static final String THREAD_PUBLISH_RIGHT = "net-atos-entng-actualites-controllers-InfoController|publish";
 	private final QueryHelperSql helperSql = new QueryHelperSql();
+	private static final String CONTENT_FIELD_QUERY = "CASE WHEN i.content_version = 0 THEN i.content " +
+			"  WHEN i.content_version = 1 THEN " +
+			"  COALESCE((select _inf.content from actualites.info_revision _inf where _inf.info_id = i.id and _inf.content_version = 0 order by _inf.id DESC limit 1 )," +
+			" i.content) " +
+			" END ";
 	/**
 	 * Format object to create a new revision
 	 * @param id info id
@@ -90,7 +98,9 @@ public class InfoServiceSqlImpl implements InfoService {
 					String userQuery = "SELECT "+ Actualites.NEWS_SCHEMA + ".merge_users(?,?)";
 					s.prepared(userQuery, new fr.wseduc.webutils.collections.JsonArray().add(user.getUserId()).add(user.getUsername()));
 
-					data.put("owner", user.getUserId()).put("id", infoId);
+					data.put("owner", user.getUserId())
+						.put("id", infoId)
+						.put("content_version", 1);
 					s.insert(Actualites.NEWS_SCHEMA + "." + Actualites.INFO_TABLE, data, "id");
 
 					JsonObject revision = mapRevision(infoId, data);
@@ -164,11 +174,43 @@ public class InfoServiceSqlImpl implements InfoService {
 	}
 
 	@Override
+	public void transformerUpdate(News news) {
+		SqlStatementsBuilder s = new SqlStatementsBuilder();
+
+		String query = "UPDATE " + Actualites.NEWS_SCHEMA + "." + Actualites.INFO_TABLE +
+				" SET content = ?, content_version = 1, modified = NOW() " +
+				"WHERE id = ? " +
+				"RETURNING id";
+
+		JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
+		values.add(news.getContent());
+		values.add(news.getId());
+
+		s.prepared(query, values);
+
+		JsonObject revision = new JsonObject();
+		revision.put("info_id", news.getId());
+		revision.put("content", news.getContent());
+		revision.put("content_version", news.getContentVersion());
+		revision.put("title", news.getTitle());
+
+		revision.put("owner", news.getOwner().getId());
+		revision.put("event", Events.UPDATE);
+		s.insert(Actualites.NEWS_SCHEMA + "." + Actualites.INFO_REVISION_TABLE, revision, null);
+
+		Sql.getInstance().transaction(s.build(), r -> {
+			if (!"ok".equals(r.body().getString("status"))) {
+				log.error(String.format("[Actualites@%s::update] Error while persisting transformer update", this.getClass().getSimpleName()));
+			}
+		});
+	}
+
+	@Override
 	public void retrieve(String id, Handler<Either<String, JsonObject>> handler) {
 			String query;
 			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
 			query = "SELECT i.id as _id, i.title, i.content, i.status, i.publication_date, i.expiration_date, i.is_headline, i.thread_id, i.created, i.modified" +
-				", i.owner, u.username, t.title AS thread_title, t.icon AS thread_icon" +
+				", i.owner, i.content_revision, u.username, t.title AS thread_title, t.icon AS thread_icon" +
 				", (SELECT json_agg(cr.*) FROM (" +
 					"SELECT c.id as _id, c.comment, c.owner, c.created, c.modified, au.username" +
 					" FROM actualites.comment AS c" +
@@ -202,7 +244,7 @@ public class InfoServiceSqlImpl implements InfoService {
 				groupsAndUserIds.addAll(user.getGroupsIds());
 			}
 			query = "SELECT i.id as _id, i.title, i.content, i.status, i.publication_date, i.expiration_date, i.is_headline, i.thread_id, i.created, i.modified" +
-				", i.owner, u.username, t.title AS thread_title, t.icon AS thread_icon" +
+				", i.owner, i.content_revision, u.username, t.title AS thread_title, t.icon AS thread_icon" +
 				", (SELECT json_agg(cr.*) FROM (" +
 					"SELECT c.id as _id, c.comment, c.owner, c.created, c.modified, au.username" +
 					" FROM actualites.comment AS c" +
@@ -267,7 +309,7 @@ public class InfoServiceSqlImpl implements InfoService {
 				groupsAndUserIds.addAll(user.getGroupsIds());
 			}
 			query = "SELECT i.id as _id, i.title, i.content, i.status, i.publication_date, i.expiration_date, i.is_headline, i.thread_id, i.created, i.modified" +
-				", i.owner, u.username, t.title AS thread_title, t.icon AS thread_icon" +
+				", i.owner, i.content_revision, u.username, t.title AS thread_title, t.icon AS thread_icon" +
 				", (SELECT json_agg(cr.*) FROM (" +
 					"SELECT c.id as _id, c.comment, c.owner, c.created, c.modified, au.username" +
 					" FROM actualites.comment AS c" +
@@ -483,7 +525,7 @@ public class InfoServiceSqlImpl implements InfoService {
     @Override
     public void getRevisions(Long infoId, Handler<Either<String, JsonArray>> handler) {
         String query = "SELECT info_revision.id as _id, created, title, content, owner as " +
-                "user_id, event as eventName, username " +
+                "user_id, event as eventName, username, content_version as contentVersion " +
                 "FROM "+ Actualites.NEWS_SCHEMA +".info_revision " +
                 "INNER JOIN "+ Actualites.NEWS_SCHEMA +".users on (info_revision.owner = users.id) " +
                 "WHERE info_id = ? " +
@@ -548,7 +590,7 @@ public class InfoServiceSqlImpl implements InfoService {
 					"	 ) " +
 					"SELECT i.id, i.thread_id, i.title, i.content, i.status, i.owner, u.username AS owner_name, " +
 					"        u.deleted as owner_deleted, i.created, i.modified, i.publication_date, " +
-					"        i.expiration_date, i.is_headline, i.number_of_comments, max(info_for_user.rights) as rights " +
+					"        i.expiration_date, i.is_headline, i.number_of_comments, max(info_for_user.rights) as rights, i.content_version " +
 					"    FROM " + infosTable + " AS i " +
 					"        LEFT JOIN info_for_user ON info_for_user.id = i.id " +
 					" 		 LEFT JOIN thread_for_user ON thread_for_user.id = i.thread_id " +
@@ -557,7 +599,7 @@ public class InfoServiceSqlImpl implements InfoService {
 					"    WHERE " + whereClause +
 					"    GROUP BY i.id, i.thread_id, i.title, i.content, i.status, i.owner, owner_name, owner_deleted, " +
 					"        i.created, i.modified, i.publication_date, i.expiration_date, i.is_headline, " +
-					"        i.number_of_comments " +
+					"        i.number_of_comments, i.content_version " +
 					"    ORDER BY i.modified DESC " +
 					"    OFFSET ? " +
 					"    LIMIT ? ";
@@ -606,7 +648,8 @@ public class InfoServiceSqlImpl implements InfoService {
 									row.getString("expiration_date"),
 									row.getBoolean("is_headline"),
 									row.getInteger("number_of_comments"),
-									Rights.fromRawRights(securedActions, rawRights)
+									Rights.fromRawRights(securedActions, rawRights),
+									row.getInteger("content_version")
 							);
 						}).collect(Collectors.toList());
 						promise.complete(pojo);
@@ -620,7 +663,7 @@ public class InfoServiceSqlImpl implements InfoService {
 		return promise.future();
 	}
 
-	public Future<NewsComplete> getFromId(Map<String, SecuredAction> securedActions, UserInfos user, int infoId) {
+	public Future<NewsComplete> getFromId(Map<String, SecuredAction> securedActions, UserInfos user, int infoId, boolean originalContent) {
 		final Promise<NewsComplete> promise = Promise.promise();
 		if (user == null) {
 			promise.fail("user not provided");
@@ -655,10 +698,10 @@ public class InfoServiceSqlImpl implements InfoService {
 					"    	 WHERE tsh.member_id IN " + ids + " " +
 					"    	 GROUP BY t.id, tsh.member_id " +
 					"	 ) " +
-					"SELECT i.id, i.title, i.content, i.created, i.modified, i.is_headline, i.number_of_comments, " + // info data
+					"SELECT i.id, i.title, " + getContentFieldQuery(originalContent) + " as content , i.created, i.modified, i.is_headline, i.number_of_comments, " + // info data
 					"        i.status, i.publication_date, i.expiration_date, " + // info publication data
 					"		 i.owner, u.username AS owner_name, u.deleted AS owner_deleted, " + // info owner data
-					"		 i.thread_id, t.title AS thread_title, t.icon AS thread_icon, " +
+					"		 i.thread_id, i.content_version as content_version, t.title AS thread_title, t.icon AS thread_icon, " +
 					"		 t.owner AS thread_owner, ut.username AS thread_owner_name, ut.deleted AS thread_owner_deleted, " + // thread owner data
 					"		 max(info_for_user.rights) AS rights, " + // info rights
 					"		 max(thread_for_user.rights) AS thread_rights " + // thread rights
@@ -670,10 +713,10 @@ public class InfoServiceSqlImpl implements InfoService {
 					"        LEFT JOIN " + usersTable + " AS ut ON t.owner = ut.id " +
 					"    WHERE " +
 					"		 i.id = ? " + // get info from id
-					"    GROUP BY i.id, i.title, i.content, i.created, i.modified, i.is_headline, i.number_of_comments, " +
+					"    GROUP BY i.id, i.title, content, i.created, i.modified, i.is_headline, i.number_of_comments, " +
 					"        i.status, i.publication_date, i.expiration_date, " +
 					"        i.owner, owner_name, owner_deleted, " +
-					" 		 i.thread_id, thread_title, thread_icon, " +
+					" 		 i.thread_id, i.content_version, thread_title, thread_icon, " +
 					"		 thread_owner, thread_owner_name, thread_owner_deleted";
 
 			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
@@ -728,7 +771,8 @@ public class InfoServiceSqlImpl implements InfoService {
 									row.getString("expiration_date"),
 									row.getBoolean("is_headline"),
 									row.getInteger("number_of_comments"),
-									Rights.fromRawRights(securedActions, rawRights)
+									Rights.fromRawRights(securedActions, rawRights),
+									row.getInteger("content_version")
 							);
 						}).collect(Collectors.toList()).get(0);
 						promise.complete(pojo);
@@ -740,6 +784,13 @@ public class InfoServiceSqlImpl implements InfoService {
 			});
 		}
 		return promise.future();
+	}
+
+	private String getContentFieldQuery(boolean originalContent) {
+		if(!originalContent)  {
+			return "i.content";
+		}
+		return CONTENT_FIELD_QUERY;
 	}
 
 
