@@ -1,0 +1,11 @@
+.separated-info {
+  color: var(--edifice-gray-700);
+}
+
+.separated-info.flex-row > :not(:first-child):before {
+  content: '';
+  margin: 12px;
+  height: 16px;
+  border: 0;
+  border-left: 1px solid var(--edifice-gray-500);
+}
