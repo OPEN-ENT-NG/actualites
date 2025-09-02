@@ -1,8 +1,14 @@
-import { Layout, LoadingScreen, useEdificeClient } from '@edifice.io/react';
+import {
+  AppHeader,
+  Breadcrumb,
+  Layout,
+  LoadingScreen,
+  useEdificeClient,
+} from '@edifice.io/react';
 
-import { matchPath } from 'react-router-dom';
+import { matchPath, Outlet } from 'react-router-dom';
 
-import { InfoList } from '~/components';
+import { IWebApp } from '@edifice.io/client';
 import { basename } from '..';
 
 /** Check old format URL and redirect if needed */
@@ -50,15 +56,21 @@ export const loader = async () => {
 };
 
 export const Root = () => {
-  const { init } = useEdificeClient();
+  const { currentApp, init } = useEdificeClient();
+  const displayApp = {
+    displayName: 'news',
+    icon: 'actualites-large',
+  };
 
   if (!init) return <LoadingScreen position={false} />;
-
-  return (
+  return init ? (
     <Layout>
-      <InfoList />
+      <AppHeader>
+        <Breadcrumb app={(currentApp as IWebApp) ?? displayApp} />
+      </AppHeader>
+      <Outlet />
     </Layout>
-  );
+  ) : null;
 };
 
 export default Root;
