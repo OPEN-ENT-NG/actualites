@@ -14,8 +14,13 @@ pipeline {
       stage('Build') {
         steps {
           checkout scm
-          sh './build.sh init clean install publish'
+          sh 'GIT_BRANCH=dev ./build.sh init clean install publish'
         }
+      }
+      stage('Build image') {
+          steps {
+              sh 'edifice image --archs=linux/amd64 --force'
+          }
       }
     }
   post {

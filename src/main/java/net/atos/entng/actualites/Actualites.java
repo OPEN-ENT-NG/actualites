@@ -68,7 +68,14 @@ public class Actualites extends BaseServer {
 
 	@Override
 	public void start(Promise<Void> startPromise) throws Exception {
-		super.start(startPromise);
+		final Promise<Void> promise = Promise.promise();
+		super.start(promise);
+		promise.future()
+				.compose(init -> initActualites())
+				.onComplete(startPromise);
+	}
+
+	public Future<Void> initActualites() {
 		final EventBus eb = getEventBus(vertx);
 		final JsonObject config = config();
 		// Subscribe to events published for transition
@@ -127,6 +134,7 @@ public class Actualites extends BaseServer {
 		commentController.setCrudService(commentSqlCrudService);
 		addController(commentController);
 
+		return Future.succeededFuture();
 	}
 
 	@Override
