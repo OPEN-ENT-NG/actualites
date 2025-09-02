@@ -8,13 +8,13 @@ export const loader = (queryClient: QueryClient) => async () => {
 export function Threads() {
   const { threadId, info } = useParams();
   const [searchParams] = useSearchParams();
-  const tab = searchParams.get('tab');
+  const status = searchParams.get('status');
 
   return (
     <div>
       Threads {threadId && <span>with thread ID {threadId}</span>}
       {info && <span> and info {info}</span>}
-      {tab && <span> and tab {tab}</span>}
+      {status && <span> and status {status}</span>}
     </div>
   );
 }
