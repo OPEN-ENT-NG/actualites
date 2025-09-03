@@ -35,11 +35,7 @@ import net.atos.entng.actualites.Actualites;
 import net.atos.entng.actualites.constants.Field;
 import net.atos.entng.actualites.filters.InfoFilter;
 import net.atos.entng.actualites.filters.ThreadFilter;
-import net.atos.entng.actualites.services.ConfigService;
-import net.atos.entng.actualites.services.InfoService;
-import net.atos.entng.actualites.services.ThreadService;
-import net.atos.entng.actualites.services.TimelineMongo;
-import net.atos.entng.actualites.services.impl.InfoServiceSqlImpl;
+import net.atos.entng.actualites.services.*;
 import net.atos.entng.actualites.services.impl.ThreadServiceSqlImpl;
 import net.atos.entng.actualites.services.impl.TimelineMongoImpl;
 import net.atos.entng.actualites.utils.Events;
@@ -85,14 +81,13 @@ public class InfoController extends ControllerHelper {
     // TRASH: 0; DRAFT: 1; PENDING: 2; PUBLISHED: 3
     private static final List<Integer> status_list = new ArrayList<Integer>(Arrays.asList(0, 1, 2, 3));
 
-    protected final InfoService infoService;
+    protected InfoService infoService;
     protected final ThreadService threadService;
     protected final TimelineMongo timelineMongo;
     protected final EventHelper eventHelper;
     protected final boolean optimized;
 
     public InfoController(final JsonObject config){
-        this.infoService = new InfoServiceSqlImpl();
         this.threadService = new ThreadServiceSqlImpl();
         this.timelineMongo = new TimelineMongoImpl(Field.TIMELINE_COLLECTION, MongoDb.getInstance());
         final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(Actualites.class.getSimpleName());
@@ -107,10 +102,12 @@ public class InfoController extends ControllerHelper {
     public void getInfo(final HttpServerRequest request) {
         // TODO IMPROVE @SecuredAction : Security on Info as a resource
         final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
+        boolean originalContent = Boolean.parseBoolean(request.getParam("originalContent", "false"));
+
         UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
             @Override
             public void handle(final UserInfos user) {
-                infoService.retrieve(infoId, user, notEmptyResponseHandler(request));
+                infoService.retrieve(infoId, user, originalContent, notEmptyResponseHandler(request));
             }
         });
     }
@@ -241,7 +238,7 @@ public class InfoController extends ControllerHelper {
 					public void handle(JsonObject resource) {
 						resource.put("status", status_list.get(1));
                         final Handler<Either<String, JsonObject>> handler = eventHelper.onCreateResource(request, RESOURCE_NAME, notEmptyResponseHandler(request));
-						infoService.create(resource, user, Events.DRAFT.toString(),handler);
+                        infoService.create(resource, user, Events.DRAFT.toString(),handler);
 					}
 				});
 			}
@@ -298,7 +295,7 @@ public class InfoController extends ControllerHelper {
 					public void handle(JsonObject resource) {
 						resource.put("status", status_list.get(3));
 						final Handler<Either<String, JsonObject>> handler = eventHelper.onCreateResource(request, RESOURCE_NAME, notEmptyResponseHandler(request));
-						infoService.create(resource, user, Events.CREATE_AND_PUBLISH.toString(), handler);
+                        infoService.create(resource, user, Events.CREATE_AND_PUBLISH.toString(), handler);
 					}
 				});
 			}
@@ -442,7 +439,7 @@ public class InfoController extends ControllerHelper {
 						};
 						JsonObject resource = new JsonObject();
 						resource.put("status", status_list.get(2));
-						infoService.update(infoId, resource, user, Events.SUBMIT.toString(),handler);
+                        infoService.update(infoId, resource, user, Events.SUBMIT.toString(),handler);
 					}
 				});
 			}
@@ -474,7 +471,7 @@ public class InfoController extends ControllerHelper {
 						};
 						JsonObject resource = new JsonObject();
 						resource.put("status", status_list.get(1));
-						infoService.update(infoId, resource, user, Events.UNPUBLISH.toString(), handler);
+                        infoService.update(infoId, resource, user, Events.UNPUBLISH.toString(), handler);
 					}
 				});
 			}
@@ -509,7 +506,7 @@ public class InfoController extends ControllerHelper {
                         };
 						JsonObject resource = new JsonObject();
 						resource.put("status", status_list.get(3));
-						infoService.update(infoId, resource, user, Events.PUBLISH.toString(), handler);
+                        infoService.update(infoId, resource, user, Events.PUBLISH.toString(), handler);
 					}
 				});
 			}
@@ -547,7 +544,7 @@ public class InfoController extends ControllerHelper {
 						};
 						JsonObject resource = new JsonObject();
 						resource.put("status", status_list.get(2));
-						infoService.update(infoId, resource, user, Events.UNPUBLISH.toString(), notEmptyResponseHandler(request));
+                        infoService.update(infoId, resource, user, Events.UNPUBLISH.toString(), notEmptyResponseHandler(request));
 			}
 		});
 	}
@@ -622,7 +619,7 @@ public class InfoController extends ControllerHelper {
             @Override
             public void handle(final UserInfos user) {
                 if (user != null) {
-                    infoService.retrieve(infoId, user, new Handler<Either<String, JsonObject>>() {
+                    infoService.retrieve(infoId, user, false, new Handler<Either<String, JsonObject>>() {
                         @Override
                         public void handle(Either<String, JsonObject> event) {
                             request.resume();
@@ -861,7 +858,7 @@ public class InfoController extends ControllerHelper {
 			@Override
 			public void handle(final UserInfos user) {
 				if (user != null) {
-					infoService.retrieve(infoId, user, new Handler<Either<String, JsonObject>>() {
+					infoService.retrieve(infoId, user, false, new Handler<Either<String, JsonObject>>() {
 						@Override
 						public void handle(Either<String, JsonObject> event) {
 							request.resume();
@@ -975,8 +972,10 @@ public class InfoController extends ControllerHelper {
             if (user != null) {
                 // 1. Parse args
                 final int infoId = Integer.parseInt(request.params().get(Actualites.INFO_RESOURCE_ID));
+                boolean originalContent = Boolean.parseBoolean(request.getParam("originalContent", "false"));
+
                 // 2. Call service
-                infoService.getFromId(securedActions, user, infoId)
+                infoService.getFromId(securedActions, user, infoId, originalContent)
                         .onSuccess(news -> render(request, news))
                         .onFailure(ex -> renderError(request));
 
@@ -985,6 +984,9 @@ public class InfoController extends ControllerHelper {
             }
         });
     }
+
+    public void setInfoService(InfoService infoService) {
+        this.infoService = infoService;
+    }
+
 }
-
-
