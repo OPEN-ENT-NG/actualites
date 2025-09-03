@@ -19,18 +19,22 @@
 
 package net.atos.entng.actualites;
 
+import fr.wseduc.transformer.ContentTransformerFactoryProvider;
+import fr.wseduc.transformer.IContentTransformerClient;
+import io.vertx.core.Future;
 import io.vertx.core.Promise;
+import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.controllers.CommentController;
+import net.atos.entng.actualites.controllers.DisplayController;
 import net.atos.entng.actualites.controllers.InfoController;
 import net.atos.entng.actualites.controllers.ThreadController;
-import net.atos.entng.actualites.controllers.DisplayController;
 import net.atos.entng.actualites.services.ConfigService;
-import net.atos.entng.actualites.services.impl.ActualitesRepositoryEvents;
-
-import net.atos.entng.actualites.services.impl.ActualitesSearchingEvents;
-import net.atos.entng.actualites.services.impl.ThreadServiceSqlImpl;
-
+import net.atos.entng.actualites.services.InfoService;
+import net.atos.entng.actualites.services.ThreadService;
+import net.atos.entng.actualites.services.impl.*;
+import org.entcore.common.editor.ContentTransformerConfig;
 import org.entcore.common.http.BaseServer;
 import org.entcore.common.http.filter.ShareAndOwner;
 import org.entcore.common.service.impl.SqlCrudService;
@@ -39,14 +43,8 @@ import org.entcore.common.share.impl.SqlShareService;
 import org.entcore.common.sql.SqlConf;
 import org.entcore.common.sql.SqlConfs;
 
-import io.vertx.core.eventbus.EventBus;
-import io.vertx.core.json.JsonArray;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import io.vertx.core.Future;
-import net.atos.entng.actualites.services.ThreadService;
 
 public class Actualites extends BaseServer {
 	public final static String NEWS_SCHEMA = "actualites";
@@ -90,6 +88,10 @@ public class Actualites extends BaseServer {
 		ConfigService configService = ConfigService.getInstance();
 		configService.setShareConfig(config.getJsonObject(SHARE_CONF_KEY));
 
+		ContentTransformerFactoryProvider.init(vertx);
+		final JsonObject contentTransformerConfig = ContentTransformerConfig.getContentTransformerConfig(vertx).orElse(null);
+		final IContentTransformerClient contentTransformerClient = ContentTransformerFactoryProvider.getFactory("actualites", contentTransformerConfig).create();
+
 		addController(new DisplayController());
 
 		// set default rights filter
@@ -116,9 +118,14 @@ public class Actualites extends BaseServer {
 		confInfo.setShareTable(INFO_SHARE_TABLE);
 		confInfo.setSchema(getSchema());
 
+		//info service transformer
+		InfoService infoService = new InfoTransformerServiceImpl(contentTransformerClient,
+																			new InfoServiceSqlImpl());
+
 		// info controller
 		InfoController infoController = new InfoController(config);
 		SqlCrudService infoSqlCrudService = new SqlCrudService(getSchema(), INFO_TABLE, INFO_SHARE_TABLE, new JsonArray().add("*"), new JsonArray().add("*"), true);
+		infoController.setInfoService(infoService);
 		infoController.setCrudService(infoSqlCrudService);
 		infoController.setShareService(new SqlShareService(getSchema(),INFO_SHARE_TABLE, eb, securedActions, null));
 		addController(infoController);

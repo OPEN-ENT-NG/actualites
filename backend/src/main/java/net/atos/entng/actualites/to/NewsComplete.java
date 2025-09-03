@@ -9,7 +9,7 @@ public class NewsComplete {
 
     private final int id;
     private final NewsThreadInfo thread;
-    private final String content;
+    private String content;
 
     private final NewsStatus status;
     private final ResourceOwner owner;
@@ -26,8 +26,10 @@ public class NewsComplete {
     private final int numberOfComments;
     private final Rights sharedRights;
     private final String title;
+    private final int contentVersion;
 
-    public NewsComplete(int id, NewsThreadInfo thread, String title, String content, NewsStatus status, ResourceOwner owner, String created, String modified, String publicationDate, String expirationDate, boolean isHeadline, int numberOfComments, Rights sharedRights) {
+    public NewsComplete(int id, NewsThreadInfo thread, String title, String content, NewsStatus status, ResourceOwner owner, String created, String modified,
+                        String publicationDate, String expirationDate, boolean isHeadline, int numberOfComments, Rights sharedRights, int contentVersion) {
         this.id = id;
         this.thread = thread;
         this.content = content;
@@ -41,6 +43,7 @@ public class NewsComplete {
         this.numberOfComments = numberOfComments;
         this.sharedRights = sharedRights;
         this.title = title;
+        this.contentVersion = contentVersion;
     }
 
     public String getTitle() {
@@ -99,5 +102,13 @@ public class NewsComplete {
 
     public int getNumberOfComments() {
         return numberOfComments;
+    }
+
+    public int getContentVersion() {
+        return contentVersion;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 }

@@ -31,7 +31,6 @@ import io.vertx.core.json.JsonObject;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public interface InfoService {
 
@@ -54,9 +53,16 @@ public interface InfoService {
 	 */
 	public void update(String id, JsonObject data, UserInfos user, String eventStatus, Handler<Either<String, JsonObject>> handler);
 
+	/**
+	 * Update a news content with a transformed content. The content version will be set to 1. This
+	 * method immediately return and error is not propagated as this doesn't concern the caller
+	 * @param newsComplete
+	 */
+	void transformerUpdateQuietly(News newsComplete);
+
 	public void retrieve(String id, Handler<Either<String, JsonObject>> handler);
 	
-	public void retrieve(String id, UserInfos user, Handler<Either<String, JsonObject>> handler);
+	public void retrieve(String id, UserInfos user, boolean originalContent, Handler<Either<String, JsonObject>> handler);
 
 	public void list(UserInfos user, boolean optimized, Handler<Either<String, JsonArray>> handler);
 
@@ -83,6 +89,6 @@ public interface InfoService {
 
 	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, Integer threadId);
 
-	public Future<NewsComplete> getFromId(Map<String, SecuredAction> securedActions, UserInfos user, int infoId);
+	public Future<NewsComplete> getFromId(Map<String, SecuredAction> securedActions, UserInfos user, int infoId, boolean originalContent);
 
 }
