@@ -5,6 +5,6 @@
  All UI components shared across the application
  * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
-export * from './InfoCard';
-export * from './InfoCardSkeleton';
+export * from './InfoCard/InfoCard';
+export * from './InfoCard/InfoCardSkeleton';
 export * from './InfoList';
