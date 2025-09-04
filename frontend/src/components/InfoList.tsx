@@ -21,13 +21,13 @@ export const InfoList = () => {
 
   return (
     <div>
-      <header>
-        <span>Mettre le Segmented Control à la place de =&gt; </span>
+      <header className="mt-16 mb-24">
+        <span>Mettre le Segmented Control ici =&gt; </span>
         <Button onClick={reload}>Recharger</Button>
       </header>
 
       {infos.map((info) => (
-        <InfoCard key={info.id} info={info}></InfoCard>
+        <InfoCard key={info.id} info={info} color="read"></InfoCard>
       ))}
       <br />
       {isLoading ? (
