@@ -10,9 +10,9 @@
       "pnpm-lock.yaml": true,
     },
     "workbench.colorCustomizations": {
-      "titleBar.activeBackground": "#cc6f21",
+      "titleBar.activeBackground": "#73320c",
       "titleBar.activeForeground": "#e1e8f7",
-      "statusBar.background": "#cc6f21",
+      "statusBar.background": "#59270a",
       "statusBar.foreground": "#d7def4"
     }
   }
