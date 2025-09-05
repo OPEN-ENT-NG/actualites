@@ -10,10 +10,6 @@ export const defaultHandlers = [
     });
   }),
 
-  http.get('/i18n', () => {
-    return HttpResponse.json({}, { status: 200 });
-  }),
-
   http.get('/userbook/api/person', () => {
     return HttpResponse.json({
       status: 'ok',
