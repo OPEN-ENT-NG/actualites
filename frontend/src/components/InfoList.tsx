@@ -27,7 +27,7 @@ export const InfoList = () => {
       </header>
 
       {infos.map((info) => (
-        <InfoCard key={info.id} info={info} color="read"></InfoCard>
+        <InfoCard key={info.id} info={info} variant="read"></InfoCard>
       ))}
       <br />
       {isLoading ? (
