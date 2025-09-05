@@ -5,9 +5,11 @@ import { Thread } from '~/models/thread';
 
 export const ThreadCard = ({
   thread,
+  className,
   textGray = '800',
 }: {
   thread?: Thread;
+  className?: string;
   textGray?: '700' | '800';
 }) => {
   const { currentApp } = useEdificeClient();
@@ -37,7 +39,7 @@ export const ThreadCard = ({
   );
 
   return (
-    <Flex direction="row" align="center" gap="8">
+    <Flex direction="row" align="center" gap="8" className={className}>
       {iconElement}
       <span className={titleClass}>{title}</span>
     </Flex>
