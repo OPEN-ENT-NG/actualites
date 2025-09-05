@@ -2,7 +2,7 @@
 
 # Frontend
 cd frontend
-./build.sh clean init build
+./build.sh --no-docker clean init build
 cd ..
 
 # Create directory structure and copy frontend dist
@@ -14,7 +14,7 @@ cp -R ../frontend/dist/* ./src/main/resources/
 mv ./src/main/resources/*.html ./src/main/resources/view
 
 # Build .
-./build.sh clean build
+./build.sh --no-docker clean build
 
 # Clean up - remove frontend/dist and backend/src/main/resources
 rm -rf ../frontend/dist
