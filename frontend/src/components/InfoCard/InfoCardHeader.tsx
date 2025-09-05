@@ -11,15 +11,15 @@ export const InfoCardHeader = ({ info }: Pick<InfoCardProps, 'info'>) => {
   const avatarUrl = getAvatarURL(info.owner.id, 'user');
 
   return (
-    <header>
+    <header className="mb-12">
       <Flex align="center" justify="between">
         <ThreadCard thread={thread} textGray="700"></ThreadCard>
         <h2>{info.title}</h2>
-        <div>{/*TODO : flag *Nouveau */}</div>
+        <div>Nouveau{/*TODO : flag Nouveau */}</div>
       </Flex>
 
       <Flex align="center" gap="16" justify="around">
-        <hr className="m-12 flex-fill" />
+        <hr className="m-12 ms-0 flex-fill" />
         <Flex gap="12" align="center" justify="around">
           <Avatar
             alt={info.owner.displayName}
@@ -33,7 +33,7 @@ export const InfoCardHeader = ({ info }: Pick<InfoCardProps, 'info'>) => {
             <div>{formatDate(info.modified, 'long')}</div>
           </SeparatedInfo>
         </Flex>
-        <hr className="m-12 flex-fill" />
+        <hr className="m-12 me-0 flex-fill" />
       </Flex>
     </header>
   );

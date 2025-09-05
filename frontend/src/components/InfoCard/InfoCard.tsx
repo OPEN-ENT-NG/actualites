@@ -6,14 +6,14 @@ import { InfoCardHeader } from './InfoCardHeader';
 
 export type InfoCardProps = {
   info: Info;
-  color: 'read' | 'unread' | 'transparent';
+  color: 'read' | 'headline' | 'transparent';
 };
 
 export const InfoCard = ({ info, color = 'transparent' }: InfoCardProps) => {
   const infoId = `info-${info.id}`;
-  const className = clsx('mb-16', {
-    'bc-primary': color === 'read',
-    'bc-secondary': color === 'unread',
+  const className = clsx('mb-16 px-24 py-16', {
+    'border info-card-read': color === 'read',
+    'border info-card-headline': color === 'headline',
   });
 
   return (
