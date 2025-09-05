@@ -19,7 +19,7 @@ export const InfoCardHeader = ({ info }: Pick<InfoCardProps, 'info'>) => {
         <div>Nouveau{/*TODO : flag Nouveau */}</div>
       </Flex>
 
-      <Divider>
+      <Divider color="red">
         <Avatar
           alt={info.owner.displayName}
           src={avatarUrl}

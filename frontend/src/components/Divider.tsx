@@ -1,6 +1,5 @@
 import { Flex } from '@edifice.io/react';
 import { ReactNode, useEffect, useRef } from 'react';
-import './Divider.css';
 
 export function Divider({
   children,
