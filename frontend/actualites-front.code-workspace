@@ -1,0 +1,19 @@
+{
+  "folders": [
+    {
+      "path": "./"
+    }
+  ],
+  "settings": {
+    "search.exclude": {
+      ".pnpm-store": true,
+      "pnpm-lock.yaml": true,
+    },
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#cc6f21",
+      "titleBar.activeForeground": "#e1e8f7",
+      "statusBar.background": "#cc6f21",
+      "statusBar.foreground": "#d7def4"
+    }
+  }
+}
