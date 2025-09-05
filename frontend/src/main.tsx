@@ -17,8 +17,10 @@ async function deferRender() {
   if (process.env.NODE_ENV === 'production') {
     return Promise.resolve();
   } else {
-    const { worker } = await import('./mocks/browser');
-    await worker.start();
+    if (import.meta.env.VITE_MOCK === 'true') {
+      const { worker } = await import('./mocks/browser');
+      await worker.start();
+    }
     const axe = await import('@axe-core/react');
     return await axe.default(React, root, 1000);
   }
