@@ -16,7 +16,7 @@ export const InfoCardHeader = ({ info }: Pick<InfoCardProps, 'info'>) => {
       <Flex align="center" justify="between">
         <ThreadCard thread={thread} textGray="700"></ThreadCard>
         <h2>{info.title}</h2>
-        <div>Nouveau{/*TODO : flag Nouveau */}</div>
+        <div>{/*TODO : flag Nouveau */}</div>
       </Flex>
 
       <Divider color="red">
