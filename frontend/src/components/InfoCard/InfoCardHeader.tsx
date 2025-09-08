@@ -1,5 +1,6 @@
 import { Avatar, Flex, useDate, useDirectory } from '@edifice.io/react';
 import { useThread } from '~/features/threads/useThread';
+import { Divider } from '../Divider';
 import { SeparatedInfo } from '../SeparatedInfo';
 import { ThreadCard } from '../ThreadCard';
 import { InfoCardProps } from './InfoCard';
@@ -18,23 +19,19 @@ export const InfoCardHeader = ({ info }: Pick<InfoCardProps, 'info'>) => {
         <div>Nouveau{/*TODO : flag Nouveau */}</div>
       </Flex>
 
-      <Flex align="center" gap="16" justify="around">
-        <hr className="m-12 ms-0 flex-fill" />
-        <Flex gap="12" align="center" justify="around">
-          <Avatar
-            alt={info.owner.displayName}
-            src={avatarUrl}
-            size="md"
-            variant="circle"
-            loading="lazy"
-          />
-          <SeparatedInfo>
-            <div>{info.owner.displayName}</div>
-            <div>{formatDate(info.modified, 'long')}</div>
-          </SeparatedInfo>
-        </Flex>
-        <hr className="m-12 me-0 flex-fill" />
-      </Flex>
+      <Divider color="red">
+        <Avatar
+          alt={info.owner.displayName}
+          src={avatarUrl}
+          size="md"
+          variant="circle"
+          loading="lazy"
+        />
+        <SeparatedInfo>
+          <div>{info.owner.displayName}</div>
+          <div>{formatDate(info.modified, 'long')}</div>
+        </SeparatedInfo>
+      </Divider>
     </header>
   );
 };
