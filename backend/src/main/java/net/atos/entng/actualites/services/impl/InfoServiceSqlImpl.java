@@ -669,14 +669,46 @@ public class InfoServiceSqlImpl implements InfoService {
 		if (user == null) {
 			promise.fail("user not provided");
 		} else {
-			// 1. Prepare SQL request
+
+			// 1. Get all ids corresponding to the user
+
+			List<String> groupsAndUserIds = new ArrayList<>();
+			groupsAndUserIds.add(user.getUserId());
+			if (user.getGroupsIds() != null) {
+				groupsAndUserIds.addAll(user.getGroupsIds());
+			}
+
+			// 2. Prepare SQL request
+
+			final String ids = Sql.listPrepared(groupsAndUserIds.toArray());
+
 			String query =
+					"WITH " +
+					"	 info_for_user AS ( " + // Every info owned of shared to the user
+					"		 SELECT i.id, array_agg(DISTINCT ish.action) AS rights " +
+					"    	 FROM " + infosTable + " AS i " +
+					"        	 JOIN " + infosSharesTable + " AS ish ON i.id = ish.resource_id " +
+					"    	 WHERE " +
+					"        	 ish.member_id IN " + ids + " " +
+					"    	 GROUP BY i.id " +
+					"	 ), " +
+					"	 thread_for_user AS ( " + // Every thread owned of shared to the user with publish rights
+					"	 	 SELECT t.id, array_agg(DISTINCT tsh.action) AS rights" +
+					"    	 FROM " + threadsTable + " AS t " +
+					"        	 INNER JOIN " + threadsSharesTable + " AS tsh ON t.id = tsh.resource_id " +
+					"    	 WHERE tsh.member_id IN " + ids + " " +
+					"    	 GROUP BY t.id, tsh.member_id " +
+					"	 ) " +
 					"SELECT i.id, i.title, " + getContentFieldQuery(originalContent) + " as content , i.created, i.modified, i.is_headline, i.number_of_comments, " + // info data
 					"        i.status, i.publication_date, i.expiration_date, " + // info publication data
 					"		 i.owner, u.username AS owner_name, u.deleted AS owner_deleted, " + // info owner data
 					"		 i.thread_id, i.content_version as content_version, t.title AS thread_title, t.icon AS thread_icon, " +
-					"		 t.owner AS thread_owner, ut.username AS thread_owner_name, ut.deleted AS thread_owner_deleted " + // thread owner data
+					"		 t.owner AS thread_owner, ut.username AS thread_owner_name, ut.deleted AS thread_owner_deleted, " + // thread owner data
+					"		 max(info_for_user.rights) AS rights, " + // info rights
+					"		 max(thread_for_user.rights) AS thread_rights " + // thread rights
 					"    FROM " + infosTable + " AS i " +
+					"        LEFT JOIN info_for_user ON info_for_user.id = i.id " +
+					" 		 LEFT JOIN thread_for_user ON thread_for_user.id = i.thread_id " +
 					"        LEFT JOIN " + usersTable + " AS u ON i.owner = u.id " +
 					" 		 LEFT JOIN " + threadsTable + " AS t ON t.id = i.thread_id " +
 					"        LEFT JOIN " + usersTable + " AS ut ON t.owner = ut.id " +
@@ -689,18 +721,29 @@ public class InfoServiceSqlImpl implements InfoService {
 					"		 thread_owner, thread_owner_name, thread_owner_deleted";
 
 			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
-
+			for(String value : groupsAndUserIds){
+				values.add(value);
+			}
+			for(String value : groupsAndUserIds){
+				values.add(value);
+			}
 			values.add(infoId);
 
-			// 2. Retrieve & parse data
-			Sql.getInstance().prepared(query, values,  (sqlResult) -> {
-				final Either<String, JsonArray> result = SqlResult.validResult(sqlResult);
+			// 3. Retrieve & parse data
+			SqlStatementsBuilder builder = new SqlStatementsBuilder();
+			//for optimization deactivate jit has it trigger, it take time to execute and give nothing in term of otpimisation
+			builder.prepared("set jit = off", new JsonArray());
+			builder.prepared(query, values);
+			builder.prepared("set jit = on", new JsonArray());
+			Sql.getInstance().transaction(builder.build(), (sqlResult) -> {
+				final Either<String, JsonArray> result = SqlResult.validResults(sqlResult);
 				if (result.isLeft()) {
 					promise.fail(result.left().getValue());
 				} else {
 					try {
 						//filter unecessary line
-						NewsComplete pojo = result.right().getValue().stream().filter(row -> row instanceof JsonObject).map(o -> {
+						JsonArray results = result.right().getValue().getJsonArray(1);
+						NewsComplete pojo = results.stream().filter(row -> row instanceof JsonObject).map(o -> {
 							final JsonObject row = (JsonObject)o;
 							final ResourceOwner owner = new ResourceOwner(
 									row.getString("owner"),
