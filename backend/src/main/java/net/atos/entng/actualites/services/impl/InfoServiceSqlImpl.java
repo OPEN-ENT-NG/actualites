@@ -61,6 +61,7 @@ public class InfoServiceSqlImpl implements InfoService {
 	private final String usersTable = "actualites.users";
 	private static final String THREAD_PUBLISH_RIGHT = "net-atos-entng-actualites-controllers-InfoController|publish";
 	private final QueryHelperSql helperSql = new QueryHelperSql();
+	// we select the current content if its not tranformed, or we search it in the revision table
 	private static final String CONTENT_FIELD_QUERY =
 			"CASE WHEN i.content_version = 0 THEN i.content " +
 			"  WHEN i.content_version = 1 THEN " +
