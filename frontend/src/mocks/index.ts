@@ -4,12 +4,46 @@ import { Thread, ThreadMode } from '~/models/thread';
 export const RESPONSE_DELAY = 500;
 
 //---------------------------------------
+//---------------- USERS ----------------
+//---------------------------------------
+export const USER_MOCKED = {
+  id: 'a1b2c3d4',
+  login: 'fake.user',
+  displayName: 'Fake User',
+  type: ['Personnel'],
+  visibleInfos: [],
+  schools: [
+    {
+      exports: null,
+      classes: [],
+      name: 'Fake School',
+      id: 'd4c3b2a1',
+      UAI: null,
+    },
+  ],
+  relatedName: null,
+  relatedId: null,
+  relatedType: null,
+  userId: 'a1b2c3d4',
+  motto: 'Always Learning',
+  photo: '/userbook/avatar/a1b2c3d4',
+  mood: 'happy',
+  health: 'good',
+  address: '123 Fake Street',
+  email: 'fake.user@example.com',
+  tel: '1234567890',
+  mobile: '0987654321',
+  birthdate: '1990-01-01',
+  hobbies: ['reading', 'coding'],
+};
+
+//---------------------------------------
 //--------------- THREADS ---------------
 //---------------------------------------
 export const mockThreads: Array<Thread> = [
   {
-    _id: 1,
-    title: 'Pour la rentrée',
+    _id: 176,
+    title: 'Echange scolaire Erasmus lycée Diderot!',
     icon: null,
     mode: 0 as ThreadMode,
     created: '2025-08-07T16:33:54.698',
@@ -175,7 +209,7 @@ export const mockInfos = [
     id: 466,
     threadId: 229,
     content:
-      '<div class="ng-scope" style="text-align: center;">Je passe à React !</div>',
+      '<p><span>​</span></p><img class="custom-image" src="/workspace/document/5a9a2dce-f278-40da-9d59-606f568c6ab5?thumbnail=2600x0" width="350" height="NaN"><p><span>  </span></p><p><strong><span>​Le voici ! Le jardin partagé du périscolaire ! Des groupes d&apos;enfants provenant de 11 écoles de la ville participent à créer et entretenir à tour de rôle un jardin où se mêlent fruits, légumes, fleurs et aromates. </span></strong></p><p><span>​</span></p><p><span>​Comment planter des graines ou des jeunes pousses ? Que lui faut-il pour grandir ? Comment va évoluer mon potager ? Autant de questions que se posent les enfants et qui rejoignent leur enseignement en classe sur le cycle de vie des plantes. Par exemple, </span><a target="_blank" rel="noopener noreferrer nofollow" href="/timelinegenerator#/view/c8fe320a-85a7-4c02-9951-d7ea443b5af8"><strong><span>voici la Frise Chronologique</span></strong></a><span> </span><span style="font-size: 14px">réalisée</span> par Mr Loison à l&apos;école Arthur Rimbaud.</p><p><span>​</span></p><p><span>​En complément du blog du périscolaire, ce beau projet fait l&apos;objet d&apos;un Cahier multimédia à lui tout seul ! Pour découvrir et suivre nos belles aventures, feuilletez le </span><a target="_blank" rel="noopener noreferrer nofollow" href="/scrapbook#/view-scrapbook/f682ec87-4e86-4b75-8ca2-d9e6f4a7b88d"><strong><span>en cliquant ici</span></strong></a><span>. </span></p><p><span>​</span></p><p><span>​ ​</span></p><img class="custom-image" src="/workspace/document/507eb39b-4a22-4198-84d8-ba322a819800?thumbnail=2600x0" width="350" height="NaN"><p><span>     ​</span></p><img class="custom-image" src="/workspace/document/0c8a6198-0bdf-4dd3-966d-56156253fe32?thumbnail=2600x0" width="350" height="NaN"><img class="custom-image" src="/workspace/document/5a9a2dce-f278-40da-9d59-606f568c6ab5?thumbnail=2600x0" width="350" height="NaN"><p><span>  </span><br></p>',
     contentVersion: 1,
     status: 'PUBLISHED' as InfoStatus,
     owner: {
@@ -208,7 +242,7 @@ export const mockInfos = [
     publicationDate: null,
     expirationDate: null,
     numberOfComments: 0,
-    title: 'coucou',
+    title: 'Echange scolaire présentation des élèves!',
     headline: false,
     sharedRights: [],
   },
