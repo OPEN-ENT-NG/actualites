@@ -268,6 +268,14 @@ packages:
     engines: { node: '>=6.0.0' }
     hasBin: true
 
+  '@babel/parser@7.28.4':
+    resolution:
+      {
+        integrity: sha512-yZbBqeM6TkpP9du/I2pUZnJsRMGGvOuIrhjzC1AwHwW+6he4mni6Bp/m8ijn0iOuZuPI2BfkCoSRunpyjnrQKg==,
+      }
+    engines: { node: '>=6.0.0' }
+    hasBin: true
+
   '@babel/plugin-transform-react-jsx-self@7.27.1':
     resolution:
       {
@@ -311,6 +319,13 @@ packages:
     resolution:
       {
         integrity: sha512-ruv7Ae4J5dUYULmeXw1gmb7rYRz57OWCPM57pHojnLq/3Z1CK2lNSLTCVjxVk1F/TZHwOZZrOWi0ur95BbLxNQ==,
+      }
+    engines: { node: '>=6.9.0' }
+
+  '@babel/types@7.28.4':
+    resolution:
+      {
+        integrity: sha512-bkFqkLhh3pMBUQQkpVgWDWq/lqzc2678eUyDlTBhRqhCHFguYYGM0Efga7tYk4TogG/3x0EEl66/OQ+WGbWB/Q==,
       }
     engines: { node: '>=6.9.0' }
 
@@ -4440,6 +4455,12 @@ packages:
         integrity: sha512-yi8swmWbO17qHhwIBNeeZxTceJMeBvWJaId6dyvTSOwTipqeHhMhOrz6513r1sOKnpvQ7zkhlG8tPrpilwTxHQ==,
       }
 
+  magic-string@0.30.19:
+    resolution:
+      {
+        integrity: sha512-2N21sPY9Ws53PZvsEpVtNuSW+ScYbQdp4b9qUaL+9QkHUrGFKo56Lg9Emg5s9V/qrtNBmiR01sYhUOwu3H+VOw==,
+      }
+
   magicast@0.3.5:
     resolution:
       {
@@ -6436,6 +6457,10 @@ snapshots:
     dependencies:
       '@babel/types': 7.28.2
 
+  '@babel/parser@7.28.4':
+    dependencies:
+      '@babel/types': 7.28.4
+
   '@babel/plugin-transform-react-jsx-self@7.27.1(@babel/core@7.28.3)':
     dependencies:
       '@babel/core': 7.28.3
@@ -6467,6 +6492,11 @@ snapshots:
       - supports-color
 
   '@babel/types@7.28.2':
+    dependencies:
+      '@babel/helper-string-parser': 7.27.1
+      '@babel/helper-validator-identifier': 7.27.1
+
+  '@babel/types@7.28.4':
     dependencies:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
@@ -6800,7 +6830,7 @@ snapshots:
       prosemirror-model: 1.25.3
       prosemirror-state: 1.4.3
       prosemirror-transform: 1.10.4
-      prosemirror-view: 1.40.1
+      prosemirror-view: 1.41.0
       vite: 5.4.19(@types/node@18.19.123)
       vite-plugin-dts: 4.5.4(@types/node@18.19.123)(rollup@4.47.1)(typescript@5.9.2)(vite@5.4.19(@types/node@18.19.123))
     transitivePeerDependencies:
@@ -6848,7 +6878,7 @@ snapshots:
       prosemirror-model: 1.25.3
       prosemirror-state: 1.4.3
       prosemirror-transform: 1.10.4
-      prosemirror-view: 1.40.1
+      prosemirror-view: 1.41.0
       vite: 5.4.19(@types/node@18.19.123)
       vite-plugin-dts: 4.5.4(@types/node@18.19.123)(rollup@4.47.1)(typescript@5.9.2)(vite@5.4.19(@types/node@18.19.123))
     transitivePeerDependencies:
@@ -7103,15 +7133,15 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
 
-  '@microsoft/api-extractor@7.52.11(@types/node@18.19.123)':
+  '@microsoft/api-extractor@7.52.12(@types/node@18.19.123)':
     dependencies:
       '@microsoft/api-extractor-model': 7.30.7(@types/node@18.19.123)
       '@microsoft/tsdoc': 0.15.1
       '@microsoft/tsdoc-config': 0.17.1
       '@rushstack/node-core-library': 5.14.0(@types/node@18.19.123)
       '@rushstack/rig-package': 0.5.3
-      '@rushstack/terminal': 0.15.4(@types/node@18.19.123)
-      '@rushstack/ts-command-line': 5.0.2(@types/node@18.19.123)
+      '@rushstack/terminal': 0.16.0(@types/node@18.19.123)
+      '@rushstack/ts-command-line': 5.0.3(@types/node@18.19.123)
       lodash: 4.17.21
       minimatch: 10.0.3
       resolve: 1.22.10
@@ -7466,7 +7496,7 @@ snapshots:
 
   '@rolldown/pluginutils@1.0.0-beta.27': {}
 
-  '@rollup/pluginutils@5.2.0(rollup@4.47.1)':
+  '@rollup/pluginutils@5.3.0(rollup@4.47.1)':
     dependencies:
       '@types/estree': 1.0.8
       estree-walker: 2.0.2
@@ -7552,16 +7582,16 @@ snapshots:
       resolve: 1.22.10
       strip-json-comments: 3.1.1
 
-  '@rushstack/terminal@0.15.4(@types/node@18.19.123)':
+  '@rushstack/terminal@0.16.0(@types/node@18.19.123)':
     dependencies:
       '@rushstack/node-core-library': 5.14.0(@types/node@18.19.123)
       supports-color: 8.1.1
     optionalDependencies:
       '@types/node': 18.19.123
 
-  '@rushstack/ts-command-line@5.0.2(@types/node@18.19.123)':
+  '@rushstack/ts-command-line@5.0.3(@types/node@18.19.123)':
     dependencies:
-      '@rushstack/terminal': 0.15.4(@types/node@18.19.123)
+      '@rushstack/terminal': 0.16.0(@types/node@18.19.123)
       '@types/argparse': 1.0.38
       argparse: 1.0.10
       string-argv: 0.3.2
@@ -7838,9 +7868,9 @@ snapshots:
       prosemirror-schema-list: 1.5.1
       prosemirror-state: 1.4.3
       prosemirror-tables: 1.7.1
-      prosemirror-trailing-node: 3.0.0(prosemirror-model@1.25.3)(prosemirror-state@1.4.3)(prosemirror-view@1.40.1)
+      prosemirror-trailing-node: 3.0.0(prosemirror-model@1.25.3)(prosemirror-state@1.4.3)(prosemirror-view@1.41.0)
       prosemirror-transform: 1.10.4
-      prosemirror-view: 1.40.1
+      prosemirror-view: 1.41.0
 
   '@tiptap/react@2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))(@tiptap/pm@2.11.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
@@ -8139,18 +8169,18 @@ snapshots:
       path-browserify: 1.0.1
       vscode-uri: 3.1.0
 
-  '@vue/compiler-core@3.5.20':
+  '@vue/compiler-core@3.5.21':
     dependencies:
-      '@babel/parser': 7.28.3
-      '@vue/shared': 3.5.20
+      '@babel/parser': 7.28.4
+      '@vue/shared': 3.5.21
       entities: 4.5.0
       estree-walker: 2.0.2
       source-map-js: 1.2.1
 
-  '@vue/compiler-dom@3.5.20':
+  '@vue/compiler-dom@3.5.21':
     dependencies:
-      '@vue/compiler-core': 3.5.20
-      '@vue/shared': 3.5.20
+      '@vue/compiler-core': 3.5.21
+      '@vue/shared': 3.5.21
 
   '@vue/compiler-vue2@2.7.16':
     dependencies:
@@ -8160,9 +8190,9 @@ snapshots:
   '@vue/language-core@2.2.0(typescript@5.9.2)':
     dependencies:
       '@volar/language-core': 2.4.23
-      '@vue/compiler-dom': 3.5.20
+      '@vue/compiler-dom': 3.5.21
       '@vue/compiler-vue2': 2.7.16
-      '@vue/shared': 3.5.20
+      '@vue/shared': 3.5.21
       alien-signals: 0.4.14
       minimatch: 9.0.5
       muggle-string: 0.4.1
@@ -8170,7 +8200,7 @@ snapshots:
     optionalDependencies:
       typescript: 5.9.2
 
-  '@vue/shared@3.5.20': {}
+  '@vue/shared@3.5.21': {}
 
   '@yarnpkg/lockfile@1.1.0': {}
 
@@ -9165,6 +9195,10 @@ snapshots:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
 
+  magic-string@0.30.19:
+    dependencies:
+      '@jridgewell/sourcemap-codec': 1.5.5
+
   magicast@0.3.5:
     dependencies:
       '@babel/parser': 7.28.3
@@ -9597,20 +9631,20 @@ snapshots:
     dependencies:
       prosemirror-state: 1.4.3
       prosemirror-transform: 1.10.4
-      prosemirror-view: 1.40.1
+      prosemirror-view: 1.41.0
 
   prosemirror-gapcursor@1.3.2:
     dependencies:
       prosemirror-keymap: 1.2.3
       prosemirror-model: 1.25.3
       prosemirror-state: 1.4.3
-      prosemirror-view: 1.40.1
+      prosemirror-view: 1.41.0
 
   prosemirror-history@1.4.1:
     dependencies:
       prosemirror-state: 1.4.3
       prosemirror-transform: 1.10.4
-      prosemirror-view: 1.40.1
+      prosemirror-view: 1.41.0
       rope-sequence: 1.3.4
 
   prosemirror-inputrules@1.5.0:
@@ -9654,7 +9688,7 @@ snapshots:
     dependencies:
       prosemirror-model: 1.25.3
       prosemirror-transform: 1.10.4
-      prosemirror-view: 1.40.1
+      prosemirror-view: 1.41.0
 
   prosemirror-tables@1.7.1:
     dependencies:
@@ -9662,21 +9696,21 @@ snapshots:
       prosemirror-model: 1.25.3
       prosemirror-state: 1.4.3
       prosemirror-transform: 1.10.4
-      prosemirror-view: 1.40.1
+      prosemirror-view: 1.41.0
 
-  prosemirror-trailing-node@3.0.0(prosemirror-model@1.25.3)(prosemirror-state@1.4.3)(prosemirror-view@1.40.1):
+  prosemirror-trailing-node@3.0.0(prosemirror-model@1.25.3)(prosemirror-state@1.4.3)(prosemirror-view@1.41.0):
     dependencies:
       '@remirror/core-constants': 3.0.0
       escape-string-regexp: 4.0.0
       prosemirror-model: 1.25.3
       prosemirror-state: 1.4.3
-      prosemirror-view: 1.40.1
+      prosemirror-view: 1.41.0
 
   prosemirror-transform@1.10.4:
     dependencies:
       prosemirror-model: 1.25.3
 
-  prosemirror-view@1.40.1:
+  prosemirror-view@1.41.0:
     dependencies:
       prosemirror-model: 1.25.3
       prosemirror-state: 1.4.3
@@ -10179,15 +10213,15 @@ snapshots:
 
   vite-plugin-dts@4.5.4(@types/node@18.19.123)(rollup@4.47.1)(typescript@5.9.2)(vite@5.4.19(@types/node@18.19.123)):
     dependencies:
-      '@microsoft/api-extractor': 7.52.11(@types/node@18.19.123)
-      '@rollup/pluginutils': 5.2.0(rollup@4.47.1)
+      '@microsoft/api-extractor': 7.52.12(@types/node@18.19.123)
+      '@rollup/pluginutils': 5.3.0(rollup@4.47.1)
       '@volar/typescript': 2.4.23
       '@vue/language-core': 2.2.0(typescript@5.9.2)
       compare-versions: 6.1.1
       debug: 4.4.1
       kolorist: 1.8.0
       local-pkg: 1.1.2
-      magic-string: 0.30.18
+      magic-string: 0.30.19
       typescript: 5.9.2
     optionalDependencies:
       vite: 5.4.19(@types/node@18.19.123)
