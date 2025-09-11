@@ -1,19 +1,15 @@
-import { Flex, useBreakpoint } from '@edifice.io/react';
+import { Flex } from '@edifice.io/react';
 import { ReactNode } from 'react';
 import './SeparatedInfo.css';
 
-export function SeparatedInfo({
-  stackingBreakpoint = 'md',
-  children,
-}: {
-  stackingBreakpoint?: keyof ReturnType<typeof useBreakpoint>;
+export type SeparatedInfoProps = {
   children: ReactNode[];
-}) {
-  const breakpoints = useBreakpoint();
-  const direction = breakpoints[stackingBreakpoint] ? 'row' : 'column';
+  className?: string;
+};
 
+export function SeparatedInfo({ children, className }: SeparatedInfoProps) {
   return (
-    <Flex direction={direction} className="separated-info">
+    <Flex direction="row" className={`separated-info ${className}`}>
       {...children}
     </Flex>
   );

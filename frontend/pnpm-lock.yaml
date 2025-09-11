@@ -430,10 +430,22 @@ packages:
         integrity: sha512-Iz7YZeF57GG0c+1hNfwVchlDhWFRdWSs8ZCM6jmwsDN2qc3nmUhsuvDQNTQ3YVWDJ5WGq3j7GCrzprDIUBBgXw==,
       }
 
+  '@edifice.io/bootstrap@2.3.1-develop-b2school-actualites.20250911174726':
+    resolution:
+      {
+        integrity: sha512-sh+s2UGWZXc72xrd+d2Iem7cusBx4E2tF7kQGua90SUDTOjd5qbxQ/QMII+IA2e8BWdAwBNbzFfCiHONw276UQ==,
+      }
+
   '@edifice.io/client@2.3.0-develop-b2school.20250902101143':
     resolution:
       {
         integrity: sha512-dwjjEQSgWR6z2CwTJjcgQBYW5118kQXvP0wt3KbLZKuRU0m1IocJCJ/4rIglWx0vc7AAocZlycZvfOXzC1EdGQ==,
+      }
+
+  '@edifice.io/client@2.3.1-develop-b2school-actualites.20250911174726':
+    resolution:
+      {
+        integrity: sha512-tMCScI8VTCqo+bMLhAvFYNJUn4w1I8u5c33CrGIQ56J53lMGbFDuqkaMd2qW6mWbM8BRUfj9iMifxikDSruv6A==,
       }
 
   '@edifice.io/react@2.3.0-develop-b2school.20250902101143':
@@ -449,16 +461,41 @@ packages:
       react-hook-form: ^7.53.0
       react-i18next: ^14.1.0
 
+  '@edifice.io/react@2.3.1-develop-b2school-actualites.20250911174726':
+    resolution:
+      {
+        integrity: sha512-wXRotzrIMb77C/bQvzQVJGyQ4GYXVniG8BDulPH8mjjheNTHpiHcdA9hFKvkCUEI4ksX1mgx4HpBaCKRJTaOlw==,
+      }
+    peerDependencies:
+      '@react-spring/web': ^9.7.5
+      '@tanstack/react-query': 5.62.7
+      react: ^18.3.1
+      react-dom: ^18.3.1
+      react-hook-form: ^7.53.0
+      react-i18next: ^14.1.0
+
   '@edifice.io/tiptap-extensions@2.3.0-develop-b2school.20250902101143':
     resolution:
       {
         integrity: sha512-B+waM/rtTtMOBQg4RufBN5DkVlDN/hXRSg+7oXQ5+zxiYax0lo79FEGodhRJsA+vJ7Mxo1/Dqn0SXgjbM/72vg==,
       }
 
+  '@edifice.io/tiptap-extensions@2.3.1-develop-b2school-actualites.20250911174726':
+    resolution:
+      {
+        integrity: sha512-U8UHoD26iBTez1oTccHcNvyxrhKJx83tRSe+rBxyeFKY8kuenE3MmLIr85bJUtbdI2KNCDhEozoGr5me/SK1/Q==,
+      }
+
   '@edifice.io/utilities@2.3.0-develop-b2school.20250902101143':
     resolution:
       {
         integrity: sha512-Y85ErQOQqRZ9nhph6rJChKczU4IDgGEWwDXP2XDAB6gX14Mr1U0HHBltZHkwUZjp2rpn3CUloRfITJfKkIlmMw==,
+      }
+
+  '@edifice.io/utilities@2.3.1-develop-b2school-actualites.20250911174726':
+    resolution:
+      {
+        integrity: sha512-uVTqp33P4JQ+mDK/+A1gkR4+veJz3cfqx95h94JzT+Mrxni6cz5mZUS3PpeiPUh3PJGW/QOEbjG84mNyAYbtZw==,
       }
 
   '@emnapi/core@1.4.5':
