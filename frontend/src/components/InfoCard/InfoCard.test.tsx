@@ -5,7 +5,7 @@ import { InfoCard } from './InfoCard';
 
 describe('InfoCard', () => {
   it('should render', () => {
-    render(<InfoCard info={mockInfos[0]} />);
+    render(<InfoCard info={mockInfos[0]} variant="transparent" />);
 
     const title = screen.getByText('Bientôt', { selector: 'h1' });
     expect(title).toBeInTheDocument();
