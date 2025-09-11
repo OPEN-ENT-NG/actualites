@@ -11,6 +11,7 @@
     "dev:mock": "VITE_MOCK=true vite",
     "format": "prettier --write \"**/*.{ts,tsx,css}\"",
     "dev:get-tokens": "pnpm get-tokens --auto && vite",
+    "dev:recette": "pnpm get-tokens --auto && vite",
     "get-tokens": "node scripts/get-tokens/index.cjs",
     "lint": "eslint .",
     "pre-commit": "pnpm run format",
