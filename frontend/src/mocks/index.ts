@@ -1,6 +1,8 @@
 import { InfoStatus } from '~/models/info';
 import { Thread, ThreadMode } from '~/models/thread';
 
+export const RESPONSE_DELAY = 500;
+
 //---------------------------------------
 //--------------- THREADS ---------------
 //---------------------------------------
