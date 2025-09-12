@@ -5,7 +5,8 @@ import { InfoCardProps } from './InfoCard';
 
 export const InfoCardFooter = ({
   info: _info,
-}: Pick<InfoCardProps, 'info'>) => {
+  onMoreClick,
+}: Pick<InfoCardProps, 'info'> & { onMoreClick: () => void }) => {
   const { t } = useTranslation();
   const icon = <IconRafterDown></IconRafterDown>;
   return (
@@ -24,6 +25,7 @@ export const InfoCardFooter = ({
           size="sm"
           rightIcon={icon}
           className="btn-icon"
+          onClick={onMoreClick}
         >
           {t('actualites.read.more')}
         </Button>
