@@ -1,10 +1,11 @@
-import { http, HttpResponse } from 'msw';
+import { delay, http, HttpResponse } from 'msw';
 import { baseUrl } from '~/services';
 import {
   mockInfoRevisions,
   mockInfos,
   mockInfoShare,
   mockOriginalInfo,
+  RESPONSE_DELAY,
 } from '..';
 
 /**
@@ -12,6 +13,9 @@ import {
  * Mock HTTP methods for info service
  */
 export const infoHandlers = [
+  http.all(baseUrl, async () => {
+    await delay(RESPONSE_DELAY);
+  }),
   //// Get all infos
   http.get(`${baseUrl}/list`, () => {
     return HttpResponse.json(mockInfos, { status: 200 });

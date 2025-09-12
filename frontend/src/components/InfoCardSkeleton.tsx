@@ -1,4 +1,10 @@
-import { Avatar, ButtonSkeleton, Image, TextSkeleton } from '@edifice.io/react';
+import {
+  Avatar,
+  ButtonSkeleton,
+  Flex,
+  Image,
+  TextSkeleton,
+} from '@edifice.io/react';
 import { EditorPreviewSkeleton } from '@edifice.io/react/editor';
 import React from 'react';
 
@@ -11,19 +17,19 @@ export const InfoCardSkeleton = React.forwardRef<
       className="d-grid mb-12"
       style={{ gridTemplateColumns: '1fr 50% 1fr', gap: '12px' }}
     >
-      <div className="d-flex align-items-center gap-8">
+      <Flex align="center" gap="8">
         <Image width={32} height={32} src="" alt="" className="placeholder" />
         <TextSkeleton size="sm" className="col-3"></TextSkeleton>
-      </div>
+      </Flex>
       <TextSkeleton size="lg" className="col-12"></TextSkeleton>
     </header>
-    <div className="d-flex align-items-center justify-content-center gap-8">
+    <Flex align="center" justify="center" gap="8">
       <Avatar alt="" size="xs" className="placeholder" />
       <TextSkeleton size="lg" className="col-2"></TextSkeleton>
-    </div>
+    </Flex>
     <EditorPreviewSkeleton variant="ghost" />
-    <div className="d-flex justify-content-end">
+    <Flex justify="end">
       <ButtonSkeleton size="sm" className="col-2" />
-    </div>
+    </Flex>
   </article>
 ));
