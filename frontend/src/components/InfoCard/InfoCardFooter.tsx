@@ -1,7 +1,6 @@
 import { Button, Flex } from '@edifice.io/react';
 import { IconRafterDown } from '@edifice.io/react/icons';
 import { useTranslation } from 'react-i18next';
-import { SeparatedInfo } from '../SeparatedInfo';
 import { InfoCardProps } from './InfoCard';
 
 export const InfoCardFooter = ({ info }: Pick<InfoCardProps, 'info'>) => {
@@ -10,10 +9,12 @@ export const InfoCardFooter = ({ info }: Pick<InfoCardProps, 'info'>) => {
   return (
     <footer className="mt-12">
       <Flex align="center" justify="between">
-        <SeparatedInfo>
-          <span>{/*TODO : nombre de vues */}</span>
-          <span>{/*TODO : nombre de commentaires */}</span>
-        </SeparatedInfo>
+        <div>
+          {/* <SeparatedInfo>
+          // TODO : nombre de vues
+          // TODO : nombre de commentaires
+          </SeparatedInfo> */}
+        </div>
         <Button
           type="button"
           color="secondary"

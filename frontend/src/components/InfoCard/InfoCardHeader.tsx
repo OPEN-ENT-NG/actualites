@@ -1,12 +1,12 @@
 import {
   Avatar,
+  Divider,
+  SeparatedInfo,
   useBreakpoint,
   useDate,
   useDirectory,
 } from '@edifice.io/react';
 import { useThread } from '~/features/threads/useThread';
-import { Divider } from '../Divider';
-import { SeparatedInfo } from '../SeparatedInfo';
 import { InfoCardProps } from './InfoCard';
 import { InfoCardThreadHeader } from './InfoCardThreadHeader';
 
@@ -25,9 +25,9 @@ export const InfoCardHeader = ({ info }: Pick<InfoCardProps, 'info'>) => {
   const iconSize = md ? 'sm' : 'xs';
 
   return (
-    <header className="mb-12">
+    <header key={info.id} className="mb-12">
       <div className="d-grid" style={styles}>
-        <InfoCardThreadHeader thread={thread} textGray="700" />
+        <InfoCardThreadHeader thread={thread} />
         <h3 className={`text-truncate text-truncate-2 ${classes}`}>
           {info?.title}
         </h3>
