@@ -19,23 +19,18 @@
 
 package net.atos.entng.actualites.services.impl;
 
-import static net.atos.entng.actualites.Actualites.MANAGE_RIGHT_ACTION;
-
-import io.vertx.core.Vertx;
-import org.entcore.common.service.impl.SqlRepositoryEvents;
-import org.entcore.common.sql.Sql;
-import org.entcore.common.sql.SqlResult;
-import org.entcore.common.sql.SqlStatementsBuilder;
-import org.entcore.common.user.RepositoryEvents;
+import fr.wseduc.webutils.Either;
 import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+import org.entcore.common.service.impl.SqlRepositoryEvents;
+import org.entcore.common.sql.Sql;
+import org.entcore.common.sql.SqlResult;
+import org.entcore.common.sql.SqlStatementsBuilder;
 
-import fr.wseduc.webutils.Either;
-
-import java.io.File;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 

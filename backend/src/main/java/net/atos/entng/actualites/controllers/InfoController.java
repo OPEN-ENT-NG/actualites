@@ -77,6 +77,9 @@ public class InfoController extends ControllerHelper {
     private static final String NEWS_UNPUBLISH_EVENT_TYPE = EVENT_TYPE + "_UNPUBLISH";
     private static final String NEWS_UPDATE_EVENT_TYPE = EVENT_TYPE + "_UPDATE";
 
+    private static final int LIST_MAX_PAGE_SIZE = 50;
+    private static final int LIST_DEFAULT_PAGE_SIZE = 20;
+
 
     // TODO : refactor code to use enums or constants for statuses
     // TRASH: 0; DRAFT: 1; PENDING: 2; PUBLISHED: 3
@@ -96,23 +99,6 @@ public class InfoController extends ControllerHelper {
         optimized = config.getBoolean("optimized-query", true);
     }
 
-    @Get("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/:"+Actualites.INFO_RESOURCE_ID)
-    @ApiDoc("Retrieve : retrieve an Info in thread by thread and by id")
-    @ResourceFilter(InfoFilter.class)
-    @SecuredAction(value = "info.read", type = ActionType.RESOURCE)
-    public void getInfo(final HttpServerRequest request) {
-        // TODO IMPROVE @SecuredAction : Security on Info as a resource
-        final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
-        boolean originalContent = Boolean.parseBoolean(request.getParam("originalContent", "false"));
-
-        UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
-            @Override
-            public void handle(final UserInfos user) {
-                infoService.retrieve(infoId, user, originalContent, notEmptyResponseHandler(request));
-            }
-        });
-    }
-
     @Get("/api/v2/infos/:"+Actualites.INFO_RESOURCE_ID)
     @ApiDoc("Retrieve : retrieve an Info in thread by thread and by id")
     @ResourceFilter(value = InfoNewFilter.class, arguments = "v2")
@@ -129,6 +115,69 @@ public class InfoController extends ControllerHelper {
                     right = "net.atos.entng.actualites.controllers.InfoController|getInfoComments")
     public void getInfoV1(final HttpServerRequest request) {
         getInfoComments(request);
+    }
+
+    @Get("/list")
+    @ApiDoc("List infos with pagination. Accept custom page size. Params threadId can be used to restrict the list to this thread.")
+    @SecuredAction(value = "actualites.infos.list.page", right = "net.atos.entng.actualites.controllers.InfoController|listInfos")
+    public void listInfosPagined(final HttpServerRequest request) {
+        // TODO IMPROVE : Security on Infos visibles by statuses / dates is not enforced
+        UserUtils.getUserInfos(eb, request, user -> {
+            if (user != null) {
+
+                // 1. Parse args
+
+                int page = 0;
+                int pageSize = LIST_DEFAULT_PAGE_SIZE;
+                Integer threadId = null;
+
+                try {
+                    if (request.params().contains("page")) {
+                        page = Integer.parseInt(request.params().get("page"));
+                        if (page < 0) throw new IllegalArgumentException("page number must be positive");
+                    }
+                    if (request.params().contains("pageSize")) {
+                        pageSize = Integer.parseInt(request.params().get("pageSize"));
+                        if (pageSize <= 0) throw new IllegalArgumentException("page size must be positive non-zero");
+                        if (pageSize > LIST_MAX_PAGE_SIZE) throw new IllegalArgumentException("page size maximum exceeded");
+                    }
+                    if (request.params().contains("threadId")) {
+                        threadId = new Integer(request.params().get("threadId"));
+                    }
+
+                } catch (IllegalArgumentException e) {
+                    badRequest(request);
+                    return;
+                }
+
+                // 2. Call service
+
+                infoService.listPaginated(securedActions, user, page, pageSize, threadId)
+                        .onSuccess(news -> render(request, news))
+                        .onFailure(ex -> renderError(request));
+            } else {
+                unauthorized(request);
+            }
+        });
+    }
+
+
+
+    @Get("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/:"+Actualites.INFO_RESOURCE_ID)
+    @ApiDoc("Retrieve : retrieve an Info in thread by thread and by id")
+    @ResourceFilter(InfoFilter.class)
+    @SecuredAction(value = "info.read", type = ActionType.RESOURCE)
+    public void getInfo(final HttpServerRequest request) {
+        // TODO IMPROVE @SecuredAction : Security on Info as a resource
+        final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
+        boolean originalContent = Boolean.parseBoolean(request.getParam("originalContent", "false"));
+
+        UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+            @Override
+            public void handle(final UserInfos user) {
+                infoService.retrieve(infoId, user, originalContent, notEmptyResponseHandler(request));
+            }
+        });
     }
 
     @Get("/infos")
@@ -934,52 +983,6 @@ public class InfoController extends ControllerHelper {
         }
     }
 
-    private static final int LIST_MAX_PAGE_SIZE = 50;
-    private static final int LIST_DEFAULT_PAGE_SIZE = 20;
-
-    @Get("/list")
-    @ApiDoc("List infos with pagination. Accept custom page size. Params threadId can be used to restrict the list to this thread.")
-    @SecuredAction(value = "actualites.infos.list.page", right = "net.atos.entng.actualites.controllers.InfoController|listInfos")
-    public void listInfosPagined(final HttpServerRequest request) {
-        // TODO IMPROVE : Security on Infos visibles by statuses / dates is not enforced
-        UserUtils.getUserInfos(eb, request, user -> {
-            if (user != null) {
-
-                // 1. Parse args
-
-                int page = 0;
-                int pageSize = LIST_DEFAULT_PAGE_SIZE;
-                Integer threadId = null;
-
-                try {
-                    if (request.params().contains("page")) {
-                        page = Integer.parseInt(request.params().get("page"));
-                        if (page < 0) throw new IllegalArgumentException("page number must be positive");
-                    }
-                    if (request.params().contains("pageSize")) {
-                        pageSize = Integer.parseInt(request.params().get("pageSize"));
-                        if (pageSize <= 0) throw new IllegalArgumentException("page size must be positive non-zero");
-                        if (pageSize > LIST_MAX_PAGE_SIZE) throw new IllegalArgumentException("page size maximum exceeded");
-                    }
-                    if (request.params().contains("threadId")) {
-                        threadId = new Integer(request.params().get("threadId"));
-                    }
-
-                } catch (IllegalArgumentException e) {
-                    badRequest(request);
-                    return;
-                }
-
-                // 2. Call service
-
-                infoService.listPaginated(securedActions, user, page, pageSize, threadId)
-                        .onSuccess(news -> render(request, news))
-                        .onFailure(ex -> renderError(request));
-            } else {
-                unauthorized(request);
-            }
-        });
-    }
 
     @Get("/info/:"+Actualites.INFO_RESOURCE_ID)
     @ApiDoc("Get info from its id.")
