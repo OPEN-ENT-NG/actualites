@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Badge,
   Divider,
   Flex,
   Image,
@@ -8,15 +9,21 @@ import {
   useDate,
   useDirectory,
 } from '@edifice.io/react';
+import { IconClock, IconSave } from '@edifice.io/react/icons';
+import { useTranslation } from 'react-i18next';
 import iconHeadline from '~/assets/icon-headline.svg';
 import { useThread } from '~/features/threads/useThread';
 import { InfoCardProps } from './InfoCard';
 import { InfoCardThreadHeader } from './InfoCardThreadHeader';
 
-export const InfoCardHeader = ({ info }: Pick<InfoCardProps, 'info'>) => {
+export const InfoCardHeader = ({
+  info,
+  isIncoming,
+}: Pick<InfoCardProps, 'info'> & { isIncoming?: boolean }) => {
   const { formatDate } = useDate();
   const thread = useThread(info.threadId);
   const { getAvatarURL } = useDirectory();
+  const { t } = useTranslation('actualites');
   const avatarUrl = getAvatarURL(info.owner.id, 'user');
 
   const { md } = useBreakpoint();
@@ -26,10 +33,9 @@ export const InfoCardHeader = ({ info }: Pick<InfoCardProps, 'info'>) => {
 
   const classes = md ? 'text-center' : '';
   const iconSize = md ? 'sm' : 'xs';
-
-  const dividerColor = info.headline
-    ? 'var(--edifice-yellow)'
-    : 'var(--edifice-info-card-state-color)';
+  const styleBadge = md
+    ? { textAlign: 'right' as const, minWidth: '150px' }
+    : { minWidth: '150px' };
 
   return (
     <header key={info.id} className="mb-12">
@@ -38,8 +44,23 @@ export const InfoCardHeader = ({ info }: Pick<InfoCardProps, 'info'>) => {
         <h3 className={`text-truncate text-truncate-2 ${classes}`}>
           {info?.title}
         </h3>
-        <div style={{ textAlign: 'right', minWidth: '150px' }}>
-          {/* Ajouter le badge nouveau */}
+        <div style={styleBadge}>
+          {info.status === 'DRAFT' && (
+            <Badge className="bg-blue-200 text-blue">
+              <Flex align="center" gap="8" wrap="nowrap" className="mx-4">
+                {t('info.status.draft')}
+                <IconSave />
+              </Flex>
+            </Badge>
+          )}
+          {isIncoming && (
+            <Badge className="bg-purple-200 text-purple-500">
+              <Flex align="center" gap="8" wrap="nowrap" className="mx-4">
+                {t('info.status.incoming')}
+                <IconClock />
+              </Flex>
+            </Badge>
+          )}
         </div>
       </div>
 
@@ -52,7 +73,7 @@ export const InfoCardHeader = ({ info }: Pick<InfoCardProps, 'info'>) => {
             height={24}
           />
         )}
-        <Divider color={dividerColor}>
+        <Divider color="var(--edifice-info-card-divider-color)">
           <Avatar
             alt={info.owner.displayName}
             src={avatarUrl}

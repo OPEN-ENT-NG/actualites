@@ -7,7 +7,7 @@ export const InfoCardFooter = ({
   info: _info,
   onMoreClick,
 }: Pick<InfoCardProps, 'info'> & { onMoreClick: () => void }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('actualites');
   const icon = <IconRafterDown></IconRafterDown>;
   return (
     <footer className="mt-12">

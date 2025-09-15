@@ -1,6 +1,8 @@
 .info-card {
   --edifice-info-card-state-color: var(--edifice-blue-300);
   --edifice-info-card-border-color: var(--edifice-white);
+  --edifice-info-card-border-color: var(--edifice-white);
+  --edifice-info-card-divider-color: var(--edifice-info-card-state-color);
   --edifice-info-card-before-background: var(--edifice-info-card-state-color);
   --edifice-info-card-background: var(--edifice-white);
 
@@ -18,8 +20,14 @@
   border-color: var(--edifice-info-card-border-color) !important;
 }
 
+.info-card.info-card-incoming {
+  --edifice-info-card-state-color: var(--edifice-purple-300);
+  --edifice-info-card-divider-color: var(--edifice-purple);
+}
+
 .info-card.info-card-headline {
   --edifice-info-card-state-color: var(--edifice-yellow-300);
+  --edifice-info-card-divider-color: var(--edifice-yellow);
   --edifice-info-card-border-color: var(--edifice-info-card-state-color);
 }
 

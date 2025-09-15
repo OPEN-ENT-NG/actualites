@@ -1,3 +1,5 @@
 {
-    "actualites.read.more": "Lire la suite"
+  "actualites.read.more": "Lire la suite",
+  "info.status.draft": "Brouillon",
+  "info.status.incoming": "À venir"
 }
