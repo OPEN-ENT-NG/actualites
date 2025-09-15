@@ -7,7 +7,7 @@ export function useThread(threadId: ThreadId) {
 
   const thread = useMemo(() => {
     return threads?.data?.find((t) => t._id === threadId);
-  }, [threads.data]);
+  }, [threads.data, threadId]);
 
   return thread;
 }
