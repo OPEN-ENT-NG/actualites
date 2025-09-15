@@ -14,7 +14,7 @@ cp -R ../frontend/dist/* ./src/main/resources/
 mv ./src/main/resources/*.html ./src/main/resources/view
 
 # Build .
-./build.sh --no-docker clean build
+./build.sh --no-docker clean init build
 
 # Clean up - remove frontend/dist and backend/src/main/resources
 rm -rf ../frontend/dist
