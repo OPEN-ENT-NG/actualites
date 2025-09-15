@@ -5,25 +5,18 @@ import {
   useBreakpoint,
   useEdificeClient,
 } from '@edifice.io/react';
-import clsx from 'clsx';
 import { Thread } from '~/models/thread';
 
 export const InfoCardThreadHeader = ({
   thread,
   className,
-  textGray = '800',
 }: {
   thread?: Thread;
   className?: string;
-  textGray?: '700' | '800';
 }) => {
   const { appCode } = useEdificeClient();
   const { md } = useBreakpoint();
 
-  const titleClass = clsx(
-    'fs-5 lh-sm text-truncate text-truncate-2',
-    textGray ? `text-gray-${textGray}` : '',
-  );
   const title = thread?.title || '';
   const iconSize = md ? '32' : '22';
 
@@ -52,7 +45,9 @@ export const InfoCardThreadHeader = ({
       ) : (
         <AppIcon app={appCode} variant="square" size="32"></AppIcon>
       )}
-      <span className={titleClass}>{title}</span>
+      <span className="fs-5 text-truncate text-truncate-2 text-gray-700">
+        {title}
+      </span>
     </Flex>
   );
 };
