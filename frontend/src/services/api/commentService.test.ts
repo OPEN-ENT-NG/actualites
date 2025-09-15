@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { mockComments } from '~/mocks';
+import { mockComments } from '~/mocks/datas/comments';
 import { commentService } from '.';
 
 describe('Comment GET Methods', () => {

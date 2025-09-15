@@ -18,6 +18,9 @@ export const InfoCard = ({ info }: InfoCardProps) => {
   const infoId = `info-${info.id}`;
   const className = clsx(
     'mb-16 px-24 py-16 info-card position-relative border-none overflow-visible',
+    {
+      'info-card-headline': info.headline,
+    },
   );
   const [collapse, setCollapse] = useState(true);
 

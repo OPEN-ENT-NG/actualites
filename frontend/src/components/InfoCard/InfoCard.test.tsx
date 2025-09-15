@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { mockInfos } from '~/mocks';
+import { mockInfos } from '~/mocks/datas/infos';
 import { render, screen } from '~/mocks/setup';
 import { InfoCard } from './InfoCard';
 
