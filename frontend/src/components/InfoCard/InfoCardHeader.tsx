@@ -9,17 +9,22 @@ import {
   useDate,
   useDirectory,
 } from '@edifice.io/react';
-import { IconClock, IconSave } from '@edifice.io/react/icons';
+import { IconClock, IconClockAlert, IconSave } from '@edifice.io/react/icons';
 import { useTranslation } from 'react-i18next';
 import iconHeadline from '~/assets/icon-headline.svg';
 import { useThread } from '~/features/threads/useThread';
+import { InfoExtendedStatus } from '~/models/info';
 import { InfoCardProps } from './InfoCard';
 import { InfoCardThreadHeader } from './InfoCardThreadHeader';
 
+export type InfoCardHeaderProps = Pick<InfoCardProps, 'info'> & {
+  extendedStatus?: InfoExtendedStatus;
+};
+
 export const InfoCardHeader = ({
   info,
-  isIncoming,
-}: Pick<InfoCardProps, 'info'> & { isIncoming?: boolean }) => {
+  extendedStatus,
+}: InfoCardHeaderProps) => {
   const { formatDate } = useDate();
   const thread = useThread(info.threadId);
   const { getAvatarURL } = useDirectory();
@@ -37,6 +42,8 @@ export const InfoCardHeader = ({
     ? { textAlign: 'right' as const, minWidth: '150px' }
     : { minWidth: '150px' };
 
+  const isExpired = extendedStatus === InfoExtendedStatus.EXPIRED;
+
   return (
     <header key={info.id} className="mb-12">
       <div className="d-grid" style={styles}>
@@ -53,7 +60,7 @@ export const InfoCardHeader = ({
               </Flex>
             </Badge>
           )}
-          {isIncoming && (
+          {!isExpired && extendedStatus === InfoExtendedStatus.INCOMING && (
             <Badge className="bg-purple-200 text-purple-500">
               <Flex align="center" gap="8" wrap="nowrap" className="mx-4">
                 {t('info.status.incoming')}
@@ -61,11 +68,19 @@ export const InfoCardHeader = ({
               </Flex>
             </Badge>
           )}
+          {isExpired && (
+            <Badge className="bg-red-200 text-red-500">
+              <Flex align="center" gap="8" wrap="nowrap" className="mx-4">
+                {t('info.status.expired')}
+                <IconClockAlert />
+              </Flex>
+            </Badge>
+          )}
         </div>
       </div>
 
       <Flex className="flex-fill mt-12" align="center" wrap="nowrap" gap="16">
-        {info.headline && (
+        {info.headline && !isExpired && (
           <Image
             src={iconHeadline}
             alt="Headline Icon"
@@ -86,7 +101,7 @@ export const InfoCardHeader = ({
             <div>{formatDate(info.modified, 'long')}</div>
           </SeparatedInfo>
         </Divider>
-        {info.headline && (
+        {info.headline && !isExpired && (
           <Image
             src={iconHeadline}
             style={{ rotate: '180deg' }}

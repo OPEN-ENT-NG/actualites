@@ -15,6 +15,11 @@ export enum InfoStatus {
   PUBLISHED = 'PUBLISHED', // 3
 }
 
+export enum InfoExtendedStatus {
+  EXPIRED = 'EXPIRED',
+  INCOMING = 'DRAINCOMINGFT',
+}
+
 export interface Info {
   id: InfoId;
   threadId: ThreadId;

@@ -1,7 +1,8 @@
-import { Card } from '@edifice.io/react';
+import { Alert, Card } from '@edifice.io/react';
 import clsx from 'clsx';
 import { useState } from 'react';
-import { Info, InfoStatus } from '~/models/info';
+import { useTranslation } from 'react-i18next';
+import { Info, InfoExtendedStatus, InfoStatus } from '~/models/info';
 import './InfoCard.css';
 import { InfoCardContent } from './InfoCardContent';
 import { InfoCardFooter } from './InfoCardFooter';
@@ -15,11 +16,16 @@ export type InfoCardProps = {
 };
 
 export const InfoCard = ({ info }: InfoCardProps) => {
+  const { t } = useTranslation('actualites');
   const infoId = `info-${info.id}`;
   const isIncoming =
     info.status === InfoStatus.PUBLISHED &&
     !!info.publicationDate &&
     new Date(info.publicationDate) > new Date();
+  const isExpired =
+    info.status === InfoStatus.PUBLISHED &&
+    !!info.expirationDate &&
+    new Date(info.expirationDate) < new Date();
   const className = clsx(
     'mb-16 px-24 py-16 info-card position-relative border-none overflow-visible',
     {
@@ -27,9 +33,16 @@ export const InfoCard = ({ info }: InfoCardProps) => {
       'info-card-draft': info.status === InfoStatus.DRAFT,
       'info-card-pending': info.status === InfoStatus.PENDING,
       'info-card-headline': info.headline,
+      'info-card-expired': isExpired,
     },
   );
   const [collapse, setCollapse] = useState(true);
+
+  const extendedStatus: InfoExtendedStatus | undefined = isIncoming
+    ? InfoExtendedStatus.INCOMING
+    : isExpired
+      ? InfoExtendedStatus.EXPIRED
+      : undefined;
 
   const handleMoreClick = () => {
     setCollapse(!collapse);
@@ -38,7 +51,16 @@ export const InfoCard = ({ info }: InfoCardProps) => {
   return (
     <Card className={className} isClickable={false} isSelectable={false}>
       <article id={infoId} className="overflow-hidden">
-        <InfoCardHeader info={info} isIncoming={isIncoming} />
+        <InfoCardHeader info={info} extendedStatus={extendedStatus} />
+
+        {isExpired && (
+          <Alert type="danger" className="mb-16">
+            <div>
+              <strong>{t('info.alert.expired.title')}</strong>
+            </div>
+            <div>{t('info.status.expired.description')}</div>
+          </Alert>
+        )}
 
         <InfoCardContent info={info} collapse={collapse} />
 

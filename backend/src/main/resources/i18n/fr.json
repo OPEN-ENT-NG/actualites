@@ -1,5 +1,6 @@
 {
   "actualites.read.more": "Lire la suite",
   "info.status.draft": "Brouillon",
-  "info.status.incoming": "À venir"
+  "info.status.incoming": "À venir",
+  "info.status.expired": "Expirée"
 }

@@ -31,6 +31,12 @@
   --edifice-info-card-border-color: var(--edifice-info-card-state-color);
 }
 
+.info-card.info-card-expired {
+  --edifice-info-card-state-color: var(--edifice-red-300);
+  --edifice-info-card-divider-color: var(--edifice-danger);
+  --edifice-info-card-border-color: var(--edifice-white);
+}
+
 .info-card::before {
   content: '';
   position: absolute;
