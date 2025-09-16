@@ -36,9 +36,9 @@
     ]
   },
   "dependencies": {
-    "@edifice.io/react": "link:../../edifice-frontend-framework/packages/react",
-    "@edifice.io/bootstrap": "link:../../edifice-frontend-framework/packages/bootstrap",
-    "@edifice.io/client": "link:../../edifice-frontend-framework/packages/client",
+    "@edifice.io/react": "develop-b2school-actualites",
+    "@edifice.io/bootstrap": "develop-b2school-actualites",
+    "@edifice.io/client": "develop-b2school-actualites",
     "@react-spring/web": "^9.7.5",
     "@tanstack/react-query": "5.62.7",
     "@uidotdev/usehooks": "2.4.1",
