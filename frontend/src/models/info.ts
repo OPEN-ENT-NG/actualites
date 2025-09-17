@@ -17,7 +17,7 @@ export enum InfoStatus {
 
 export enum InfoExtendedStatus {
   EXPIRED = 'EXPIRED',
-  INCOMING = 'DRAINCOMINGFT',
+  INCOMING = 'INCOMING',
 }
 
 export interface Info {
