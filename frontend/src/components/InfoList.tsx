@@ -21,8 +21,8 @@ export const InfoList = () => {
 
   return (
     <div>
-      <header>
-        <span>Mettre le Segmented Control à la place de =&gt; </span>
+      <header className="mt-16 mb-24">
+        <span>Mettre le Segmented Control ici =&gt; </span>
         <Button onClick={reload}>Recharger</Button>
       </header>
 
