@@ -3,7 +3,9 @@ import { IconRafterDown } from '@edifice.io/react/icons';
 import { useTranslation } from 'react-i18next';
 import { InfoCardProps } from './InfoCard';
 
-export const InfoCardFooter = ({ info }: Pick<InfoCardProps, 'info'>) => {
+export const InfoCardFooter = ({
+  info: _info,
+}: Pick<InfoCardProps, 'info'>) => {
   const { t } = useTranslation();
   const icon = <IconRafterDown></IconRafterDown>;
   return (
