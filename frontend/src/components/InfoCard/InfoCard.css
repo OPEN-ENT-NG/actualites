@@ -1,7 +1,6 @@
 .info-card {
   --edifice-info-card-state-color: var(--edifice-blue-300);
   --edifice-info-card-border-color: var(--edifice-white);
-  --edifice-info-card-border-color: var(--edifice-white);
   --edifice-info-card-divider-color: var(--edifice-info-card-state-color);
   --edifice-info-card-before-background: var(--edifice-info-card-state-color);
   --edifice-info-card-background: var(--edifice-white);
