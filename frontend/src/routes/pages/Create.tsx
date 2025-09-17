@@ -1,6 +1,6 @@
 import { QueryClient } from '@tanstack/react-query';
 
-export const loader = (queryClient: QueryClient) => async () => {
+export const loader = (_queryClient: QueryClient) => async () => {
   return null;
 };
 
