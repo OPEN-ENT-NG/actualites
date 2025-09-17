@@ -30,6 +30,7 @@ import net.atos.entng.actualites.controllers.CommentController;
 import net.atos.entng.actualites.controllers.DisplayController;
 import net.atos.entng.actualites.controllers.InfoController;
 import net.atos.entng.actualites.controllers.ThreadController;
+import net.atos.entng.actualites.controllers.v1.ThreadControllerV1;
 import net.atos.entng.actualites.services.ConfigService;
 import net.atos.entng.actualites.services.InfoService;
 import net.atos.entng.actualites.services.ThreadService;
@@ -103,6 +104,13 @@ public class Actualites extends BaseServer {
 		threadController.setCrudService(threadSqlCrudService);
 		threadController.setShareService(new SqlShareService(getSchema(),THREAD_SHARE_TABLE, eb, securedActions, null));
 		addController(threadController);
+
+		// thread controller v1
+		ThreadControllerV1 threadControllerV1 = new ThreadControllerV1(eb);
+		SqlCrudService threadSqlCrudServiceV1 = new SqlCrudService(getSchema(), THREAD_TABLE, THREAD_SHARE_TABLE, new JsonArray().add("*"), new JsonArray().add("*"), true);
+		threadControllerV1.setCrudService(threadSqlCrudServiceV1);
+		threadControllerV1.setShareService(new SqlShareService(getSchema(),THREAD_SHARE_TABLE, eb, securedActions, null));
+		addController(threadControllerV1);
 
 		// info table
 		SqlConf confInfo = SqlConfs.createConf(InfoController.class.getName());

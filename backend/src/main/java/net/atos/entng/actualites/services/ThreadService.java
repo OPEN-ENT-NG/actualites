@@ -30,6 +30,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import net.atos.entng.actualites.to.NewsStatus;
 import net.atos.entng.actualites.to.NewsThread;
 
 public interface ThreadService {
@@ -43,6 +44,8 @@ public interface ThreadService {
 	public void getPublishSharedWithIds(String threadId, Handler<Either<String, JsonArray>> handler);
 
 	Future<List<NewsThread>> list(Map<String, SecuredAction> securedActions, UserInfos user);
+
+	Future<List<NewsThread>> list(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, List<Integer> threadsIds, NewsStatus status);
 
 	/** Utility method to attach threads without a structure to their owner's structure, when a single one exists. */
 	Future<Void> attachThreadsWithNullStructureToDefault();

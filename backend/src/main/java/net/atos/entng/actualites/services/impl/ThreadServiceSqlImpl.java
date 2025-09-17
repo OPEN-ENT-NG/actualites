@@ -316,6 +316,123 @@ public class ThreadServiceSqlImpl implements ThreadService {
 	}
 
 	@Override
+	public Future<List<NewsThread>> list(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, List<Integer> threadsIds, NewsStatus status) {
+		final Promise<List<NewsThread>> promise = Promise.promise();
+		if (user == null) {
+			promise.fail("user not provided");
+		} else {
+			// 1. Get all ids corresponding to the user
+
+			List<String> groupsAndUserIds = new ArrayList<>();
+			groupsAndUserIds.add(user.getUserId());
+			if (user.getGroupsIds() != null) {
+				groupsAndUserIds.addAll(user.getGroupsIds());
+			}
+
+			// 2. Prepare SQL request
+
+			final String ids = Sql.listPrepared(groupsAndUserIds.toArray());
+			StringBuilder query = new StringBuilder();
+			query.append(
+				"WITH thread_with_info_for_user AS ( " +
+				"    SELECT DISTINCT i.thread_id AS id " +
+				"    FROM " + infosTable + " AS i " +
+				"        LEFT JOIN " + infosSharesTable + " AS ish ON i.id = ish.resource_id " +
+				"    WHERE " +
+				"		 ( " +
+				"			 ish.member_id IN " + ids + " " +
+				"			 OR " +
+				"			 i.owner = ? " +
+				"		 ) " +
+				"		 AND " +
+				"		 (i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) " +
+				"		 AND " +
+				"		 (i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL) " +
+				"		 AND " +
+				"		 (i.status = " + status.ordinal() + ") " +
+				"), thread_for_user AS ( " +
+				"    SELECT t.id, array_agg(DISTINCT tsh.action) AS rights " +
+				"    FROM " + threadsTable + " AS t " +
+				"        INNER JOIN " + threadsSharesTable + " AS tsh ON t.id = tsh.resource_id " +
+				"    WHERE tsh.member_id IN " + ids + " " +
+				"    GROUP BY t.id, tsh.member_id " +
+				") SELECT t.id, t.owner, u.username AS owner_name, u.deleted as owner_deleted, t.title, t.icon," +
+				"    t.created, t.modified, t.structure_id, max(thread_for_user.rights) as rights " +
+				"    FROM " + threadsTable + " AS t " +
+				"        LEFT JOIN thread_for_user ON thread_for_user.id = t.id " +
+				"        LEFT JOIN " + usersTable + " AS u ON t.owner = u.id " +
+				"    WHERE (t.owner = ? " +
+				"       OR t.id IN (SELECT id from thread_with_info_for_user) " +
+				"       OR t.id IN (SELECT id from thread_for_user)) "
+			);
+
+			// Ajout du filtre threadsIds si non vide
+			if (threadsIds != null && !threadsIds.isEmpty()) {
+				String threadsIdsStr = threadsIds.stream()
+					.map(String::valueOf)
+					.collect(java.util.stream.Collectors.joining(","));
+				query.append(" AND t.id IN (").append(threadsIdsStr).append(") ");
+			}
+
+			query.append(
+				" GROUP BY t.id, t.owner, owner_name, owner_deleted, t.title, t.icon, t.created, t.modified, t.structure_id " +
+				" ORDER BY t.title "
+			);
+
+			// Pagination
+			query.append(" LIMIT ? OFFSET ?");
+
+			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
+			for(String value : groupsAndUserIds){
+				values.add(value);
+			}
+			values.add(user.getUserId());
+			for(String value : groupsAndUserIds){
+				values.add(value);
+			}
+			values.add(user.getUserId());
+			values.add(pageSize);
+			values.add(page * pageSize);
+
+			// 3. Retrieve & parse data
+
+			Sql.getInstance().prepared(query.toString(), values, (sqlResult) -> {
+				final Either<String, JsonArray> result = SqlResult.validResult(sqlResult);
+				if (result.isLeft()) {
+					promise.fail(result.left().getValue());
+				} else {
+					try {
+						List<NewsThread> pojo = result.right().getValue().stream().filter(row -> row instanceof JsonObject).map(o -> {
+							final JsonObject row = (JsonObject)o;
+							final ResourceOwner owner = new ResourceOwner(
+									row.getString("owner"),
+									row.getString("owner_name"),
+									row.getBoolean("owner_deleted")
+							);
+							final List<String> rawRights = SqlResult.sqlArrayToList(row.getJsonArray("rights"), String.class);
+							return new NewsThread(
+										row.getInteger("id"),
+										row.getString("title"),
+										row.getString("icon"),
+										row.getString("created"),
+										row.getString("modified"),
+										row.getString("structure_id"),
+										owner,
+										Rights.fromRawRights(securedActions, rawRights)
+									);
+						}).collect(toList());
+						promise.complete(pojo);
+					} catch (Exception e) {
+						log.error("Failed to parse JsonObject", e);
+						promise.fail(e);
+					}
+				}
+			});
+		}
+		return promise.future();
+	}
+
+	@Override
     public Future<Void> attachThreadsWithNullStructureToDefault() {
 		// 1. Get IDs of owner of threads without a structure.
 		return getIdsOfOwnersForNullStructure()
