@@ -6,7 +6,7 @@
   "author": "Edifice",
   "type": "module",
   "scripts": {
-    "build": "vite build",
+    "build": "pnpm run typecheck && vite build",
     "dev": "vite",
     "dev:mock": "VITE_MOCK=true vite",
     "format": "prettier --write \"**/*.{ts,tsx,css}\"",
@@ -15,12 +15,14 @@
     "get-tokens": "node scripts/get-tokens/index.cjs",
     "lint": "eslint .",
     "pre-commit": "pnpm run format",
+    "pre-push": "pnpm run typecheck && pnpm run test",
     "prepare": "cd .. && husky frontend/.husky || true",
     "preview": "vite preview",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
-    "test:watch": "vitest --watch"
+    "test:watch": "vitest --watch",
+    "typecheck": "tsc -b --noEmit --pretty"
   },
   "husky": {
     "hooks": {
