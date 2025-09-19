@@ -26,6 +26,7 @@ export const InfoCard = ({ info }: InfoCardProps) => {
     info.status === InfoStatus.PUBLISHED &&
     !!info.expirationDate &&
     new Date(info.expirationDate) < new Date();
+  const [collapse, setCollapse] = useState(true);
   const className = clsx(
     'mb-16 px-24 py-16 info-card position-relative border-none overflow-visible',
     {
@@ -34,9 +35,9 @@ export const InfoCard = ({ info }: InfoCardProps) => {
       'info-card-pending': info.status === InfoStatus.PENDING,
       'info-card-headline': info.headline,
       'info-card-expired': isExpired,
+      'info-card-full-content': !collapse,
     },
   );
-  const [collapse, setCollapse] = useState(true);
 
   const extendedStatus: InfoExtendedStatus | undefined = isIncoming
     ? InfoExtendedStatus.INCOMING

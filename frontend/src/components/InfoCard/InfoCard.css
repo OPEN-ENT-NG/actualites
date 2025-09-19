@@ -39,7 +39,7 @@
 .info-card::before {
   content: '';
   position: absolute;
-  top: 100px;
+  height: calc(100% - 100px);
   left: -1.6rem;
   bottom: -1px;
   width: 1.6rem;
@@ -49,6 +49,12 @@
   border-bottom-left-radius: 2.4rem;
   border-bottom-right-radius: 2.4rem;
   box-shadow: inset -4px -3px 6px 0px #00000033;
+  transition: height 0.5s ease-in-out;
+}
+
+.info-card.info-card-full-content::before {
+  transition-delay: 0.5s;
+  height: 50px;
 }
 
 .info-card::after {
@@ -63,4 +69,23 @@
   border-top-left-radius: 2.4rem;
   box-shadow: -3px 0px 3px 0px #00000033;
   border-bottom: solid 1px var(--edifice-info-card-border-color);
+}
+
+.info-card-content {
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+  transition:
+    opacity 0.5s ease-in-out,
+    height 0.5s ease-in-out;
+}
+
+.content-hidden {
+  opacity: 0;
+  height: 0;
+}
+
+.content-visible {
+  opacity: 1;
+  transition-delay: 0.5s;
 }
