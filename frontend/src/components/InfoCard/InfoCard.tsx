@@ -1,6 +1,6 @@
 import { Alert, Card } from '@edifice.io/react';
 import clsx from 'clsx';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Info, InfoExtendedStatus, InfoStatus } from '~/models/info';
 import './InfoCard.css';
@@ -17,6 +17,8 @@ export type InfoCardProps = {
 
 export const InfoCard = ({ info }: InfoCardProps) => {
   const { t } = useTranslation('actualites');
+  const cardRef = useRef<HTMLDivElement>(null);
+
   const infoId = `info-${info.id}`;
   const isIncoming =
     info.status === InfoStatus.PUBLISHED &&
@@ -49,11 +51,22 @@ export const InfoCard = ({ info }: InfoCardProps) => {
   }
 
   const handleMoreClick = () => {
-    setCollapse(!collapse);
+    setCollapse((collapse) => {
+      if (!collapse && cardRef.current) {
+        // Scroll to top of the card when collapsing
+        cardRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+      return !collapse;
+    });
   };
 
   return (
-    <Card className={className} isClickable={false} isSelectable={false}>
+    <Card
+      ref={cardRef}
+      className={className}
+      isClickable={false}
+      isSelectable={false}
+    >
       <article id={infoId} className="overflow-hidden">
         <InfoCardHeader info={info} extendedStatus={extendedStatus} />
 
