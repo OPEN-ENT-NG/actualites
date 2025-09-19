@@ -4,6 +4,7 @@
   --edifice-info-card-divider-color: var(--edifice-info-card-state-color);
   --edifice-info-card-before-background: var(--edifice-info-card-state-color);
   --edifice-info-card-background: var(--edifice-white);
+  --edifice-info-animation-duration: 0.3s;
 
   position: relative;
   margin-left: 1.6rem;
@@ -49,11 +50,11 @@
   border-bottom-left-radius: 2.4rem;
   border-bottom-right-radius: 2.4rem;
   box-shadow: inset -4px -3px 6px 0px #00000033;
-  transition: height 0.5s ease-in-out;
+  transition: height var(--edifice-info-animation-duration) ease-in-out;
 }
 
 .info-card.info-card-full-content::before {
-  transition-delay: 0.5s;
+  transition-delay: var(--edifice-info-animation-duration);
   height: 50px;
 }
 
@@ -76,8 +77,8 @@
   height: 0;
   overflow: hidden;
   transition:
-    opacity 0.5s ease-in-out,
-    height 0.5s ease-in-out;
+    opacity var(--edifice-info-animation-duration) ease-in-out,
+    height var(--edifice-info-animation-duration) ease-in-out;
 }
 
 .content-hidden {
@@ -87,5 +88,5 @@
 
 .content-visible {
   opacity: 1;
-  transition-delay: 0.5s;
+  transition-delay: var(--edifice-info-animation-duration);
 }

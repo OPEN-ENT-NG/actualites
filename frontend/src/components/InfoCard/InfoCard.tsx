@@ -62,7 +62,7 @@ export const InfoCard = ({ info }: InfoCardProps) => {
             <div>
               <strong>{t('info.alert.expired.title')}</strong>
             </div>
-            <div>{t('info.status.expired.description')}</div>
+            <div>{t('actualites.info.status.expired.description')}</div>
           </Alert>
         )}
 

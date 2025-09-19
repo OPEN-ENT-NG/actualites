@@ -34,14 +34,14 @@ export const InfoCardContent = ({
     collapseContentRef.current?.scrollHeight,
   ]);
 
-  const classNameContentCollapsed = clsx('info-card-content', {
-    'content-visible': collapse,
-    'content-hidden': !collapse,
-  });
-  const classNameContentFull = clsx('info-card-content', {
-    'content-hidden': collapse,
-    'content-visible': !collapse,
-  });
+  const classNameContentCollapsed = clsx(
+    'info-card-content',
+    !collapse ? 'content-hidden' : 'content-visible',
+  );
+  const classNameContentFull = clsx(
+    'info-card-content',
+    collapse ? 'content-hidden' : 'content-visible',
+  );
 
   return (
     <div>

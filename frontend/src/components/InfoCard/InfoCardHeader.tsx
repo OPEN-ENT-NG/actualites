@@ -55,7 +55,7 @@ export const InfoCardHeader = ({
           {info.status === 'DRAFT' && (
             <Badge className="bg-blue-200 text-blue">
               <Flex align="center" gap="8" wrap="nowrap" className="mx-4">
-                {t('info.status.draft')}
+                {t('actualites.info.status.draft')}
                 <IconSave />
               </Flex>
             </Badge>
@@ -63,7 +63,7 @@ export const InfoCardHeader = ({
           {!isExpired && extendedStatus === InfoExtendedStatus.INCOMING && (
             <Badge className="bg-purple-200 text-purple-500">
               <Flex align="center" gap="8" wrap="nowrap" className="mx-4">
-                {t('info.status.incoming')}
+                {t('actualites.info.status.incoming')}
                 <IconClock />
               </Flex>
             </Badge>
@@ -71,7 +71,7 @@ export const InfoCardHeader = ({
           {isExpired && (
             <Badge className="bg-red-200 text-red-500">
               <Flex align="center" gap="8" wrap="nowrap" className="mx-4">
-                {t('info.status.expired')}
+                {t('actualites.info.status.expired')}
                 <IconClockAlert />
               </Flex>
             </Badge>
@@ -83,7 +83,7 @@ export const InfoCardHeader = ({
         {info.headline && !isExpired && (
           <Image
             src={iconHeadline}
-            alt="Headline Icon"
+            alt={t('actualites.info.alt.headline')}
             width={24}
             height={24}
           />
@@ -105,7 +105,7 @@ export const InfoCardHeader = ({
           <Image
             src={iconHeadline}
             style={{ rotate: '180deg' }}
-            alt="Headline Icon"
+            alt={t('actualites.info.alt.headline')}
             width={24}
             height={24}
           />
