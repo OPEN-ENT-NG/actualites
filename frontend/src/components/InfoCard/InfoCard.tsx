@@ -39,11 +39,14 @@ export const InfoCard = ({ info }: InfoCardProps) => {
     },
   );
 
-  const extendedStatus: InfoExtendedStatus | undefined = isIncoming
-    ? InfoExtendedStatus.INCOMING
-    : isExpired
-      ? InfoExtendedStatus.EXPIRED
-      : undefined;
+  let extendedStatus: InfoExtendedStatus | undefined;
+  if (isIncoming) {
+    extendedStatus = InfoExtendedStatus.INCOMING;
+  } else if (isExpired) {
+    extendedStatus = InfoExtendedStatus.EXPIRED;
+  } else {
+    extendedStatus = undefined;
+  }
 
   const handleMoreClick = () => {
     setCollapse(!collapse);
