@@ -4,7 +4,7 @@ import {
   mockInfos,
   mockInfoShare,
   mockOriginalInfo,
-} from '~/mocks';
+} from '~/mocks/datas/infos';
 import { InfoStatus } from '~/models/info';
 import { infoService } from '.';
 
