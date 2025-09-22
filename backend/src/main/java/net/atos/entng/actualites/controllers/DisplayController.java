@@ -24,6 +24,7 @@ import java.util.Map;
 import fr.wseduc.security.ActionType;
 import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.Actualites;
+import net.atos.entng.actualites.filters.InfoFilter;
 
 import org.entcore.common.events.EventStore;
 import org.entcore.common.events.EventStoreFactory;
@@ -63,5 +64,13 @@ public class DisplayController extends BaseController {
 	@ResourceFilter(SuperAdminFilter.class)
 	public void getConfig(final HttpServerRequest request) {
 		renderJson(request, config);
+	}
+
+	/** Render react frontend in old-format */
+	@Get("/oldformat/:"+Actualites.INFO_RESOURCE_ID)
+    @SecuredAction(value = "info.read", type = ActionType.RESOURCE)
+    @ResourceFilter(InfoFilter.class)
+	public void viewOldInfoById(HttpServerRequest request) {
+		renderView(request, new JsonObject(), "index.html", null);
 	}
 }
