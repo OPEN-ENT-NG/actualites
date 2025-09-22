@@ -40,7 +40,7 @@
 .info-card::before {
   content: '';
   position: absolute;
-  height: calc(100% - 100px);
+  height: calc(100% - 80px);
   left: -1.6rem;
   bottom: -1px;
   width: 1.6rem;
