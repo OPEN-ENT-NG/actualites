@@ -51,11 +51,9 @@ import org.entcore.common.user.UserUtils;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 import static org.entcore.common.http.response.DefaultResponseHandler.*;
 import static org.entcore.common.user.UserUtils.getUserInfos;
@@ -93,6 +91,16 @@ public class InfoController extends ControllerHelper {
         final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(Actualites.class.getSimpleName());
         eventHelper = new EventHelper(eventStore);
         optimized = config.getBoolean("optimized-query", true);
+    }
+
+    @Override
+    protected boolean shouldNormalizedRights() {
+        return true;
+    }
+
+    @Override
+    protected Function<JsonObject, Optional<String>> jsonToOwnerId() {
+        return json -> Optional.of(json.getString("owner"));
     }
 
     @Get("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/:"+Actualites.INFO_RESOURCE_ID)
@@ -588,7 +596,15 @@ public class InfoController extends ControllerHelper {
                                     }
                                     result.put("actions", newActions);
                                 }
-                                handler.handle(new Either.Right<String, JsonObject>(result));
+                                infoService.getOwnerInfo(id, h -> {
+                                    if(h.isRight()) {
+                                        result.put("owner", h.right().getValue().getString("owner"));
+                                        addNormalizedRights(result);
+                                        handler.handle(new Either.Right<String, JsonObject>(result));
+                                    } else {
+                                        handler.handle(new Either.Left<String, JsonObject>("Error finding owner of the resource."));
+                                    }
+                                });
                             } else {
                                 handler.handle(new Either.Left<String, JsonObject>("Error finding shared resource."));
                             }

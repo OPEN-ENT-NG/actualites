@@ -27,6 +27,7 @@ import java.util.Map;
 
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+import net.atos.entng.actualites.Actualites;
 import net.atos.entng.actualites.to.NewsStatus;
 import net.atos.entng.actualites.to.ResourceOwner;
 import net.atos.entng.actualites.to.Rights;
@@ -323,6 +324,15 @@ public class ThreadServiceSqlImpl implements ThreadService {
 		.compose(ids -> getDefaultStructureOfUsers(ids))
 		// 3. Assign a default structure to eligible threads.
 		.compose(map -> assignDefaultOwnerStructure(map));
+	}
+
+	@Override
+	public void getOwnerInfo(String threadId, Handler<Either<String, JsonObject>> handler) {
+		if (threadId != null && !threadId.isEmpty()) {
+			String query = "SELECT thread.owner FROM " + threadsTable + " WHERE id = ?";
+			Sql.getInstance().prepared(query, new fr.wseduc.webutils.collections.JsonArray().add(Long.parseLong(threadId)),
+					SqlResult.validUniqueResultHandler(handler));
+		}
 	}
 
 	/** Get IDs of owner of threads without a structure. */
