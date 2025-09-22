@@ -1,7 +1,7 @@
 import { http, HttpResponse } from 'msw';
 import { ThreadMode } from '~/models/thread';
 import { baseUrl } from '~/services';
-import { mockThreads, mockThreadShare } from '..';
+import { mockThreads, mockThreadShare } from '../datas/threads';
 
 /**
  * MSW Handlers
