@@ -47,4 +47,11 @@ public interface ThreadService {
 	/** Utility method to attach threads without a structure to their owner's structure, when a single one exists. */
 	Future<Void> attachThreadsWithNullStructureToDefault();
 
+	/**
+	 * Retreive owner of the thread
+	 * @param threadId
+	 * @param handler
+	 */
+	public void getOwnerInfo(String threadId, Handler<Either<String, JsonObject>> handler);
+
 }
