@@ -20,9 +20,8 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
       {
         path: '',
         async lazy() {
-          const { loader, Threads: Component } = await import(
-            '~/routes/pages/Threads'
-          );
+          const { loader, Threads: Component } =
+            await import('~/routes/pages/Threads');
           return {
             loader: loader(queryClient),
             Component,
@@ -39,9 +38,8 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
                     path: '',
                     index: true,
                     async lazy() {
-                      const { loader, Threads: Component } = await import(
-                        '~/routes/pages/Threads'
-                      );
+                      const { loader, Threads: Component } =
+                        await import('~/routes/pages/Threads');
                       return {
                         loader: loader(queryClient),
                         Component,
@@ -51,9 +49,8 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
                   {
                     path: 'infos/:info/edit',
                     async lazy() {
-                      const { loader, Threads: Component } = await import(
-                        '~/routes/pages/Threads'
-                      );
+                      const { loader, Threads: Component } =
+                        await import('~/routes/pages/Threads');
                       return {
                         loader: loader(queryClient),
                         Component,
@@ -69,9 +66,8 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
       {
         path: 'drafts/create',
         async lazy() {
-          const { loader, Create: Component } = await import(
-            '~/routes/pages/Create'
-          );
+          const { loader, Create: Component } =
+            await import('~/routes/pages/Create');
           return {
             loader: loader(queryClient),
             Component,
