@@ -1,19 +1,34 @@
 import {
   Avatar,
+  Badge,
   Divider,
+  Flex,
+  Image,
   SeparatedInfo,
   useBreakpoint,
   useDate,
   useDirectory,
 } from '@edifice.io/react';
+import { IconClock, IconClockAlert, IconSave } from '@edifice.io/react/icons';
+import { useTranslation } from 'react-i18next';
+import iconHeadline from '~/assets/icon-headline.svg';
 import { useThread } from '~/features/threads/useThread';
+import { InfoExtendedStatus } from '~/models/info';
 import { InfoCardProps } from './InfoCard';
 import { InfoCardThreadHeader } from './InfoCardThreadHeader';
 
-export const InfoCardHeader = ({ info }: Pick<InfoCardProps, 'info'>) => {
+export type InfoCardHeaderProps = Pick<InfoCardProps, 'info'> & {
+  extendedStatus?: InfoExtendedStatus;
+};
+
+export const InfoCardHeader = ({
+  info,
+  extendedStatus,
+}: InfoCardHeaderProps) => {
   const { formatDate } = useDate();
   const thread = useThread(info.threadId);
   const { getAvatarURL } = useDirectory();
+  const { t } = useTranslation('actualites');
   const avatarUrl = getAvatarURL(info.owner.id, 'user');
 
   const { md } = useBreakpoint();
@@ -23,6 +38,11 @@ export const InfoCardHeader = ({ info }: Pick<InfoCardProps, 'info'>) => {
 
   const classes = md ? 'text-center' : '';
   const iconSize = md ? 'sm' : 'xs';
+  const styleBadge = md
+    ? { textAlign: 'right' as const, minWidth: '150px' }
+    : { minWidth: '150px' };
+
+  const isExpired = extendedStatus === InfoExtendedStatus.EXPIRED;
 
   return (
     <header key={info.id} className="mb-12">
@@ -31,24 +51,66 @@ export const InfoCardHeader = ({ info }: Pick<InfoCardProps, 'info'>) => {
         <h3 className={`text-truncate text-truncate-2 ${classes}`}>
           {info?.title}
         </h3>
-        <div style={{ textAlign: 'right', minWidth: '150px' }}>
-          {/* Ajouter le badge nouveau */}
+        <div style={styleBadge}>
+          {info.status === 'DRAFT' && (
+            <Badge className="bg-blue-200 text-blue">
+              <Flex align="center" gap="8" wrap="nowrap" className="mx-4">
+                {t('actualites.info.status.draft')}
+                <IconSave />
+              </Flex>
+            </Badge>
+          )}
+          {!isExpired && extendedStatus === InfoExtendedStatus.INCOMING && (
+            <Badge className="bg-purple-200 text-purple-500">
+              <Flex align="center" gap="8" wrap="nowrap" className="mx-4">
+                {t('actualites.info.status.incoming')}
+                <IconClock />
+              </Flex>
+            </Badge>
+          )}
+          {isExpired && (
+            <Badge className="bg-red-200 text-red-500">
+              <Flex align="center" gap="8" wrap="nowrap" className="mx-4">
+                {t('actualites.info.status.expired')}
+                <IconClockAlert />
+              </Flex>
+            </Badge>
+          )}
         </div>
       </div>
 
-      <Divider color="red">
-        <Avatar
-          alt={info.owner.displayName}
-          src={avatarUrl}
-          size={iconSize}
-          variant="circle"
-          loading="lazy"
-        />
-        <SeparatedInfo className="fs-6">
-          <div>{info.owner.displayName}</div>
-          <div>{formatDate(info.modified, 'long')}</div>
-        </SeparatedInfo>
-      </Divider>
+      <Flex className="flex-fill mt-12" align="center" wrap="nowrap" gap="16">
+        {info.headline && !isExpired && (
+          <Image
+            src={iconHeadline}
+            alt={t('actualites.info.alt.headline')}
+            width={24}
+            height={24}
+          />
+        )}
+        <Divider color="var(--edifice-info-card-divider-color)">
+          <Avatar
+            alt={info.owner.displayName}
+            src={avatarUrl}
+            size={iconSize}
+            variant="circle"
+            loading="lazy"
+          />
+          <SeparatedInfo className="fs-6">
+            <div>{info.owner.displayName}</div>
+            <div>{formatDate(info.modified, 'long')}</div>
+          </SeparatedInfo>
+        </Divider>
+        {info.headline && !isExpired && (
+          <Image
+            src={iconHeadline}
+            style={{ rotate: '180deg' }}
+            alt={t('actualites.info.alt.headline')}
+            width={24}
+            height={24}
+          />
+        )}
+      </Flex>
     </header>
   );
 };

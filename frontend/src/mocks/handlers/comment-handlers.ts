@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw';
 import { baseUrl } from '~/services';
-import { mockComments } from '..';
+import { mockComments } from '../datas/comments';
 
 /**
  * MSW Handlers
