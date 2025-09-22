@@ -1,9 +1,13 @@
 {
-  "actualites.read.more": "Lire la suite",
   "actualites.info.status.draft": "Brouillon",
   "actualites.info.status.incoming": "À venir",
   "actualites.info.status.expired": "Expirée",
   "actualites.info.status.expired.description": "Pour rappel, les actualités expirées ne sont plus visibles pour les lecteurs.",
   "actualites.info.alert.expired.title": "L’actualité est expirée depuis le [[expiredDate]]",
-  "actualites.info.alt.headline": "Icône de actualité mise en avant"
+  "actualites.info.alt.headline": "Icône de actualité mise en avant",
+  "actualites.previouscontent.alert.button": "Voir l’ancienne version",
+  "actualites.previouscontent.alert.paragraph1": "Le contenu de cette actualité a été créé avec l’ancienne version d’actualité.",
+  "actualites.previouscontent.alert.paragraph2": "S’il ne s’affiche pas correctement, vous pouvez voir l’ancienne version.",
+  "actualites.previouscontent.modal.close": "Fermer",
+  "actualites.read.more": "Lire la suite"
 }

@@ -90,3 +90,8 @@
   opacity: 1;
   transition-delay: var(--edifice-info-animation-duration);
 }
+
+/* Override defective Alert component */
+.info-card-previouscontent-alert .alert-content {
+  width: 100%;
+}
