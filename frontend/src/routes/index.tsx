@@ -18,48 +18,49 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
     errorElement: <PageError />,
     children: [
       {
-        path: 'threads',
+        path: '',
+        async lazy() {
+          const { loader, Threads: Component } = await import(
+            '~/routes/pages/Threads'
+          );
+          return {
+            loader: loader(queryClient),
+            Component,
+          };
+        },
         children: [
           {
-            path: '',
-            index: true,
-            async lazy() {
-              const { loader, Threads: Component } = await import(
-                '~/routes/pages/Threads'
-              );
-              return {
-                loader: loader(queryClient),
-                Component,
-              };
-            },
-          },
-          {
-            path: ':threadId',
+            path: 'threads',
             children: [
               {
-                path: '',
-                index: true,
-                async lazy() {
-                  const { loader, Threads: Component } = await import(
-                    '~/routes/pages/Threads'
-                  );
-                  return {
-                    loader: loader(queryClient),
-                    Component,
-                  };
-                },
-              },
-              {
-                path: 'infos/:info/edit',
-                async lazy() {
-                  const { loader, Threads: Component } = await import(
-                    '~/routes/pages/Threads'
-                  );
-                  return {
-                    loader: loader(queryClient),
-                    Component,
-                  };
-                },
+                path: ':threadId',
+                children: [
+                  {
+                    path: '',
+                    index: true,
+                    async lazy() {
+                      const { loader, Threads: Component } = await import(
+                        '~/routes/pages/Threads'
+                      );
+                      return {
+                        loader: loader(queryClient),
+                        Component,
+                      };
+                    },
+                  },
+                  {
+                    path: 'infos/:info/edit',
+                    async lazy() {
+                      const { loader, Threads: Component } = await import(
+                        '~/routes/pages/Threads'
+                      );
+                      return {
+                        loader: loader(queryClient),
+                        Component,
+                      };
+                    },
+                  },
+                ],
               },
             ],
           },
