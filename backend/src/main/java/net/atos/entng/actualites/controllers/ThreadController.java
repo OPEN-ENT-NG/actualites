@@ -25,6 +25,8 @@ import static org.entcore.common.http.response.DefaultResponseHandler.notEmptyRe
 import static org.entcore.common.user.UserUtils.getUserInfos;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 import net.atos.entng.actualites.Actualites;
 import net.atos.entng.actualites.filters.ThreadFilter;
@@ -76,6 +78,16 @@ public class ThreadController extends ControllerHelper {
 		this.threadService = new ThreadServiceSqlImpl().setEventBus(eb);
 		final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(Actualites.class.getSimpleName());
 		eventHelper = new EventHelper(eventStore);
+	}
+
+	@Override
+	protected boolean shouldNormalizedRights() {
+		return true;
+	}
+
+	@Override
+	protected Function<JsonObject, Optional<String>> jsonToOwnerId() {
+		return json -> Optional.of(json.getString("owner"));
 	}
 
 	@Get("/threads")
@@ -223,7 +235,15 @@ public class ThreadController extends ControllerHelper {
 									}
 									result.put("actions", newActions);
 								}
-								handler.handle(new Either.Right<String, JsonObject>(result));
+								threadService.getOwnerInfo(id, h -> {
+									if(h.isRight()) {
+										result.put("owner", h.right().getValue().getString("owner"));
+										addNormalizedRights(result);
+										handler.handle(new Either.Right<String, JsonObject>(result));
+									} else {
+										handler.handle(new Either.Left<String, JsonObject>("Error finding owner of the resource."));
+									}
+								});
 							} else {
 								handler.handle(new Either.Left<String, JsonObject>("Error finding shared resource."));
 							}
