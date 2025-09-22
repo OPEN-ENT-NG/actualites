@@ -1,5 +1,5 @@
 import { HttpResponse, http } from 'msw';
-import { USER_MOCKED } from '..';
+import { USER_MOCKED } from '../datas/user';
 
 /**
  * DO NOT MODIFY

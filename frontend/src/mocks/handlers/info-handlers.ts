@@ -5,8 +5,8 @@ import {
   mockInfos,
   mockInfoShare,
   mockOriginalInfo,
-  RESPONSE_DELAY,
-} from '..';
+} from '../datas/infos';
+import { RESPONSE_DELAY } from '../datas/threads';
 
 /**
  * MSW Handlers

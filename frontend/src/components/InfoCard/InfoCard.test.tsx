@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { mockInfos } from '~/mocks';
+import { mockInfos } from '~/mocks/datas/infos';
 import { render, screen } from '~/mocks/setup';
 import { InfoCard } from './InfoCard';
 
@@ -35,6 +35,18 @@ vi.mock('@edifice.io/react', async () => {
   };
 });
 
+function getHeadlineImg(card: HTMLElement) {
+  const imgHeadline = [];
+  for (let i = 0; i < card.getElementsByTagName('img').length; i++) {
+    if (
+      card.getElementsByTagName('img')[i].alt === 'actualites.info.alt.headline'
+    ) {
+      imgHeadline.push(card.getElementsByTagName('img')[i]);
+    }
+  }
+  return imgHeadline;
+}
+
 describe('InfoCard', () => {
   it('should render', () => {
     mocks.useBreakpoint.mockReturnValue({ md: false });
@@ -42,7 +54,64 @@ describe('InfoCard', () => {
 
     const card = screen.getByRole('article');
     expect(card.getElementsByTagName('h3')[0].textContent).toBe('Bientôt');
+  });
 
-    screen.debug();
+  it('should healine message', () => {
+    mocks.useBreakpoint.mockReturnValue({ md: false });
+    render(<InfoCard info={mockInfos[0]} />);
+
+    const card = screen.getByRole('article');
+    expect(card.parentElement).toHaveClass('info-card-headline');
+    const imgHeadline = getHeadlineImg(card);
+    expect(imgHeadline).toHaveLength(2);
+  });
+
+  it('should draft message', () => {
+    mocks.useBreakpoint.mockReturnValue({ md: false });
+    render(<InfoCard info={mockInfos[2]} />);
+
+    const card = screen.getByRole('article');
+    expect(card.parentElement).toHaveClass('info-card-draft');
+
+    const badge = card.getElementsByClassName('badge bg-blue-200 text-blue')[0];
+    expect(badge).toBeInTheDocument();
+    expect(badge.textContent).toBe('actualites.info.status.draft');
+
+    const imgHeadline = getHeadlineImg(card);
+    expect(imgHeadline).toHaveLength(0);
+  });
+
+  it('should incoming message', () => {
+    mocks.useBreakpoint.mockReturnValue({ md: false });
+    render(<InfoCard info={mockInfos[3]} />);
+
+    const card = screen.getByRole('article');
+    expect(card.parentElement).toHaveClass('info-card-incoming');
+
+    const badge = card.getElementsByClassName(
+      'badge bg-purple-200 text-purple-500',
+    )[0];
+    expect(badge).toBeInTheDocument();
+    expect(badge.textContent).toBe('actualites.info.status.incoming');
+
+    const imgHeadline = getHeadlineImg(card);
+    expect(imgHeadline).toHaveLength(0);
+  });
+
+  it('should expired message', () => {
+    mocks.useBreakpoint.mockReturnValue({ md: false });
+    render(<InfoCard info={mockInfos[4]} />);
+
+    const card = screen.getByRole('article');
+    expect(card.parentElement).toHaveClass('info-card-expired');
+
+    const badge = card.getElementsByClassName(
+      'badge bg-red-200 text-red-500',
+    )[0];
+    expect(badge).toBeInTheDocument();
+    expect(badge.textContent).toBe('actualites.info.status.expired');
+
+    const imgHeadline = getHeadlineImg(card);
+    expect(imgHeadline).toHaveLength(0);
   });
 });
