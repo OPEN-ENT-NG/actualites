@@ -7,14 +7,14 @@ import {
 } from '@edifice.io/react';
 import { IconRafterRight } from '@edifice.io/react/icons';
 import { useId, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useI18n } from '~/hooks/useI18n';
 import { baseUrl } from '~/services';
 import { InfoCardProps } from './InfoCard';
 
 export const InfoCardPreviousContent = ({
   info,
 }: Pick<InfoCardProps, 'info'>) => {
-  const { t } = useTranslation('actualites');
+  const { t } = useI18n();
   const [isModalOpen, toggle] = useToggle(false);
   const modalId = useId();
   const [isLoaded, setIsLoaded] = useState(false);
@@ -49,6 +49,7 @@ export const InfoCardPreviousContent = ({
       {isModalOpen && (
         <Modal
           size="md"
+          viewport
           id={modalId}
           isOpen={isModalOpen}
           onModalClose={handleModalClose}
@@ -64,7 +65,7 @@ export const InfoCardPreviousContent = ({
             )}
             <iframe
               className="flex-fill"
-              src={`${baseUrl}/oldformat/${info.id}`}
+              src={`${baseUrl}/oldformat/${info.threadId}/${info.id}`}
               title={info.title}
               onLoad={handleIframeLoad}
             ></iframe>
