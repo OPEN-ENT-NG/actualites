@@ -24,6 +24,8 @@ import fr.wseduc.webutils.security.SecuredAction;
 import io.vertx.core.Future;
 import net.atos.entng.actualites.to.News;
 import net.atos.entng.actualites.to.NewsComplete;
+import net.atos.entng.actualites.to.NewsStatus;
+
 import org.entcore.common.user.UserInfos;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
@@ -88,6 +90,8 @@ public interface InfoService {
 	public void getOwnerInfo(String infoId, Handler<Either<String, JsonObject>> handler);
 
 	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, Integer threadId);
+
+	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, List<Integer> threadIds, NewsStatus status);
 
 	public Future<NewsComplete> getFromId(Map<String, SecuredAction> securedActions, UserInfos user, int infoId, boolean originalContent);
 

@@ -16,6 +16,8 @@ import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.services.InfoService;
 import net.atos.entng.actualites.to.News;
 import net.atos.entng.actualites.to.NewsComplete;
+import net.atos.entng.actualites.to.NewsStatus;
+
 import org.entcore.common.user.UserInfos;
 
 import java.util.ArrayList;
@@ -135,7 +137,11 @@ public class InfoTransformerServiceImpl implements InfoService {
     @Override
     public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, Integer threadId) {
         return transformAndUpdateNewsContent(this.infoService.listPaginated(securedActions, user, page, pageSize, threadId));
+    }
 
+    @Override
+    public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, List<Integer> threadIds, NewsStatus status) {
+        return transformAndUpdateNewsContent(this.infoService.listPaginated(securedActions, user, page, pageSize, threadIds, status));
     }
 
     @Override
