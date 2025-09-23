@@ -30,6 +30,7 @@ import net.atos.entng.actualites.controllers.CommentController;
 import net.atos.entng.actualites.controllers.DisplayController;
 import net.atos.entng.actualites.controllers.InfoController;
 import net.atos.entng.actualites.controllers.ThreadController;
+import net.atos.entng.actualites.controllers.v1.InfosControllerV1;
 import net.atos.entng.actualites.services.ConfigService;
 import net.atos.entng.actualites.services.InfoService;
 import net.atos.entng.actualites.services.ThreadService;
@@ -119,8 +120,7 @@ public class Actualites extends BaseServer {
 		confInfo.setSchema(getSchema());
 
 		//info service transformer
-		InfoService infoService = new InfoTransformerServiceImpl(contentTransformerClient,
-																			new InfoServiceSqlImpl());
+		InfoService infoService = new InfoTransformerServiceImpl(contentTransformerClient, new InfoServiceSqlImpl());
 
 		// info controller
 		InfoController infoController = new InfoController(config);
@@ -129,6 +129,13 @@ public class Actualites extends BaseServer {
 		infoController.setCrudService(infoSqlCrudService);
 		infoController.setShareService(new SqlShareService(getSchema(),INFO_SHARE_TABLE, eb, securedActions, null));
 		addController(infoController);
+
+		InfosControllerV1 infosControllerV1 = new InfosControllerV1(eb);
+		infosControllerV1.setInfoService(infoService);
+		infosControllerV1.setCrudService(infoSqlCrudService);
+		infosControllerV1.setShareService(new SqlShareService(getSchema(),INFO_SHARE_TABLE, eb, securedActions, null));
+		addController(infosControllerV1);
+
 
 		// comment table
 		SqlConf confComment = SqlConfs.createConf(CommentController.class.getName());
