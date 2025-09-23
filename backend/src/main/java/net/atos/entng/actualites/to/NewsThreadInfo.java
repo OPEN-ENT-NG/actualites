@@ -3,7 +3,6 @@ package net.atos.entng.actualites.to;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.security.acl.Owner;
 import java.util.Set;
 
 public class NewsThreadInfo {

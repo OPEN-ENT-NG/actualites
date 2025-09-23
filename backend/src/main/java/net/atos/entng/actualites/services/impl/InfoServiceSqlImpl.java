@@ -538,6 +538,14 @@ public class InfoServiceSqlImpl implements InfoService {
 
 	@Override
 	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, Integer threadId) {
+		List<Integer> threadIds = new ArrayList<>();
+		if (threadId != null) threadIds.add(threadId);
+
+		return listPaginated(securedActions, user, page, pageSize, threadIds, NewsStatus.PUBLISHED);
+	}
+
+	@Override
+	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, List<Integer> threadIds, NewsStatus status) {
 		final Promise<List<News>> promise = Promise.promise();
 		if (user == null) {
 			promise.fail("user not provided");
@@ -559,7 +567,7 @@ public class InfoServiceSqlImpl implements InfoService {
 					"AND " +
 					"(i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL) " + // Expiration date not crossed
 					"AND " +
-					"(i.status = " + NewsStatus.PUBLISHED.ordinal() + ") " + // PUBLISHED
+					"(i.status = " + status.ordinal() + ") " + // PUBLISHED
 					"AND ( " +
 					"	 i.owner = ? " + // user is owner of info
 					"	 OR " +
@@ -569,8 +577,9 @@ public class InfoServiceSqlImpl implements InfoService {
 					"    OR " +
 					"    t.id IN (SELECT id FROM thread_for_user) " + // thread is shared to the user with publish rights
 					") ";
-			if (threadId != null) {
-				whereClause = "i.thread_id = ? AND ( " + whereClause + ") ";
+			if (threadIds != null && !threadIds.isEmpty()) {
+				String threadIdsSql = Sql.listPrepared(threadIds.toArray());
+				whereClause = "i.thread_id IN " + threadIdsSql + " AND ( " + whereClause + ") ";
 			}
 			String query =
 					"WITH " +
@@ -612,8 +621,10 @@ public class InfoServiceSqlImpl implements InfoService {
 			for(String value : groupsAndUserIds){
 				values.add(value); // for thread_for_user
 			}
-			if (threadId != null) {
-				values.add(threadId.intValue()); // for thread filtering
+			if (threadIds != null && !threadIds.isEmpty()) {
+				for (Integer tid : threadIds) {
+					values.add(tid); // for thread filtering
+				}
 			}
 			values.add(user.getUserId()); // for info owning clause
 			values.add(user.getUserId()); // for thread owning clause
@@ -629,31 +640,34 @@ public class InfoServiceSqlImpl implements InfoService {
 				} else {
 					try {
 
-						List<News> pojo = result.right().getValue().stream().filter(row -> row instanceof JsonObject).map(o -> {
-							final JsonObject row = (JsonObject)o;
-							final ResourceOwner owner = new ResourceOwner(
-									row.getString("owner"),
-									row.getString("owner_name"),
-									row.getBoolean("owner_deleted")
-							);
-							final List<String> rawRights = SqlResult.sqlArrayToList(row.getJsonArray("rights"), String.class);
-							return new News(
-									row.getInteger("id"),
-									row.getInteger("thread_id"),
-									row.getString("title"),
-									row.getString("content"),
-									NewsStatus.fromOrdinal(row.getInteger("status")),
-									owner,
-									row.getString("created"),
-									row.getString("modified"),
-									row.getString("publication_date"),
-									row.getString("expiration_date"),
-									row.getBoolean("is_headline"),
-									row.getInteger("number_of_comments"),
-									Rights.fromRawRights(securedActions, rawRights),
-									row.getInteger("content_version")
-							);
-						}).collect(Collectors.toList());
+						List<News> pojo = result.right().getValue().stream()
+							.filter(row -> row instanceof JsonObject)
+							.map(JsonObject.class::cast)
+							.map(row -> {
+								final ResourceOwner owner = new ResourceOwner(
+										row.getString("owner"),
+										row.getString("owner_name"),
+										row.getBoolean("owner_deleted")
+								);
+								final List<String> rawRights = SqlResult.sqlArrayToList(row.getJsonArray("rights"), String.class);
+								return new News(
+										row.getInteger("id"),
+										row.getInteger("thread_id"),
+										row.getString("title"),
+										row.getString("content"),
+										NewsStatus.fromOrdinal(row.getInteger("status")),
+										owner,
+										row.getString("created"),
+										row.getString("modified"),
+										row.getString("publication_date"),
+										row.getString("expiration_date"),
+										row.getBoolean("is_headline"),
+										row.getInteger("number_of_comments"),
+										Rights.fromRawRights(securedActions, rawRights),
+										row.getInteger("content_version")
+								);
+							})
+							.collect(Collectors.toList());
 						promise.complete(pojo);
 					} catch (Exception e) {
 						log.error("Failed to parse JsonObject", e);
