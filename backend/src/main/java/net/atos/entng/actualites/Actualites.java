@@ -59,6 +59,8 @@ public class Actualites extends BaseServer {
 	public final static String INFO_SHARE_TABLE = "info_shares";
 	public final static String INFO_REVISION_TABLE = "info_revision";
 
+	public final static String USER_TABLE = "users";
+	public final static String MEMBER_TABLE = "members";
 	public final static String COMMENT_TABLE = "comment";
 
 	public final static String MANAGE_RIGHT_ACTION = "net-atos-entng-actualites-controllers-ThreadController|updateThread";

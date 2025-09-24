@@ -29,7 +29,6 @@ import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import net.atos.entng.actualites.Actualites;
 import net.atos.entng.actualites.services.InfoService;
 import net.atos.entng.actualites.to.*;
 import net.atos.entng.actualites.utils.Events;
@@ -48,24 +47,28 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.entcore.common.sql.SqlResult.validUniqueResultHandler;
+import static net.atos.entng.actualites.Actualites.*;
 
 public class InfoServiceSqlImpl implements InfoService {
 
 	protected static final Logger log = LoggerFactory.getLogger(Renders.class);
 	private static final String THREAD_PUBLISH = "net-atos-entng-actualites-controllers-InfoController|publish";
 	private static final String RESOURCE_SHARED = "net-atos-entng-actualites-controllers-InfoController|getInfo";
-	private final String threadsTable = "actualites.thread";
-	private final String threadsSharesTable = "actualites.thread_shares";
-	private final String infosTable = "actualites.info";
-	private final String infosSharesTable = "actualites.info_shares";
-	private final String usersTable = "actualites.users";
+	private static final String NEWS_THREAD_TABLE = NEWS_SCHEMA + "." + THREAD_TABLE;
+	private static final String NEWS_THREAD_SHARE_TABLE = NEWS_SCHEMA + "." + THREAD_SHARE_TABLE;
+	private static final String NEWS_INFO_TABLE = NEWS_SCHEMA + "." + INFO_TABLE;
+	private static final String NEWS_INFO_SHARE_TABLE = NEWS_SCHEMA + "." + INFO_SHARE_TABLE;
+	private static final String NEWS_USER_TABLE = NEWS_SCHEMA + "." + USER_TABLE;
+	private static final String NEWS_COMMENT_TABLE = NEWS_SCHEMA + "." + COMMENT_TABLE;
+	private static final String NEWS_MEMBER_TABLE = NEWS_SCHEMA + "." + MEMBER_TABLE;
+	private static final String NEWS_INFO_REVISION_TABLE = NEWS_SCHEMA + "." + INFO_REVISION_TABLE;
 	private static final String THREAD_PUBLISH_RIGHT = "net-atos-entng-actualites-controllers-InfoController|publish";
 	private final QueryHelperSql helperSql = new QueryHelperSql();
 	// we select the current content if its not tranformed, or we search it in the revision table
 	private static final String CONTENT_FIELD_QUERY =
 			"CASE WHEN i.content_version = 0 THEN i.content " +
 			"  WHEN i.content_version = 1 THEN " +
-			"  COALESCE((select _inf.content from actualites.info_revision _inf where _inf.info_id = i.id and _inf.content_version = 0 order by _inf.id DESC limit 1 )," +
+			"  COALESCE((select _inf.content from "+NEWS_INFO_REVISION_TABLE+" _inf where _inf.info_id = i.id and _inf.content_version = 0 order by _inf.id DESC limit 1 )," +
 			" i.content) " +
 			" END ";
 	/**
@@ -97,21 +100,21 @@ public class InfoServiceSqlImpl implements InfoService {
 					final Long infoId = event.right().getValue().getLong("id");
 					SqlStatementsBuilder s = new SqlStatementsBuilder();
 
-					String userQuery = "SELECT "+ Actualites.NEWS_SCHEMA + ".merge_users(?,?)";
+					String userQuery = "SELECT "+ NEWS_SCHEMA + ".merge_users(?,?)";
 					s.prepared(userQuery, new fr.wseduc.webutils.collections.JsonArray().add(user.getUserId()).add(user.getUsername()));
 
 					data.put("owner", user.getUserId())
 						.put("id", infoId)
 						.put("content_version", 1);
-					s.insert(Actualites.NEWS_SCHEMA + "." + Actualites.INFO_TABLE, data, "id");
+					s.insert(NEWS_INFO_TABLE, data, "id");
 
 					JsonObject revision = mapRevision(infoId, data);
 					revision.put("event", eventStatus);
-					s.insert(Actualites.NEWS_SCHEMA + "." + Actualites.INFO_REVISION_TABLE, revision, null);
+					s.insert(NEWS_INFO_REVISION_TABLE, revision, null);
 
 					Sql.getInstance().transaction(s.build(), validUniqueResultHandler(1, handler));
 				} else {
-					log.error("Failure to call nextval('"+ Actualites.NEWS_SCHEMA +".info_id_seq') sequence");
+					log.error("Failure to call nextval('"+ NEWS_SCHEMA +".info_id_seq') sequence");
 					handler.handle(new Either.Left<String, JsonObject>("An error occured when creating new info"));
 				}
 			}
@@ -139,7 +142,7 @@ public class InfoServiceSqlImpl implements InfoService {
 	public void update(String id, JsonObject data, UserInfos user, String eventStatus, Handler<Either<String, JsonObject>> handler) {
 		SqlStatementsBuilder s = new SqlStatementsBuilder();
 
-		String userQuery = "SELECT "+ Actualites.NEWS_SCHEMA + ".merge_users(?,?)";
+		String userQuery = "SELECT "+ NEWS_SCHEMA + ".merge_users(?,?)";
 		s.prepared(userQuery, new fr.wseduc.webutils.collections.JsonArray().add(user.getUserId()).add(user.getUsername()));
 
 		StringBuilder sb = new StringBuilder();
@@ -160,17 +163,17 @@ public class InfoServiceSqlImpl implements InfoService {
 			}
 			values.add(data.getValue(attr));
 		}
-		String query = "UPDATE " + Actualites.NEWS_SCHEMA + "." + Actualites.INFO_TABLE +
+		String query = "UPDATE " + NEWS_INFO_TABLE +
 						" SET " + sb.toString() + "modified = NOW() " +
-						"WHERE id = ? " +
-						"RETURNING id";
+						" WHERE id = ? " +
+						" RETURNING id";
 
 		s.prepared(query, values.add(Integer.parseInt(id)));
 
 		JsonObject revision = mapRevision(Long.parseLong(id), data);
 		revision.put("owner", user.getUserId());
 		revision.put("event", eventStatus);
-		s.insert(Actualites.NEWS_SCHEMA + "." + Actualites.INFO_REVISION_TABLE, revision, null);
+		s.insert(NEWS_INFO_REVISION_TABLE, revision, null);
 
 		Sql.getInstance().transaction(s.build(), SqlResult.validUniqueResultHandler(1, handler));
 	}
@@ -180,11 +183,11 @@ public class InfoServiceSqlImpl implements InfoService {
 		SqlStatementsBuilder s = new SqlStatementsBuilder();
 
 		String query = "WITH content_update AS (" +
-				" UPDATE " + Actualites.NEWS_SCHEMA + "." + Actualites.INFO_TABLE +
+				" UPDATE " + NEWS_INFO_TABLE +
 				" SET content = ?, content_version = 1, modified = NOW() " +
 				" WHERE id = ? AND content_version = 0 " +
 				" RETURNING id, title, content, owner, '"+ Events.UPDATE +"', content_version) " +
-				" INSERT INTO " + Actualites.NEWS_SCHEMA + "." + Actualites.INFO_REVISION_TABLE +
+				" INSERT INTO " + NEWS_INFO_REVISION_TABLE +
 				" (info_id, title, content, owner, event, content_version) " +
 				" SELECT * FROM content_update ";
 
@@ -209,19 +212,19 @@ public class InfoServiceSqlImpl implements InfoService {
 				", i.owner, i.content_version, u.username, t.title AS thread_title, t.icon AS thread_icon" +
 				", (SELECT json_agg(cr.*) FROM (" +
 					"SELECT c.id as _id, c.comment, c.owner, c.created, c.modified, au.username" +
-					" FROM actualites.comment AS c" +
-					" LEFT JOIN actualites.users AS au ON c.owner = au.id" +
+					" FROM "+NEWS_COMMENT_TABLE+" AS c" +
+					" LEFT JOIN "+NEWS_USER_TABLE+" AS au ON c.owner = au.id" +
 					" WHERE i.id = c.info_id" +
 					" ORDER BY c.modified ASC) cr)" +
 					" AS comments" +
 				", json_agg(row_to_json(row(ios.member_id, ios.action)::actualites.share_tuple)) as shared" +
 				", array_to_json(array_agg(group_id)) as groups" +
-				" FROM actualites.info AS i" +
-				" LEFT JOIN actualites.thread AS t ON i.thread_id = t.id" +
-				" LEFT JOIN actualites.thread_shares AS ts ON t.id = ts.resource_id" +
-				" LEFT JOIN actualites.users AS u ON i.owner = u.id" +
-				" LEFT JOIN actualites.info_shares AS ios ON i.id = ios.resource_id" +
-				" LEFT JOIN actualites.members AS m ON ((ts.member_id = m.id OR ios.member_id = m.id) AND m.group_id IS NOT NULL)" +
+				" FROM "+NEWS_INFO_TABLE+" AS i" +
+				" LEFT JOIN "+NEWS_THREAD_TABLE+" AS t ON i.thread_id = t.id" +
+				" LEFT JOIN "+NEWS_THREAD_SHARE_TABLE+" AS ts ON t.id = ts.resource_id" +
+				" LEFT JOIN "+NEWS_USER_TABLE+" AS u ON i.owner = u.id" +
+				" LEFT JOIN "+NEWS_INFO_SHARE_TABLE+" AS ios ON i.id = ios.resource_id" +
+				" LEFT JOIN "+NEWS_MEMBER_TABLE+" AS m ON ((ts.member_id = m.id OR ios.member_id = m.id) AND m.group_id IS NOT NULL)" +
 				" WHERE i.id = ? " +
 				" GROUP BY i.id, u.username, t.id" +
 				" ORDER BY i.modified DESC";
@@ -243,19 +246,19 @@ public class InfoServiceSqlImpl implements InfoService {
 				", i.owner, i.content_version, u.username, t.title AS thread_title, t.icon AS thread_icon" +
 				", (SELECT json_agg(cr.*) FROM (" +
 					"SELECT c.id as _id, c.comment, c.owner, c.created, c.modified, au.username" +
-					" FROM actualites.comment AS c" +
-					" LEFT JOIN actualites.users AS au ON c.owner = au.id" +
+					" FROM "+NEWS_COMMENT_TABLE+" AS c" +
+					" LEFT JOIN "+NEWS_USER_TABLE+" AS au ON c.owner = au.id" +
 					" WHERE i.id = c.info_id" +
 					" ORDER BY c.modified ASC) cr)" +
 					" AS comments" +
 				", json_agg(row_to_json(row(ios.member_id, ios.action)::actualites.share_tuple)) as shared" +
 				", array_to_json(array_agg(group_id)) as groups" +
-				" FROM actualites.info AS i" +
-				" LEFT JOIN actualites.thread AS t ON i.thread_id = t.id" +
-				" LEFT JOIN actualites.thread_shares AS ts ON t.id = ts.resource_id" +
-				" LEFT JOIN actualites.users AS u ON i.owner = u.id" +
-				" LEFT JOIN actualites.info_shares AS ios ON i.id = ios.resource_id" +
-				" LEFT JOIN actualites.members AS m ON ((ts.member_id = m.id OR ios.member_id = m.id) AND m.group_id IS NOT NULL)" +
+				" FROM "+NEWS_INFO_TABLE+" AS i" +
+				" LEFT JOIN "+NEWS_THREAD_TABLE+" AS t ON i.thread_id = t.id" +
+				" LEFT JOIN "+NEWS_THREAD_SHARE_TABLE+" AS ts ON t.id = ts.resource_id" +
+				" LEFT JOIN "+NEWS_USER_TABLE+" AS u ON i.owner = u.id" +
+				" LEFT JOIN "+NEWS_INFO_SHARE_TABLE+" AS ios ON i.id = ios.resource_id" +
+				" LEFT JOIN "+NEWS_MEMBER_TABLE+" AS m ON ((ts.member_id = m.id OR ios.member_id = m.id) AND m.group_id IS NOT NULL)" +
 				" WHERE i.id = ? " +
 				" AND ((i.owner = ? OR (ios.member_id IN " + Sql.listPrepared(groupsAndUserIds.toArray()) + " AND i.status > 2))" +
 				" OR ((t.owner = ? OR (ts.member_id IN " + Sql.listPrepared(groupsAndUserIds.toArray()) + " AND ts.action = ?)) AND i.status > 1))" +
@@ -308,19 +311,19 @@ public class InfoServiceSqlImpl implements InfoService {
 				", i.owner, i.content_version, u.username, t.title AS thread_title, t.icon AS thread_icon" +
 				", (SELECT json_agg(cr.*) FROM (" +
 					"SELECT c.id as _id, c.comment, c.owner, c.created, c.modified, au.username" +
-					" FROM actualites.comment AS c" +
-					" LEFT JOIN actualites.users AS au ON c.owner = au.id" +
+					" FROM "+NEWS_COMMENT_TABLE+" AS c" +
+					" LEFT JOIN "+NEWS_USER_TABLE+" AS au ON c.owner = au.id" +
 					" WHERE i.id = c.info_id" +
 					" ORDER BY c.modified ASC) cr)" +
 					" AS comments" +
 				", json_agg(row_to_json(row(ios.member_id, ios.action)::actualites.share_tuple)) as shared" +
 				", array_to_json(array_agg(group_id)) as groups" +
-				" FROM actualites.info AS i" +
-				" LEFT JOIN actualites.thread AS t ON i.thread_id = t.id" +
-				" LEFT JOIN actualites.thread_shares AS ts ON t.id = ts.resource_id" +
-				" LEFT JOIN actualites.users AS u ON i.owner = u.id" +
-				" LEFT JOIN actualites.info_shares AS ios ON i.id = ios.resource_id" +
-				" LEFT JOIN actualites.members AS m ON ((ts.member_id = m.id OR ios.member_id = m.id) AND m.group_id IS NOT NULL)" +
+				" FROM "+NEWS_INFO_TABLE+" AS i" +
+				" LEFT JOIN "+NEWS_THREAD_TABLE+" AS t ON i.thread_id = t.id" +
+				" LEFT JOIN "+NEWS_THREAD_SHARE_TABLE+" AS ts ON t.id = ts.resource_id" +
+				" LEFT JOIN "+NEWS_USER_TABLE+" AS u ON i.owner = u.id" +
+				" LEFT JOIN "+NEWS_INFO_SHARE_TABLE+" AS ios ON i.id = ios.resource_id" +
+				" LEFT JOIN "+NEWS_MEMBER_TABLE+" AS m ON ((ts.member_id = m.id OR ios.member_id = m.id) AND m.group_id IS NOT NULL)" +
 				" WHERE t.id = ? " +
 				" AND ((i.owner = ? OR (ios.member_id IN " + Sql.listPrepared(groupsAndUserIds.toArray()) + " AND i.status > 2))" +
 				" OR ((t.owner = ? OR (ts.member_id IN " + Sql.listPrepared(groupsAndUserIds.toArray()) + " AND ts.action = ?)) AND i.status > 1))" +
@@ -365,11 +368,11 @@ public class InfoServiceSqlImpl implements InfoService {
 					" END as date" +
 				", json_agg(row_to_json(row(ios.member_id, ios.action)::actualites.share_tuple)) as shared" +
 				", array_to_json(array_agg(group_id)) as groups" +
-				" FROM actualites.info AS i" +
-				" LEFT JOIN actualites.thread AS t ON i.thread_id = t.id" +
-				" LEFT JOIN actualites.users AS u ON i.owner = u.id" +
-				" LEFT JOIN actualites.info_shares AS ios ON i.id = ios.resource_id" +
-				" LEFT JOIN actualites.members AS m ON (ios.member_id = m.id AND m.group_id IS NOT NULL)" +
+				" FROM "+NEWS_INFO_TABLE+" AS i" +
+				" LEFT JOIN "+NEWS_THREAD_TABLE+" AS t ON i.thread_id = t.id" +
+				" LEFT JOIN "+NEWS_USER_TABLE+" AS u ON i.owner = u.id" +
+				" LEFT JOIN "+NEWS_INFO_SHARE_TABLE+" AS ios ON i.id = ios.resource_id" +
+				" LEFT JOIN "+NEWS_MEMBER_TABLE+" AS m ON (ios.member_id = m.id AND m.group_id IS NOT NULL)" +
 				" WHERE ((ios.member_id IN " + Sql.listPrepared(groupsAndUserIds.toArray()) + "AND ios.action = ?) OR i.owner = ?)" +
 				" AND i.status = 3" +
 					" AND (i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) AND (i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL)" +
@@ -409,9 +412,9 @@ public class InfoServiceSqlImpl implements InfoService {
 					subquery.append("SELECT info.id as _id, info.title, users.username, thread.id AS thread_id, thread.title AS thread_title, ");
 					subquery.append("thread.icon AS thread_icon, CASE WHEN info.publication_date > info.modified THEN info.publication_date ");
 					subquery.append("ELSE info.modified END AS date ");
-					subquery.append("FROM actualites.info ");
-					subquery.append("INNER JOIN actualites.thread ON (info.thread_id = thread.id) ");
-					subquery.append("INNER JOIN actualites.users ON (info.owner = users.id) ");
+					subquery.append("FROM "+NEWS_INFO_TABLE+" ");
+					subquery.append("INNER JOIN "+NEWS_THREAD_TABLE+" ON (info.thread_id = thread.id) ");
+					subquery.append("INNER JOIN "+NEWS_USER_TABLE+" ON (info.owner = users.id) ");
 					subquery.append("WHERE info.id IN ").append(infoIds).append(" ");
 					subquery.append("AND info.status = 3 ");
 					subquery.append("AND (info.publication_date <= LOCALTIMESTAMP OR info.publication_date IS NULL) ");
@@ -446,12 +449,12 @@ public class InfoServiceSqlImpl implements InfoService {
 			query = "SELECT i.id as _id, i.title, i.thread_id, i.owner, u.username, t.title AS thread_title, t.icon AS thread_icon" +
 				", json_agg(row_to_json(row(ios.member_id, ios.action)::actualites.share_tuple)) as shared" +
 				", array_to_json(array_agg(group_id)) as groups" +
-				" FROM actualites.info AS i" +
-				" LEFT JOIN actualites.thread AS t ON i.thread_id = t.id" +
-				" LEFT JOIN actualites.thread_shares AS ts ON t.id = ts.resource_id" +
-				" LEFT JOIN actualites.users AS u ON i.owner = u.id" +
-				" LEFT JOIN actualites.info_shares AS ios ON i.id = ios.resource_id" +
-				" LEFT JOIN actualites.members AS m ON ((ts.member_id = m.id OR ios.member_id = m.id) AND m.group_id IS NOT NULL)" +
+				" FROM "+NEWS_INFO_TABLE+" AS i" +
+				" LEFT JOIN "+NEWS_THREAD_TABLE+" AS t ON i.thread_id = t.id" +
+				" LEFT JOIN "+NEWS_THREAD_SHARE_TABLE+" AS ts ON t.id = ts.resource_id" +
+				" LEFT JOIN "+NEWS_USER_TABLE+" AS u ON i.owner = u.id" +
+				" LEFT JOIN "+NEWS_INFO_SHARE_TABLE+" AS ios ON i.id = ios.resource_id" +
+				" LEFT JOIN "+NEWS_MEMBER_TABLE+" AS m ON ((ts.member_id = m.id OR ios.member_id = m.id) AND m.group_id IS NOT NULL)" +
 				" WHERE (ios.member_id IN " + Sql.listPrepared(groupsAndUserIds.toArray()) + " OR i.owner = ?" +
 					" OR (ts.member_id IN " + Sql.listPrepared(groupsAndUserIds.toArray()) + " AND ts.action = ?) OR t.owner = ?)" +
 				" AND (i.status = 3" +
@@ -510,7 +513,7 @@ public class InfoServiceSqlImpl implements InfoService {
 	@Override
 	public void getOwnerInfo(String infoId, Handler<Either<String, JsonObject>> handler) {
 		if (infoId != null && !infoId.isEmpty()) {
-			String query = "SELECT info.owner FROM actualites." + Actualites.INFO_TABLE + " WHERE" +
+			String query = "SELECT info.owner FROM " + NEWS_INFO_TABLE + " WHERE" +
 					" id = ?;";
 
 			Sql.getInstance().prepared(query, new fr.wseduc.webutils.collections.JsonArray().add(Long.parseLong(infoId)),
@@ -520,10 +523,10 @@ public class InfoServiceSqlImpl implements InfoService {
 
     @Override
     public void getRevisions(Long infoId, Handler<Either<String, JsonArray>> handler) {
-        String query = "SELECT info_revision.id as _id, created, title, content, owner as " +
-                "user_id, event as eventName, username, content_version as contentVersion " +
-                "FROM "+ Actualites.NEWS_SCHEMA +".info_revision " +
-                "INNER JOIN "+ Actualites.NEWS_SCHEMA +".users on (info_revision.owner = users.id) " +
+        String query = "SELECT r.id as _id, created, title, content, owner as user_id, " +
+                " event as eventName, username, content_version as contentVersion " +
+                "FROM "+ NEWS_INFO_REVISION_TABLE +" AS r " +
+                "INNER JOIN "+ NEWS_USER_TABLE +" AS u ON (r.owner = u.id) " +
                 "WHERE info_id = ? " +
                 "ORDER BY created DESC;";
         Sql.getInstance().prepared(query, new fr.wseduc.webutils.collections.JsonArray().add(infoId),
@@ -579,28 +582,30 @@ public class InfoServiceSqlImpl implements InfoService {
 					"WITH " +
 					"	 info_for_user AS ( " + // Every info owned of shared to the user
 					"		 SELECT i.id, array_agg(DISTINCT ish.action) AS rights " +
-					"    	 FROM " + infosTable + " AS i " +
-					"        	 JOIN " + infosSharesTable + " AS ish ON i.id = ish.resource_id " +
+					"    	 FROM " + NEWS_INFO_TABLE + " AS i " +
+					"        	 JOIN " + NEWS_INFO_SHARE_TABLE + " AS ish ON i.id = ish.resource_id " +
 					"    	 WHERE " +
 					"        	 ish.member_id IN " + ids + " " +
 					"    	 GROUP BY i.id " +
 					"	 ), " +
 					"	 thread_for_user AS ( " + // Every thread owned of shared to the user with publish rights
 					"	 	 SELECT t.id " +
-					"    	 FROM " + threadsTable + " AS t " +
-					"        	 INNER JOIN " + threadsSharesTable + " AS tsh ON t.id = tsh.resource_id " +
+					"    	 FROM " + NEWS_THREAD_TABLE + " AS t " +
+					"        	 INNER JOIN " + NEWS_THREAD_SHARE_TABLE + " AS tsh ON t.id = tsh.resource_id " +
 					"    	 WHERE tsh.member_id IN " + ids + " " +
 					"		 	AND tsh.action = '" + THREAD_PUBLISH_RIGHT + "' " +
 					"    	 GROUP BY t.id, tsh.member_id " +
 					"	 ) " +
 					"SELECT i.id, i.thread_id, i.title, i.content, i.status, i.owner, u.username AS owner_name, " +
 					"        u.deleted as owner_deleted, i.created, i.modified, i.publication_date, " +
-					"        i.expiration_date, i.is_headline, i.number_of_comments, max(info_for_user.rights) as rights, i.content_version " +
-					"    FROM " + infosTable + " AS i " +
+					"        i.expiration_date, i.is_headline, i.number_of_comments, max(info_for_user.rights) as rights, " +
+					"        i.content_version, MIN(COALESCE(r.content_version, 1)) as previous_content_version " +
+					"    FROM " + NEWS_INFO_TABLE + " AS i " +
 					"        LEFT JOIN info_for_user ON info_for_user.id = i.id " +
 					" 		 LEFT JOIN thread_for_user ON thread_for_user.id = i.thread_id " +
-					"        LEFT JOIN " + usersTable + " AS u ON i.owner = u.id " +
-					" 		 LEFT JOIN " + threadsTable + " AS t ON t.id = i.thread_id " +
+					"        LEFT JOIN " + NEWS_USER_TABLE + " AS u ON i.owner = u.id " +
+					" 		 LEFT JOIN " + NEWS_THREAD_TABLE + " AS t ON t.id = i.thread_id " +
+					" 		 LEFT JOIN " + NEWS_INFO_REVISION_TABLE + " AS r ON r.info_id = i.id " +
 					"    WHERE " + whereClause +
 					"    GROUP BY i.id, i.thread_id, i.title, i.content, i.status, i.owner, owner_name, owner_deleted, " +
 					"        i.created, i.modified, i.publication_date, i.expiration_date, i.is_headline, " +
@@ -658,7 +663,8 @@ public class InfoServiceSqlImpl implements InfoService {
 										row.getBoolean("is_headline"),
 										row.getInteger("number_of_comments"),
 										Rights.fromRawRights(securedActions, rawRights),
-										row.getInteger("content_version")
+										row.getInteger("content_version"),
+										row.getInteger("previous_content_version")
 								);
 							})
 							.collect(Collectors.toList());
@@ -695,16 +701,16 @@ public class InfoServiceSqlImpl implements InfoService {
 					"WITH " +
 					"	 info_for_user AS ( " + // Every info owned of shared to the user
 					"		 SELECT i.id, array_agg(DISTINCT ish.action) AS rights " +
-					"    	 FROM " + infosTable + " AS i " +
-					"        	 JOIN " + infosSharesTable + " AS ish ON i.id = ish.resource_id " +
+					"    	 FROM " + NEWS_INFO_TABLE + " AS i " +
+					"        	 JOIN " + NEWS_INFO_SHARE_TABLE + " AS ish ON i.id = ish.resource_id " +
 					"    	 WHERE " +
 					"        	 ish.member_id IN " + ids + " " +
 					"    	 GROUP BY i.id " +
 					"	 ), " +
 					"	 thread_for_user AS ( " + // Every thread owned of shared to the user with publish rights
 					"	 	 SELECT t.id, array_agg(DISTINCT tsh.action) AS rights" +
-					"    	 FROM " + threadsTable + " AS t " +
-					"        	 INNER JOIN " + threadsSharesTable + " AS tsh ON t.id = tsh.resource_id " +
+					"    	 FROM " + NEWS_THREAD_TABLE + " AS t " +
+					"        	 INNER JOIN " + NEWS_THREAD_SHARE_TABLE + " AS tsh ON t.id = tsh.resource_id " +
 					"    	 WHERE tsh.member_id IN " + ids + " " +
 					"    	 GROUP BY t.id, tsh.member_id " +
 					"	 ) " +
@@ -715,12 +721,12 @@ public class InfoServiceSqlImpl implements InfoService {
 					"		 t.owner AS thread_owner, ut.username AS thread_owner_name, ut.deleted AS thread_owner_deleted, " + // thread owner data
 					"		 max(info_for_user.rights) AS rights, " + // info rights
 					"		 max(thread_for_user.rights) AS thread_rights " + // thread rights
-					"    FROM " + infosTable + " AS i " +
+					"    FROM " + NEWS_INFO_TABLE + " AS i " +
 					"        LEFT JOIN info_for_user ON info_for_user.id = i.id " +
 					" 		 LEFT JOIN thread_for_user ON thread_for_user.id = i.thread_id " +
-					"        LEFT JOIN " + usersTable + " AS u ON i.owner = u.id " +
-					" 		 LEFT JOIN " + threadsTable + " AS t ON t.id = i.thread_id " +
-					"        LEFT JOIN " + usersTable + " AS ut ON t.owner = ut.id " +
+					"        LEFT JOIN " + NEWS_USER_TABLE + " AS u ON i.owner = u.id " +
+					" 		 LEFT JOIN " + NEWS_THREAD_TABLE + " AS t ON t.id = i.thread_id " +
+					"        LEFT JOIN " + NEWS_USER_TABLE + " AS ut ON t.owner = ut.id " +
 					"    WHERE " +
 					"		 i.id = ? " + // get info from id
 					"    GROUP BY i.id, i.title, content, i.created, i.modified, i.is_headline, i.number_of_comments, " +

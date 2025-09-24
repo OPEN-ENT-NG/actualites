@@ -19,6 +19,10 @@ export const InfoCardPreviousContent = ({
   const modalId = useId();
   const [isLoaded, setIsLoaded] = useState(false);
 
+  if (info.previousContentVersion >= info.contentVersion) {
+    return null;
+  }
+
   const handlePreviousContentClick = () => toggle();
   const handleModalClose = () => toggle();
   const handleIframeLoad = () => setIsLoaded(true);
