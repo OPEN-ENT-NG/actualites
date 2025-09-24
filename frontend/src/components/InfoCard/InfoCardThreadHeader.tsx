@@ -20,10 +20,6 @@ export const InfoCardThreadHeader = ({
   const title = thread?.title || '';
   const iconSize = md ? '32' : '22';
 
-  if (!thread) {
-    return null;
-  }
-
   return (
     <Flex
       direction="row"
