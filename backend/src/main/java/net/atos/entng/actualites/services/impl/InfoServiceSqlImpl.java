@@ -183,7 +183,7 @@ public class InfoServiceSqlImpl implements InfoService {
 				" UPDATE " + Actualites.NEWS_SCHEMA + "." + Actualites.INFO_TABLE +
 				" SET content = ?, content_version = 1, modified = NOW() " +
 				" WHERE id = ? AND content_version = 0 " +
-				" RETURNING id, title, content, owner, 'UPDATE', content_version) " +
+				" RETURNING id, title, content, owner, '"+ Events.UPDATE +"', content_version) " +
 				" INSERT INTO " + Actualites.NEWS_SCHEMA + "." + Actualites.INFO_REVISION_TABLE +
 				" (info_id, title, content, owner, event, content_version) " +
 				" SELECT * FROM content_update ";
