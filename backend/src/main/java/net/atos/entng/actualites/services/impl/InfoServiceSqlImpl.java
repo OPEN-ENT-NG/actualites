@@ -179,26 +179,20 @@ public class InfoServiceSqlImpl implements InfoService {
 	public void transformerUpdateQuietly(News news) {
 		SqlStatementsBuilder s = new SqlStatementsBuilder();
 
-		String query = "UPDATE " + Actualites.NEWS_SCHEMA + "." + Actualites.INFO_TABLE +
+		String query = "WITH content_update AS (" +
+				" UPDATE " + Actualites.NEWS_SCHEMA + "." + Actualites.INFO_TABLE +
 				" SET content = ?, content_version = 1, modified = NOW() " +
-				"WHERE id = ? " +
-				"RETURNING id";
+				" WHERE id = ? AND content_version = 0 " +
+				" RETURNING id, title, content, owner, 'UPDATE', content_version) " +
+				" INSERT INTO " + Actualites.NEWS_SCHEMA + "." + Actualites.INFO_REVISION_TABLE +
+				" (info_id, title, content, owner, event, content_version) " +
+				" SELECT * FROM content_update ";
 
 		JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
 		values.add(news.getContent());
 		values.add(news.getId());
 
 		s.prepared(query, values);
-
-		JsonObject revision = new JsonObject();
-		revision.put("info_id", news.getId());
-		revision.put("content", news.getContent());
-		revision.put("content_version", news.getContentVersion());
-		revision.put("title", news.getTitle());
-
-		revision.put("owner", news.getOwner().getId());
-		revision.put("event", Events.UPDATE);
-		s.insert(Actualites.NEWS_SCHEMA + "." + Actualites.INFO_REVISION_TABLE, revision, null);
 
 		Sql.getInstance().transaction(s.build(), r -> {
 			if (!"ok".equals(r.body().getString("status"))) {
