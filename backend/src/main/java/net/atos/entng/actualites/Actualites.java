@@ -30,6 +30,7 @@ import net.atos.entng.actualites.controllers.CommentController;
 import net.atos.entng.actualites.controllers.DisplayController;
 import net.atos.entng.actualites.controllers.InfoController;
 import net.atos.entng.actualites.controllers.ThreadController;
+import net.atos.entng.actualites.controllers.v1.CommentControllerV1;
 import net.atos.entng.actualites.controllers.v1.InfosControllerV1;
 import net.atos.entng.actualites.controllers.v1.ThreadControllerV1;
 import net.atos.entng.actualites.services.ConfigService;
@@ -145,6 +146,8 @@ public class Actualites extends BaseServer {
 		commentController.setCrudService(commentSqlCrudService);
 		addController(commentController);
 
+		CommentControllerV1 commentControllerV1 = new CommentControllerV1(commentController, infoController);
+		addController(commentControllerV1);
 	}
 
 	@Override
