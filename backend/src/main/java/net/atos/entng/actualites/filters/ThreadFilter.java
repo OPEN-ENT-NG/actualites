@@ -56,7 +56,7 @@ public class ThreadFilter implements ResourcesProvider {
 		if (id != null && !id.trim().isEmpty() && (parseId(id) instanceof Integer)) {
 			request.pause();
 			// Method
-			String sharedMethod = binding.getServiceMethod().replaceAll("\\.", "-");
+			String sharedMethod = binding.getRight().replaceAll("\\.", "-");
 
 			// Groups and users
 			final List<String> groupsAndUserIds = new ArrayList<>();
