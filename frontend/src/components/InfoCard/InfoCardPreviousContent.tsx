@@ -34,7 +34,8 @@ export const InfoCardPreviousContent = ({
         className="info-card-previouscontent-alert mb-12"
         button={
           <Button
-            color="secondary"
+            color="tertiary"
+            className="text-gray-700"
             type="button"
             variant="ghost"
             rightIcon={<IconRafterRight />}

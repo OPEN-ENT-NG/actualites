@@ -597,15 +597,17 @@ public class InfoServiceSqlImpl implements InfoService {
 					"    	 GROUP BY t.id, tsh.member_id " +
 					"	 ) " +
 					"SELECT i.id, i.thread_id, i.title, i.content, i.status, i.owner, u.username AS owner_name, " +
-					"        u.deleted as owner_deleted, i.created, i.modified, i.publication_date, " +
-					"        i.expiration_date, i.is_headline, i.number_of_comments, max(info_for_user.rights) as rights, " +
-					"        i.content_version, MIN(COALESCE(r.content_version, 1)) as previous_content_version " +
+					"        u.deleted as owner_deleted, i.created, i.modified, i.publication_date, i.expiration_date, " +
+					"        i.is_headline, i.number_of_comments, max(info_for_user.rights) as rights, i.content_version, " +
+					"        COALESCE(( " +
+					"         SELECT MAX(_inf.content_version) FROM "+NEWS_INFO_REVISION_TABLE+" _inf " + 
+					"         WHERE _inf.info_id = i.id AND _inf.content_version < i.content_version "+
+					"        ), 1) as previous_content_version " +
 					"    FROM " + NEWS_INFO_TABLE + " AS i " +
 					"        LEFT JOIN info_for_user ON info_for_user.id = i.id " +
 					" 		 LEFT JOIN thread_for_user ON thread_for_user.id = i.thread_id " +
 					"        LEFT JOIN " + NEWS_USER_TABLE + " AS u ON i.owner = u.id " +
 					" 		 LEFT JOIN " + NEWS_THREAD_TABLE + " AS t ON t.id = i.thread_id " +
-					" 		 LEFT JOIN " + NEWS_INFO_REVISION_TABLE + " AS r ON r.info_id = i.id " +
 					"    WHERE " + whereClause +
 					"    GROUP BY i.id, i.thread_id, i.title, i.content, i.status, i.owner, owner_name, owner_deleted, " +
 					"        i.created, i.modified, i.publication_date, i.expiration_date, i.is_headline, " +
