@@ -61,7 +61,7 @@ import static org.entcore.common.user.UserUtils.getUserInfos;
 public class InfoController extends ControllerHelper {
 
     private static final String INFO_ID_PARAMETER = "id";
-    private static final String RESULT_SIZE_PARAMETER = "resultSize";
+    public static final String RESULT_SIZE_PARAMETER = "resultSize";
 
     private static final String SCHEMA_INFO_CREATE = "createInfo";
     private static final String SCHEMA_INFO_UPDATE = "updateInfo";
@@ -860,10 +860,8 @@ public class InfoController extends ControllerHelper {
 	@ResourceFilter(InfoFilter.class)
 	@SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE)
 	public void shareResourceInfo(final HttpServerRequest request) {
-		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
 		final String infoId = request.params().get(INFO_ID_PARAMETER);
-		if(threadId == null || threadId.trim().isEmpty()
-				|| infoId == null || infoId.trim().isEmpty()) {
+		if(infoId == null || infoId.trim().isEmpty()) {
 			badRequest(request);
 			return;
 		}
@@ -883,7 +881,7 @@ public class InfoController extends ControllerHelper {
 										JsonObject params = new JsonObject()
 												.put("profilUri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
 												.put("username", user.getUsername())
-												.put("resourceUri", pathPrefix + "#/view/thread/" + threadId + "/info/" + infoId)
+												.put("resourceUri", pathPrefix + "#/view/thread/" + info.getString("thread_id") + "/info/" + infoId)
 												.put("disableAntiFlood", true)
 												.put("pushNotif", new JsonObject().put("title", "push.notif.actu.info.published").put("body", user.getUsername()+ " : "+ info.getString("title")));
 										params.put("preview", NotificationUtils.htmlContentToPreview(

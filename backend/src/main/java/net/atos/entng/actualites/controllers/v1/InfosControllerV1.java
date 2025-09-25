@@ -97,7 +97,7 @@ public class InfosControllerV1 extends ControllerHelper {
 		});
 	}
 
-	@Get("/api/v1/infos/last")
+	@Get("/api/v1/infos/last/:" + InfoController.RESULT_SIZE_PARAMETER)
 	@ApiDoc("List last infos, accept query param resultSize.")
 	@SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")
 	public void getLastInfos(HttpServerRequest request) {
@@ -120,7 +120,7 @@ public class InfosControllerV1 extends ControllerHelper {
 		infoContoller.delete(request);
 	}
 
-	@Get("/api/v1/infos/:" + Actualites.INFO_RESOURCE_ID + "/shares")
+	@Get("/api/v1/infos/:id/shares")
 	@ApiDoc("Get share info")
 	@ResourceFilter(InfoFilter.class)
 	@SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|shareInfo")
@@ -128,16 +128,16 @@ public class InfosControllerV1 extends ControllerHelper {
 		infoContoller.shareInfo(request);
 	}
 
-	@Put("/api/v1/infos/:" + Actualites.INFO_RESOURCE_ID)
+	@Put("/api/v1/infos/:id/shares")
 	@ApiDoc("Update share info")
 	@ResourceFilter(InfoFilter.class)
 	@SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|shareInfo")
 	public void updateShareInfo(HttpServerRequest request) {
-		infoContoller.shareInfoSubmit(request);
+		infoContoller.shareResourceInfo(request);
 	}
 
 	@Get("/api/v1/infos/:" + Actualites.INFO_RESOURCE_ID + "/timeline")
-	@ApiDoc("Get share info")
+	@ApiDoc("Get timeline info")
 	@ResourceFilter(InfoFilter.class)
 	@SecuredAction(value = "thread.publish", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|getInfoTimeline")
 	public void getInfoTimeline(HttpServerRequest request) {

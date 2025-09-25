@@ -107,10 +107,10 @@ public class ThreadFilter implements ResourcesProvider {
 	}
 
 	private boolean isThreadShare(final Binding binding) {
-		return ("net.atos.entng.actualites.controllers.ThreadController|shareThread".equals(binding.getServiceMethod()) ||
-				 "net.atos.entng.actualites.controllers.ThreadController|shareThreadSubmit".equals(binding.getServiceMethod()) ||
-				 "net.atos.entng.actualites.controllers.ThreadController|shareThreadRemove".equals(binding.getServiceMethod()) ||
-				"net.atos.entng.actualites.controllers.ThreadController|shareResource".equals(binding.getServiceMethod())
+		return ("net.atos.entng.actualites.controllers.ThreadController|shareThread".equals(binding.getRight()) ||
+				 "net.atos.entng.actualites.controllers.ThreadController|shareThreadSubmit".equals(binding.getRight()) ||
+				 "net.atos.entng.actualites.controllers.ThreadController|shareThreadRemove".equals(binding.getRight()) ||
+				"net.atos.entng.actualites.controllers.ThreadController|shareResource".equals(binding.getRight())
 				);
 	}
 

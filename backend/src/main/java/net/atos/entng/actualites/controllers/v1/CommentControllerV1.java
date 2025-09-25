@@ -34,7 +34,7 @@ public class CommentControllerV1 extends ControllerHelper {
     @ApiDoc("Comment : Add a comment to an Info by info id")
     @ResourceFilter(InfoFilter.class)
     @SecuredAction(value = "info.comment", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|comment")
-    public void getComments(HttpServerRequest request) {
+    public void createComment(HttpServerRequest request) {
         commentController.comment(request);
     }
 

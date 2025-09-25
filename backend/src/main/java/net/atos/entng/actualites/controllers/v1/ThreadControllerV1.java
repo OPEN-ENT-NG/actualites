@@ -60,7 +60,7 @@ public class ThreadControllerV1 extends ControllerHelper {
         threadController.deleteThread(request);
     }
 
-    @Get("/api/v1/threads/:" + Actualites.THREAD_RESOURCE_ID  + "/shares")
+    @Get("/api/v1/threads/:id/shares")
     @ApiDoc("Get thread's shares")
     @ResourceFilter(ThreadFilter.class)
     @SecuredAction(value = "thread.manager", right = ROOT_RIGHT + "|shareThread", type = ActionType.RESOURCE)
@@ -76,7 +76,7 @@ public class ThreadControllerV1 extends ControllerHelper {
         threadController.shareResource(request);
     }
 
-    @Post("/api/v1/threads/tasks/threadLink")
+    @Post("/api/v1/threads/tasks")
     @ApiDoc("Get thread's shares")
     @ResourceFilter(SuperAdminFilter.class)
     @SecuredAction(value = "", right = ROOT_RIGHT + "|admcTask", type = ActionType.RESOURCE)
