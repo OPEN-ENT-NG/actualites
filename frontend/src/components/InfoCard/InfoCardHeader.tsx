@@ -10,9 +10,9 @@ import {
   useDirectory,
 } from '@edifice.io/react';
 import { IconClock, IconClockAlert, IconSave } from '@edifice.io/react/icons';
-import { useTranslation } from 'react-i18next';
 import iconHeadline from '~/assets/icon-headline.svg';
 import { useThread } from '~/features/threads/useThread';
+import { useI18n } from '~/hooks/useI18n';
 import { InfoExtendedStatus } from '~/models/info';
 import { InfoCardProps } from './InfoCard';
 import { InfoCardThreadHeader } from './InfoCardThreadHeader';
@@ -28,7 +28,7 @@ export const InfoCardHeader = ({
   const { formatDate } = useDate();
   const thread = useThread(info.threadId);
   const { getAvatarURL } = useDirectory();
-  const { t } = useTranslation('actualites');
+  const { t } = useI18n();
   const avatarUrl = getAvatarURL(info.owner.id, 'user');
 
   const { md } = useBreakpoint();

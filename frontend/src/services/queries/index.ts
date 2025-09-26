@@ -7,3 +7,6 @@
  */
 
 export * from './actions';
+export * from './comment';
+export * from './info';
+export * from './thread';
