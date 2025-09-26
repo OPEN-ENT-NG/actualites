@@ -11,6 +11,8 @@ import { useI18n } from '~/hooks/useI18n';
 import { baseUrl } from '~/services';
 import { InfoCardProps } from './InfoCard';
 
+import './InfoCardPreviousContent.css';
+
 export const InfoCardPreviousContent = ({
   info,
 }: Pick<InfoCardProps, 'info'>) => {
@@ -29,13 +31,15 @@ export const InfoCardPreviousContent = ({
 
   return (
     <>
-      <Alert
-        type="warning"
-        className="info-card-previouscontent-alert mb-12"
-        button={
+      <Alert type="warning" className="info-card-previouscontent-alert mb-12">
+        <div className="d-md-flex justify-content-between align-items-center flex-row">
+          <div>
+            <p>{t('actualites.previouscontent.alert.paragraph1')}</p>
+            <p>{t('actualites.previouscontent.alert.paragraph2')}</p>
+          </div>
           <Button
             color="tertiary"
-            className="text-gray-700"
+            className="previouscontent-alert-view-more text-gray-700"
             type="button"
             variant="ghost"
             rightIcon={<IconRafterRight />}
@@ -43,11 +47,6 @@ export const InfoCardPreviousContent = ({
           >
             {t('actualites.previouscontent.alert.button')}
           </Button>
-        }
-      >
-        <div>
-          <p>{t('actualites.previouscontent.alert.paragraph1')}</p>
-          <p>{t('actualites.previouscontent.alert.paragraph2')}</p>
         </div>
       </Alert>
 
