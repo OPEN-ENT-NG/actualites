@@ -1,9 +1,9 @@
 package net.atos.entng.actualites.to;
 
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.Set;
 
 public class News {
 
@@ -27,10 +27,11 @@ public class News {
     private final Rights sharedRights;
     private final String title;
     private int contentVersion;
+    private int previousContentVersion;
 
     public News(int id, int threadId, String title, String content, NewsStatus status, ResourceOwner owner, String created, String modified,
                 String publicationDate, String expirationDate, boolean isHeadline, int numberOfComments, Rights sharedRights,
-                int contentVersion) {
+                int contentVersion, int previousContentVersion) {
         this.id = id;
         this.threadId = threadId;
         this.content = content;
@@ -45,6 +46,7 @@ public class News {
         this.sharedRights = sharedRights;
         this.title = title;
         this.contentVersion = contentVersion;
+        this.previousContentVersion = previousContentVersion;
     }
 
     public String getTitle() {
@@ -115,5 +117,13 @@ public class News {
 
     public void setContentVersion(int contentVersion) {
         this.contentVersion = contentVersion;
+    }
+
+    public int getPreviousContentVersion() {
+        return previousContentVersion;
+    }
+
+    public void setPreviousContentVersion(int previousContentVersion) {
+        this.previousContentVersion = previousContentVersion;
     }
 }
