@@ -54,7 +54,7 @@ public class InfoFilter implements ResourcesProvider {
 		if (id != null && !id.trim().isEmpty() && (parseId(id) instanceof Integer)) {
 			request.pause();
 			// Method
-			String sharedMethod = binding.getServiceMethod().replaceAll("\\.", "-");
+			String sharedMethod = binding.getRight().replaceAll("\\.", "-");
 
 			// Groups and users
 			final List<String> groupsAndUserIds = new ArrayList<>();
@@ -145,43 +145,43 @@ public class InfoFilter implements ResourcesProvider {
 	}
 
 	private boolean isInfoAction(final Binding binding) {
-		return ("net.atos.entng.actualites.controllers.InfoController|getInfo".equals(binding.getServiceMethod()) ||
-				 "net.atos.entng.actualites.controllers.InfoController|getSingleInfo".equals(binding.getServiceMethod()) ||
-				 "net.atos.entng.actualites.controllers.CommentController|comment".equals(binding.getServiceMethod()) ||
-				 "net.atos.entng.actualites.controllers.CommentController|updateComment".equals(binding.getServiceMethod()) ||
-				 "net.atos.entng.actualites.controllers.CommentController|deleteComment".equals(binding.getServiceMethod()) ||
-				 "net.atos.entng.actualites.controllers.InfoController|getInfoComments".equals(binding.getServiceMethod()) ||
-				 "net.atos.entng.actualites.controllers.InfoController|getInfoShared".equals(binding.getServiceMethod())
+		return ("net.atos.entng.actualites.controllers.InfoController|getInfo".equals(binding.getRight()) ||
+				 "net.atos.entng.actualites.controllers.InfoController|getSingleInfo".equals(binding.getRight()) ||
+				 "net.atos.entng.actualites.controllers.CommentController|comment".equals(binding.getRight()) ||
+				 "net.atos.entng.actualites.controllers.CommentController|updateComment".equals(binding.getRight()) ||
+				 "net.atos.entng.actualites.controllers.CommentController|deleteComment".equals(binding.getRight()) ||
+				 "net.atos.entng.actualites.controllers.InfoController|getInfoComments".equals(binding.getRight()) ||
+				 "net.atos.entng.actualites.controllers.InfoController|getInfoShared".equals(binding.getRight())
 				);
 	}
 
 	private boolean isDeleteComment(final Binding binding) {
-		return "net.atos.entng.actualites.controllers.CommentController|deleteComment".equals(binding.getServiceMethod());
+		return "net.atos.entng.actualites.controllers.CommentController|deleteComment".equals(binding.getRight());
 	}
 
 	private boolean isInfoShare(final Binding binding) {
-		return ("net.atos.entng.actualites.controllers.InfoController|shareInfo".equals(binding.getServiceMethod()) ||
+		return ("net.atos.entng.actualites.controllers.InfoController|shareInfo".equals(binding.getRight()) ||
 				isInfoShareSubmitOrRemove(binding));
 	}
 
 	private boolean isInfoShareSubmitOrRemove(final Binding binding) {
-		return ("net.atos.entng.actualites.controllers.InfoController|shareInfoSubmit".equals(binding.getServiceMethod()) ||
-				 "net.atos.entng.actualites.controllers.InfoController|shareInfoRemove".equals(binding.getServiceMethod()) ||
-				"net.atos.entng.actualites.controllers.InfoController|shareResourceInfo".equals(binding.getServiceMethod())
+		return ("net.atos.entng.actualites.controllers.InfoController|shareInfoSubmit".equals(binding.getRight()) ||
+				 "net.atos.entng.actualites.controllers.InfoController|shareInfoRemove".equals(binding.getRight()) ||
+				"net.atos.entng.actualites.controllers.InfoController|shareResourceInfo".equals(binding.getRight())
 				);
 	};
 
 	private boolean isInfoPendingOrPublished(final Binding binding) {
-		return ("net.atos.entng.actualites.controllers.InfoController|publish".equals(binding.getServiceMethod()) ||
-				"net.atos.entng.actualites.controllers.InfoController|unpublish".equals(binding.getServiceMethod()) ||
-				"net.atos.entng.actualites.controllers.InfoController|unsubmit".equals(binding.getServiceMethod()) ||
-				"net.atos.entng.actualites.controllers.InfoController|updatePublished".equals(binding.getServiceMethod()) ||
-				"net.atos.entng.actualites.controllers.InfoController|updatePending".equals(binding.getServiceMethod()));
+		return ("net.atos.entng.actualites.controllers.InfoController|publish".equals(binding.getRight()) ||
+				"net.atos.entng.actualites.controllers.InfoController|unpublish".equals(binding.getRight()) ||
+				"net.atos.entng.actualites.controllers.InfoController|unsubmit".equals(binding.getRight()) ||
+				"net.atos.entng.actualites.controllers.InfoController|updatePublished".equals(binding.getRight()) ||
+				"net.atos.entng.actualites.controllers.InfoController|updatePending".equals(binding.getRight()));
 	}
 
 	private boolean isInfoPublishing(final Binding binding) {
-		return ("net.atos.entng.actualites.controllers.InfoController|publish".equals(binding.getServiceMethod()) ||
-				 "net.atos.entng.actualites.controllers.InfoController|updatePublished".equals(binding.getServiceMethod() )
+		return ("net.atos.entng.actualites.controllers.InfoController|publish".equals(binding.getRight()) ||
+				 "net.atos.entng.actualites.controllers.InfoController|updatePublished".equals(binding.getRight() )
 				);
 	}
 
