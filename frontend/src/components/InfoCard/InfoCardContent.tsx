@@ -2,6 +2,7 @@ import { Editor, EditorPreview } from '@edifice.io/react/editor';
 import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 import { InfoCardProps } from './InfoCard';
+import { InfoCardPreviousContent } from './InfoCardPreviousContent';
 
 export const InfoCardContent = ({
   info,
@@ -35,16 +36,17 @@ export const InfoCardContent = ({
   ]);
 
   const classNameContentCollapsed = clsx(
-    'info-card-content',
+    'info-card-content px-md-24',
     !collapse ? 'content-hidden' : 'content-visible',
   );
   const classNameContentFull = clsx(
-    'info-card-content',
+    'info-card-content px-md-24',
     collapse ? 'content-hidden' : 'content-visible',
   );
 
   return (
     <div>
+      {!collapse && info.content && <InfoCardPreviousContent info={info} />}
       <div
         className={classNameContentCollapsed}
         ref={collapseContentRef}
