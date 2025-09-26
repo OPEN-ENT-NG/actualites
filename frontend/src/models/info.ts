@@ -38,6 +38,8 @@ export interface Info {
   title: string;
   headline: boolean;
   sharedRights: any[];
+  contentVersion: number;
+  previousContentVersion: number;
 }
 
 export enum InfoRevisionEvent {
