@@ -1,7 +1,7 @@
 import { Alert, Card } from '@edifice.io/react';
 import clsx from 'clsx';
 import { useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useI18n } from '~/hooks/useI18n';
 import { Info, InfoExtendedStatus, InfoStatus } from '~/models/info';
 import './InfoCard.css';
 import { InfoCardContent } from './InfoCardContent';
@@ -16,7 +16,7 @@ export type InfoCardProps = {
 };
 
 export const InfoCard = ({ info }: InfoCardProps) => {
-  const { t } = useTranslation('actualites');
+  const { t } = useI18n();
   const cardRef = useRef<HTMLDivElement>(null);
 
   const infoId = `info-${info.id}`;

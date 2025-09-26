@@ -1,0 +1,8 @@
+/* Override defective Alert component */
+.info-card-previouscontent-alert .alert-content {
+  width: 100%;
+}
+
+.info-card-previouscontent-alert .previouscontent-alert-view-more svg {
+  color: var(--edifice-gray-700) !important;
+}
