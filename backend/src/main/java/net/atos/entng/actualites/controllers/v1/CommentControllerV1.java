@@ -26,7 +26,7 @@ public class CommentControllerV1 extends ControllerHelper {
     @ApiDoc("Comment : Get info's comments")
     @ResourceFilter(InfoFilter.class)
     @SecuredAction(value = "info.read", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|getInfoComments")
-    public void getInfoTimeline(HttpServerRequest request) {
+    public void getInfoComments(HttpServerRequest request) {
         infoController.getInfoComments(request);
     }
 
@@ -35,7 +35,7 @@ public class CommentControllerV1 extends ControllerHelper {
     @ResourceFilter(InfoFilter.class)
     @SecuredAction(value = "info.comment", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|comment")
     public void createComment(HttpServerRequest request) {
-        commentController.comment(request);
+        commentController.createComment(request);
     }
 
     @Put("/api/v1/infos/:" + Actualites.INFO_RESOURCE_ID + "/comments/:id")

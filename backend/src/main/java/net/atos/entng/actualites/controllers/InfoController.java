@@ -26,6 +26,7 @@ import fr.wseduc.security.SecuredAction;
 import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.I18n;
 import fr.wseduc.webutils.request.RequestUtils;
+import io.micrometer.common.util.StringUtils;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.http.HttpServerRequest;
@@ -624,7 +625,7 @@ public class InfoController extends ControllerHelper {
     @SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE)
     public void shareInfoSubmit(final HttpServerRequest request) {
         final String infoId = request.params().get(INFO_ID_PARAMETER);
-        if(infoId == null || infoId.trim().isEmpty()) {
+        if(StringUtils.isEmpty(infoId)) {
             badRequest(request);
             return;
         }
@@ -861,7 +862,7 @@ public class InfoController extends ControllerHelper {
 	@SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE)
 	public void shareResourceInfo(final HttpServerRequest request) {
 		final String infoId = request.params().get(INFO_ID_PARAMETER);
-		if(infoId == null || infoId.trim().isEmpty()) {
+		if(StringUtils.isEmpty(infoId)) {
 			badRequest(request);
 			return;
 		}

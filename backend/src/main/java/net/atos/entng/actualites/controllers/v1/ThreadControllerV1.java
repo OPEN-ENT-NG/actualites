@@ -11,6 +11,8 @@ import org.entcore.common.controller.ControllerHelper;
 import org.entcore.common.http.filter.ResourceFilter;
 import org.entcore.common.http.filter.SuperAdminFilter;
 
+import static net.atos.entng.actualites.Actualites.THREAD_RESOURCE_ID;
+
 public class ThreadControllerV1 extends ControllerHelper {
 
     private final ThreadController threadController;
@@ -28,7 +30,7 @@ public class ThreadControllerV1 extends ControllerHelper {
         threadController.listThreadsV2(request);
     }
 
-    @Get("/api/v1/threads/:" + Actualites.THREAD_RESOURCE_ID)
+    @Get("/api/v1/threads/:" + THREAD_RESOURCE_ID)
     @ApiDoc("Get a thread by Id")
     @ResourceFilter(ThreadFilter.class)
     @SecuredAction(value = "thread.contrib", right = ROOT_RIGHT + "|getThread", type = ActionType.RESOURCE)
@@ -44,7 +46,7 @@ public class ThreadControllerV1 extends ControllerHelper {
         threadController.createThread(request);
     }
 
-    @Put("/api/v1/threads/:" + Actualites.THREAD_RESOURCE_ID)
+    @Put("/api/v1/threads/:" + THREAD_RESOURCE_ID)
     @ApiDoc("Update thread by id")
     @ResourceFilter(ThreadFilter.class)
     @SecuredAction(value = "thread.manager", right = ROOT_RIGHT + "|updateThread", type = ActionType.RESOURCE)
@@ -52,7 +54,7 @@ public class ThreadControllerV1 extends ControllerHelper {
         threadController.updateThread(request);
     }
 
-    @Delete("/api/v1/threads/:" + Actualites.THREAD_RESOURCE_ID)
+    @Delete("/api/v1/threads/:" + THREAD_RESOURCE_ID)
     @ApiDoc("Delete thread by id")
     @ResourceFilter(ThreadFilter.class)
     @SecuredAction(value = "thread.manager", right = ROOT_RIGHT + "|deleteThread", type = ActionType.RESOURCE)
