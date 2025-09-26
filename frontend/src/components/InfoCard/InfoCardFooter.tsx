@@ -1,13 +1,13 @@
 import { Button, Flex } from '@edifice.io/react';
 import { IconRafterDown } from '@edifice.io/react/icons';
-import { useTranslation } from 'react-i18next';
+import { useI18n } from '~/hooks/useI18n';
 import { InfoCardProps } from './InfoCard';
 
 export const InfoCardFooter = ({
   info: _info,
   onMoreClick,
 }: Pick<InfoCardProps, 'info'> & { onMoreClick: () => void }) => {
-  const { t } = useTranslation('actualites');
+  const { t } = useI18n();
   const icon = <IconRafterDown></IconRafterDown>;
   return (
     <footer className="mt-12">

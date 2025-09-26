@@ -32,7 +32,7 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
             path: 'threads',
             children: [
               {
-                path: ':threadId',
+                path: ':threadIdAsString',
                 children: [
                   {
                     path: '',
@@ -47,7 +47,7 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
                     },
                   },
                   {
-                    path: 'infos/:info/edit',
+                    path: 'infos/:infoIdAsString/edit',
                     async lazy() {
                       const { loader, Threads: Component } =
                         await import('~/routes/pages/Threads');
@@ -75,6 +75,16 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
         },
       },
     ],
+  },
+  /* Display an info using previous format. */
+  {
+    path: 'oldformat/:threadIdAsString/:infoIdAsString',
+    async lazy() {
+      const { Component } = await import('./old-format');
+      return {
+        Component,
+      };
+    },
   },
   /* 404 Page */
   {

@@ -21,22 +21,21 @@ package net.atos.entng.actualites.controllers;
 
 import java.util.Map;
 
-import fr.wseduc.security.ActionType;
-import io.vertx.core.json.JsonObject;
-import net.atos.entng.actualites.Actualites;
-
 import org.entcore.common.events.EventStore;
 import org.entcore.common.events.EventStoreFactory;
-import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpServerRequest;
 import org.entcore.common.http.filter.ResourceFilter;
 import org.entcore.common.http.filter.SuperAdminFilter;
 import org.vertx.java.core.http.RouteMatcher;
 
-
 import fr.wseduc.rs.Get;
+import fr.wseduc.security.ActionType;
 import fr.wseduc.security.SecuredAction;
 import fr.wseduc.webutils.http.BaseController;
+import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.json.JsonObject;
+import net.atos.entng.actualites.Actualites;
+import net.atos.entng.actualites.filters.InfoFilter;
 
 public class DisplayController extends BaseController {
 
@@ -63,5 +62,13 @@ public class DisplayController extends BaseController {
 	@ResourceFilter(SuperAdminFilter.class)
 	public void getConfig(final HttpServerRequest request) {
 		renderJson(request, config);
+	}
+
+	/** Render react frontend in old-format */
+	@Get("/oldformat/:"+Actualites.THREAD_RESOURCE_ID+"/:"+Actualites.INFO_RESOURCE_ID)
+    @SecuredAction(value = "info.read", type = ActionType.RESOURCE)
+    @ResourceFilter(InfoFilter.class)
+	public void viewOldInfoById(HttpServerRequest request) {
+		renderView(request, new JsonObject(), "index.html", null);
 	}
 }
