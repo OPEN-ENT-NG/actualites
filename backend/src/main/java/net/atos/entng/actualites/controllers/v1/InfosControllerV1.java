@@ -1,6 +1,12 @@
 package net.atos.entng.actualites.controllers.v1;
 
+import fr.wseduc.rs.ApiDoc;
+import fr.wseduc.rs.Delete;
+import fr.wseduc.rs.Put;
+import fr.wseduc.security.ActionType;
 import net.atos.entng.actualites.Actualites;
+import net.atos.entng.actualites.controllers.InfoController;
+import net.atos.entng.actualites.filters.InfoFilter;
 import net.atos.entng.actualites.services.InfoService;
 import net.atos.entng.actualites.services.ThreadService;
 import net.atos.entng.actualites.services.impl.ThreadServiceSqlImpl;
@@ -15,6 +21,7 @@ import org.entcore.common.controller.ControllerHelper;
 import org.entcore.common.events.EventHelper;
 import org.entcore.common.events.EventStore;
 import org.entcore.common.events.EventStoreFactory;
+import org.entcore.common.http.filter.ResourceFilter;
 import org.entcore.common.user.UserUtils;
 
 import fr.wseduc.rs.Get;
@@ -27,14 +34,12 @@ public class InfosControllerV1 extends ControllerHelper {
 	public static final int DEFAULT_PAGE_SIZE = 20;
 	public static final int MAX_PAGE_SIZE = 100;
 
-    protected final ThreadService threadService;
-    protected final EventHelper eventHelper;
 	protected InfoService infoService;
+	private final InfoController infoContoller;
+	private static final String ROOT_RIGHT = "net.atos.entng.actualites.controllers.InfoController";
 
-    public InfosControllerV1(EventBus eb) {
-        this.threadService = new ThreadServiceSqlImpl().setEventBus(eb);
-        final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(Actualites.class.getSimpleName());
-        eventHelper = new EventHelper(eventStore);
+    public InfosControllerV1(InfoController infoController) {
+		this.infoContoller = infoController;
     }
 
 	public void setInfoService(InfoService infoService) {
@@ -42,7 +47,7 @@ public class InfosControllerV1 extends ControllerHelper {
     }
 
     @Get("/api/v1/infos")
-	@SecuredAction("actualites.infos.list.page")
+	@SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")
 	public void infos(final HttpServerRequest request) {
 		// page argument
 		int pageParsed;
@@ -90,6 +95,53 @@ public class InfosControllerV1 extends ControllerHelper {
 				unauthorized(request);
 			}
 		});
+	}
+
+	@Get("/api/v1/infos/last/:" + InfoController.RESULT_SIZE_PARAMETER)
+	@ApiDoc("List last infos, accept query param resultSize.")
+	@SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")
+	public void getLastInfos(HttpServerRequest request) {
+		infoContoller.listLastPublishedInfos(request);
+	}
+
+	@Get("/api/v1/infos/:" + Actualites.INFO_RESOURCE_ID)
+	@ApiDoc("Retrieve : retrieve an Info in thread by thread and by id")
+	@ResourceFilter(InfoFilter.class)
+	@SecuredAction(value = "info.read", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|getInfo")
+	public void getInfos(HttpServerRequest request) {
+		infoContoller.getSingleInfo(request);
+	}
+
+	@Delete("/api/v1/infos/:" + Actualites.INFO_RESOURCE_ID)
+	@ApiDoc("Delete : Real delete an Info in thread by thread and by id")
+	@ResourceFilter(InfoFilter.class)
+	@SecuredAction(value = "thread.manager", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|delete")
+	public void removeInfo(HttpServerRequest request) {
+		infoContoller.delete(request);
+	}
+
+	@Get("/api/v1/infos/:id/shares")
+	@ApiDoc("Get share info")
+	@ResourceFilter(InfoFilter.class)
+	@SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|shareInfo")
+	public void getShareInfo(HttpServerRequest request) {
+		infoContoller.shareInfo(request);
+	}
+
+	@Put("/api/v1/infos/:id/shares")
+	@ApiDoc("Update share info")
+	@ResourceFilter(InfoFilter.class)
+	@SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|shareInfo")
+	public void updateShareInfo(HttpServerRequest request) {
+		infoContoller.shareResourceInfo(request);
+	}
+
+	@Get("/api/v1/infos/:" + Actualites.INFO_RESOURCE_ID + "/timeline")
+	@ApiDoc("Get timeline info")
+	@ResourceFilter(InfoFilter.class)
+	@SecuredAction(value = "thread.publish", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|getInfoTimeline")
+	public void getInfoTimeline(HttpServerRequest request) {
+		infoContoller.getInfoTimeline(request);
 	}
 
 }
