@@ -13,3 +13,6 @@ backend/**/resources/public/*.*
 # Ignore HTML files in "backend/view" folders
 backend/**/resources/view/*.html
 
+# Ignore generated files
+frontend/public/mockServiceWorker.js
+backend/src/main/resources/mockServiceWorker.js
