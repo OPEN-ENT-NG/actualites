@@ -71,8 +71,8 @@ public class CommentController extends ControllerHelper {
 	@Put("/info/:"+Actualites.INFO_RESOURCE_ID+"/comment")
 	@ApiDoc("Comment : Add a comment to an Info by info id")
 	@ResourceFilter(InfoFilter.class)
-	@SecuredAction(value = "info.comment", type = ActionType.RESOURCE)
-	public void comment(final HttpServerRequest request) {
+	@SecuredAction(value = "info.comment", type = ActionType.RESOURCE, right= "net.atos.entng.actualites.controllers.CommentController|comment" )
+	public void createComment(final HttpServerRequest request) {
 		final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
