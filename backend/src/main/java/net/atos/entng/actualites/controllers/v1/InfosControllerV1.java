@@ -144,4 +144,19 @@ public class InfosControllerV1 extends ControllerHelper {
 		infoContoller.getInfoTimeline(request);
 	}
 
+	@Get("/api/v1/infos/stats")
+	@ApiDoc("Get statistics about threads and infos grouped by status")
+	@SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")
+	public void getStats(HttpServerRequest request) {
+		UserUtils.getUserInfos(eb, request, user -> {
+			if (user != null) {
+				infoService.getStats(securedActions, user)
+					.onSuccess(stats -> render(request, stats))
+					.onFailure(ex -> renderError(request));
+			} else {
+				unauthorized(request);
+			}
+		});
+	}
+
 }

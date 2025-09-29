@@ -149,6 +149,11 @@ public class InfoTransformerServiceImpl implements InfoService {
         return infoService.getFromId(securedActions, user, infoId, originalContent);
     }
 
+    @Override
+    public Future<JsonObject> getStats(Map<String, SecuredAction> securedActions, UserInfos user) {
+        return infoService.getStats(securedActions, user);
+    }
+
     private Future<List<News>> transformAndUpdateNewsContent(Future<List<News>> newsRes) {
         return newsRes.compose(newsList -> {
             List<Future<News>> futures = newsList.stream()

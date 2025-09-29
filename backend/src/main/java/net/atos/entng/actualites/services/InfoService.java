@@ -95,4 +95,12 @@ public interface InfoService {
 
 	public Future<NewsComplete> getFromId(Map<String, SecuredAction> securedActions, UserInfos user, int infoId, boolean originalContent);
 
+	/**
+	 * Get statistics about threads and infos grouped by status
+	 * @param securedActions secured actions map
+	 * @param user user requesting stats
+	 * @return Future containing stats with threads array including id, infosCount and status breakdown
+	 */
+	public Future<JsonObject> getStats(Map<String, SecuredAction> securedActions, UserInfos user);
+
 }
