@@ -64,21 +64,22 @@ public class InfoController extends ControllerHelper {
     private static final String INFO_ID_PARAMETER = "id";
     public static final String RESULT_SIZE_PARAMETER = "resultSize";
 
-    private static final String SCHEMA_INFO_CREATE = "createInfo";
+    public static final String SCHEMA_INFO_CREATE = "createInfo";
     private static final String SCHEMA_INFO_UPDATE = "updateInfo";
 
-    private static final String RESOURCE_NAME = "info";
+    public static final String RESOURCE_NAME = "info";
     private static final String EVENT_TYPE = "NEWS";
-    private static final String NEWS_SUBMIT_EVENT_TYPE = EVENT_TYPE + "_SUBMIT";
-    private static final String NEWS_UNSUBMIT_EVENT_TYPE = EVENT_TYPE + "_UNSUBMIT";
-    private static final String NEWS_PUBLISH_EVENT_TYPE = EVENT_TYPE + "_PUBLISH";
-    private static final String NEWS_UNPUBLISH_EVENT_TYPE = EVENT_TYPE + "_UNPUBLISH";
-    private static final String NEWS_UPDATE_EVENT_TYPE = EVENT_TYPE + "_UPDATE";
+    public static final String NEWS_SUBMIT_EVENT_TYPE = EVENT_TYPE + "_SUBMIT";
+    public static final String NEWS_UNSUBMIT_EVENT_TYPE = EVENT_TYPE + "_UNSUBMIT";
+    public static final String NEWS_PUBLISH_EVENT_TYPE = EVENT_TYPE + "_PUBLISH";
+    public static final String NEWS_UNPUBLISH_EVENT_TYPE = EVENT_TYPE + "_UNPUBLISH";
+    public static final String NEWS_UPDATE_EVENT_TYPE = EVENT_TYPE + "_UPDATE";
 
 
     // TODO : refactor code to use enums or constants for statuses
     // TRASH: 0; DRAFT: 1; PENDING: 2; PUBLISHED: 3
     private static final List<Integer> status_list = new ArrayList<Integer>(Arrays.asList(0, 1, 2, 3));
+    private final NotificationTimelineService notificationTimelineService;
 
     protected InfoService infoService;
     protected final ThreadService threadService;
@@ -86,12 +87,14 @@ public class InfoController extends ControllerHelper {
     protected final EventHelper eventHelper;
     protected final boolean optimized;
 
-    public InfoController(final JsonObject config){
+    public InfoController(final JsonObject config, final NotificationTimelineService notificationTimelineService){
         this.threadService = new ThreadServiceSqlImpl();
         this.timelineMongo = new TimelineMongoImpl(Field.TIMELINE_COLLECTION, MongoDb.getInstance());
+        this.notificationTimelineService = notificationTimelineService;
         final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(Actualites.class.getSimpleName());
         eventHelper = new EventHelper(eventStore);
         optimized = config.getBoolean("optimized-query", true);
+        
     }
 
     @Override
@@ -276,7 +279,7 @@ public class InfoController extends ControllerHelper {
                                             eventHelper.onCreateResource(request, RESOURCE_NAME);
                                             JsonObject info = event.right().getValue();
                                             String infoId = info.getLong("id").toString();
-                                            notifyTimeline(request, user, threadId, infoId, title, NEWS_SUBMIT_EVENT_TYPE);
+                                            notificationTimelineService.notifyTimeline(request, user, threadId, infoId, title, NEWS_SUBMIT_EVENT_TYPE, pathPrefix);
                                             renderJson(request, event.right().getValue(), 200);
                                         } else {
                                             JsonObject error = new JsonObject().put("error", event.left().getValue());
@@ -439,7 +442,7 @@ public class InfoController extends ControllerHelper {
 						final String title = body.getString("title");
 						Handler<Either<String, JsonObject>> handler = event -> {
                             if (event.isRight()) {
-                                notifyTimeline(request, user, threadId, infoId, title, NEWS_SUBMIT_EVENT_TYPE);
+                                notificationTimelineService.notifyTimeline(request, user, threadId, infoId, title, NEWS_SUBMIT_EVENT_TYPE, pathPrefix);
                                 renderJson(request, event.right().getValue(), 200);
                             } else {
                                 JsonObject error = new JsonObject().put("error", event.left().getValue());
@@ -506,7 +509,7 @@ public class InfoController extends ControllerHelper {
 						owner.setUsername(body.getString("username"));
 						Handler<Either<String, JsonObject>> handler = event -> {
                             if (event.isRight()) {
-                                notifyTimeline(request, user, owner, threadId, infoId, title, NEWS_PUBLISH_EVENT_TYPE);
+                                notificationTimelineService.notifyTimeline(request, user, owner, threadId, infoId, title, NEWS_PUBLISH_EVENT_TYPE, pathPrefix);
                                 renderJson(request, event.right().getValue(), 200);
                             } else {
                                 JsonObject error = new JsonObject().put("error", event.left().getValue());
@@ -543,7 +546,7 @@ public class InfoController extends ControllerHelper {
 							@Override
 							public void handle(Either<String, JsonObject> event) {
 								if (event.isRight()) {
-									notifyTimeline(request, user, owner, threadId, infoId, title, NEWS_UNPUBLISH_EVENT_TYPE);
+                                    notificationTimelineService.notifyTimeline(request, user, owner, threadId, infoId, title, NEWS_UNPUBLISH_EVENT_TYPE, pathPrefix);
 									renderJson(request, event.right().getValue(), 200);
 								} else {
 									JsonObject error = new JsonObject().put("error", event.left().getValue());
@@ -696,7 +699,8 @@ public class InfoController extends ControllerHelper {
                     if (!ownerId.equals(user.getUserId()) && resource.containsKey("thread_id") && resource.containsKey("title")) {
                         UserInfos owner = new UserInfos();
                         owner.setUserId(ownerId);
-                        notifyTimeline(request,  user, owner, resource.getLong("thread_id").toString(), infoId, resource.getString("title"), eventType);
+                        notificationTimelineService.notifyTimeline(request,  user, owner, resource.getLong("thread_id").toString(),
+                                infoId, resource.getString("title"), eventType, pathPrefix);
                     }
                 } else {
                     log.error("Unable to create notification : GetOwnerInfo failed");
@@ -704,138 +708,6 @@ public class InfoController extends ControllerHelper {
             }
         });
 //            notifyTimeline(request, user, resource.getString("thread_id"), infoId, resource.getString("title"), NEWS_UPDATE_EVENT_TYPE);
-    }
-
-    private void notifyTimeline(final HttpServerRequest request, final UserInfos user, final String threadId, final String infoId, final String title, final String eventType){
-        // the news owner is behind the action
-        UserInfos owner = user;
-        notifyTimeline(request, user, owner, threadId, infoId, title, eventType);
-    }
-
-    private void notifyTimeline(final HttpServerRequest request, final UserInfos user, final UserInfos owner, final String threadId, final String infoId, final String title, final String eventType){
-        if (eventType.equals(NEWS_SUBMIT_EVENT_TYPE)) {
-            threadService.getPublishSharedWithIds(threadId, new Handler<Either<String, JsonArray>>() {
-                @Override
-                public void handle(Either<String, JsonArray> event) {
-                    if (event.isRight()) {
-                        // get all ids
-                        JsonArray shared = event.right().getValue();
-                        extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-submitted");
-                    }
-                }
-            });
-        } else if(eventType.equals(NEWS_UNSUBMIT_EVENT_TYPE)){
-            threadService.getPublishSharedWithIds(threadId, new Handler<Either<String, JsonArray>>() {
-                @Override
-                public void handle(Either<String, JsonArray> event) {
-                    if (event.isRight()) {
-                        // get all ids
-                        JsonArray shared = event.right().getValue();
-                        extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-unsubmitted");
-                    }
-                }
-            });
-        } else if(eventType.equals(NEWS_PUBLISH_EVENT_TYPE)){
-            infoService.getSharedWithIds(infoId, new Handler<Either<String, JsonArray>>() {
-                @Override
-                public void handle(Either<String, JsonArray> event) {
-                    if (event.isRight()) {
-                        // get all ids
-                        JsonArray shared = event.right().getValue();
-                        extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-published");
-                    }
-                }
-            });
-        } else if(eventType.equals(NEWS_UNPUBLISH_EVENT_TYPE)){
-            infoService.getSharedWithIds(infoId, new Handler<Either<String, JsonArray>>() {
-                @Override
-                public void handle(Either<String, JsonArray> event) {
-                    if (event.isRight()) {
-                        // get all ids
-                        JsonArray shared = event.right().getValue();
-                        extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-unpublished");
-                    }
-                }
-            });
-        } else if (eventType.equals(NEWS_UPDATE_EVENT_TYPE)) {
-            ArrayList<String> ids = new ArrayList<>();
-            ids.add(owner.getUserId());
-            sendNotify(request, ids, user, threadId, infoId, title, "news.news-update");
-        }
-    }
-
-    private void extractUserIds(final HttpServerRequest request, final JsonArray shared, final UserInfos user, final UserInfos owner, final String threadId, final String infoId, final String title, final String notificationName){
-        final List<String> ids = new ArrayList<String>();
-        if (shared.size() > 0) {
-            JsonObject jo = null;
-            String groupId = null;
-            String id = null;
-            final AtomicInteger remaining = new AtomicInteger(shared.size());
-            // Extract shared with
-            for(int i=0; i<shared.size(); i++){
-                jo = shared.getJsonObject(i);
-                if(jo.containsKey("userId")){
-                    id = jo.getString("userId");
-                    if(!ids.contains(id) && !(user.getUserId().equals(id)) && !(owner.getUserId().equals(id))){
-                        ids.add(id);
-                    }
-                    remaining.getAndDecrement();
-                }
-                else{
-                    if(jo.containsKey("groupId")){
-                        groupId = jo.getString("groupId");
-                        if (groupId != null) {
-                            UserUtils.findUsersInProfilsGroups(groupId, eb, user.getUserId(), false, new Handler<JsonArray>() {
-                                @Override
-                                public void handle(JsonArray event) {
-                                    if (event != null) {
-                                        String userId = null;
-                                        for (Object o : event) {
-                                            if (!(o instanceof JsonObject)) continue;
-                                            userId = ((JsonObject) o).getString("id");
-                                            if(!ids.contains(userId) && !(user.getUserId().equals(userId)) && !(owner.getUserId().equals(userId))){
-                                                ids.add(userId);
-                                            }
-                                        }
-                                    }
-                                    if (remaining.decrementAndGet() < 1) {
-                                        sendNotify(request, ids, owner, threadId, infoId, title, notificationName);
-                                    }
-                                }
-                            });
-                        }
-                    }
-                }
-            }
-            if (remaining.get() < 1) {
-                sendNotify(request, ids, owner, threadId, infoId, title, notificationName);
-            }
-        }
-    }
-
-    private void sendNotify(final HttpServerRequest request, final List<String> ids, final UserInfos owner, final String threadId, final String infoId, final String title, final String notificationName){
-        if (infoId != null && !infoId.isEmpty() && threadId != null && !threadId.isEmpty() && owner != null) {
-            JsonObject params = new JsonObject()
-                    .put("profilUri", "/userbook/annuaire#" + owner.getUserId() + "#" + (owner.getType() != null ? owner.getType() : ""))
-                    .put("username", owner.getUsername())
-                    .put("info", title)
-                    .put("actuUri", pathPrefix + "#/view/thread/" + threadId + "/info/" + infoId);
-            params.put("resourceUri", params.getString("actuUri"));
-            if("news.news-published".equals(notificationName)) {
-                params.put("pushNotif", new JsonObject().put("title", "push.notif.actu.info.published").put("body", owner.getUsername()+ " : "+ title));
-				infoService.retrieve(infoId, actu -> {
-					JsonObject preview = null;
-					if (actu.isRight()) {
-						preview = NotificationUtils.htmlContentToPreview(
-								actu.right().getValue().getString("content"));
-					}
-					notification.notifyTimeline(request, notificationName, owner, ids, infoId,
-							null, params, false, preview);
-				});
-			} else {
-				notification.notifyTimeline(request, notificationName, owner, ids, infoId, params);
-			}
-        }
     }
 
     @Get("/info/:"+ Actualites.INFO_RESOURCE_ID +"/timeline")
