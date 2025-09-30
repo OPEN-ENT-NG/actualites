@@ -817,7 +817,7 @@ public class InfoServiceSqlImpl implements InfoService {
 	}
 
 	@Override
-	public Future<JsonObject> getStats(Map<String, SecuredAction> securedActions, UserInfos user) {
+	public Future<JsonObject> getStats(UserInfos user) {
 		final Promise<JsonObject> promise = Promise.promise();
 		if (user == null) {
 			promise.fail("User's infos not provided");
@@ -846,9 +846,9 @@ public class InfoServiceSqlImpl implements InfoService {
 					"accessible_threads AS ( " +
 					"    SELECT t.id FROM " + NEWS_THREAD_TABLE + " AS t WHERE t.owner = ? " +					//		l'utilisateur possède le fil
 					"    UNION " +
-					"    SELECT tsh.resource_id FROM " + NEWS_THREAD_SHARE_TABLE + " AS tsh " +					//		l'utilisateur a un partage sur le fil
-					"        INNER JOIN " + NEWS_MEMBER_TABLE + " AS tm ON tsh.member_id = tm.id " +
-					"        WHERE tm.user_id = ? OR tm.group_id IN " + ids + " " +
+					"    SELECT ts.resource_id FROM " + NEWS_THREAD_SHARE_TABLE + " AS ts " +					//		l'utilisateur a un partage sur le fil
+					"        INNER JOIN " + NEWS_MEMBER_TABLE + " AS tm ON ts.member_id = tm.id " +
+					"        WHERE ts.action = '" + THREAD_PUBLISH + "' AND (tm.user_id = ? OR tm.group_id IN " + ids + ") " +
 					"    UNION " +
 					"    SELECT DISTINCT i.thread_id FROM " + NEWS_INFO_TABLE + " AS i WHERE i.owner = ? " +	//		l'utilisateur possède une info
 					"    UNION " +

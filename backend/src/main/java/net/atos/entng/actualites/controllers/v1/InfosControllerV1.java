@@ -150,7 +150,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	public void getStats(HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
-				infoService.getStats(securedActions, user)
+				infoService.getStats(user)
 					.onSuccess(stats -> render(request, stats))
 					.onFailure(ex -> renderError(request));
 			} else {

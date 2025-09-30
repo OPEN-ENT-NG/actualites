@@ -150,8 +150,8 @@ public class InfoTransformerServiceImpl implements InfoService {
     }
 
     @Override
-    public Future<JsonObject> getStats(Map<String, SecuredAction> securedActions, UserInfos user) {
-        return infoService.getStats(securedActions, user);
+    public Future<JsonObject> getStats(UserInfos user) {
+        return infoService.getStats(user);
     }
 
     private Future<List<News>> transformAndUpdateNewsContent(Future<List<News>> newsRes) {
