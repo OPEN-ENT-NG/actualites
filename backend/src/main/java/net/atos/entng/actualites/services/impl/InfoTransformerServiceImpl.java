@@ -140,13 +140,18 @@ public class InfoTransformerServiceImpl implements InfoService {
     }
 
     @Override
-    public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, List<Integer> threadIds, NewsStatus status) {
-        return transformAndUpdateNewsContent(this.infoService.listPaginated(securedActions, user, page, pageSize, threadIds, status));
+    public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, List<Integer> threadIds, List<NewsStatus> statuses) {
+        return transformAndUpdateNewsContent(this.infoService.listPaginated(securedActions, user, page, pageSize, threadIds, statuses));
     }
 
     @Override
     public Future<NewsComplete> getFromId(Map<String, SecuredAction> securedActions, UserInfos user, int infoId, boolean originalContent) {
         return infoService.getFromId(securedActions, user, infoId, originalContent);
+    }
+
+    @Override
+    public Future<JsonObject> getStats(UserInfos user) {
+        return infoService.getStats(user);
     }
 
     private Future<List<News>> transformAndUpdateNewsContent(Future<List<News>> newsRes) {
