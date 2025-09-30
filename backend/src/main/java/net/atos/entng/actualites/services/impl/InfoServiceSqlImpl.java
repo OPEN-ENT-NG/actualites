@@ -816,5 +816,94 @@ public class InfoServiceSqlImpl implements InfoService {
 		return CONTENT_FIELD_QUERY;
 	}
 
+	@Override
+	public Future<JsonObject> getStats(UserInfos user) {
+		final Promise<JsonObject> promise = Promise.promise();
+		if (user == null) {
+			promise.fail("User's infos not provided");
+		} else {
+			List<String> groupsAndUserIds = new ArrayList<>();
+			groupsAndUserIds.add(user.getUserId());
+			if (user.getGroupsIds() != null) {
+				groupsAndUserIds.addAll(user.getGroupsIds());
+			}
+
+			final String ids = Sql.listPrepared(groupsAndUserIds.toArray());
+
+			StringBuilder statusAggregation = new StringBuilder("jsonb_build_object(");
+			NewsStatus[] statuses = NewsStatus.values();
+			for (int i = 0; i < statuses.length; i++) {
+				if (i > 0) {
+					statusAggregation.append(", ");
+				}
+				statusAggregation.append("'").append(statuses[i].name()).append("', ")
+					.append("COUNT(*) FILTER (WHERE i.status = ").append(statuses[i].getValue()).append(")");
+			}
+			statusAggregation.append(")");
+
+			String query =
+					"WITH " +
+					"accessible_threads AS ( " +
+					"    SELECT t.id FROM " + NEWS_THREAD_TABLE + " AS t WHERE t.owner = ? " +					//		l'utilisateur possède le fil
+					"    UNION " +
+					"    SELECT ts.resource_id FROM " + NEWS_THREAD_SHARE_TABLE + " AS ts " +					//		l'utilisateur a un partage sur le fil
+					"        INNER JOIN " + NEWS_MEMBER_TABLE + " AS tm ON ts.member_id = tm.id " +
+					"        WHERE ts.action = '" + THREAD_PUBLISH + "' AND (tm.user_id = ? OR tm.group_id IN " + ids + ") " +
+					"    UNION " +
+					"    SELECT DISTINCT i.thread_id FROM " + NEWS_INFO_TABLE + " AS i WHERE i.owner = ? " +	//		l'utilisateur possède une info
+					"    UNION " +
+					"    SELECT DISTINCT i.thread_id FROM " + NEWS_INFO_TABLE + " AS i " +						//		l'utilisateur a un partage sur une info
+					"        INNER JOIN " + NEWS_INFO_SHARE_TABLE + " AS ish ON i.id = ish.resource_id " +
+					"        INNER JOIN " + NEWS_MEMBER_TABLE + " AS im ON ish.member_id = im.id " +
+					"        WHERE im.user_id = ? OR im.group_id IN " + ids +
+					") " +
+					"SELECT t.id, " +
+					"       COUNT(i.id) AS infos_count, " +
+					"       " + statusAggregation + " AS status " +
+					"FROM " + NEWS_THREAD_TABLE + " AS t " +
+					"    INNER JOIN accessible_threads ON accessible_threads.id = t.id " +
+					"    LEFT JOIN " + NEWS_INFO_TABLE + " AS i ON t.id = i.thread_id " +
+					"GROUP BY t.id " +
+					"ORDER BY t.id";
+
+			JsonArray params = new JsonArray();
+			params.add(user.getUserId());				// t.owner
+			params.add(user.getUserId());				// tm.user_id
+			groupsAndUserIds.forEach(params::add);		// IN tm.group_id
+			params.add(user.getUserId());				// i.owner
+			params.add(user.getUserId());				// im.user_id
+			groupsAndUserIds.forEach(params::add);		// IN im.group_id
+
+			Sql.getInstance().prepared(query, params, SqlResult.validResultHandler(result -> {
+				if (result.isLeft()) {
+					log.error("Failed to get stats: " + result.left().getValue());
+					promise.fail(result.left().getValue());
+				} else {
+					JsonArray rows = result.right().getValue();
+					JsonArray threads = new JsonArray();
+
+					for (int i = 0; i < rows.size(); i++) {
+						JsonObject row = rows.getJsonObject(i);
+						JsonObject thread = new JsonObject();
+						thread.put("id", row.getInteger("id"));
+						thread.put("infosCount", row.getInteger("infos_count", 0));
+
+						JsonObject statusObj = row.getJsonObject("status");
+						if (statusObj == null) {
+							statusObj = new JsonObject();
+						}
+						thread.put("status", statusObj);
+
+						threads.add(thread);
+					}
+
+					JsonObject response = new JsonObject();
+					response.put("threads", threads);
+					promise.complete(response);
+				}
+			}));
+		}
+		return promise.future();
+	}
 
 }
