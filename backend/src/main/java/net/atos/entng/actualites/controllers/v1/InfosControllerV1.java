@@ -83,12 +83,24 @@ public class InfosControllerV1 extends ControllerHelper {
 		}
 
 		// status argument
-		String statusParam = request.params().get("status");
-        final NewsStatus status = !isEmpty(statusParam) ? NewsStatus.valueOf(statusParam.toUpperCase()) : NewsStatus.PUBLISHED;
+		final List<NewsStatus> statuses = new ArrayList<>();
+		List<String> statusParams = request.params().getAll("status");
+		if (statusParams != null && !statusParams.isEmpty()) {
+			for (String statusParam : statusParams) {
+				try {
+					statuses.add(NewsStatus.valueOf(statusParam.toUpperCase()));
+				} catch (IllegalArgumentException e) {
+					// Pas un statut valide, on skip !
+				}
+			}
+		}
+		if (statuses.isEmpty()) {
+			statuses.add(NewsStatus.PUBLISHED);
+		}
 
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
-				infoService.listPaginated(securedActions, user, page, pageSize, threadIds, status)
+				infoService.listPaginated(securedActions, user, page, pageSize, threadIds, statuses)
 					.onSuccess(news -> render(request, news))
 					.onFailure(ex -> renderError(request));
 			} else {
@@ -142,6 +154,21 @@ public class InfosControllerV1 extends ControllerHelper {
 	@SecuredAction(value = "thread.publish", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|getInfoTimeline")
 	public void getInfoTimeline(HttpServerRequest request) {
 		infoContoller.getInfoTimeline(request);
+	}
+
+	@Get("/api/v1/infos/stats")
+	@ApiDoc("Get statistics about threads and infos grouped by status")
+	@SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")
+	public void getStats(HttpServerRequest request) {
+		UserUtils.getUserInfos(eb, request, user -> {
+			if (user != null) {
+				infoService.getStats(user)
+					.onSuccess(stats -> render(request, stats))
+					.onFailure(ex -> renderError(request));
+			} else {
+				unauthorized(request);
+			}
+		});
 	}
 
 }
