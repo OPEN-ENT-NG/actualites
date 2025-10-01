@@ -48,6 +48,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.entcore.common.sql.SqlResult.validUniqueResultHandler;
+import static fr.wseduc.webutils.Utils.isEmpty;
 import static net.atos.entng.actualites.Actualites.*;
 
 public class InfoServiceSqlImpl implements InfoService {
@@ -853,41 +854,46 @@ public class InfoServiceSqlImpl implements InfoService {
 
 			String query =
 					"WITH " +
-					"accessible_threads AS ( " +
-					"    SELECT t.id FROM " + NEWS_THREAD_TABLE + " AS t WHERE t.owner = ? " +					//		l'utilisateur possède le fil
-					"    UNION " +
-					"    SELECT ts.resource_id FROM " + NEWS_THREAD_SHARE_TABLE + " AS ts " +					//		l'utilisateur a un partage sur le fil
-					"        INNER JOIN " + NEWS_MEMBER_TABLE + " AS tm ON ts.member_id = tm.id " +
-					"        WHERE ts.action = '" + THREAD_PUBLISH_RIGHT + "' AND (tm.user_id = ? OR tm.group_id IN " + ids + ") " +
-					"    UNION " +
-					"    SELECT DISTINCT i.thread_id FROM " + NEWS_INFO_TABLE + " AS i WHERE i.owner = ? " +	//		l'utilisateur possède une info
-					"    UNION " +
-					"    SELECT DISTINCT i.thread_id FROM " + NEWS_INFO_TABLE + " AS i " +						//		l'utilisateur a un partage sur une info
-					"        INNER JOIN " + NEWS_INFO_SHARE_TABLE + " AS ish ON i.id = ish.resource_id " +
-					"        INNER JOIN " + NEWS_MEMBER_TABLE + " AS im ON ish.member_id = im.id " +
-					"        WHERE im.user_id = ? OR im.group_id IN " + ids +
-					") " +
+					"	 info_for_user AS ( " +
+					"		 SELECT i.id, array_agg(DISTINCT ish.action) AS rights " +
+					"    	 FROM " + NEWS_INFO_TABLE + " AS i " +
+					"        	 JOIN " + NEWS_INFO_SHARE_TABLE + " AS ish ON i.id = ish.resource_id " +
+					"    	 WHERE ish.member_id IN " + ids + " " +
+					"    	 GROUP BY i.id " +
+					"	 ), " +
+					"	 thread_for_user AS ( " +
+					"	 	 SELECT t.id, array_agg(DISTINCT tsh.action) AS rights " +
+					"    	 FROM " + NEWS_THREAD_TABLE + " AS t " +
+					"        	 INNER JOIN " + NEWS_THREAD_SHARE_TABLE + " AS tsh ON t.id = tsh.resource_id " +
+					"    	 WHERE tsh.member_id IN " + ids + " " +
+					"    	 GROUP BY t.id " +
+					"	 ) " +
 					"SELECT t.id, " +
-					"       COUNT(i.id) FILTER (WHERE i.status <> " + NewsStatus.PUBLISHED.getValue() + " OR " +
-					"           ((i.publication_date IS NULL OR i.publication_date <= LOCALTIMESTAMP) " +
-					"            AND (i.expiration_date IS NULL OR i.expiration_date > LOCALTIMESTAMP))) AS infos_count, " +
-					"       " + statusAggregation + " AS status " +
+					"       COUNT(i.id) FILTER (WHERE " +
+					"           (i.owner = ? OR " +
+					"            (i.id IN (SELECT id from info_for_user) AND i.status >= " + NewsStatus.PUBLISHED.getValue() + ") OR " +
+					"            (t.owner = ? AND i.status >= " + NewsStatus.PENDING.getValue() + ") OR " +
+					"            (t.id IN (SELECT id FROM thread_for_user WHERE '" + THREAD_PUBLISH_RIGHT + "' = ANY(rights)) AND i.status >= " + NewsStatus.PENDING.getValue() + ")) " +
+					"           AND (i.status <> " + NewsStatus.PUBLISHED.getValue() + " OR " +
+					"                ((i.publication_date IS NULL OR i.publication_date <= LOCALTIMESTAMP) " +
+					"                 AND (i.expiration_date IS NULL OR i.expiration_date > LOCALTIMESTAMP)))) AS infos_count, " +
+					"       " + statusAggregation + "::text AS status " +
 					"FROM " + NEWS_THREAD_TABLE + " AS t " +
-					"    INNER JOIN accessible_threads ON accessible_threads.id = t.id " +
 					"    LEFT JOIN " + NEWS_INFO_TABLE + " AS i ON t.id = i.thread_id " +
-					"        AND (i.status <> " + NewsStatus.PUBLISHED.getValue() + " OR " +
-					"            ((i.publication_date IS NULL OR i.publication_date <= LOCALTIMESTAMP) " +
-					"             AND (i.expiration_date IS NULL OR i.expiration_date > LOCALTIMESTAMP))) " +
+					"    LEFT JOIN info_for_user ON info_for_user.id = i.id " +
+					" 	 LEFT JOIN thread_for_user ON thread_for_user.id = i.thread_id " +
+					"WHERE t.owner = ? OR t.id IN (SELECT DISTINCT thread_id FROM " + NEWS_INFO_TABLE + " WHERE owner = ?) " +
+					"      OR t.id IN (SELECT id FROM thread_for_user) " +
 					"GROUP BY t.id " +
 					"ORDER BY t.id";
 
 			JsonArray params = new JsonArray();
-			params.add(user.getUserId());				// t.owner
-			params.add(user.getUserId());				// tm.user_id
-			groupsAndUserIds.forEach(params::add);		// IN tm.group_id
-			params.add(user.getUserId());				// i.owner
-			params.add(user.getUserId());				// im.user_id
-			groupsAndUserIds.forEach(params::add);		// IN im.group_id
+			groupsAndUserIds.forEach(params::add);	// ish.member_id IN
+			groupsAndUserIds.forEach(params::add);	// tsh.member_id IN
+			params.add(user.getUserId());			// i.owner
+			params.add(user.getUserId());			// t.owner
+			params.add(user.getUserId());			// t.owner
+			params.add(user.getUserId());			// info owner
 
 			Sql.getInstance().prepared(query, params, SqlResult.validResultHandler(result -> {
 				if (result.isLeft()) {
@@ -903,8 +909,11 @@ public class InfoServiceSqlImpl implements InfoService {
 						thread.put("id", row.getInteger("id"));
 						thread.put("infosCount", row.getInteger("infos_count", 0));
 
-						JsonObject statusObj = row.getJsonObject("status");
-						if (statusObj == null) {
+						JsonObject statusObj;
+						String statusStr = row.getString("status");
+						if (!isEmpty(statusStr)) {
+							statusObj = new JsonObject(statusStr);
+						} else {
 							statusObj = new JsonObject();
 						}
 						thread.put("status", statusObj);
