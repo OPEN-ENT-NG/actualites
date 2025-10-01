@@ -41,6 +41,7 @@ import org.entcore.common.utils.StopWatch;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,8 +53,8 @@ import static net.atos.entng.actualites.Actualites.*;
 public class InfoServiceSqlImpl implements InfoService {
 
 	protected static final Logger log = LoggerFactory.getLogger(Renders.class);
-	private static final String THREAD_PUBLISH = "net-atos-entng-actualites-controllers-InfoController|publish";
-	private static final String RESOURCE_SHARED = "net-atos-entng-actualites-controllers-InfoController|getInfo";
+	private static final String THREAD_PUBLISH_RIGHT = "net-atos-entng-actualites-controllers-InfoController|publish";
+	private static final String RESOURCE_SHARED_RIGHT = "net-atos-entng-actualites-controllers-InfoController|getInfo";
 	private static final String NEWS_THREAD_TABLE = NEWS_SCHEMA + "." + THREAD_TABLE;
 	private static final String NEWS_THREAD_SHARE_TABLE = NEWS_SCHEMA + "." + THREAD_SHARE_TABLE;
 	private static final String NEWS_INFO_TABLE = NEWS_SCHEMA + "." + INFO_TABLE;
@@ -62,7 +63,6 @@ public class InfoServiceSqlImpl implements InfoService {
 	private static final String NEWS_COMMENT_TABLE = NEWS_SCHEMA + "." + COMMENT_TABLE;
 	private static final String NEWS_MEMBER_TABLE = NEWS_SCHEMA + "." + MEMBER_TABLE;
 	private static final String NEWS_INFO_REVISION_TABLE = NEWS_SCHEMA + "." + INFO_REVISION_TABLE;
-	private static final String THREAD_PUBLISH_RIGHT = "net-atos-entng-actualites-controllers-InfoController|publish";
 	private final QueryHelperSql helperSql = new QueryHelperSql();
 	// we select the current content if its not tranformed, or we search it in the revision table
 	private static final String CONTENT_FIELD_QUERY =
@@ -273,7 +273,7 @@ public class InfoServiceSqlImpl implements InfoService {
 			for(String value : groupsAndUserIds){
 				values.add(value);
 			}
-			values.add(THREAD_PUBLISH);
+			values.add(THREAD_PUBLISH_RIGHT);
 			Sql.getInstance().prepared(query.toString(), values, SqlResult.parseSharedUnique(handler));
 		}
 	}
@@ -338,7 +338,7 @@ public class InfoServiceSqlImpl implements InfoService {
 			for(String value : groupsAndUserIds){
 				values.add(value);
 			}
-			values.add(THREAD_PUBLISH);
+			values.add(THREAD_PUBLISH_RIGHT);
 			Sql.getInstance().prepared(query.toString(), values, SqlResult.parseShared(handler));
 		}
 	}
@@ -383,7 +383,7 @@ public class InfoServiceSqlImpl implements InfoService {
 			for(String value : groupsAndUserIds){
 				values.add(value);
 			}
-			values.add(RESOURCE_SHARED);
+			values.add(RESOURCE_SHARED_RIGHT);
 			values.add(user.getUserId());
 			values.add(resultSize);
 			Sql.getInstance().prepared(query.toString(), values, SqlResult.parseShared(handler));
@@ -468,7 +468,7 @@ public class InfoServiceSqlImpl implements InfoService {
 			for(String value : groupsAndUserIds){
 				values.add(value);
 			}
-			values.add(THREAD_PUBLISH);
+			values.add(THREAD_PUBLISH_RIGHT);
 			values.add(user.getUserId());
 			Sql.getInstance().prepared(query.toString(), values, SqlResult.parseShared(handler));
 		}
@@ -538,11 +538,11 @@ public class InfoServiceSqlImpl implements InfoService {
 		List<Integer> threadIds = new ArrayList<>();
 		if (threadId != null) threadIds.add(threadId);
 
-		return listPaginated(securedActions, user, page, pageSize, threadIds, NewsStatus.PUBLISHED);
+		return listPaginated(securedActions, user, page, pageSize, threadIds, Arrays.asList(NewsStatus.PUBLISHED));
 	}
 
 	@Override
-	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, List<Integer> threadIds, NewsStatus status) {
+	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, List<Integer> threadIds, List<NewsStatus> statuses) {
 		final Promise<List<News>> promise = Promise.promise();
 		if (user == null) {
 			promise.fail("user not provided");
@@ -559,21 +559,28 @@ public class InfoServiceSqlImpl implements InfoService {
 			// 2. Prepare SQL request
 
 			final String ids = Sql.listPrepared(groupsAndUserIds.toArray());
+
+			// Build status filter
+			List<Integer> statusValues = statuses.stream().map(NewsStatus::getValue).collect(Collectors.toList());
+			String statusFilter = "i.status IN " + Sql.listPrepared(statusValues.toArray());
+
+			// Different visibility rules per status
+			// - DRAFT: only owner sees it
+			// - PENDING: owner + thread contributors with publish right
+			// - PUBLISHED: owner + thread contributors + info shares (with date filtering)
 			String whereClause =
-					"(i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) " + // Publish date crossed
-					"AND " +
-					"(i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL) " + // Expiration date not crossed
-					"AND " +
-					"(i.status = " + status.ordinal() + ") " + // PUBLISHED
+					statusFilter + " " +
 					"AND ( " +
-					"	 i.owner = ? " + // user is owner of info
+					"	 i.owner = ? " + // user is owner of info: all statuses
 					"	 OR " +
-					"	 i.id IN (SELECT id from info_for_user) " + // info is shared to the user
+					"	 (i.id IN (SELECT id from info_for_user) AND i.status >= " + NewsStatus.PUBLISHED.getValue() + ") " + // info shared: only PUBLISHED
 					" 	 OR " +
-					"    t.owner = ?" + // user is owner of thread
+					"    (t.owner = ? AND i.status >= " + NewsStatus.PENDING.getValue() + ") " + // thread owner: PENDING + PUBLISHED
 					"    OR " +
-					"    t.id IN (SELECT id FROM thread_for_user) " + // thread is shared to the user with publish rights
-					") ";
+					"    (t.id IN (SELECT id FROM thread_for_user) AND i.status >= " + NewsStatus.PENDING.getValue() + ") " + // thread shared with publish: PENDING + PUBLISHED
+					") " +
+					"AND (i.status <> " + NewsStatus.PUBLISHED.getValue() + " OR ((i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) " + // for PUBLISHED: check dates
+					"     AND (i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL))) ";
 			if (threadIds != null && !threadIds.isEmpty()) {
 				String threadIdsSql = Sql.listPrepared(threadIds.toArray());
 				whereClause = "i.thread_id IN " + threadIdsSql + " AND ( " + whereClause + ") ";
@@ -621,6 +628,9 @@ public class InfoServiceSqlImpl implements InfoService {
 			}
 			for(String value : groupsAndUserIds){
 				values.add(value); // for thread_for_user
+			}
+			for(Integer statusValue : statusValues){
+				values.add(statusValue); // for status filtering
 			}
 			if (threadIds != null && !threadIds.isEmpty()) {
 				for (Integer tid : threadIds) {
@@ -848,7 +858,7 @@ public class InfoServiceSqlImpl implements InfoService {
 					"    UNION " +
 					"    SELECT ts.resource_id FROM " + NEWS_THREAD_SHARE_TABLE + " AS ts " +					//		l'utilisateur a un partage sur le fil
 					"        INNER JOIN " + NEWS_MEMBER_TABLE + " AS tm ON ts.member_id = tm.id " +
-					"        WHERE ts.action = '" + THREAD_PUBLISH + "' AND (tm.user_id = ? OR tm.group_id IN " + ids + ") " +
+					"        WHERE ts.action = '" + THREAD_PUBLISH_RIGHT + "' AND (tm.user_id = ? OR tm.group_id IN " + ids + ") " +
 					"    UNION " +
 					"    SELECT DISTINCT i.thread_id FROM " + NEWS_INFO_TABLE + " AS i WHERE i.owner = ? " +	//		l'utilisateur possède une info
 					"    UNION " +
@@ -858,11 +868,16 @@ public class InfoServiceSqlImpl implements InfoService {
 					"        WHERE im.user_id = ? OR im.group_id IN " + ids +
 					") " +
 					"SELECT t.id, " +
-					"       COUNT(i.id) AS infos_count, " +
+					"       COUNT(i.id) FILTER (WHERE i.status <> " + NewsStatus.PUBLISHED.getValue() + " OR " +
+					"           ((i.publication_date IS NULL OR i.publication_date <= LOCALTIMESTAMP) " +
+					"            AND (i.expiration_date IS NULL OR i.expiration_date > LOCALTIMESTAMP))) AS infos_count, " +
 					"       " + statusAggregation + " AS status " +
 					"FROM " + NEWS_THREAD_TABLE + " AS t " +
 					"    INNER JOIN accessible_threads ON accessible_threads.id = t.id " +
 					"    LEFT JOIN " + NEWS_INFO_TABLE + " AS i ON t.id = i.thread_id " +
+					"        AND (i.status <> " + NewsStatus.PUBLISHED.getValue() + " OR " +
+					"            ((i.publication_date IS NULL OR i.publication_date <= LOCALTIMESTAMP) " +
+					"             AND (i.expiration_date IS NULL OR i.expiration_date > LOCALTIMESTAMP))) " +
 					"GROUP BY t.id " +
 					"ORDER BY t.id";
 
