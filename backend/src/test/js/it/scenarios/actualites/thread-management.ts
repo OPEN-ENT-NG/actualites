@@ -21,9 +21,10 @@ import {
   createThread,
   updateThread,
   getThreadById,
-  Thread, Identifier, deleteThread, threadExists,
+  Thread, Identifier, deleteThread, threadExists, createThreadOrFail,
 } from "./_thread-utils.ts";
 import { check } from "k6";
+import { RefinedResponse } from "k6/http";
 
 const maxDuration = __ENV.MAX_DURATION || "5m";
 const schoolName = __ENV.DATA_SCHOOL_NAME || "Thread management";
@@ -53,7 +54,6 @@ type InitData = {
 export function setup() {
   let head :Structure|null = null;
   const structures: Structure[] = [];
-  const profiles: UserProfileType[] = ['Teacher', 'Student', 'Relative'];
   describe("[Tread-Management-Init] Initialize data", () => {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     head = initStructure(`${schoolName} - Head`)
@@ -92,7 +92,10 @@ export function testThreadMutation(data: InitData){
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const title = `Creation test ${seed}`;
-    const thread: Identifier = createThread(title);
+    const threadResp: RefinedResponse<any> = createThread(title);
+    check(threadResp, {"Thread creation must be in success" : (r) => r.status === 200 });
+
+    const thread = JSON.parse(threadResp.body as string);
 
     console.log(` Thread of id ${thread.id} created`);
 
@@ -112,7 +115,7 @@ export function testThreadMutation(data: InitData){
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const title = `Creation test ${seed}`;
-    const thread: Identifier = createThread(title);
+    const thread: Identifier = createThreadOrFail(title);
 
     console.log("Updating the thread");
     const titleUpdate = `Update test ${seed}`;
@@ -122,8 +125,8 @@ export function testThreadMutation(data: InitData){
       "icon" : ""
     } ;
 
-    updateThread(threadUpdate, thread.id);
-    console.log(` Thread of id ${thread.id} updated`);
+    const upResp : RefinedResponse<any> = updateThread(threadUpdate, thread.id);
+    check(upResp, {"Thread update must be successful" : (r) => r.status === 200 });
 
     const threadById = getThreadById(thread.id);
     check(threadById, {"Thread must have the title updated" : (t) => t.title === titleUpdate });
@@ -141,12 +144,12 @@ export function testThreadMutation(data: InitData){
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const title = `Creation test ${seed}`;
-    const thread: Identifier = createThread(title);
+    const thread: Identifier = createThreadOrFail(title);
 
     console.log("Updating the thread");
 
-    deleteThread(thread.id);
-    console.log(` Thread of id ${thread.id} deleted`);
+    const deleteResp : RefinedResponse<any> = deleteThread(thread.id);
+    check(deleteResp, {"Thread delete must be successful" : (r) => r.status === 200 });
 
     threadExists(thread.id);
   });
