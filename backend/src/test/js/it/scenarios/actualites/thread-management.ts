@@ -12,7 +12,6 @@ import {
   Role,
   getTeacherRole,
   getRolesOfStructure,
-  UserProfileType,
   createAndSetRole,
   linkRoleToUsers,
   getParentRole
