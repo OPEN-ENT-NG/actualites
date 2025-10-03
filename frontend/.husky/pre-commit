@@ -1,3 +1,8 @@
 # .husky/pre-commit
 
-cd frontend && pnpm run pre-commit && pnpm run build
+MODIFIED_FILES=$(git diff --cached --name-only)
+
+if echo "$MODIFIED_FILES" | grep -q '^frontend'; then
+  echo "🔍 Changes detected in the conversation module..."
+  cd frontend && pnpm run pre-commit && pnpm run build
+fi

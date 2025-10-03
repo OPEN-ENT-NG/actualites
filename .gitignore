@@ -3,6 +3,7 @@
 .vscode
 .gradle
 .pnpm-store
+test.sh
 
 # Ignore some files in React-based frontends
 .pnpm-store
