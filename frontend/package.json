@@ -37,14 +37,12 @@
     ]
   },
   "dependencies": {
-    "@ant-design/icons": "^6.0.2",
     "@edifice.io/bootstrap": "develop-b2school-actualites",
     "@edifice.io/client": "develop-b2school-actualites",
     "@edifice.io/react": "develop-b2school-actualites",
     "@react-spring/web": "^9.7.5",
     "@tanstack/react-query": "5.62.7",
     "@uidotdev/usehooks": "2.4.1",
-    "antd": "^5.27.4",
     "clsx": "^2.1.1",
     "i18next": "23.8.1",
     "i18next-http-backend": "2.4.2",

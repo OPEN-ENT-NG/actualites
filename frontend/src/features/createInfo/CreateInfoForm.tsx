@@ -1,205 +1,186 @@
 import { useI18n } from '~/hooks/useI18n';
 
-import { AppIconSize, Button, Flex, useBreakpoint } from '@edifice.io/react';
+import {
+  AppIconSize,
+  Button,
+  Flex,
+  FormControl,
+  Input,
+  Label,
+  OptionsType,
+  Select,
+  Switch,
+  useBreakpoint,
+} from '@edifice.io/react';
 import { Editor, EditorInstance } from '@edifice.io/react/editor';
 import {
   IconArrowRight,
   IconQuestion,
   IconSave,
 } from '@edifice.io/react/icons';
-import { Form, Input, Select, Switch } from 'antd';
-import { DefaultOptionType } from 'antd/es/select';
-import { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { ThreadIcon } from '~/components/ThreadIcon';
+import { Thread, ThreadId } from '~/models/thread';
 import { useThreads } from '~/services/queries';
 import './CreateInfoForm.css';
+
+export interface InfoParams {
+  threadId?: ThreadId;
+  title: string;
+  headline: boolean;
+  content: string;
+}
 
 export function CreateInfoForm() {
   const { t } = useI18n();
   const { data: threads } = useThreads();
   const { md } = useBreakpoint();
-  const [submittable, setSubmittable] = useState<boolean>(false);
 
-  const [form] = Form.useForm();
-  // Watch all values
-  const values = Form.useWatch([], form);
+  const defaultValues: InfoParams = {
+    threadId: threads?.length === 1 ? threads[0].id : undefined,
+    title: '',
+    headline: false,
+    content: '',
+  };
 
-  // Watch form changes to enable/disable submit button
-  useEffect(() => {
-    form
-      .validateFields({ validateOnly: true })
-      .then(() => setSubmittable(true))
-      .catch(() => setSubmittable(false));
-  }, [form, values]);
+  const {
+    register,
+    control,
+    setValue,
+
+    formState: { isValid },
+    getValues,
+  } = useForm<InfoParams>({
+    defaultValues,
+    mode: 'all',
+  });
 
   const iconSize: AppIconSize = '24';
-
-  const items: DefaultOptionType[] = threads ? [threads[0]] : [];
-  // threads?.map((thread: Thread) => ({
-  //   value: thread._id,
-  //   label: thread.title,
-  // })) || [];
 
   if (!threads || threads.length === 0) {
     // skeleton loading
     return null;
   }
 
-  const customizeRequiredMark = (
-    label: React.ReactNode,
-    { required }: { required: boolean },
-  ) => (
-    <>
-      {label}
-      {required && <span className="text-red-500 ps-4">*</span>}
-    </>
-  );
+  const items: OptionsType[] = threads.map((thread: Thread) => ({
+    value: thread.id + '',
+    label: thread.title,
+    icon: <ThreadIcon thread={thread} iconSize={iconSize} />,
+  }));
 
   const handleEditorChange = ({ editor }: { editor: EditorInstance }) => {
-    form.setFieldValue(
-      'content',
-      editor.isEmpty ? undefined : editor.getHTML(),
-    );
-    form.validateFields(['content']);
+    setValue('content', editor.isEmpty ? '' : editor.getHTML());
+  };
+
+  const handleSubmit = () => {
+    if (isValid) {
+      console.log(getValues());
+    }
   };
 
   return (
     <>
-      <Form
-        form={form}
-        onFinish={(values) => {
-          console.log('Form values:', values);
-        }}
-        name="create-info-form"
-        layout="vertical"
-        requiredMark={customizeRequiredMark}
-        className="d-flex flex-column mt-24"
-        initialValues={{
-          headline: false,
-          threadId: undefined,
-          title: '',
-          content: '',
-        }} // if only one thread, select it by default
+      <Flex
+        fill
+        direction={md ? 'row' : 'column'}
+        gap="24"
+        align={md ? 'center' : 'stretch'}
+        className="col-12 mt-24"
+        wrap="nowrap"
       >
-        <Flex
-          fill
-          direction={md ? 'row' : 'column'}
-          gap={md ? '24' : ''}
-          align={md ? 'center' : 'stretch'}
-          className="col-12"
-          wrap="nowrap"
-        >
-          <Form.Item
-            label={t('actualites.info.createForm.selectThreadLabel')}
-            rules={[
-              {
-                required: true,
-                message: t('actualites.info.createForm.required'),
-              },
-            ]}
-            name={'threadId'}
-            className="col-12 col-md-5"
-          >
-            {items?.length > 1 ? (
-              <Select
-                placeholder={
-                  <Flex align="center" gap="8" className="text-gray-800">
-                    <IconQuestion width={iconSize} height={iconSize} />
-                    {t('actualites.info.createForm.selectThreadPlaceholder')}
-                  </Flex>
-                }
-                options={items}
-                labelRender={(props) => (
-                  <Flex align="center" gap="8">
-                    <ThreadIcon
-                      thread={threads.find((t) => t.id === props.value)}
-                      iconSize={iconSize}
-                    />
-                    <div>{props.label}</div>
-                  </Flex>
-                )}
-                optionRender={(props) => (
-                  <Flex align="center" gap="8">
-                    <ThreadIcon
-                      thread={threads.find((t) => t.id === props.value)}
-                      iconSize={iconSize}
-                    />
-                    <div>{props.label}</div>
-                  </Flex>
-                )}
-              />
-            ) : (
-              <Flex align="center" gap="8" className="border rounded py-4 px-8">
-                <ThreadIcon thread={threads[0]} iconSize={iconSize} />
-                <span>{threads[0]?.title}</span>
-              </Flex>
-            )}
-          </Form.Item>
-          <Form.Item
-            name={'title'}
-            label={t('actualites.info.createForm.titleLabel')}
-            className="flex-fill"
-            rules={[
-              {
-                required: true,
-                message: t('actualites.info.createForm.required'),
-              },
-            ]}
-          >
-            <Input
-              type="text"
-              placeholder={t('actualites.info.createForm.titlePlaceholder')}
-              showCount
-              maxLength={60}
+        <FormControl id="threadId" className="col-12 col-md-5" isRequired>
+          <Label>{t('actualites.info.createForm.selectThreadLabel')}</Label>
+          {items.length > 1 ? (
+            <Controller
+              name="threadId"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Select
+                  options={items}
+                  block={true}
+                  size="md"
+                  onValueChange={field.onChange}
+                  icon={<IconQuestion />}
+                  placeholderOption={t(
+                    'actualites.info.createForm.selectThreadPlaceholder',
+                  )}
+                />
+              )}
             />
-          </Form.Item>
+          ) : (
+            <Flex align="center" gap="8" className="border rounded py-4 px-8">
+              <ThreadIcon thread={threads[0]} iconSize={iconSize} />
+              <span>{threads[0]?.title}</span>
+            </Flex>
+          )}
+        </FormControl>
+        <FormControl id={'title'} className="flex-fill" isRequired>
+          <Label>{t('actualites.info.createForm.titleLabel')}</Label>
+          <Input
+            type="text"
+            size="md"
+            placeholder={t('actualites.info.createForm.titlePlaceholder')}
+            showCounter
+            maxLength={60}
+            {...register('title', { required: true })}
+          />
+        </FormControl>
+      </Flex>
+      <FormControl id={'headline'}>
+        <Flex align="center" gap="8" className="mt-24">
+          <Switch {...register('headline')} />
+          <label>{t('actualites.info.createForm.headlineLabel')}</label>
         </Flex>
-        <Form.Item name={'headline'}>
-          <Flex align="center" gap="8">
-            <Switch className="ant-switch-outlined" />
-            <label>{t('actualites.info.createForm.headlineLabel')}</label>
-          </Flex>
-        </Form.Item>
-        <Form.Item
-          label={t('actualites.info.createForm.contentLabel')}
-          name={'content'}
-          rules={[
-            {
-              required: true,
-              message: t('actualites.info.createForm.required'),
-            },
-          ]}
-        >
-          <Flex>
-            <Editor
-              content={''}
-              mode="edit"
-              id="info-content"
-              onContentChange={handleEditorChange}
-            />
-          </Flex>
-        </Form.Item>
-        <Flex
-          direction={md ? 'row' : 'column'}
-          justify="end"
-          className="pt-16"
-          gap="12"
-        >
-          <Button color="primary" variant="ghost" leftIcon={<IconSave />}>
-            {t('actualites.info.createForm.cancel')}
-          </Button>
-          <Button color="primary" variant="outline" leftIcon={<IconSave />}>
+      </FormControl>
+      <FormControl id={'content'} className="mt-24" isRequired>
+        <Label>{t('actualites.info.createForm.contentLabel')}</Label>
+        <Controller
+          name="threadId"
+          control={control}
+          rules={{ required: true }}
+          render={({}) => (
+            <Flex wrap="nowrap" className="create-info-form_content">
+              <Editor
+                content={''}
+                mode="edit"
+                id="info-content"
+                onContentChange={handleEditorChange}
+              />
+            </Flex>
+          )}
+        />
+      </FormControl>
+      <Flex
+        direction={md ? 'row' : 'column-reverse'}
+        justify="end"
+        align={md ? 'center' : 'end'}
+        className="pt-24"
+        gap="12"
+      >
+        <Button color="primary" variant="ghost">
+          {t('actualites.info.createForm.cancel')}
+        </Button>
+        <Flex gap="12">
+          <Button
+            color="primary"
+            variant="outline"
+            type="submit"
+            leftIcon={<IconSave />}
+          >
             {t('actualites.info.createForm.saveDraft')}
           </Button>
           <Button
             color="primary"
+            type="submit"
             rightIcon={<IconArrowRight />}
-            disabled={!submittable}
+            onClick={handleSubmit}
+            disabled={!isValid}
           >
             {t('actualites.info.createForm.nextStep')}
           </Button>
         </Flex>
-      </Form>
+      </Flex>
     </>
   );
 }
