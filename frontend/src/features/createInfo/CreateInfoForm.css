@@ -1,0 +1,7 @@
+#info-content {
+  min-height: 150px;
+}
+
+#create-info-form_content > div {
+  overflow: hidden;
+}
