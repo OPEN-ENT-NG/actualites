@@ -1,12 +1,14 @@
 import {
   AppHeader,
   Breadcrumb,
+  Button,
+  Flex,
   Layout,
   LoadingScreen,
   useEdificeClient,
 } from '@edifice.io/react';
 
-import { matchPath, Outlet } from 'react-router-dom';
+import { matchPath, Outlet, useNavigate } from 'react-router-dom';
 
 import { IWebApp } from '@edifice.io/client';
 import { basename } from '..';
@@ -57,9 +59,17 @@ export const loader = async () => {
 
 export const Root = () => {
   const { currentApp, init } = useEdificeClient();
+  const navigate = useNavigate();
   const displayApp = {
     displayName: 'news',
     icon: 'actualites-large',
+  };
+
+  const pathname = window.location.pathname;
+  const isCreateRoute = pathname.endsWith('/create');
+
+  const handleClickNewInfo = () => {
+    navigate('/create');
   };
 
   if (!init) return <LoadingScreen position={false} />;
@@ -67,6 +77,11 @@ export const Root = () => {
     <Layout>
       <AppHeader>
         <Breadcrumb app={(currentApp as IWebApp) ?? displayApp} />
+        {!isCreateRoute && (
+          <Flex fill align="center" justify="end">
+            <Button onClick={handleClickNewInfo}>New Article</Button>
+          </Flex>
+        )}
       </AppHeader>
       <Outlet />
     </Layout>
