@@ -3,7 +3,8 @@ import { useRef } from 'react';
 import { useInfoList } from '~/features';
 import { useInfiniteScroll } from '~/hooks/useInfiniteScroll';
 import { DEFAULT_PAGE_SIZE } from '~/services/queries/info';
-import { InfoCard, InfoCardSkeleton } from '.';
+import { InfoCard, InfoCardSkeleton } from '..';
+import { InfoListEmpty } from './InfoListEmpty';
 
 export const InfoList = () => {
   const loadNextRef = useRef<HTMLElement>(null);
@@ -39,7 +40,7 @@ export const InfoList = () => {
       ) : hasNextPage ? (
         <InfoCardSkeleton ref={loadNextRef} />
       ) : (
-        <></>
+        <InfoListEmpty />
       )}
     </div>
   );

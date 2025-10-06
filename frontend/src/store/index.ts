@@ -4,4 +4,5 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
-export * from './rights';
+export * from './rights/ressource';
+export * from './rights/workflow';

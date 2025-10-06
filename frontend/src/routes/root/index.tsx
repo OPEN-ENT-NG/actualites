@@ -8,15 +8,27 @@ import {
   useEdificeClient,
 } from '@edifice.io/react';
 
-import { matchPath, Outlet, useNavigate } from 'react-router-dom';
+import {
+  matchPath,
+  Outlet,
+  useNavigate,
+  useLoaderData,
+} from 'react-router-dom';
 
 import { IWebApp } from '@edifice.io/client';
+import { existingActions } from '~/config';
+import { queryClient } from '~/providers';
+import { actionsQueryOptions } from '~/services/queries/actions';
+import { useWorkflowRights } from '~/store';
 import { basename } from '..';
 
 /** Check old format URL and redirect if needed */
 export const loader = async () => {
-  const hashLocation = location.hash.substring(1);
+  const workflowRights = await queryClient.ensureQueryData(
+    actionsQueryOptions(existingActions),
+  );
 
+  const hashLocation = location.hash.substring(1);
   // Check if the URL is an old format (angular root with hash) and redirect to the new format
   let redirectPath;
   if (hashLocation) {
@@ -54,10 +66,16 @@ export const loader = async () => {
     }
   }
 
-  return null;
+  return { workflowRights };
 };
 
 export const Root = () => {
+  const { workflowRights } = useLoaderData() as {
+    workflowRights: Record<string, boolean>;
+  };
+  const setRights = useWorkflowRights.use.setRights();
+  setRights(workflowRights);
+
   const { currentApp, init } = useEdificeClient();
   const navigate = useNavigate();
   const displayApp = {

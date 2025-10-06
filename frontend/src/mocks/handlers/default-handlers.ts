@@ -92,18 +92,8 @@ export const defaultHandlers = [
       classes: [],
       authorizedActions: [
         {
-          name: 'org.entcore.fake.controllers.FoldersController|add',
-          displayName: 'fake.createFolder',
-          type: 'SECURED_ACTION_WORKFLOW',
-        },
-        {
-          name: 'org.entcore.fake.controllers.FoldersController|list',
-          displayName: 'fake.listFolders',
-          type: 'SECURED_ACTION_WORKFLOW',
-        },
-        {
-          name: 'org.entcore.fake.controllers.FakeController|print',
-          displayName: 'fake.print',
+          name: 'net.atos.entng.actualites.controllers.ThreadController|createThread',
+          displayName: 'actualites.create',
           type: 'SECURED_ACTION_WORKFLOW',
         },
       ],
