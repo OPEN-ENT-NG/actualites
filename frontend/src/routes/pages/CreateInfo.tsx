@@ -1,9 +1,7 @@
 import { Flex } from '@edifice.io/react';
 import { QueryClient } from '@tanstack/react-query';
-import { CreateInfoForm } from '~/features/create-info/CreateInfoForm';
-import { CreateInfoHeader } from '~/features/create-info/CreateInfoHeader';
-import { CreateInfoSkeleton } from '~/features/create-info/CreateInfoSkeleton';
-import { useThreads } from '~/services/queries';
+import { CreateInfoForm } from '~/features/createInfo/CreateInfoForm';
+import { CreateInfoHeader } from '~/features/createInfo/CreateInfoHeader';
 import './CreateInfo.css';
 
 export const loader = (_queryClient: QueryClient) => async () => {
@@ -11,7 +9,6 @@ export const loader = (_queryClient: QueryClient) => async () => {
 };
 
 export function CreateInfo() {
-  const { data: threads } = useThreads();
   return (
     <Flex fill className="py-16" justify="center">
       <Flex
@@ -20,14 +17,8 @@ export function CreateInfo() {
         wrap="nowrap"
         className="create-info-container overflow-hidden"
       >
-        {threads ? (
-          <>
-            <CreateInfoHeader />
-            <CreateInfoForm />
-          </>
-        ) : (
-          <CreateInfoSkeleton />
-        )}
+        <CreateInfoHeader />
+        <CreateInfoForm />
       </Flex>
     </Flex>
   );
