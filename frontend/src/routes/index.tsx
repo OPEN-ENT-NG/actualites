@@ -18,6 +18,19 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
     errorElement: <PageError />,
     children: [
       {
+        path: 'create',
+        index: true,
+        async lazy() {
+          const { loader, CreateInfo: Component } = await import(
+            '~/routes/pages/CreateInfo'
+          );
+          return {
+            loader: loader(queryClient),
+            Component,
+          };
+        },
+      },
+      {
         path: '',
         async lazy() {
           const { loader, Threads: Component } =
@@ -62,17 +75,6 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
             ],
           },
         ],
-      },
-      {
-        path: 'drafts/create',
-        async lazy() {
-          const { loader, Create: Component } =
-            await import('~/routes/pages/Create');
-          return {
-            loader: loader(queryClient),
-            Component,
-          };
-        },
       },
     ],
   },

@@ -10,5 +10,17 @@
   "actualites.previouscontent.alert.paragraph1": "Le contenu de cette actualité a été créé avec l’ancienne version d’actualité.",
   "actualites.previouscontent.alert.paragraph2": "S’il ne s’affiche pas correctement, vous pouvez voir l’ancienne version.",
   "actualites.previouscontent.modal.close": "Fermer",
-  "actualites.read.more": "Lire la suite"
+  "actualites.read.more": "Lire la suite",
+  "actualites.info.createForm.required": "Champs requis",
+  "actualites.info.createForm.title": "Création d’une actualité",
+  "actualites.info.createForm.subTitle": "Création d’une actualité",
+  "actualites.info.createForm.selectThreadPlaceholder": "Sélectionner un fil d’actualité",
+  "actualites.info.createForm.selectThreadLabel": "Fil de l'actualité",
+  "actualites.info.createForm.titlePlaceholder": "Ecrire ici le titre",
+  "actualites.info.createForm.titleLabel": "Titre de l'actualité",
+  "actualites.info.createForm.contentLabel": "Contenu de l'actualité",
+  "actualites.info.createForm.headlineLabel": "Actualité taguée “Mettre en avant”",
+  "actualites.info.createForm.cancel": "Annuler",
+  "actualites.info.createForm.nextStep": "Suivant",
+  "actualites.info.createForm.saveDraft": "Brouillon"
 }
