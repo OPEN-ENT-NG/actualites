@@ -279,7 +279,7 @@ public class InfoController extends ControllerHelper {
                                             eventHelper.onCreateResource(request, RESOURCE_NAME);
                                             JsonObject info = event.right().getValue();
                                             String infoId = info.getLong("id").toString();
-                                            notificationTimelineService.notifyTimeline(request, user, threadId, infoId, title, NEWS_SUBMIT_EVENT_TYPE, pathPrefix);
+                                            notificationTimelineService.notifyTimeline(request, user, threadId, infoId, title, NEWS_SUBMIT_EVENT_TYPE);
                                             renderJson(request, event.right().getValue(), 200);
                                         } else {
                                             JsonObject error = new JsonObject().put("error", event.left().getValue());
@@ -442,7 +442,7 @@ public class InfoController extends ControllerHelper {
 						final String title = body.getString("title");
 						Handler<Either<String, JsonObject>> handler = event -> {
                             if (event.isRight()) {
-                                notificationTimelineService.notifyTimeline(request, user, threadId, infoId, title, NEWS_SUBMIT_EVENT_TYPE, pathPrefix);
+                                notificationTimelineService.notifyTimeline(request, user, threadId, infoId, title, NEWS_SUBMIT_EVENT_TYPE);
                                 renderJson(request, event.right().getValue(), 200);
                             } else {
                                 JsonObject error = new JsonObject().put("error", event.left().getValue());
@@ -509,7 +509,7 @@ public class InfoController extends ControllerHelper {
 						owner.setUsername(body.getString("username"));
 						Handler<Either<String, JsonObject>> handler = event -> {
                             if (event.isRight()) {
-                                notificationTimelineService.notifyTimeline(request, user, owner, threadId, infoId, title, NEWS_PUBLISH_EVENT_TYPE, pathPrefix);
+                                notificationTimelineService.notifyTimeline(request, user, owner, threadId, infoId, title, NEWS_PUBLISH_EVENT_TYPE);
                                 renderJson(request, event.right().getValue(), 200);
                             } else {
                                 JsonObject error = new JsonObject().put("error", event.left().getValue());
@@ -546,7 +546,7 @@ public class InfoController extends ControllerHelper {
 							@Override
 							public void handle(Either<String, JsonObject> event) {
 								if (event.isRight()) {
-                                    notificationTimelineService.notifyTimeline(request, user, owner, threadId, infoId, title, NEWS_UNPUBLISH_EVENT_TYPE, pathPrefix);
+                                    notificationTimelineService.notifyTimeline(request, user, owner, threadId, infoId, title, NEWS_UNPUBLISH_EVENT_TYPE);
 									renderJson(request, event.right().getValue(), 200);
 								} else {
 									JsonObject error = new JsonObject().put("error", event.left().getValue());
@@ -700,7 +700,7 @@ public class InfoController extends ControllerHelper {
                         UserInfos owner = new UserInfos();
                         owner.setUserId(ownerId);
                         notificationTimelineService.notifyTimeline(request,  user, owner, resource.getLong("thread_id").toString(),
-                                infoId, resource.getString("title"), eventType, pathPrefix);
+                                infoId, resource.getString("title"), eventType);
                     }
                 } else {
                     log.error("Unable to create notification : GetOwnerInfo failed");

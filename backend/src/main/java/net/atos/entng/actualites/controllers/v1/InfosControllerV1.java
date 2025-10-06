@@ -2,9 +2,11 @@ package net.atos.entng.actualites.controllers.v1;
 
 import fr.wseduc.rs.*;
 import fr.wseduc.security.ActionType;
+import fr.wseduc.security.SecuredAction;
 import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.request.RequestUtils;
 import io.vertx.core.Handler;
+import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.Actualites;
 import net.atos.entng.actualites.controllers.InfoController;
@@ -13,14 +15,6 @@ import net.atos.entng.actualites.filters.InfoFilter;
 import net.atos.entng.actualites.services.InfoService;
 import net.atos.entng.actualites.services.NotificationTimelineService;
 import net.atos.entng.actualites.to.NewsStatus;
-
-import static fr.wseduc.webutils.Utils.isEmpty;
-import static net.atos.entng.actualites.controllers.InfoController.*;
-import static org.entcore.common.http.response.DefaultResponseHandler.notEmptyResponseHandler;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import net.atos.entng.actualites.utils.Events;
 import org.apache.commons.lang3.StringUtils;
 import org.entcore.common.controller.ControllerHelper;
@@ -30,8 +24,12 @@ import org.entcore.common.events.EventStoreFactory;
 import org.entcore.common.http.filter.ResourceFilter;
 import org.entcore.common.user.UserUtils;
 
-import fr.wseduc.security.SecuredAction;
-import io.vertx.core.http.HttpServerRequest;
+import java.util.ArrayList;
+import java.util.List;
+
+import static fr.wseduc.webutils.Utils.isEmpty;
+import static net.atos.entng.actualites.controllers.InfoController.*;
+import static org.entcore.common.http.response.DefaultResponseHandler.notEmptyResponseHandler;
 
 public class InfosControllerV1 extends ControllerHelper {
 
@@ -176,7 +174,7 @@ public class InfosControllerV1 extends ControllerHelper {
 							String infoId = info.getLong("id").toString();
 							String threadId = info.getString("thread_id");
 							String title = info.getString("title");
-							notificationTimelineService.notifyTimeline(request, user, threadId, infoId, title, NEWS_SUBMIT_EVENT_TYPE, pathPrefix);
+							notificationTimelineService.notifyTimeline(request, user, threadId, infoId, title, NEWS_SUBMIT_EVENT_TYPE);
 							renderJson(request, event.right().getValue(), 200);
 						} else {
 							JsonObject error = new JsonObject().put("error", event.left().getValue());

@@ -1,6 +1,7 @@
 package net.atos.entng.actualites.services.impl;
 
 import fr.wseduc.webutils.Either;
+import fr.wseduc.webutils.Server;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
@@ -27,6 +28,7 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
     private final InfoService infoService;
     private final ThreadService threadService;
     private final EventBus eventBus;
+    private final String pathPrefix;
 
     public NotificationTimelineServiceImpl(InfoService infoService, ThreadService threadService, Vertx vertx,
                                            EventBus eb, JsonObject config) {
@@ -34,26 +36,28 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
         this.threadService = threadService;
         this.notification = new TimelineHelper(vertx, eb, config);
         this.eventBus = eb;
+        this.pathPrefix = Server.getPathPrefix(config);
+
     }
 
 
     @Override
     public void notifyTimeline(HttpServerRequest request, UserInfos user, String threadId, String infoId, String title,
-                               String eventType, String pathPrefix) {
+                               String eventType) {
         // the news owner is behind the action
         UserInfos owner = user;
-        notifyTimeline(request, user, owner, threadId, infoId, title, eventType, pathPrefix);
+        notifyTimeline(request, user, owner, threadId, infoId, title, eventType);
     }
 
     @Override
     public void notifyTimeline(HttpServerRequest request, UserInfos user, UserInfos owner, String threadId, String infoId,
-                               String title, String eventType, String pathPrefix) {
+                               String title, String eventType) {
         if (eventType.equals(NEWS_SUBMIT_EVENT_TYPE)) {
             threadService.getPublishSharedWithIds(threadId, event -> {
                 if (event.isRight()) {
                     // get all ids
                     JsonArray shared = event.right().getValue();
-                    extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-submitted", pathPrefix);
+                    extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-submitted");
                 }
             });
         } else if(eventType.equals(NEWS_UNSUBMIT_EVENT_TYPE)){
@@ -61,7 +65,7 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
                 if (event.isRight()) {
                     // get all ids
                     JsonArray shared = event.right().getValue();
-                    extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-unsubmitted", pathPrefix);
+                    extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-unsubmitted");
                 }
             });
         } else if(eventType.equals(NEWS_PUBLISH_EVENT_TYPE)){
@@ -69,7 +73,7 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
                 if (event.isRight()) {
                     // get all ids
                     JsonArray shared = event.right().getValue();
-                    extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-published", pathPrefix);
+                    extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-published");
                 }
             });
         } else if(eventType.equals(NEWS_UNPUBLISH_EVENT_TYPE)){
@@ -77,20 +81,20 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
                 if (event.isRight()) {
                     // get all ids
                     JsonArray shared = event.right().getValue();
-                    extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-unpublished", pathPrefix);
+                    extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-unpublished");
                 }
             });
         } else if (eventType.equals(NEWS_UPDATE_EVENT_TYPE)) {
             ArrayList<String> ids = new ArrayList<>();
             ids.add(owner.getUserId());
-            sendNotify(request, ids, user, threadId, infoId, title, "news.news-update", pathPrefix);
+            sendNotify(request, ids, user, threadId, infoId, title, "news.news-update");
         }
     }
 
 
 
     private void extractUserIds(final HttpServerRequest request, final JsonArray shared, final UserInfos user, final UserInfos owner,
-                                final String threadId, final String infoId, final String title, final String notificationName, final String pathPrefix){
+                                final String threadId, final String infoId, final String title, final String notificationName){
         final List<String> ids = new ArrayList<String>();
         if (shared.size() > 0) {
             JsonObject jo = null;
@@ -125,7 +129,7 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
                                         }
                                     }
                                     if (remaining.decrementAndGet() < 1) {
-                                        sendNotify(request, ids, owner, threadId, infoId, title, notificationName, pathPrefix);
+                                        sendNotify(request, ids, owner, threadId, infoId, title, notificationName);
                                     }
                                 }
                             });
@@ -134,13 +138,13 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
                 }
             }
             if (remaining.get() < 1) {
-                sendNotify(request, ids, owner, threadId, infoId, title, notificationName, pathPrefix);
+                sendNotify(request, ids, owner, threadId, infoId, title, notificationName);
             }
         }
     }
 
     private void sendNotify(final HttpServerRequest request, final List<String> ids, final UserInfos owner, final String threadId,
-                            final String infoId, final String title, final String notificationName, final String pathPrefix ){
+                            final String infoId, final String title, final String notificationName ){
         if (infoId != null && !infoId.isEmpty() && threadId != null && !threadId.isEmpty() && owner != null) {
             JsonObject params = new JsonObject()
                     .put("profilUri", "/userbook/annuaire#" + owner.getUserId() + "#" + (owner.getType() != null ? owner.getType() : ""))
