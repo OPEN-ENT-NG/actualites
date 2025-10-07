@@ -2,7 +2,6 @@ import {
   ButtonSkeleton,
   Flex,
   FormControl,
-  Stepper,
   Switch,
   TextSkeleton,
   useBreakpoint,
@@ -18,16 +17,12 @@ export interface InfoParams {
   content: string;
 }
 
-export function CreateInfoSkeleton() {
+export function CreateInfoFormSkeleton() {
   const { md } = useBreakpoint();
 
   return (
     <>
-      <Stepper currentStep={0} nbSteps={2} />
-      <h1 className="placeholder col-3 mt-24" />
-      <TextSkeleton size="lg" className="col-3 mt-2" />
       <Flex
-        fill
         direction={md ? 'row' : 'column'}
         gap="24"
         align={md ? 'center' : 'stretch'}

@@ -20,11 +20,12 @@ import {
 import { Controller, useForm } from 'react-hook-form';
 import { ThreadIcon } from '~/components/ThreadIcon';
 import { Thread, ThreadId } from '~/models/thread';
-import { useThreads } from '~/services/queries';
+import { useCreateDraftInfo, useThreads } from '~/services/queries';
+import { CreationStep, useCreationStore } from '~/store/creationStore';
 import './CreateInfoForm.css';
 
 export interface InfoParams {
-  threadId?: ThreadId;
+  thread_id?: ThreadId;
   title: string;
   headline: boolean;
   content: string;
@@ -34,9 +35,11 @@ export function CreateInfoForm() {
   const { t } = useI18n();
   const { data: threads } = useThreads();
   const { md } = useBreakpoint();
+  const { setCurrentCreationStep } = useCreationStore();
+  const { mutate: createDraftInfo } = useCreateDraftInfo();
 
   const defaultValues: InfoParams = {
-    threadId: threads?.length === 1 ? threads[0]._id : undefined,
+    thread_id: threads?.length === 1 ? threads[0]._id : undefined,
     title: '',
     headline: false,
     content: '',
@@ -46,8 +49,8 @@ export function CreateInfoForm() {
     register,
     control,
     setValue,
-    trigger,
-    formState: { isValid },
+    reset,
+    formState: { isValid, isDirty },
     getValues,
   } = useForm<InfoParams>({
     defaultValues,
@@ -57,7 +60,6 @@ export function CreateInfoForm() {
   const iconSize = 22;
 
   if (!threads || threads.length === 0) {
-    // skeleton loading
     return null;
   }
 
@@ -68,31 +70,48 @@ export function CreateInfoForm() {
   }));
 
   const handleEditorChange = ({ editor }: { editor: EditorInstance }) => {
-    setValue('content', editor.isEmpty ? '' : editor.getHTML());
-    trigger('content');
+    setValue('content', editor.isEmpty ? '' : editor.getHTML(), {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
   };
 
+  const handleSaveDraft = () => {
+    createDraftInfo(
+      {
+        title: getValues('title'),
+        content: getValues('content'),
+        thread_id: getValues('thread_id'),
+      },
+      {
+        onSuccess: () => {
+          console.log('Draft created');
+        },
+      },
+    );
+    reset({}, { keepValues: true });
+  };
   const handleSubmit = () => {
     if (isValid) {
       console.log(getValues());
+      setCurrentCreationStep(CreationStep.INFO_SHARE);
     }
   };
 
   return (
     <>
       <Flex
-        fill
         direction={md ? 'row' : 'column'}
         gap="24"
         align={md ? 'center' : 'stretch'}
         className="col-12 mt-24"
         wrap="nowrap"
       >
-        <FormControl id="threadId" className="col-12 col-md-5" isRequired>
+        <FormControl id="thread_id" className="col-12 col-md-5" isRequired>
           <Label>{t('actualites.info.createForm.selectThreadLabel')}</Label>
           {items.length > 1 ? (
             <Controller
-              name="threadId"
+              name="thread_id"
               control={control}
               rules={{ required: true }}
               render={({ field }) => (
@@ -167,6 +186,8 @@ export function CreateInfoForm() {
             variant="outline"
             type="submit"
             leftIcon={<IconSave />}
+            onClick={handleSaveDraft}
+            disabled={!isDirty || getValues('thread_id') === undefined}
           >
             {t('actualites.info.createForm.saveDraft')}
           </Button>
