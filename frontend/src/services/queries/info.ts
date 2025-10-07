@@ -111,12 +111,12 @@ export const useInfoOriginalFormat = (threadId: ThreadId, infoId: InfoId) =>
 export const useCreateDraftInfo = () =>
   useMutation({
     mutationFn: (payload: {
-      title: string;
-      content: string;
-      thread_id: number;
+      title?: string;
+      content?: string;
+      thread_id?: number;
     }) => infoService.createDraft(payload),
     // TODO optimistic update
-    // onSuccess: async (, { title, content, thread_id }) => {
+    // onSuccess: async (, { title, content, threadId }) => {
     // },
   });
 

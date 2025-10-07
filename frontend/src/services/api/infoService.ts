@@ -40,9 +40,9 @@ export const createInfoService = () => {
      * @returns ID of the newly created Info
      */
     createDraft(payload: {
-      title: string;
-      content: string;
-      thread_id: ThreadId;
+      title?: string;
+      content?: string;
+      thread_id?: ThreadId;
     }) {
       return odeServices.http().post<{
         id: InfoId;
