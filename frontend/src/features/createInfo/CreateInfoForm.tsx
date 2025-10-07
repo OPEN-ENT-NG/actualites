@@ -47,7 +47,7 @@ export function CreateInfoForm() {
     register,
     control,
     setValue,
-
+    trigger,
     formState: { isValid },
     getValues,
   } = useForm<InfoParams>({
@@ -70,6 +70,7 @@ export function CreateInfoForm() {
 
   const handleEditorChange = ({ editor }: { editor: EditorInstance }) => {
     setValue('content', editor.isEmpty ? '' : editor.getHTML());
+    trigger('content');
   };
 
   const handleSubmit = () => {
@@ -136,10 +137,10 @@ export function CreateInfoForm() {
       <FormControl id={'content'} className="mt-24" isRequired>
         <Label>{t('actualites.info.createForm.contentLabel')}</Label>
         <Controller
-          name="threadId"
+          name="content"
           control={control}
           rules={{ required: true }}
-          render={({}) => (
+          render={() => (
             <Flex wrap="nowrap" className="create-info-form_content">
               <Editor
                 content={''}
