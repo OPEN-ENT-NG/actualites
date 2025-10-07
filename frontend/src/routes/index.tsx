@@ -1,5 +1,5 @@
 import { QueryClient } from '@tanstack/react-query';
-import { RouteObject, createBrowserRouter } from 'react-router-dom';
+import { Navigate, RouteObject, createBrowserRouter } from 'react-router-dom';
 
 import { NotFound } from './errors/not-found';
 import { PageError } from './errors/page-error';
@@ -19,7 +19,6 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
     children: [
       {
         path: 'create',
-        index: true,
         async lazy() {
           const { loader, CreateInfo: Component } = await import(
             '~/routes/pages/CreateInfo'
@@ -29,6 +28,37 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
             Component,
           };
         },
+        children: [
+          {
+            path: 'params',
+            async lazy() {
+              const { loader, CreateInfoParams: Component } = await import(
+                '~/routes/pages/CreateInfoParams'
+              );
+              return {
+                loader: loader(queryClient),
+                Component,
+              };
+            },
+          },
+          {
+            path: 'share',
+            async lazy() {
+              const { loader, CreateInfoShare: Component } = await import(
+                '~/routes/pages/CreateInfoShare'
+              );
+              return {
+                loader: loader(queryClient),
+                Component,
+              };
+            },
+          },
+          {
+            path: '',
+            index: true,
+            element: <Navigate to={'/create/params'} replace={true} />,
+          },
+        ],
       },
       {
         path: '',
