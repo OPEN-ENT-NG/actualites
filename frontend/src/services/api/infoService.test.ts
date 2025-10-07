@@ -50,7 +50,8 @@ describe('Info Mutation Methods', () => {
   });
 
   test('makes a PUT request to update a Info', async () => {
-    const response = await infoService.update(229, 466, InfoStatus.PUBLISHED, {
+    const response = await infoService.update(466, InfoStatus.PUBLISHED, {
+      thread_id: 229,
       title: 'Test de renommage',
       content: '',
       is_headline: false,

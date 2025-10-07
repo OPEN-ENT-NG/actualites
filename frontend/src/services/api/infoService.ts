@@ -1,7 +1,8 @@
 import { odeServices } from '@edifice.io/client';
-import { baseUrlAPI } from '.';
+import { baseUrl, baseUrlAPI } from '.';
 import {
   Info,
+  InfoDetails,
   InfoId,
   InfoRevision,
   InfoStatus,
@@ -13,7 +14,18 @@ import { ThreadId } from '../../models/thread';
 export const createInfoService = () => {
   return {
     /**
+     * Get an Info by its ID.
+     * @param param0 - The ID of the Info to retrieve.
+     * @returns The requested Info object.
+     */
+    getInfo({ infoId }: { infoId: InfoId }) {
+      return odeServices
+        .http()
+        .get<InfoDetails>(`${baseUrlAPI}/infos/${infoId}`);
+    },
+    /**
      * Get a page of Infos results.
+     * @param param0 - The page number, page size, and optional thread ID to filter Infos.
      * @returns an array of Info objects
      */
     getInfos({
@@ -40,13 +52,18 @@ export const createInfoService = () => {
      * @returns ID of the newly created Info
      */
     createDraft(payload: {
-      title: string;
-      content: string;
-      thread_id: ThreadId;
+      title?: string;
+      content?: string;
+      thread_id?: ThreadId;
     }) {
       return odeServices.http().post<{
         id: InfoId;
-      }>(`${baseUrlAPI}/threads/${payload.thread_id}/info`, payload);
+      }>(`${baseUrlAPI}/infos`, {
+        title: payload.title,
+        content: payload.content,
+        status: 1, // DRAFT
+        thread_id: Number(payload.thread_id),
+      });
     },
 
     /**
@@ -58,31 +75,30 @@ export const createInfoService = () => {
      * @returns ID of the updated Info
      */
     update(
-      threadId: ThreadId,
       infoId: InfoId,
       infoStatus: InfoStatus,
       payload: {
-        // thread_id: ThreadId; // FIXME Is uncommenting this line useful, or dangerous ?
-        title: string;
-        content: string;
+        thread_id?: ThreadId; // FIXME Is uncommenting this line useful, or dangerous ?
+        title?: string;
+        content?: string;
         is_headline: boolean;
         publication_date?: string;
         expiration_date?: string;
       },
     ) {
-      const action =
+      const status =
         infoStatus === InfoStatus.DRAFT
-          ? 'draft'
+          ? 1
           : infoStatus === InfoStatus.PENDING
-            ? 'pending'
+            ? 2
             : infoStatus === InfoStatus.PUBLISHED
-              ? 'published'
+              ? 3
               : null;
-      if (!action) throw new Error('Cannot update a trashed Info');
+      if (!status) throw new Error('Cannot update a trashed Info');
 
       return odeServices.http().put<{
         id: InfoId;
-      }>(`${baseUrlAPI}/threads/${threadId}/info/${infoId}/${action}`, payload);
+      }>(`${baseUrlAPI}/infos/${infoId}`, { ...payload, status });
     },
 
     /**
@@ -101,7 +117,7 @@ export const createInfoService = () => {
     ) {
       return odeServices.http().put<{
         id: InfoId;
-      }>(`${baseUrlAPI}/threads/${threadId}/info/${infoId}/submit`, payload);
+      }>(`${baseUrl}/thread/${threadId}/info/${infoId}/submit`, payload);
     },
 
     /**
@@ -113,7 +129,7 @@ export const createInfoService = () => {
     unsubmit(threadId: ThreadId, infoId: InfoId) {
       return odeServices.http().put<{
         id: InfoId;
-      }>(`${baseUrlAPI}/threads/${threadId}/info/${infoId}/unsubmit`, {
+      }>(`${baseUrl}/thread/${threadId}/info/${infoId}/unsubmit`, {
         /*empty payload required*/
       });
     },
@@ -136,7 +152,7 @@ export const createInfoService = () => {
     ) {
       return odeServices.http().put<{
         id: InfoId;
-      }>(`${baseUrlAPI}/threads/${threadId}/info/${infoId}/publish`, payload);
+      }>(`${baseUrl}/thread/${threadId}/info/${infoId}/publish`, payload);
     },
 
     /**
@@ -148,28 +164,26 @@ export const createInfoService = () => {
     delete(threadId: ThreadId, infoId: InfoId) {
       return odeServices.http().delete<{
         rows: number;
-      }>(`${baseUrlAPI}/threads/${threadId}/info/${infoId}`);
+      }>(`${baseUrl}/thread/${threadId}/info/${infoId}`);
     },
 
     getShares(threadId: ThreadId, infoId: InfoId) {
       return odeServices
         .http()
-        .get<Share>(
-          `${baseUrlAPI}/threads/${threadId}/info/share/json/${infoId}`,
-        );
+        .get<Share>(`${baseUrl}/thread/${threadId}/info/share/json/${infoId}`);
     },
 
     getRevisions(infoId: InfoId) {
       return odeServices
         .http()
-        .get<InfoRevision[]>(`${baseUrlAPI}/infos/${infoId}/timeline`);
+        .get<InfoRevision[]>(`${baseUrl}/info/${infoId}/timeline`);
     },
 
     getOriginalFormat(threadId: ThreadId, infoId: InfoId) {
       return odeServices
         .http()
         .get<OriginalInfo>(
-          `${baseUrlAPI}/threads/${threadId}/info/${infoId}?originalFormat=true`,
+          `${baseUrl}/thread/${threadId}/info/${infoId}?originalFormat=true`,
         );
     },
   };
