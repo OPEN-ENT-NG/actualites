@@ -1,13 +1,17 @@
-import { AppIcon, Image, useEdificeClient } from '@edifice.io/react';
-import { AppIconSize } from 'node_modules/@edifice.io/react/dist/components/AppIcon/AppIcon';
+import {
+  AppIcon,
+  AppIconSize,
+  Image,
+  useEdificeClient,
+} from '@edifice.io/react';
 import { Thread } from '~/models/thread';
 
 export const ThreadIcon = ({
   thread,
-  iconSize = 32,
+  iconSize = '32',
 }: {
   thread?: Thread;
-  iconSize?: number;
+  iconSize?: AppIconSize;
 }) => {
   const { appCode } = useEdificeClient();
 

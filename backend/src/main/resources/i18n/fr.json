@@ -13,7 +13,7 @@
   "actualites.read.more": "Lire la suite",
   "actualites.info.createForm.required": "Champs requis",
   "actualites.info.createForm.title": "Création d’une actualité",
-  "actualites.info.createForm.subTitle": "Création d’une actualité",
+  "actualites.info.createForm.subtitle": "Création d’une actualité",
   "actualites.info.createForm.selectThreadPlaceholder": "Sélectionner un fil d’actualité",
   "actualites.info.createForm.selectThreadLabel": "Fil de l'actualité",
   "actualites.info.createForm.titlePlaceholder": "Ecrire ici le titre",
