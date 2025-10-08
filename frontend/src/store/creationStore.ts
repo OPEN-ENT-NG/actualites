@@ -1,24 +1,47 @@
 import { create } from 'zustand';
-import { Info } from '~/models/info';
+import { ThreadId } from '~/models/thread';
 import { createSelectors } from './createSelectors';
 
 export enum CreationStep {
+  /**
+   * Filling info parameters (title, content, thread, ...)
+   */
   INFO_PARAM = 0,
   INFO_SHARE = 1,
 }
+export interface CreationInfoFormParams {
+  thread_id?: ThreadId;
+  title: string;
+  headline: boolean;
+  content: string;
+}
+
+export interface CreationInfoForm {
+  values: CreationInfoFormParams;
+  isValid: boolean;
+  isDirty: boolean;
+}
 
 interface CreationState {
-  info: Info | undefined;
+  infoForm?: {
+    values: CreationInfoFormParams;
+    isValid: boolean;
+    isDirty: boolean;
+  };
+  resetForm: () => void;
   currentCreationStep: CreationStep;
-  setInfo: (value: Info | undefined) => void;
+  setInfoForm: (value: CreationInfoForm) => void;
+  setResetForm: (value: () => void) => void;
   setCurrentCreationStep: (value: CreationStep) => void;
 }
 
 export const useCreationStore = createSelectors(
   create<CreationState>((set) => ({
-    info: undefined,
+    infoForm: undefined,
+    resetForm: () => {},
     currentCreationStep: CreationStep.INFO_PARAM,
-    setInfo: (info) => set({ info }),
+    setInfoForm: (infoForm) => set({ infoForm }),
+    setResetForm: (resetForm) => set({ resetForm }),
     setCurrentCreationStep: (creationStep) =>
       set({ currentCreationStep: creationStep }),
   })),
