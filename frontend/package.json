@@ -36,9 +36,9 @@
     ]
   },
   "dependencies": {
-    "@edifice.io/react": "develop-b2school-actualites",
     "@edifice.io/bootstrap": "develop-b2school-actualites",
     "@edifice.io/client": "develop-b2school-actualites",
+    "@edifice.io/react": "develop-b2school-actualites",
     "@react-spring/web": "^9.7.5",
     "@tanstack/react-query": "5.62.7",
     "@uidotdev/usehooks": "2.4.1",
@@ -77,8 +77,8 @@
     "lint-staged": "15.2.9",
     "msw": "^2.4.11",
     "nx": "19.6.0",
-    "prettier": "^3.3.3",
     "playwright": "^1.51.1",
+    "prettier": "^3.3.3",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.8.1",
     "vite": "^5.4.6",

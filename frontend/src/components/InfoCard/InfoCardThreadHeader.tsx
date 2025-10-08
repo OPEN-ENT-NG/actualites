@@ -12,7 +12,7 @@ export const InfoCardThreadHeader = ({
   const { md } = useBreakpoint();
 
   const title = thread?.title || '';
-  const iconSize = md ? 32 : 22;
+  const iconSize = md ? '32' : '24';
 
   return (
     <Flex
