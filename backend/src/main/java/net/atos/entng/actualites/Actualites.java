@@ -35,6 +35,7 @@ import net.atos.entng.actualites.controllers.v1.InfosControllerV1;
 import net.atos.entng.actualites.controllers.v1.ThreadControllerV1;
 import net.atos.entng.actualites.services.ConfigService;
 import net.atos.entng.actualites.services.InfoService;
+import net.atos.entng.actualites.services.NotificationTimelineService;
 import net.atos.entng.actualites.services.ThreadService;
 import net.atos.entng.actualites.services.impl.*;
 import org.entcore.common.editor.ContentTransformerConfig;
@@ -126,18 +127,23 @@ public class Actualites extends BaseServer {
 		confInfo.setShareTable(INFO_SHARE_TABLE);
 		confInfo.setSchema(getSchema());
 
+
 		//info service transformer
 		InfoService infoService = new InfoTransformerServiceImpl(contentTransformerClient, new InfoServiceSqlImpl());
 
+		//notification timeline
+		NotificationTimelineService notificationTimelineService = new NotificationTimelineServiceImpl(infoService,  new ThreadServiceSqlImpl().setEventBus(eb), vertx, eb, config);
+
 		// info controller
-		InfoController infoController = new InfoController(config);
+		InfoController infoController = new InfoController(config, notificationTimelineService);
 		SqlCrudService infoSqlCrudService = new SqlCrudService(getSchema(), INFO_TABLE, INFO_SHARE_TABLE, new JsonArray().add("*"), new JsonArray().add("*"), true);
 		infoController.setInfoService(infoService);
 		infoController.setCrudService(infoSqlCrudService);
 		infoController.setShareService(new SqlShareService(getSchema(),INFO_SHARE_TABLE, eb, securedActions, null));
 		addController(infoController);
 
-		InfosControllerV1 infosControllerV1 = new InfosControllerV1(infoController);
+
+		InfosControllerV1 infosControllerV1 = new InfosControllerV1(infoController, notificationTimelineService);
 		infosControllerV1.setInfoService(infoService);
 		infosControllerV1.setCrudService(infoSqlCrudService);
 		infosControllerV1.setShareService(new SqlShareService(getSchema(),INFO_SHARE_TABLE, eb, securedActions, null));
