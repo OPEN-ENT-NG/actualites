@@ -2,7 +2,6 @@ import { useI18n } from '~/hooks/useI18n';
 
 import {
   AppIconSize,
-  Button,
   Flex,
   FormControl,
   Input,
@@ -13,33 +12,31 @@ import {
   useBreakpoint,
 } from '@edifice.io/react';
 import { Editor, EditorInstance } from '@edifice.io/react/editor';
-import {
-  IconArrowRight,
-  IconQuestion,
-  IconSave,
-} from '@edifice.io/react/icons';
+import { IconQuestion } from '@edifice.io/react/icons';
+import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { ThreadIcon } from '~/components/ThreadIcon';
-import { Thread, ThreadId } from '~/models/thread';
-import { useCreateDraftInfo, useThreads } from '~/services/queries';
-import { CreationStep, useCreationStore } from '~/store/creationStore';
+import { Thread } from '~/models/thread';
+import { useThreads } from '~/services/queries';
+import {
+  CreationInfoFormParams,
+  useCreationStore,
+} from '~/store/creationStore';
 import './CreateInfoForm.css';
-
-export interface InfoParams {
-  thread_id?: ThreadId;
-  title: string;
-  headline: boolean;
-  content: string;
-}
 
 export function CreateInfoForm() {
   const { t } = useI18n();
   const { data: threads } = useThreads();
   const { md } = useBreakpoint();
-  const { setCurrentCreationStep } = useCreationStore();
-  const { mutate: createDraftInfo } = useCreateDraftInfo();
 
-  const defaultValues: InfoParams = {
+  const { setInfoForm, setResetForm } = useCreationStore();
+
+  const iconSize: AppIconSize = '24';
+
+  if (!threads || threads.length === 0) {
+    return null;
+  }
+  const defaultValues: CreationInfoFormParams = {
     thread_id: threads?.length === 1 ? threads[0].id : undefined,
     title: '',
     headline: false,
@@ -47,22 +44,42 @@ export function CreateInfoForm() {
   };
 
   const {
-    register,
     control,
+    register,
     setValue,
-    reset,
+    watch,
     formState: { isValid, isDirty },
+    reset,
     getValues,
-  } = useForm<InfoParams>({
+  } = useForm<CreationInfoFormParams>({
     defaultValues,
     mode: 'all',
   });
 
-  const iconSize: AppIconSize = '24';
+  useEffect(() => {
+    setResetForm(() => () => reset({}, { keepDefaultValues: true }));
+    return () => setResetForm(() => {});
+  }, [reset, setResetForm]);
 
-  if (!threads || threads.length === 0) {
-    return null;
-  }
+  useEffect(() => {
+    const subscription = watch((values) => {
+      setInfoForm({
+        values: values as CreationInfoFormParams,
+        isValid,
+        isDirty,
+      });
+    });
+
+    return () => subscription.unsubscribe();
+  }, [watch, isValid, isDirty, setInfoForm]);
+
+  useEffect(() => {
+    setInfoForm({
+      values: getValues(),
+      isValid,
+      isDirty,
+    });
+  }, [setInfoForm, isDirty, isValid]);
 
   const items: OptionsType[] = threads.map((thread: Thread) => ({
     value: thread.id + '',
@@ -77,35 +94,13 @@ export function CreateInfoForm() {
     });
   };
 
-  const handleSaveDraft = () => {
-    createDraftInfo(
-      {
-        title: getValues('title'),
-        content: getValues('content'),
-        thread_id: getValues('thread_id'),
-      },
-      {
-        onSuccess: () => {
-          console.log('Draft created');
-        },
-      },
-    );
-    reset({}, { keepValues: true });
-  };
-  const handleSubmit = () => {
-    if (isValid) {
-      console.log(getValues());
-      setCurrentCreationStep(CreationStep.INFO_SHARE);
-    }
-  };
-
   return (
-    <>
+    <Flex direction="column" gap="24">
       <Flex
         direction={md ? 'row' : 'column'}
         gap="24"
         align={md ? 'center' : 'stretch'}
-        className="col-12 mt-24"
+        className="col-12"
         wrap="nowrap"
       >
         <FormControl id="thread_id" className="col-12 col-md-5" isRequired>
@@ -148,21 +143,23 @@ export function CreateInfoForm() {
         </FormControl>
       </Flex>
       <FormControl id={'headline'}>
-        <Flex align="center" gap="8" className="mt-24">
-          <Switch {...register('headline')} />
-          <label>{t('actualites.info.createForm.headlineLabel')}</label>
+        <Flex align="center" gap="8">
+          <Switch
+            {...register('headline')}
+            label={t('actualites.info.createForm.headlineLabel')}
+          />
         </Flex>
       </FormControl>
-      <FormControl id={'content'} className="mt-24" isRequired>
+      <FormControl id={'content'} isRequired>
         <Label>{t('actualites.info.createForm.contentLabel')}</Label>
         <Controller
           name="content"
           control={control}
           rules={{ required: true }}
-          render={() => (
+          render={({ field }) => (
             <Flex wrap="nowrap" className="create-info-form_content">
               <Editor
-                content={''}
+                content={field.value}
                 mode="edit"
                 id="info-content"
                 onContentChange={handleEditorChange}
@@ -171,38 +168,6 @@ export function CreateInfoForm() {
           )}
         />
       </FormControl>
-      <Flex
-        direction={md ? 'row' : 'column-reverse'}
-        justify="end"
-        align={md ? 'center' : 'end'}
-        className="pt-24"
-        gap="12"
-      >
-        <Button color="primary" variant="ghost">
-          {t('actualites.info.createForm.cancel')}
-        </Button>
-        <Flex gap="12">
-          <Button
-            color="primary"
-            variant="outline"
-            type="submit"
-            leftIcon={<IconSave />}
-            onClick={handleSaveDraft}
-            disabled={!isDirty || getValues('thread_id') === undefined}
-          >
-            {t('actualites.info.createForm.saveDraft')}
-          </Button>
-          <Button
-            color="primary"
-            type="submit"
-            rightIcon={<IconArrowRight />}
-            onClick={handleSubmit}
-            disabled={!isValid}
-          >
-            {t('actualites.info.createForm.nextStep')}
-          </Button>
-        </Flex>
-      </Flex>
-    </>
+    </Flex>
   );
 }
