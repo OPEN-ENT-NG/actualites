@@ -1,6 +1,7 @@
 import { useI18n } from '~/hooks/useI18n';
 
 import {
+  AppIconSize,
   Button,
   Flex,
   FormControl,
@@ -54,7 +55,7 @@ export function CreateInfoForm() {
     mode: 'all',
   });
 
-  const iconSize = 22;
+  const iconSize: AppIconSize = '24';
 
   if (!threads || threads.length === 0) {
     // skeleton loading
@@ -79,13 +80,13 @@ export function CreateInfoForm() {
   };
 
   return (
-    <>
+    <Flex direction="column" gap="24" className="mt-24">
       <Flex
         fill
         direction={md ? 'row' : 'column'}
         gap="24"
         align={md ? 'center' : 'stretch'}
-        className="col-12 mt-24"
+        className="col-12"
         wrap="nowrap"
       >
         <FormControl id="threadId" className="col-12 col-md-5" isRequired>
@@ -128,21 +129,23 @@ export function CreateInfoForm() {
         </FormControl>
       </Flex>
       <FormControl id={'headline'}>
-        <Flex align="center" gap="8" className="mt-24">
-          <Switch {...register('headline')} />
-          <label>{t('actualites.info.createForm.headlineLabel')}</label>
+        <Flex align="center" gap="8">
+          <Switch
+            {...register('headline')}
+            label={t('actualites.info.createForm.headlineLabel')}
+          />
         </Flex>
       </FormControl>
-      <FormControl id={'content'} className="mt-24" isRequired>
+      <FormControl id={'content'} isRequired>
         <Label>{t('actualites.info.createForm.contentLabel')}</Label>
         <Controller
           name="content"
           control={control}
           rules={{ required: true }}
-          render={() => (
+          render={({ field }) => (
             <Flex wrap="nowrap" className="create-info-form_content">
               <Editor
-                content={''}
+                content={field.value}
                 mode="edit"
                 id="info-content"
                 onContentChange={handleEditorChange}
@@ -155,8 +158,8 @@ export function CreateInfoForm() {
         direction={md ? 'row' : 'column-reverse'}
         justify="end"
         align={md ? 'center' : 'end'}
-        className="pt-24"
         gap="12"
+        wrap="reverse"
       >
         <Button color="primary" variant="ghost">
           {t('actualites.info.createForm.cancel')}
@@ -181,6 +184,6 @@ export function CreateInfoForm() {
           </Button>
         </Flex>
       </Flex>
-    </>
+    </Flex>
   );
 }
