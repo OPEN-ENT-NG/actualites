@@ -1,8 +1,8 @@
 import { Flex } from '@edifice.io/react';
 import { QueryClient } from '@tanstack/react-query';
-import { CreateInfoForm } from '~/features/createInfo/CreateInfoForm';
-import { CreateInfoHeader } from '~/features/createInfo/CreateInfoHeader';
-import { CreateInfoSkeleton } from '~/features/createInfo/CreateInfoSkeleton';
+import { CreateInfoForm } from '~/features/create-info/CreateInfoForm';
+import { CreateInfoHeader } from '~/features/create-info/CreateInfoHeader';
+import { CreateInfoSkeleton } from '~/features/create-info/CreateInfoSkeleton';
 import { useThreads } from '~/services/queries';
 import './CreateInfo.css';
 
