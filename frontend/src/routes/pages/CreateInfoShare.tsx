@@ -1,5 +1,5 @@
 import { QueryClient } from '@tanstack/react-query';
-import { CreateInfoHeader } from '~/features/createInfo/CreateInfoHeader';
+import { CreateInfoFormHeader } from '~/features/create-info/components/CreateInfoFormHeader';
 import './CreateInfo.css';
 
 export const loader = (_queryClient: QueryClient) => async () => {
@@ -7,5 +7,5 @@ export const loader = (_queryClient: QueryClient) => async () => {
 };
 
 export function CreateInfoShare() {
-  return <CreateInfoHeader />;
+  return <CreateInfoFormHeader />;
 }
