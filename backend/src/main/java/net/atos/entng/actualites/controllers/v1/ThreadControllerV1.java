@@ -4,7 +4,6 @@ import fr.wseduc.rs.*;
 import fr.wseduc.security.ActionType;
 import fr.wseduc.security.SecuredAction;
 import io.vertx.core.http.HttpServerRequest;
-import net.atos.entng.actualites.Actualites;
 import net.atos.entng.actualites.controllers.ThreadController;
 import net.atos.entng.actualites.filters.ThreadFilter;
 import org.entcore.common.controller.ControllerHelper;
