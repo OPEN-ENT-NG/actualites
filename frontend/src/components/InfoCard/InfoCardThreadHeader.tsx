@@ -1,4 +1,4 @@
-import { Flex, useBreakpoint } from '@edifice.io/react';
+import { AppIconSize, Flex, useBreakpoint } from '@edifice.io/react';
 import { Thread } from '~/models/thread';
 import { ThreadIcon } from '../ThreadIcon';
 
@@ -12,7 +12,7 @@ export const InfoCardThreadHeader = ({
   const { md } = useBreakpoint();
 
   const title = thread?.title || '';
-  const iconSize = md ? 32 : 22;
+  const iconSize: AppIconSize = md ? '32' : '24';
 
   return (
     <Flex
