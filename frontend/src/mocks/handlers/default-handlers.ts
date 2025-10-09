@@ -1,5 +1,6 @@
 import { HttpResponse, http } from 'msw';
-import { USER_MOCKED } from '../datas/user';
+import { mockUserLogged } from '../datas/users';
+import { mockUserInfos } from '../datas/userinfos';
 
 /**
  * DO NOT MODIFY
@@ -14,7 +15,7 @@ export const defaultHandlers = [
   http.get('/userbook/api/person', () => {
     return HttpResponse.json({
       status: 'ok',
-      result: [USER_MOCKED],
+      result: [mockUserLogged],
     });
   }),
 
@@ -32,15 +33,15 @@ export const defaultHandlers = [
     return HttpResponse.json({ locale: 'fr' });
   }),
 
-  http.get(`/directory/userbook/${USER_MOCKED.id}`, () => {
+  http.get(`/directory/userbook/${mockUserLogged.id}`, () => {
     return HttpResponse.json({
       mood: 'happy',
       health: 'good',
       alertSize: false,
       storage: 12345678,
       type: 'USERBOOK',
-      userid: USER_MOCKED.id,
-      picture: USER_MOCKED.photo,
+      userid: mockUserLogged.id,
+      picture: mockUserLogged.photo,
       quota: 104857600,
       motto: 'Always Learning',
       theme: 'default',
@@ -54,68 +55,12 @@ export const defaultHandlers = [
     });
   }),
 
-  http.get(`/workspace/quota/user/${USER_MOCKED.id}`, () => {
+  http.get(`/workspace/quota/user/${mockUserLogged.id}`, () => {
     return HttpResponse.json({ quota: 104857600, storage: 12345678 });
   }),
 
   http.get('/auth/oauth2/userinfo', () => {
-    return HttpResponse.json({
-      classNames: null,
-      level: '',
-      login: 'fake.admin',
-      lastName: 'Admin',
-      firstName: 'Fake',
-      externalId: 'abcd1234-5678-90ef-ghij-klmn1234opqr',
-      federated: null,
-      birthDate: '1980-01-01',
-      forceChangePassword: null,
-      needRevalidateTerms: false,
-      deletePending: false,
-      username: 'fake.user',
-      type: 'ADMIN',
-      hasPw: true,
-      functions: {
-        SUPER_ADMIN: {
-          code: 'SUPER_ADMIN',
-          scope: null,
-        },
-      },
-      groupsIds: ['group1-1234567890', 'group2-0987654321'],
-      federatedIDP: null,
-      optionEnabled: [],
-      userId: USER_MOCKED.id,
-      structures: ['d4c3b2a1'],
-      structureNames: ['Fake School'],
-      uai: [],
-      hasApp: false,
-      ignoreMFA: true,
-      classes: [],
-      authorizedActions: [
-        {
-          name: 'net.atos.entng.actualites.controllers.ThreadController|createThread',
-          displayName: 'actualites.create',
-          type: 'SECURED_ACTION_WORKFLOW',
-        },
-      ],
-      apps: [
-        {
-          name: 'FakeApp',
-          address: '/fake',
-          icon: 'fake-large',
-          target: '',
-          displayName: 'fake',
-          display: true,
-          prefix: '/fake',
-          casType: null,
-          scope: [''],
-          isExternal: false,
-        },
-      ],
-      childrenIds: [],
-      children: {},
-      widgets: [],
-      sessionMetadata: {},
-    });
+    return HttpResponse.json(mockUserInfos);
   }),
 
   http.get('/userbook/preference/rgpdCookies', () => {

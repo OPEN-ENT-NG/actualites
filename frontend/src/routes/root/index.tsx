@@ -19,12 +19,12 @@ import { IWebApp } from '@edifice.io/client';
 import { existingActions } from '~/config';
 import { queryClient } from '~/providers';
 import { actionsQueryOptions } from '~/services/queries/actions';
-import { useWorkflowRights } from '~/store';
+import { useActionUserRights } from '~/store';
 import { basename } from '..';
 
 /** Check old format URL and redirect if needed */
 export const loader = async () => {
-  const workflowRights = await queryClient.ensureQueryData(
+  const actionUserRights = await queryClient.ensureQueryData(
     actionsQueryOptions(existingActions),
   );
 
@@ -66,15 +66,15 @@ export const loader = async () => {
     }
   }
 
-  return { workflowRights };
+  return { actionUserRights };
 };
 
 export const Root = () => {
-  const { workflowRights } = useLoaderData() as {
-    workflowRights: Record<string, boolean>;
+  const { actionUserRights } = useLoaderData() as {
+    actionUserRights: Record<string, boolean>;
   };
-  const setRights = useWorkflowRights.use.setRights();
-  setRights(workflowRights);
+  const setRights = useActionUserRights.use.setRights();
+  setRights(actionUserRights);
 
   const { currentApp, init } = useEdificeClient();
   const navigate = useNavigate();

@@ -1,4 +1,3 @@
-import { describe, expect, test } from 'vitest';
 import { mockThreads, mockThreadShare } from '~/mocks/datas/threads';
 import { threadService } from '.';
 import { ThreadMode } from '../../models/thread';

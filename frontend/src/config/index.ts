@@ -7,11 +7,11 @@
  */
 
 import { ACTION, IAction } from '@edifice.io/client';
+import { THREAD_CREATION_RIGHT } from './rights';
 
 export const existingActions: IAction[] = [
   {
     id: ACTION.CREATE,
-    workflow:
-      'net.atos.entng.actualites.controllers.ThreadController|createThread',
+    workflow: THREAD_CREATION_RIGHT,
   },
 ];

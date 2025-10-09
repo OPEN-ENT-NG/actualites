@@ -4,7 +4,7 @@ import { useInfoList } from '~/features';
 import { useInfiniteScroll } from '~/hooks/useInfiniteScroll';
 import { DEFAULT_PAGE_SIZE } from '~/services/queries/info';
 import { InfoCard, InfoCardSkeleton } from '..';
-import { InfoListEmpty } from './InfoListEmpty';
+import { InfoListEmpty } from './components/InfoListEmpty';
 
 export const InfoList = () => {
   const loadNextRef = useRef<HTMLElement>(null);
@@ -27,6 +27,8 @@ export const InfoList = () => {
         <Button onClick={reload}>Recharger</Button>
       </header>
 
+      {!isLoading && infos.length === 0 && <InfoListEmpty />}
+
       {infos.map((info) => (
         <InfoCard key={info.id} info={info}></InfoCard>
       ))}
@@ -37,10 +39,8 @@ export const InfoList = () => {
           <InfoCardSkeleton />
           <InfoCardSkeleton />
         </>
-      ) : hasNextPage ? (
-        <InfoCardSkeleton ref={loadNextRef} />
       ) : (
-        <InfoListEmpty />
+        hasNextPage && <InfoCardSkeleton ref={loadNextRef} />
       )}
     </div>
   );

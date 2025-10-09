@@ -5,4 +5,4 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
 export * from './rights/ressource';
-export * from './rights/workflow';
+export * from './rights/action';

@@ -19,7 +19,7 @@ export const infoHandlers = [
   // Get all infos
   http.get(`${baseUrlAPI}/infos`, () => {
     return HttpResponse.json(mockInfos, { status: 200 });
-    // return HttpResponse.json([], { status: 200 }); #TODO use different mock for tests
+    // return HttpResponse.json([], { status: 200 });
   }),
   // Create a draft info
   http.post<{ threadId: string }>(
