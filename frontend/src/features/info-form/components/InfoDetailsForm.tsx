@@ -2,7 +2,6 @@ import { useI18n } from '~/hooks/useI18n';
 
 import {
   AppIconSize,
-  Button,
   Flex,
   FormControl,
   Input,
@@ -13,52 +12,82 @@ import {
   useBreakpoint,
 } from '@edifice.io/react';
 import { Editor, EditorInstance } from '@edifice.io/react/editor';
-import {
-  IconArrowRight,
-  IconQuestion,
-  IconSave,
-} from '@edifice.io/react/icons';
+import { IconQuestion } from '@edifice.io/react/icons';
+import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { ThreadIcon } from '~/components/ThreadIcon';
-import { Thread, ThreadId } from '~/models/thread';
+import { Thread } from '~/models/thread';
 import { useThreads } from '~/services/queries';
-import './CreateInfoForm.css';
+import { InfoDetailsFormParams } from '~/store/infoFormStore';
+import { useInfoDetailsForm } from '../hooks/useInfoDetailsForm';
+import './InfoDetailsForm.css';
 
-export interface InfoParams {
-  threadId?: ThreadId;
-  title: string;
-  headline: boolean;
-  content: string;
-}
-
-export function CreateInfoForm() {
+export function InfoDetailsForm({
+  infoDetails,
+}: {
+  infoDetails?: InfoDetailsFormParams;
+}) {
   const { t } = useI18n();
   const { data: threads } = useThreads();
   const { md } = useBreakpoint();
 
-  const defaultValues: InfoParams = {
-    threadId: threads?.length === 1 ? threads[0].id : undefined,
+  const { setDetailsForm, setResetDetailsForm, setDetailsFormState } =
+    useInfoDetailsForm();
+
+  const iconSize: AppIconSize = '24';
+
+  const defaultValues: InfoDetailsFormParams = {
+    thread_id: threads?.length === 1 ? threads[0].id : undefined,
     title: '',
     headline: false,
     content: '',
   };
 
   const {
-    register,
     control,
+    register,
     setValue,
+    watch,
+    formState: { isValid, isDirty, errors },
+    reset,
     trigger,
-    formState: { isValid },
-    getValues,
-  } = useForm<InfoParams>({
-    defaultValues,
+  } = useForm<InfoDetailsFormParams>({
+    defaultValues: infoDetails || defaultValues,
     mode: 'all',
   });
 
-  const iconSize: AppIconSize = '24';
+  useEffect(() => {
+    setDetailsForm(infoDetails || defaultValues);
+    trigger();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    setResetDetailsForm((values) => {
+      reset(values || {}, {
+        [values ? 'keepValues' : 'keepDefaultValues']: true,
+      });
+    });
+    return () => setResetDetailsForm(() => {});
+  }, [reset, setResetDetailsForm]);
+
+  useEffect(() => {
+    const subscription = watch((values) => {
+      setDetailsForm(values as InfoDetailsFormParams);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [watch, setDetailsForm]);
+
+  useEffect(() => {
+    setDetailsFormState({
+      isValid,
+      isDirty,
+    });
+  }, [setDetailsFormState, isDirty, isValid]);
 
   if (!threads || threads.length === 0) {
-    // skeleton loading
     return null;
   }
 
@@ -69,31 +98,31 @@ export function CreateInfoForm() {
   }));
 
   const handleEditorChange = ({ editor }: { editor: EditorInstance }) => {
-    setValue('content', editor.isEmpty ? '' : editor.getHTML());
-    trigger('content');
-  };
-
-  const handleSubmit = () => {
-    if (isValid) {
-      console.log(getValues());
-    }
+    setValue('content', editor.isEmpty ? '' : editor.getHTML(), {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
   };
 
   return (
-    <Flex direction="column" gap="24" className="mt-24">
+    <Flex direction="column" gap="24">
       <Flex
-        fill
         direction={md ? 'row' : 'column'}
         gap="24"
         align={md ? 'center' : 'stretch'}
         className="col-12"
         wrap="nowrap"
       >
-        <FormControl id="threadId" className="col-12 col-md-5" isRequired>
+        <FormControl
+          id="thread_id"
+          className="col-12 col-md-5"
+          isRequired
+          status={errors.thread_id ? 'invalid' : undefined}
+        >
           <Label>{t('actualites.info.createForm.selectThreadLabel')}</Label>
           {items.length > 1 ? (
             <Controller
-              name="threadId"
+              name="thread_id"
               control={control}
               rules={{ required: true }}
               render={({ field }) => (
@@ -116,7 +145,12 @@ export function CreateInfoForm() {
             </Flex>
           )}
         </FormControl>
-        <FormControl id={'title'} className="flex-fill" isRequired>
+        <FormControl
+          id={'title'}
+          className="flex-fill"
+          isRequired
+          status={errors.title ? 'invalid' : undefined}
+        >
           <Label>{t('actualites.info.createForm.titleLabel')}</Label>
           <Input
             type="text"
@@ -136,14 +170,18 @@ export function CreateInfoForm() {
           />
         </Flex>
       </FormControl>
-      <FormControl id={'content'} isRequired>
+      <FormControl
+        id={'content'}
+        isRequired
+        status={errors.content ? 'invalid' : undefined}
+      >
         <Label>{t('actualites.info.createForm.contentLabel')}</Label>
         <Controller
           name="content"
           control={control}
           rules={{ required: true }}
           render={({ field }) => (
-            <Flex wrap="nowrap" className="create-info-form_content">
+            <Flex wrap="nowrap" className="info-details-form_content">
               <Editor
                 content={field.value}
                 mode="edit"
@@ -154,36 +192,6 @@ export function CreateInfoForm() {
           )}
         />
       </FormControl>
-      <Flex
-        direction={md ? 'row' : 'column-reverse'}
-        justify="end"
-        align={md ? 'center' : 'end'}
-        gap="12"
-        wrap="reverse"
-      >
-        <Button color="primary" variant="ghost">
-          {t('actualites.info.createForm.cancel')}
-        </Button>
-        <Flex gap="12">
-          <Button
-            color="primary"
-            variant="outline"
-            type="submit"
-            leftIcon={<IconSave />}
-          >
-            {t('actualites.info.createForm.saveDraft')}
-          </Button>
-          <Button
-            color="primary"
-            type="submit"
-            rightIcon={<IconArrowRight />}
-            onClick={handleSubmit}
-            disabled={!isValid}
-          >
-            {t('actualites.info.createForm.nextStep')}
-          </Button>
-        </Flex>
-      </Flex>
     </Flex>
   );
 }

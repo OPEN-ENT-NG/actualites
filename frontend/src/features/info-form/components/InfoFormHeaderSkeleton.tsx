@@ -1,6 +1,6 @@
 import { Flex, Stepper, TextSkeleton } from '@edifice.io/react';
 
-export function CreateInfoFormHeaderSkeleton() {
+export function InfoFormHeaderSkeleton() {
   return (
     <Flex direction="column" gap="16">
       <Stepper currentStep={0} nbSteps={2} />
