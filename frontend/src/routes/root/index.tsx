@@ -66,10 +66,10 @@ export const Root = () => {
   };
 
   const pathname = window.location.pathname;
-  const isCreateRoute = pathname.endsWith('/create');
+  const isCreateRoute = pathname.includes('/create/info');
 
   const handleClickNewInfo = () => {
-    navigate('/create');
+    navigate('/create/info');
   };
 
   if (!init) return <LoadingScreen position={false} />;

@@ -23,5 +23,6 @@
   "actualites.info.createForm.headlineLabel": "Actualité taguée “Mettre en avant”",
   "actualites.info.createForm.cancel": "Annuler",
   "actualites.info.createForm.nextStep": "Suivant",
+  "actualites.info.createForm.publish": "Publier",
   "actualites.info.createForm.saveDraft": "Brouillon"
 }
