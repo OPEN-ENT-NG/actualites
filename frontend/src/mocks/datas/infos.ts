@@ -1,9 +1,9 @@
-import { InfoStatus } from '~/models/info';
+import { Info, InfoStatus } from '~/models/info';
 
 //---------------------------------------
 //---------------- INFOS ----------------
 //---------------------------------------
-export const mockInfos = [
+export const mockInfos: Info[] = [
   {
     id: 466,
     threadId: 229,

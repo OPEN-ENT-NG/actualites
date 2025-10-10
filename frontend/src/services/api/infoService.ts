@@ -13,7 +13,16 @@ import { ThreadId } from '../../models/thread';
 export const createInfoService = () => {
   return {
     /**
+     * Get an Info by its ID.
+     * @param param0 - The ID of the Info to retrieve.
+     * @returns The requested Info object.
+     */
+    getInfo({ infoId }: { infoId?: InfoId }) {
+      return odeServices.http().get<Info>(`${baseUrlAPI}/infos/${infoId}`);
+    },
+    /**
      * Get a page of Infos results.
+     * @param param0 - The page number, page size, and optional thread ID to filter Infos.
      * @returns an array of Info objects
      */
     getInfos({

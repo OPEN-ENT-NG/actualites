@@ -1,5 +1,5 @@
 import { QueryClient } from '@tanstack/react-query';
-import { Navigate, RouteObject, createBrowserRouter } from 'react-router-dom';
+import { RouteObject, createBrowserRouter } from 'react-router-dom';
 
 import { NotFound } from './errors/not-found';
 import { PageError } from './errors/page-error';
@@ -18,7 +18,7 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
     errorElement: <PageError />,
     children: [
       {
-        path: 'create',
+        path: 'create/info',
         async lazy() {
           const { loader, CreateInfo: Component } = await import(
             '~/routes/pages/CreateInfo'
@@ -30,33 +30,42 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
         },
         children: [
           {
-            path: 'params',
-            async lazy() {
-              const { loader, CreateInfoParams: Component } = await import(
-                '~/routes/pages/CreateInfoParams'
-              );
-              return {
-                loader: loader(queryClient),
-                Component,
-              };
-            },
-          },
-          {
-            path: 'share',
-            async lazy() {
-              const { loader, CreateInfoShare: Component } = await import(
-                '~/routes/pages/CreateInfoShare'
-              );
-              return {
-                loader: loader(queryClient),
-                Component,
-              };
-            },
-          },
-          {
             path: '',
             index: true,
-            element: <Navigate to={'/create/params'} replace={true} />,
+            async lazy() {
+              const { loader, CreateInfoDetails: Component } = await import(
+                '~/routes/pages/CreateInfoDetails'
+              );
+              return {
+                loader: loader(queryClient),
+                Component,
+              };
+            },
+          },
+          {
+            path: ':infoId/rights',
+            async lazy() {
+              const { loader, CreateInfoRights: Component } = await import(
+                '~/routes/pages/CreateInfoRights'
+              );
+              return {
+                loader: loader(queryClient),
+                Component,
+              };
+            },
+          },
+          {
+            path: ':infoId',
+            index: true,
+            async lazy() {
+              const { loader, CreateInfoDetails: Component } = await import(
+                '~/routes/pages/CreateInfoDetails'
+              );
+              return {
+                loader: loader(queryClient),
+                Component,
+              };
+            },
           },
         ],
       },
