@@ -1,4 +1,4 @@
-import { ThreadId } from './thread';
+import { Thread, ThreadId } from './thread';
 
 export type InfoId = number;
 
@@ -22,7 +22,8 @@ export enum InfoExtendedStatus {
 
 export interface Info {
   id: InfoId;
-  threadId: ThreadId;
+  threadId?: ThreadId;
+  thread?: Thread;
   content: string;
   status: InfoStatus;
   owner: InfoOwner;

@@ -1,9 +1,9 @@
 import { Flex, Stepper } from '@edifice.io/react';
 import { useI18n } from '~/hooks/useI18n';
-import { useCreationStore } from '~/store/creationStore';
+import { useInfoFormStore } from '~/store/infoFormStore';
 
-export function CreateInfoFormHeader() {
-  const { currentCreationStep } = useCreationStore();
+export function InfoFormHeader() {
+  const currentCreationStep = useInfoFormStore.use.currentCreationStep();
   const { t } = useI18n();
   return (
     <Flex direction="column" gap="16">

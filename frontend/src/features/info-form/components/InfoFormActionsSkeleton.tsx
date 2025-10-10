@@ -1,6 +1,6 @@
 import { ButtonSkeleton, Flex, useBreakpoint } from '@edifice.io/react';
 
-export function CreateInfoFormActionsSkeleton() {
+export function InfoFormActionsSkeleton() {
   const { md } = useBreakpoint();
 
   return (

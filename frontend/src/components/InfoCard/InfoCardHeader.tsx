@@ -26,7 +26,7 @@ export const InfoCardHeader = ({
   extendedStatus,
 }: InfoCardHeaderProps) => {
   const { formatDate } = useDate();
-  const thread = useThread(info.threadId);
+  const thread = useThread((info.threadId || info.thread?.id)!);
   const { getAvatarURL } = useDirectory();
   const { t } = useI18n();
   const avatarUrl = getAvatarURL(info.owner.id, 'user');
