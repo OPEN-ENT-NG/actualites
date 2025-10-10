@@ -20,7 +20,8 @@ export enum ThreadTypes {
 export type ThreadId = number;
 
 export interface Thread {
-  _id: ThreadId;
+  _id?: ThreadId;
+  id?: ThreadId;
   title: string;
   /** URL of the icon of this thread.*/
   icon: string | null;

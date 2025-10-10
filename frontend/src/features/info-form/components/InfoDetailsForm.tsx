@@ -18,25 +18,25 @@ import { Controller, useForm } from 'react-hook-form';
 import { ThreadIcon } from '~/components/ThreadIcon';
 import { Thread } from '~/models/thread';
 import { useThreads } from '~/services/queries';
-import {
-  CreationInfoFormParams,
-  useCreationStore,
-} from '~/store/creationStore';
-import './CreateInfoForm.css';
+import { InfoDetailsFormParams } from '~/store/infoFormStore';
+import { useInfoDetailsForm } from '../hooks/useInfoDetailsForm';
+import './InfoDetailsForm.css';
 
-export function CreateInfoForm() {
+export function InfoDetailsForm({
+  infoDetails,
+}: {
+  infoDetails?: InfoDetailsFormParams;
+}) {
   const { t } = useI18n();
   const { data: threads } = useThreads();
   const { md } = useBreakpoint();
 
-  const { setInfoForm, setResetForm } = useCreationStore();
+  const { setDetailsForm, setResetDetailsForm, setDetailsFormState } =
+    useInfoDetailsForm();
 
   const iconSize: AppIconSize = '24';
 
-  if (!threads || threads.length === 0) {
-    return null;
-  }
-  const defaultValues: CreationInfoFormParams = {
+  const defaultValues: InfoDetailsFormParams = {
     thread_id: threads?.length === 1 ? threads[0]._id : undefined,
     title: '',
     headline: false,
@@ -48,38 +48,48 @@ export function CreateInfoForm() {
     register,
     setValue,
     watch,
-    formState: { isValid, isDirty },
+    formState: { isValid, isDirty, errors },
     reset,
-    getValues,
-  } = useForm<CreationInfoFormParams>({
-    defaultValues,
+    trigger,
+  } = useForm<InfoDetailsFormParams>({
+    defaultValues: infoDetails || defaultValues,
     mode: 'all',
   });
 
   useEffect(() => {
-    setResetForm(() => () => reset({}, { keepDefaultValues: true }));
-    return () => setResetForm(() => {});
-  }, [reset, setResetForm]);
+    setDetailsForm(infoDetails || defaultValues);
+    trigger();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    setResetDetailsForm((values) => {
+      reset(values || {}, {
+        [values ? 'keepValues' : 'keepDefaultValues']: true,
+      });
+    });
+    return () => setResetDetailsForm(() => {});
+  }, [reset, setResetDetailsForm]);
 
   useEffect(() => {
     const subscription = watch((values) => {
-      setInfoForm({
-        values: values as CreationInfoFormParams,
-        isValid,
-        isDirty,
-      });
+      setDetailsForm(values as InfoDetailsFormParams);
     });
 
     return () => subscription.unsubscribe();
-  }, [watch, isValid, isDirty, setInfoForm]);
+  }, [watch, setDetailsForm]);
 
   useEffect(() => {
-    setInfoForm({
-      values: getValues(),
+    setDetailsFormState({
       isValid,
       isDirty,
     });
-  }, [setInfoForm, isDirty, isValid]);
+  }, [setDetailsFormState, isDirty, isValid]);
+
+  if (!threads || threads.length === 0) {
+    return null;
+  }
 
   const items: OptionsType[] = threads.map((thread: Thread) => ({
     value: thread._id + '',
@@ -103,7 +113,12 @@ export function CreateInfoForm() {
         className="col-12"
         wrap="nowrap"
       >
-        <FormControl id="thread_id" className="col-12 col-md-5" isRequired>
+        <FormControl
+          id="thread_id"
+          className="col-12 col-md-5"
+          isRequired
+          status={errors.thread_id ? 'invalid' : undefined}
+        >
           <Label>{t('actualites.info.createForm.selectThreadLabel')}</Label>
           {items.length > 1 ? (
             <Controller
@@ -130,7 +145,12 @@ export function CreateInfoForm() {
             </Flex>
           )}
         </FormControl>
-        <FormControl id={'title'} className="flex-fill" isRequired>
+        <FormControl
+          id={'title'}
+          className="flex-fill"
+          isRequired
+          status={errors.title ? 'invalid' : undefined}
+        >
           <Label>{t('actualites.info.createForm.titleLabel')}</Label>
           <Input
             type="text"
@@ -150,14 +170,18 @@ export function CreateInfoForm() {
           />
         </Flex>
       </FormControl>
-      <FormControl id={'content'} isRequired>
+      <FormControl
+        id={'content'}
+        isRequired
+        status={errors.content ? 'invalid' : undefined}
+      >
         <Label>{t('actualites.info.createForm.contentLabel')}</Label>
         <Controller
           name="content"
           control={control}
           rules={{ required: true }}
           render={({ field }) => (
-            <Flex wrap="nowrap" className="create-info-form_content">
+            <Flex wrap="nowrap" className="info-details-form_content">
               <Editor
                 content={field.value}
                 mode="edit"

@@ -7,7 +7,7 @@ import {
 } from '@edifice.io/react';
 import { EditorSkeleton } from '@edifice.io/react/editor';
 import { ThreadId } from '~/models/thread';
-import './CreateInfoForm.css';
+import './InfoDetailsForm.css';
 
 export interface InfoParams {
   threadId?: ThreadId;
@@ -16,7 +16,7 @@ export interface InfoParams {
   content: string;
 }
 
-export function CreateInfoFormSkeleton() {
+export function InfoFormSkeleton() {
   const { md } = useBreakpoint();
 
   return (
