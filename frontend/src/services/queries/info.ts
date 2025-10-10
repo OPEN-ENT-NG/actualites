@@ -53,6 +53,19 @@ export const infoQueryKeys = {
  */
 export const infoQueryOptions = {
   /**
+   * Get an Info by its ID.
+   * @param infoId - The ID of the Info to retrieve.
+   * @returns Query options for fetching the Info.
+   */
+  getInfoById(infoId?: InfoId) {
+    return queryOptions({
+      queryKey: infoQueryKeys.info({ infoId }),
+      queryFn: () => infoService.getInfo({ infoId }),
+      enabled: !!infoId,
+      staleTime: Infinity, // will be unvalidated manually when needed only
+    });
+  },
+  /**
    * @returns Query options for fetching a page of infos, optionnally from a given thread.
    */
   getInfos(options: { page: number; pageSize: number; threadId?: ThreadId }) {
@@ -96,6 +109,9 @@ export const infoQueryOptions = {
 
 //*******************************************************************************
 // Hooks
+export const useInfoById = (infoId?: InfoId) =>
+  useQuery(infoQueryOptions.getInfoById(infoId));
+
 export const useInfos = (page: number, pageSize = DEFAULT_PAGE_SIZE) =>
   useQuery(infoQueryOptions.getInfos({ page, pageSize }));
 
