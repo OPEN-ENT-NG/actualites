@@ -37,7 +37,7 @@ export function InfoDetailsForm({
   const iconSize: AppIconSize = '24';
 
   const defaultValues: InfoDetailsFormParams = {
-    thread_id: threads?.length === 1 ? threads[0]._id : undefined,
+    thread_id: threads?.length === 1 ? threads[0]?._id : undefined,
     title: '',
     headline: false,
     content: '',
