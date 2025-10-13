@@ -1,11 +1,6 @@
-import {
-  AppIcon,
-  Flex,
-  Image,
-  useBreakpoint,
-  useEdificeClient,
-} from '@edifice.io/react';
+import { Flex, useBreakpoint } from '@edifice.io/react';
 import { Thread } from '~/models/thread';
+import { ThreadIcon } from '../ThreadIcon';
 
 export const InfoCardThreadHeader = ({
   thread,
@@ -14,11 +9,10 @@ export const InfoCardThreadHeader = ({
   thread?: Thread;
   className?: string;
 }) => {
-  const { appCode } = useEdificeClient();
   const { md } = useBreakpoint();
 
   const title = thread?.title || '';
-  const iconSize = md ? '32' : '22';
+  const iconSize = md ? '32' : '24';
 
   return (
     <Flex
@@ -29,18 +23,7 @@ export const InfoCardThreadHeader = ({
       className={className}
       style={{ minWidth: '150px' }}
     >
-      {thread?.icon ? (
-        <Image
-          src={thread.icon}
-          alt={title}
-          width={iconSize}
-          height={iconSize}
-          objectFit="contain"
-          loading="lazy"
-        />
-      ) : (
-        <AppIcon app={appCode} variant="square" size="32"></AppIcon>
-      )}
+      <ThreadIcon thread={thread} iconSize={iconSize} />
       <span className="fs-5 text-truncate text-truncate-2 text-gray-700">
         {title}
       </span>
