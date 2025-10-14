@@ -17,13 +17,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static net.atos.entng.actualites.filters.RightConstants.CREATE_RIGHT_DRAFT;
+import static net.atos.entng.actualites.filters.RightConstants.CREATE_RIGHT_PUBLISH;
 import static org.entcore.common.sql.Sql.parseId;
 import static org.entcore.common.user.DefaultFunctions.ADMIN_LOCAL;
 
 public class CreateInfoFilter implements ResourcesProvider {
-
-    private static final String CREATE_RIGHT_DRAFT = "net-atos-entng-actualites-controllers-InfoController|createDraft";
-    private static final String CREATE_RIGHT_PUBLISH = "net-atos-entng-actualites-controllers-InfoController|publish";
 
     @Override
     public void authorize(final HttpServerRequest request, final Binding binding, final UserInfos user, final Handler<Boolean> handler) {
@@ -71,12 +70,9 @@ public class CreateInfoFilter implements ResourcesProvider {
                 }
 
                 // Execute
-                Sql.getInstance().prepared(query.toString(), values, new Handler<Message<JsonObject>>() {
-                    @Override
-                    public void handle(Message<JsonObject> message) {
-                        Long count = SqlResult.countResult(message);
-                        handler.handle(count != null && count > 0);
-                    }
+                Sql.getInstance().prepared(query.toString(), values, message -> {
+                    Long count = SqlResult.countResult(message);
+                    handler.handle(count != null && count > 0);
                 });
             } else {
                 handler.handle(false);

@@ -101,8 +101,7 @@ public class CommentController extends ControllerHelper {
 							};
 							crudService.create(resource, user, handler);
 						} else {
-							log.warn("User {0} tried to post a comment for info {1} by using a different id {2}",
-								user.getLogin(), infoIdFromBody, infoId);
+							log.warn(String.format("User %s tried to post a comment for info %s by using a different id %s", user.getLogin(), infoIdFromBody, infoId));
 							forbidden(request);
 						}
 					}
@@ -128,8 +127,7 @@ public class CommentController extends ControllerHelper {
 								if(infoIdFromBody == Integer.parseInt(infoId)) {
 									crudService.update(commentId, resource, user, notEmptyResponseHandler(request));
 								} else {
-									log.warn("User {0} tried to post a comment for info {1} by using a different id {2}",
-										user.getLogin(), infoIdFromBody, infoId);
+									log.warn(String.format("User %s tried to post a comment for info %s by using a different id %s", user.getLogin(), infoIdFromBody, infoId));
 									forbidden(request);
 								}
 							}
