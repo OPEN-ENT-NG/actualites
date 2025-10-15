@@ -247,7 +247,7 @@ public class InfosControllerV1 extends ControllerHelper {
 						if (resource.getString("title") == null) {
 							resource.put("title", actualInfo.getString("title"));
 						}
-						notifyOwner(request, user, resource, infoId, notificationFromTransition);
+						notifyOwner(request, user, resource, infoId, actualInfo, notificationFromTransition);
 					}
 					if (event == Events.UPDATE || event == Events.PENDING) {
 						if (!resource.containsKey("expiration_date")) {
@@ -309,19 +309,14 @@ public class InfosControllerV1 extends ControllerHelper {
 	}
 
 
-	private void notifyOwner(final HttpServerRequest request, final UserInfos user, final JsonObject resource, final String infoId, final String eventType) {
-		infoService.getOwnerInfo(infoId, event -> {
-            if (event.isRight()) {
-                String ownerId = event.right().getValue().getString("owner");
-                if (!ownerId.equals(user.getUserId()) && resource.containsKey("thread_id") && resource.containsKey("title")) {
-                    UserInfos owner = new UserInfos();
-                    owner.setUserId(ownerId);
-                    notificationTimelineService.notifyTimeline(request,  user, owner, resource.getLong("thread_id").toString(),
-                            infoId, resource.getString("title"), eventType);
-                }
-            } else {
-                log.error("Unable to create notification : GetOwnerInfo failed");
-            }
-        });
+	private void notifyOwner(final HttpServerRequest request, final UserInfos user, final JsonObject updatedInfo,
+							 final String infoId, final JsonObject actualInfo, final String eventType) {
+		String ownerId = actualInfo.getString("owner");
+		if (!ownerId.equals(user.getUserId())) {
+			UserInfos owner = new UserInfos();
+			owner.setUserId(ownerId);
+			notificationTimelineService.notifyTimeline(request,  user, owner, actualInfo.getString("thread_id"),
+					infoId, updatedInfo.getString("title"), eventType);
+		}
 	}
 }

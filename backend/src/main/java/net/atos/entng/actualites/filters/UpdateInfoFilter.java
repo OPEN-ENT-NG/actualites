@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static net.atos.entng.actualites.filters.RightConstants.CREATE_RIGHT_DRAFT;
-import static net.atos.entng.actualites.filters.RightConstants.CREATE_RIGHT_PUBLISH;
+import static net.atos.entng.actualites.filters.RightConstants.RIGHT_CONTRIB;
+import static net.atos.entng.actualites.filters.RightConstants.RIGHT_PUBLISH;
 import static org.entcore.common.sql.Sql.parseId;
 import static org.entcore.common.user.DefaultFunctions.ADMIN_LOCAL;
 
@@ -99,7 +99,7 @@ public class UpdateInfoFilter implements ResourcesProvider {
                     .append(" (\n")
                     .append("   t.owner = ? \n")
                     .append("   OR ts.member_id IN ").append(Sql.listPrepared(groupsAndUserIds.toArray()))
-                    .append("   AND ts.action = 'net-atos-entng-actualites-controllers-InfoController|publish' \n")
+                    .append("   AND ts.action = '" + RIGHT_PUBLISH + "' \n")
                     .append(" ) \n")
                     .append(" AND (i.status > 1 OR i.owner = ?) \n")
                     .append(")\n");
@@ -115,12 +115,12 @@ public class UpdateInfoFilter implements ResourcesProvider {
                     .append(" ( \n")
                     .append("   i.owner = ?  \n")
                     .append("   OR (ios.member_id IN ").append(Sql.listPrepared(groupsAndUserIds.toArray()))
-                    .append("   AND ios.action = 'net-atos-entng-actualites-controllers-InfoController|publish' AND i.status > 2)\n")
+                    .append("   AND ios.action = '" + RIGHT_PUBLISH + "' AND i.status > 2)\n")
                     .append("  ) OR ( \n")
                     .append("      ( \n")
                     .append("        t.owner = ? \n")
                     .append("        OR (ts.member_id IN ").append(Sql.listPrepared(groupsAndUserIds.toArray()))
-                    .append("            AND ts.action = 'net-atos-entng-actualites-controllers-InfoController|publish') \n")
+                    .append("            AND ts.action = '" + RIGHT_PUBLISH + "') \n")
                     .append("       ) AND (i.status > 1 OR i.owner = ?)\n")
                     .append("  )\n")
                 .append("   )\n");
@@ -138,12 +138,12 @@ public class UpdateInfoFilter implements ResourcesProvider {
                     .append(" ( \n")
                     .append("   i.owner = ? \n")
                     .append("   OR (ios.member_id IN ").append(Sql.listPrepared(groupsAndUserIds.toArray()))
-                    .append("   AND ios.action = 'net-atos-entng-actualites-controllers-InfoController|submit' AND i.status > 2)\n")
+                    .append("   AND ios.action = '" + RIGHT_CONTRIB + "' AND i.status > 2)\n")
                     .append("  ) OR ( \n")
                     .append("      ( \n")
                     .append("        t.owner = ? \n")
                     .append("        OR (ts.member_id IN ").append(Sql.listPrepared(groupsAndUserIds.toArray()))
-                    .append("            AND ts.action = 'net-atos-entng-actualites-controllers-InfoController|submit') \n")
+                    .append("            AND ts.action = '" + RIGHT_CONTRIB + "') \n")
                     .append("       ) AND (i.status > 1 OR i.owner = ?)\n")
                     .append("  )\n")
                     .append("   )\n");
