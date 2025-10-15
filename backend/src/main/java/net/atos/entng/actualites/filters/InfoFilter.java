@@ -39,8 +39,12 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import fr.wseduc.webutils.http.Binding;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class InfoFilter implements ResourcesProvider {
+
+	private static final Logger log = LoggerFactory.getLogger(InfoFilter.class);
 
 	@Override
 	public void authorize(final HttpServerRequest request, final Binding binding, final UserInfos user, final Handler<Boolean> handler) {
@@ -129,6 +133,8 @@ public class InfoFilter implements ResourcesProvider {
 				// missing parenthesis
 				query.append(")");
 			}
+			log.info("query : {}", query);
+			log.info("values:  {}", values);
 
 			// Execute
 			Sql.getInstance().prepared(query.toString(), values, new Handler<Message<JsonObject>>() {
