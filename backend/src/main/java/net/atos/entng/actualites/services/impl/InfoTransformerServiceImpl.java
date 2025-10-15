@@ -18,6 +18,7 @@ import net.atos.entng.actualites.to.News;
 import net.atos.entng.actualites.to.NewsComplete;
 import net.atos.entng.actualites.to.NewsStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.entcore.common.user.UserInfos;
 
 import java.util.ArrayList;
@@ -51,10 +52,25 @@ public class InfoTransformerServiceImpl implements InfoService {
 
     @Override
     public void update(String id, JsonObject data, UserInfos user, String eventStatus, Handler<Either<String, JsonObject>> handler) {
-        applyTransformation(user, data, handler, (response) -> {
-            data.put("content", response.getCleanHtml());
-            data.put("content_version", 1);
-            this.infoService.update(id, data, user, eventStatus, handler);
+        infoService.retrieve(id, h -> {
+            if (h.isLeft()) {
+                handler.handle(new Either.Left<>("This info doesn't exists"));
+                return;
+            }
+            JsonObject actualInfo = h.right().getValue();
+            //update content only if we update the content or the content is in old version
+            if (StringUtils.isEmpty(data.getString("content")) && "1".equals(actualInfo.getString("content_version"))) {
+                this.infoService.update(id, data, user, eventStatus, handler);
+                return;
+            }
+            if (StringUtils.isEmpty(data.getString("content"))) {
+              data.put("content", actualInfo.getString("content"));
+            }
+            applyTransformation(user, data, handler, (response) -> {
+                data.put("content", response.getCleanHtml());
+                data.put("content_version", 1);
+                this.infoService.update(id, data, user, eventStatus, handler);
+            });
         });
     }
 
