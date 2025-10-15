@@ -3,10 +3,8 @@ package net.atos.entng.actualites.filters;
 import fr.wseduc.webutils.http.Binding;
 import fr.wseduc.webutils.request.RequestUtils;
 import io.vertx.core.Handler;
-import io.vertx.core.eventbus.Message;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
 import org.entcore.common.http.filter.ResourcesProvider;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
@@ -17,13 +15,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static net.atos.entng.actualites.filters.RightConstants.CREATE_RIGHT_DRAFT;
+import static net.atos.entng.actualites.filters.RightConstants.RIGHT_PUBLISH;
 import static org.entcore.common.sql.Sql.parseId;
 import static org.entcore.common.user.DefaultFunctions.ADMIN_LOCAL;
 
 public class CreateInfoFilter implements ResourcesProvider {
-
-    private static final String CREATE_RIGHT_DRAFT = "net-atos-entng-actualites-controllers-InfoController|createDraft";
-    private static final String CREATE_RIGHT_PUBLISH = "net-atos-entng-actualites-controllers-InfoController|publish";
 
     @Override
     public void authorize(final HttpServerRequest request, final Binding binding, final UserInfos user, final Handler<Boolean> handler) {
@@ -34,7 +31,7 @@ public class CreateInfoFilter implements ResourcesProvider {
                 && !StringUtils.isEmpty(sStatus) && (parseId(sStatus) instanceof Integer)) {
                 // Method
                 Integer status = (Integer) parseId(sStatus);
-                String sharedMethod = status == 3 ? CREATE_RIGHT_PUBLISH : CREATE_RIGHT_DRAFT;
+                String sharedMethod = status == 3 ? RIGHT_PUBLISH : CREATE_RIGHT_DRAFT;
 
                 // Groups and users
                 final List<String> groupsAndUserIds = new ArrayList<>();
@@ -71,12 +68,9 @@ public class CreateInfoFilter implements ResourcesProvider {
                 }
 
                 // Execute
-                Sql.getInstance().prepared(query.toString(), values, new Handler<Message<JsonObject>>() {
-                    @Override
-                    public void handle(Message<JsonObject> message) {
-                        Long count = SqlResult.countResult(message);
-                        handler.handle(count != null && count > 0);
-                    }
+                Sql.getInstance().prepared(query.toString(), values, message -> {
+                    Long count = SqlResult.countResult(message);
+                    handler.handle(count != null && count > 0);
                 });
             } else {
                 handler.handle(false);
