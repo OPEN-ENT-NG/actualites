@@ -40,6 +40,29 @@ export default ({ mode }: { mode: string }) => {
         changeOrigin: false,
       };
 
+  // When VITE_MOCK is true, bypass proxy for i18n and actualites endpoints to let MSW handle them
+  const isMockMode = envs.VITE_MOCK === 'true';
+
+  // Common proxy configuration
+  const commonProxyConfig = {
+    '/applications-list': proxyObj,
+    '/conf/public': proxyObj,
+    '^/(?=help-1d|help-2d)': proxyObj,
+    '^/(?=assets)': proxyObj,
+    '^/(?=theme|locale|i18n|skin)': proxyObj,
+    '^/(?=auth|appregistry|cas|userbook|directory|communication|conversation|portal|session|timeline|workspace|infra)':
+      proxyObj,
+    '/explorer': proxyObj,
+  };
+
+  // In mock mode, don't proxy /actualites and /i18n - MSW will handle them
+  const proxyConfig = isMockMode
+    ? commonProxyConfig
+    : {
+        ...commonProxyConfig,
+        '/actualites': proxyObj,
+      };
+
   return defineConfig({
     base: mode === 'production' ? '/actualites' : '',
     root: __dirname,
@@ -62,17 +85,7 @@ export default ({ mode }: { mode: string }) => {
          */
         allow: ['../../'],
       },
-      proxy: {
-        '/applications-list': proxyObj,
-        '/conf/public': proxyObj,
-        '^/(?=help-1d|help-2d)': proxyObj,
-        '^/(?=assets)': proxyObj,
-        '^/(?=theme|locale|i18n|skin)': proxyObj,
-        '^/(?=auth|appregistry|cas|userbook|directory|communication|conversation|portal|session|timeline|workspace|infra)':
-          proxyObj,
-        '/explorer': proxyObj,
-        '/actualites': proxyObj,
-      },
+      proxy: proxyConfig,
       port: 4200,
       headers,
       host: 'localhost',
