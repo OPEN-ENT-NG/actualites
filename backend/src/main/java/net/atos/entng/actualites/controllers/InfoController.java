@@ -65,7 +65,7 @@ public class InfoController extends ControllerHelper {
     public static final String RESULT_SIZE_PARAMETER = "resultSize";
 
     public static final String SCHEMA_INFO_CREATE = "createInfo";
-    private static final String SCHEMA_INFO_UPDATE = "updateInfo";
+    public static final String SCHEMA_INFO_UPDATE = "updateInfo";
 
     public static final String RESOURCE_NAME = "info";
     private static final String EVENT_TYPE = "NEWS";
@@ -433,29 +433,21 @@ public class InfoController extends ControllerHelper {
 	public void submit(final HttpServerRequest request) {
 		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
 		final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
-		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
-			@Override
-			public void handle(final UserInfos user) {
-				RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
-					@Override
-					public void handle(JsonObject body) {
-						final String title = body.getString("title");
-						Handler<Either<String, JsonObject>> handler = event -> {
-                            if (event.isRight()) {
-                                notificationTimelineService.notifyTimeline(request, user, threadId, infoId, title, NEWS_SUBMIT_EVENT_TYPE);
-                                renderJson(request, event.right().getValue(), 200);
-                            } else {
-                                JsonObject error = new JsonObject().put("error", event.left().getValue());
-                                renderJson(request, error, 400);
-                            }
-						};
-						JsonObject resource = new JsonObject();
-						resource.put("status", status_list.get(2));
-                        infoService.update(infoId, resource, user, Events.SUBMIT.toString(),handler);
-					}
-				});
-			}
-		});
+		UserUtils.getUserInfos(eb, request, user -> RequestUtils.bodyToJson(request, body -> {
+            final String title = body.getString("title");
+            Handler<Either<String, JsonObject>> handler = event -> {
+                if (event.isRight()) {
+                    notificationTimelineService.notifyTimeline(request, user, threadId, infoId, title, NEWS_SUBMIT_EVENT_TYPE);
+                    renderJson(request, event.right().getValue(), 200);
+                } else {
+                    JsonObject error = new JsonObject().put("error", event.left().getValue());
+                    renderJson(request, error, 400);
+                }
+            };
+            JsonObject resource = new JsonObject();
+            resource.put("status", status_list.get(2));
+            infoService.update(infoId, resource, user, Events.SUBMIT.toString(),handler);
+        }));
 	}
 
 	@Put("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/:"+Actualites.INFO_RESOURCE_ID+"/unsubmit")
