@@ -1,5 +1,5 @@
 import { odeServices } from '@edifice.io/client';
-import { baseUrlAPI } from '.';
+import { baseUrl, baseUrlAPI } from '.';
 import {
   Info,
   InfoId,
@@ -55,7 +55,12 @@ export const createInfoService = () => {
     }) {
       return odeServices.http().post<{
         id: InfoId;
-      }>(`${baseUrlAPI}/threads/${payload.thread_id}/info`, payload);
+      }>(`${baseUrl}/thread/${payload.thread_id}/info`, {
+        title: payload.title,
+        content: payload.content,
+        status: 1, // DRAFT
+        thread_id: Number(payload.thread_id),
+      });
     },
 
     /**
@@ -91,7 +96,7 @@ export const createInfoService = () => {
 
       return odeServices.http().put<{
         id: InfoId;
-      }>(`${baseUrlAPI}/threads/${threadId}/info/${infoId}/${action}`, payload);
+      }>(`${baseUrl}/thread/${threadId}/info/${infoId}/${action}`, payload);
     },
 
     /**
@@ -110,7 +115,7 @@ export const createInfoService = () => {
     ) {
       return odeServices.http().put<{
         id: InfoId;
-      }>(`${baseUrlAPI}/threads/${threadId}/info/${infoId}/submit`, payload);
+      }>(`${baseUrl}/thread/${threadId}/info/${infoId}/submit`, payload);
     },
 
     /**
@@ -122,7 +127,7 @@ export const createInfoService = () => {
     unsubmit(threadId: ThreadId, infoId: InfoId) {
       return odeServices.http().put<{
         id: InfoId;
-      }>(`${baseUrlAPI}/threads/${threadId}/info/${infoId}/unsubmit`, {
+      }>(`${baseUrl}/thread/${threadId}/info/${infoId}/unsubmit`, {
         /*empty payload required*/
       });
     },
@@ -145,7 +150,7 @@ export const createInfoService = () => {
     ) {
       return odeServices.http().put<{
         id: InfoId;
-      }>(`${baseUrlAPI}/threads/${threadId}/info/${infoId}/publish`, payload);
+      }>(`${baseUrl}/thread/${threadId}/info/${infoId}/publish`, payload);
     },
 
     /**
@@ -157,28 +162,26 @@ export const createInfoService = () => {
     delete(threadId: ThreadId, infoId: InfoId) {
       return odeServices.http().delete<{
         rows: number;
-      }>(`${baseUrlAPI}/threads/${threadId}/info/${infoId}`);
+      }>(`${baseUrl}/thread/${threadId}/info/${infoId}`);
     },
 
     getShares(threadId: ThreadId, infoId: InfoId) {
       return odeServices
         .http()
-        .get<Share>(
-          `${baseUrlAPI}/threads/${threadId}/info/share/json/${infoId}`,
-        );
+        .get<Share>(`${baseUrl}/thread/${threadId}/info/share/json/${infoId}`);
     },
 
     getRevisions(infoId: InfoId) {
       return odeServices
         .http()
-        .get<InfoRevision[]>(`${baseUrlAPI}/infos/${infoId}/timeline`);
+        .get<InfoRevision[]>(`${baseUrl}/info/${infoId}/timeline`);
     },
 
     getOriginalFormat(threadId: ThreadId, infoId: InfoId) {
       return odeServices
         .http()
         .get<OriginalInfo>(
-          `${baseUrlAPI}/threads/${threadId}/info/${infoId}?originalFormat=true`,
+          `${baseUrl}/thread/${threadId}/info/${infoId}?originalFormat=true`,
         );
     },
   };
