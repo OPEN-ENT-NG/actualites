@@ -18,14 +18,24 @@ export const ThreadIcon = ({
   return (
     <>
       {thread?.icon ? (
-        <Image
-          src={thread.icon}
-          alt={thread.title}
-          width={iconSize}
-          height={iconSize}
-          objectFit="contain"
-          loading="lazy"
-        />
+        <div
+          style={{
+            width: parseInt(iconSize + ''),
+            height: parseInt(iconSize + ''),
+          }}
+          className="overflow-hidden rounded"
+        >
+          <Image
+            src={thread.icon}
+            alt={thread.title}
+            style={{
+              height: '100%',
+              width: '100%',
+            }}
+            objectFit="cover"
+            loading="lazy"
+          />
+        </div>
       ) : (
         <AppIcon
           app={appCode}
