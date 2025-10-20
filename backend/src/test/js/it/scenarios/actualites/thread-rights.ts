@@ -220,7 +220,7 @@ export function testThreadRights(data: InitData) {
     });
   });
 
-  describe("[Thread] Test that a user can share a thread he doesn't own but he have manger rights ", () => {
+  describe("[Thread] Test that a user can share a thread he doesn't own, but has manager rights on it ", () => {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
     const headTeacher = getRandomUserWithProfile(headUsers, "Teacher");
