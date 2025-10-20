@@ -1,5 +1,5 @@
 import { delay, http, HttpResponse } from 'msw';
-import { baseUrl } from '~/services';
+import { baseUrlAPI } from '~/services';
 import {
   mockInfoRevisions,
   mockInfos,
@@ -13,16 +13,16 @@ import { RESPONSE_DELAY } from '../datas/threads';
  * Mock HTTP methods for info service
  */
 export const infoHandlers = [
-  http.all(baseUrl, async () => {
+  http.all(baseUrlAPI, async () => {
     await delay(RESPONSE_DELAY);
   }),
-  //// Get all infos
-  http.get(`${baseUrl}/list`, () => {
+  // Get all infos
+  http.get(`${baseUrlAPI}/infos`, () => {
     return HttpResponse.json(mockInfos, { status: 200 });
   }),
-  //// Create a draft info
+  // Create a draft info
   http.post<{ threadId: string }>(
-    `${baseUrl}/thread/:threadId/info`,
+    `${baseUrlAPI}/threads/:threadId/info`,
     async ({ request }) => {
       const payload = await request.json();
       if (!payload) {
@@ -36,9 +36,9 @@ export const infoHandlers = [
       );
     },
   ),
-  //// Update an info or its status.
+  // Update an info or its status.
   http.put<{ threadId: string; infoId: string; action: string }>(
-    `${baseUrl}/thread/:threadId/info/:infoId/:action`,
+    `${baseUrlAPI}/threads/:threadId/info/:infoId/:action`,
     async ({ params }) => {
       const { action } = params;
       const availableActions = [
@@ -61,9 +61,9 @@ export const infoHandlers = [
       );
     },
   ),
-  //// Delete an info
+  // Delete an info
   http.delete<{ threadId: string; infoId: string }>(
-    `${baseUrl}/thread/:threadId/info/:infoId`,
+    `${baseUrlAPI}/threads/:threadId/info/:infoId`,
     async () =>
       HttpResponse.json(
         {
@@ -72,18 +72,19 @@ export const infoHandlers = [
         { status: 200 },
       ),
   ),
-  //// Get info's share
+  // Get info's share
   http.get<{ threadId: string; infoId: string }>(
-    `${baseUrl}/thread/:threadId/info/share/json/:infoId`,
+    `${baseUrlAPI}/threads/:threadId/info/share/json/:infoId`,
     async () => HttpResponse.json(mockInfoShare, { status: 200 }),
   ),
-  //// Get info's revisions
-  http.get<{ infoId: string }>(`${baseUrl}/info/:infoId/timeline`, async () =>
-    HttpResponse.json(mockInfoRevisions, { status: 200 }),
+  // Get info's revisions
+  http.get<{ infoId: string }>(
+    `${baseUrlAPI}/infos/:infoId/timeline`,
+    async () => HttpResponse.json(mockInfoRevisions, { status: 200 }),
   ),
-  //// Get original info
+  // Get original info
   http.get<{ threadId: string; infoId: string }>(
-    `${baseUrl}/thread/:threadId/info/:infoId`,
+    `${baseUrlAPI}/threads/:threadId/info/:infoId`,
     async ({ request }) => {
       const url = new URL(request.url);
       if (!url.searchParams.get('originalFormat')) {

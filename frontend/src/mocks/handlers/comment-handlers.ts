@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import { baseUrl } from '~/services';
+import { baseUrlAPI } from '~/services';
 import { mockComments } from '../datas/comments';
 
 /**
@@ -7,13 +7,13 @@ import { mockComments } from '../datas/comments';
  * Mock HTTP methods for comment service
  */
 export const commentHandlers = [
-  //// Get all comments about an info
-  http.get(`${baseUrl}/infos/:infoId/comments`, () => {
+  // Get all comments about an info
+  http.get(`${baseUrlAPI}/infos/:infoId/comments`, () => {
     return HttpResponse.json(mockComments, { status: 200 });
   }),
-  //// Create a comment
+  /// Create a comment
   http.put<{ threadId: string }>(
-    `${baseUrl}/info/:infoId/comment`,
+    `${baseUrlAPI}/infos/:infoId/comment`,
     async ({ request }) => {
       const payload = await request.json();
       if (!payload) {
@@ -27,9 +27,9 @@ export const commentHandlers = [
       );
     },
   ),
-  //// Update a comment.
+  // Update a comment.
   http.put<{ threadId: string; infoId: string; action: string }>(
-    `${baseUrl}/api/v1/infos/:infoId/comments/:commentId`,
+    `${baseUrlAPI}/infos/:infoId/comments/:commentId`,
     async ({ request }) => {
       const payload = await request.json();
       if (!payload) {
@@ -44,9 +44,9 @@ export const commentHandlers = [
       );
     },
   ),
-  //// Delete a comment
+  // Delete a comment
   http.delete<{ infoId: string; commentId: string }>(
-    `${baseUrl}/info/:infoId/comment/:commentId`,
+    `${baseUrlAPI}/infos/:infoId/comment/:commentId`,
     async () =>
       HttpResponse.json(
         {
