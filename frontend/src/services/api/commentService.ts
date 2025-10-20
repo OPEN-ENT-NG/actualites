@@ -1,6 +1,6 @@
 import { odeServices } from '@edifice.io/client';
 import { Comment, CommentId } from '~/models/comments';
-import { baseUrl } from '.';
+import { baseUrlAPI } from '.';
 import { InfoId } from '../../models/info';
 
 export const createCommentService = () => {
@@ -12,7 +12,7 @@ export const createCommentService = () => {
     getComments(infoId: InfoId) {
       return odeServices
         .http()
-        .get<Comment[]>(`${baseUrl}/infos/${infoId}/comments`);
+        .get<Comment[]>(`${baseUrlAPI}/infos/${infoId}/comments`);
     },
 
     /**
@@ -23,7 +23,7 @@ export const createCommentService = () => {
     create(payload: { info_id: InfoId; title: string; comment: string }) {
       return odeServices.http().put<{
         id: CommentId;
-      }>(`${baseUrl}/info/${payload.info_id}/comment`, payload);
+      }>(`${baseUrlAPI}/infos/${payload.info_id}/comment`, payload);
     },
 
     /**
@@ -37,7 +37,7 @@ export const createCommentService = () => {
     ) {
       return odeServices.http().put<{
         rows: number;
-      }>(`${baseUrl}/api/v1/infos/${payload.info_id}/comments/${commentId}`, payload);
+      }>(`${baseUrlAPI}/infos/${payload.info_id}/comments/${commentId}`, payload);
     },
 
     /**
@@ -49,7 +49,7 @@ export const createCommentService = () => {
     delete(infoId: InfoId, commentId: CommentId) {
       return odeServices.http().delete<{
         rows: number;
-      }>(`${baseUrl}/info/${infoId}/comment/${commentId}`);
+      }>(`${baseUrlAPI}/infos/${infoId}/comment/${commentId}`);
     },
   };
 };

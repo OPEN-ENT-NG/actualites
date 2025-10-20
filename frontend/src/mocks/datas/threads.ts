@@ -7,7 +7,7 @@ export const RESPONSE_DELAY = 500;
 //---------------------------------------
 export const mockThreads: Array<Thread> = [
   {
-    _id: 176,
+    id: 176,
     title: 'Echange scolaire Erasmus lycée Diderot!',
     icon: null,
     mode: 0 as ThreadMode,
@@ -34,7 +34,7 @@ export const mockThreads: Array<Thread> = [
     ],
   },
   {
-    _id: 229,
+    id: 229,
     title: 'Menus de la Cantine',
     icon: '/workspace/document/c6f373b2-46f4-47f4-8238-7fb4373f301d',
     mode: 0 as ThreadMode,

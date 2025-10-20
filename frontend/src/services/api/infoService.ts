@@ -1,5 +1,5 @@
 import { odeServices } from '@edifice.io/client';
-import { baseUrl } from '.';
+import { baseUrlAPI } from '.';
 import {
   Info,
   InfoId,
@@ -25,7 +25,7 @@ export const createInfoService = () => {
       pageSize: number;
       threadId?: ThreadId;
     }) {
-      return odeServices.http().get<Info[]>(`${baseUrl}/list`, {
+      return odeServices.http().get<Info[]>(`${baseUrlAPI}/infos`, {
         queryParams: {
           page,
           pageSize,
@@ -46,7 +46,7 @@ export const createInfoService = () => {
     }) {
       return odeServices.http().post<{
         id: InfoId;
-      }>(`${baseUrl}/thread/${payload.thread_id}/info`, payload);
+      }>(`${baseUrlAPI}/threads/${payload.thread_id}/info`, payload);
     },
 
     /**
@@ -82,7 +82,7 @@ export const createInfoService = () => {
 
       return odeServices.http().put<{
         id: InfoId;
-      }>(`${baseUrl}/thread/${threadId}/info/${infoId}/${action}`, payload);
+      }>(`${baseUrlAPI}/threads/${threadId}/info/${infoId}/${action}`, payload);
     },
 
     /**
@@ -101,7 +101,7 @@ export const createInfoService = () => {
     ) {
       return odeServices.http().put<{
         id: InfoId;
-      }>(`${baseUrl}/thread/${threadId}/info/${infoId}/submit`, payload);
+      }>(`${baseUrlAPI}/threads/${threadId}/info/${infoId}/submit`, payload);
     },
 
     /**
@@ -113,7 +113,7 @@ export const createInfoService = () => {
     unsubmit(threadId: ThreadId, infoId: InfoId) {
       return odeServices.http().put<{
         id: InfoId;
-      }>(`${baseUrl}/thread/${threadId}/info/${infoId}/unsubmit`, {
+      }>(`${baseUrlAPI}/threads/${threadId}/info/${infoId}/unsubmit`, {
         /*empty payload required*/
       });
     },
@@ -136,7 +136,7 @@ export const createInfoService = () => {
     ) {
       return odeServices.http().put<{
         id: InfoId;
-      }>(`${baseUrl}/thread/${threadId}/info/${infoId}/publish`, payload);
+      }>(`${baseUrlAPI}/threads/${threadId}/info/${infoId}/publish`, payload);
     },
 
     /**
@@ -148,26 +148,28 @@ export const createInfoService = () => {
     delete(threadId: ThreadId, infoId: InfoId) {
       return odeServices.http().delete<{
         rows: number;
-      }>(`${baseUrl}/thread/${threadId}/info/${infoId}`);
+      }>(`${baseUrlAPI}/threads/${threadId}/info/${infoId}`);
     },
 
     getShares(threadId: ThreadId, infoId: InfoId) {
       return odeServices
         .http()
-        .get<Share>(`${baseUrl}/thread/${threadId}/info/share/json/${infoId}`);
+        .get<Share>(
+          `${baseUrlAPI}/threads/${threadId}/info/share/json/${infoId}`,
+        );
     },
 
     getRevisions(infoId: InfoId) {
       return odeServices
         .http()
-        .get<InfoRevision[]>(`${baseUrl}/info/${infoId}/timeline`);
+        .get<InfoRevision[]>(`${baseUrlAPI}/infos/${infoId}/timeline`);
     },
 
     getOriginalFormat(threadId: ThreadId, infoId: InfoId) {
       return odeServices
         .http()
         .get<OriginalInfo>(
-          `${baseUrl}/thread/${threadId}/info/${infoId}?originalFormat=true`,
+          `${baseUrlAPI}/threads/${threadId}/info/${infoId}?originalFormat=true`,
         );
     },
   };
