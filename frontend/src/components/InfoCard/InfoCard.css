@@ -16,6 +16,10 @@
   border-color: var(--edifice-info-card-border-color);
 }
 
+.info-card:focus-within {
+  border-color: var(--edifice-info-card-border-color) !important;
+}
+
 .info-card:hover {
   border-color: var(--edifice-info-card-border-color) !important;
 }
@@ -25,6 +29,9 @@
   --edifice-info-card-divider-color: var(--edifice-purple);
 }
 
+.info-card.info-card-headline::before {
+  left: -1.6rem;
+}
 .info-card.info-card-headline {
   --edifice-info-card-state-color: var(--edifice-yellow-300);
   --edifice-info-card-divider-color: var(--edifice-yellow);
@@ -41,7 +48,7 @@
   content: '';
   position: absolute;
   height: calc(100% - 80px);
-  left: -1.6rem;
+  left: -1.7rem;
   bottom: -1px;
   width: 1.6rem;
   z-index: 1;
