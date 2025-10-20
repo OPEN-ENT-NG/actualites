@@ -1,14 +1,17 @@
 import { Button, Flex } from '@edifice.io/react';
-import { IconRafterDown } from '@edifice.io/react/icons';
+import { IconRafterDown, IconRafterUp } from '@edifice.io/react/icons';
 import { useI18n } from '~/hooks/useI18n';
 import { InfoCardProps } from './InfoCard';
 
 export const InfoCardFooter = ({
   info: _info,
+  collapse,
   onMoreClick,
-}: Pick<InfoCardProps, 'info'> & { onMoreClick: () => void }) => {
+}: Pick<InfoCardProps, 'info'> & {
+  onMoreClick: () => void;
+  collapse: boolean;
+}) => {
   const { t } = useI18n();
-  const icon = <IconRafterDown></IconRafterDown>;
   return (
     <footer className="mt-12">
       <Flex align="center" justify="between">
@@ -23,11 +26,11 @@ export const InfoCardFooter = ({
           color="secondary"
           variant="ghost"
           size="sm"
-          rightIcon={icon}
+          rightIcon={collapse ? <IconRafterDown /> : <IconRafterUp />}
           className="btn-icon"
           onClick={onMoreClick}
         >
-          {t('actualites.read.more')}
+          {t(collapse ? 'actualites.read.more' : 'actualites.read.less')}
         </Button>
       </Flex>
     </footer>
