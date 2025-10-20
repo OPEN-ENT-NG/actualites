@@ -6,7 +6,7 @@ export function useThread(threadId: ThreadId) {
   const threads = useThreads();
 
   const thread = useMemo(() => {
-    return threads?.data?.find((thread) => thread._id === threadId);
+    return threads?.data?.find((thread) => thread.id === threadId);
   }, [threads.data, threadId]);
 
   return thread;
