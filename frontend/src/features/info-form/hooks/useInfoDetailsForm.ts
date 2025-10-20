@@ -76,7 +76,7 @@ export function useInfoDetailsForm() {
           navigate(`/create/info/${id}/rights`, {});
         });
       } else {
-        navigate(`${detailsForm.infoId}/rights`, {
+        navigate(`/rights`, {
           replace: true,
           relative: 'path',
         });
