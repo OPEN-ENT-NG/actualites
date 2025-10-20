@@ -66,6 +66,7 @@ export const InfoCard = ({ info }: InfoCardProps) => {
       className={className}
       isClickable={false}
       isSelectable={false}
+      key={infoId}
     >
       <article id={infoId} className="overflow-hidden">
         <InfoCardHeader info={info} extendedStatus={extendedStatus} />

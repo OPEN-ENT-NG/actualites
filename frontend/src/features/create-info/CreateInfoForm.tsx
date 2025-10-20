@@ -37,7 +37,7 @@ export function CreateInfoForm() {
   const { md } = useBreakpoint();
 
   const defaultValues: InfoParams = {
-    threadId: threads?.length === 1 ? threads[0]._id : undefined,
+    threadId: threads?.length === 1 ? threads[0].id : undefined,
     title: '',
     headline: false,
     content: '',
@@ -63,7 +63,7 @@ export function CreateInfoForm() {
   }
 
   const items: OptionsType[] = threads.map((thread: Thread) => ({
-    value: thread._id + '',
+    value: thread.id + '',
     label: thread.title,
     icon: <ThreadIcon thread={thread} iconSize={iconSize} />,
   }));
