@@ -23,9 +23,11 @@ import static org.entcore.common.sql.Sql.parseId;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import net.atos.entng.actualites.controllers.InfoController;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.entcore.common.http.filter.ResourcesProvider;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlConf;
@@ -70,10 +72,25 @@ public class InfoFilter implements ResourcesProvider {
 			// Query
 			StringBuilder query = new StringBuilder();
 			JsonArray values = new JsonArray();
+
+			query.append("WITH user_groups AS MATERIALIZED (")
+				 .append("  SELECT id::varchar FROM (")
+				 .append("    SELECT ? AS id UNION ALL ")
+				 .append("    SELECT id FROM actualites.groups WHERE id in").append(Sql.listPrepared(groupsAndUserIds))
+				 .append("  ) as u_groups) ");
+			groupsAndUserIds.forEach(values::add);
+			values.add(user.getUserId());
+
 			query.append("SELECT count(*)")
 				.append(" FROM actualites.info AS i")
-				.append(" LEFT JOIN actualites.info_shares AS ios ON i.id = ios.resource_id")
-				.append(" LEFT JOIN actualites.thread AS t ON i.thread_id = t.id")
+				.append(" LEFT JOIN actualites.info_shares AS ios ON i.id = ios.resource_id ");
+
+			if (!isInfoPublishing(binding) && !isDeleteComment(binding)) {
+				query.append(" AND ios.action = ? ");
+				values.add(sharedMethod);
+			}
+
+			query.append(" LEFT JOIN actualites.thread AS t ON i.thread_id = t.id")
 				.append(" LEFT JOIN actualites.thread_shares AS ts ON t.id = ts.resource_id")
 				.append(" WHERE i.id = ? ");
 			values.add(Sql.parseId(id));
@@ -92,12 +109,8 @@ public class InfoFilter implements ResourcesProvider {
 				values.add(user.getUserId());
 
 				if(!isDeleteComment(binding)) {
-					query.append(" OR (ios.member_id IN ").append(Sql.listPrepared(groupsAndUserIds.toArray()))
-							.append(" AND ios.action = ? AND i.status > 2)");
-					for (String value : groupsAndUserIds) {
-						values.add(value);
-					}
-					values.add(sharedMethod);
+					query.append(" OR (ios.member_id IN (SELECT id FROM user_groups)")
+							.append(" AND i.status > 2)");
 				}
 				query.append(") OR (");
 			}
@@ -106,10 +119,8 @@ public class InfoFilter implements ResourcesProvider {
 			query.append("(t.owner = ?");
 			values.add(user.getUserId());
 
-			query.append(" OR (ts.member_id IN ").append(Sql.listPrepared(groupsAndUserIds.toArray()));
-			for(String value : groupsAndUserIds){
-				values.add(value);
-			}
+			query.append(" OR (ts.member_id IN (SELECT id FROM user_groups)");
+
 			if(isInfoAction(binding) || isInfoPendingOrPublished(binding)){
 				// Authorize if user is a publisher or a manager
 				query.append(" AND ts.action = 'net-atos-entng-actualites-controllers-InfoController|publish'");

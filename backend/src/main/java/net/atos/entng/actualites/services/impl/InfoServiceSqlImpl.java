@@ -64,6 +64,7 @@ public class InfoServiceSqlImpl implements InfoService {
 	private static final String NEWS_COMMENT_TABLE = NEWS_SCHEMA + "." + COMMENT_TABLE;
 	private static final String NEWS_MEMBER_TABLE = NEWS_SCHEMA + "." + MEMBER_TABLE;
 	private static final String NEWS_INFO_REVISION_TABLE = NEWS_SCHEMA + "." + INFO_REVISION_TABLE;
+	private static final String GROUPS_TABLE = NEWS_SCHEMA + "." + GROUP_TABLE;
 	private final QueryHelperSql helperSql = new QueryHelperSql();
 	// we select the current content if its not tranformed, or we search it in the revision table
 	private static final String CONTENT_FIELD_QUERY =
@@ -588,19 +589,24 @@ public class InfoServiceSqlImpl implements InfoService {
 			}
 			String query =
 					"WITH " +
+					"    user_groups AS MATERIALIZED ( " +
+					"        SELECT id::varchar from ( "	+
+					"        SELECT ? as id UNION ALL " +
+					"        SELECT id FROM " + GROUPS_TABLE + " WHERE id IN " + 	Sql.listPrepared(groupsAndUserIds.toArray()) +
+					"    	) as u_groups )," +
 					"	 info_for_user AS ( " + // Every info owned of shared to the user
 					"		 SELECT i.id, array_agg(DISTINCT ish.action) AS rights " +
 					"    	 FROM " + NEWS_INFO_TABLE + " AS i " +
 					"        	 JOIN " + NEWS_INFO_SHARE_TABLE + " AS ish ON i.id = ish.resource_id " +
 					"    	 WHERE " +
-					"        	 ish.member_id IN " + ids + " " +
+					"        	 ish.member_id IN (SELECT id FROM user_groups) " +
 					"    	 GROUP BY i.id " +
 					"	 ), " +
 					"	 thread_for_user AS ( " + // Every thread owned of shared to the user with publish rights
 					"	 	 SELECT t.id " +
 					"    	 FROM " + NEWS_THREAD_TABLE + " AS t " +
 					"        	 INNER JOIN " + NEWS_THREAD_SHARE_TABLE + " AS tsh ON t.id = tsh.resource_id " +
-					"    	 WHERE tsh.member_id IN " + ids + " " +
+					"    	 WHERE tsh.member_id IN (SELECT id FROM user_groups) " +
 					"		 	AND tsh.action = '" + THREAD_PUBLISH_RIGHT + "' " +
 					"    	 GROUP BY t.id, tsh.member_id " +
 					"	 ) " +
@@ -623,20 +629,14 @@ public class InfoServiceSqlImpl implements InfoService {
 					"    ORDER BY i.modified DESC " +
 					"    OFFSET ? " +
 					"    LIMIT ? ";
+
 			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
-			for(String value : groupsAndUserIds){
-				values.add(value); // for info_for_user
-			}
-			for(String value : groupsAndUserIds){
-				values.add(value); // for thread_for_user
-			}
-			for(Integer statusValue : statusValues){
-				values.add(statusValue); // for status filtering
-			}
-			if (threadIds != null && !threadIds.isEmpty()) {
-				for (Integer tid : threadIds) {
-					values.add(tid); // for thread filtering
-				}
+
+			values.add(user.getUserId()); //for user_groups
+			groupsAndUserIds.forEach(values::add); //for user_groups
+			statusValues.forEach(values::add); // for status filtering
+			if (threadIds != null) {
+				threadIds.forEach(values::add); // for thread filtering
 			}
 			values.add(user.getUserId()); // for info owning clause
 			values.add(user.getUserId()); // for thread owning clause
@@ -644,15 +644,21 @@ public class InfoServiceSqlImpl implements InfoService {
 			values.add(pageSize); // limit clause
 
 			// 3. Retrieve & parse data
+			SqlStatementsBuilder builder = new SqlStatementsBuilder();
+			//for optimization deactivate jit has it trigger, it take time to execute and give nothing in term of optimisation
+			builder.prepared("set jit = off", new JsonArray());
+			builder.prepared(query, values);
+			builder.prepared("set jit = on", new JsonArray());
 
-			Sql.getInstance().prepared(query, values, (sqlResult) -> {
-				final Either<String, JsonArray> result = SqlResult.validResult(sqlResult);
+			Sql.getInstance().transaction(builder.build(), (sqlResult) -> {
+				final Either<String, JsonArray> result = SqlResult.validResults(sqlResult);
 				if (result.isLeft()) {
 					promise.fail(result.left().getValue());
 				} else {
 					try {
-
-						List<News> pojo = result.right().getValue().stream()
+						//filter necessary line
+						JsonArray results = result.right().getValue().getJsonArray(1);
+						List<News> pojo = results.stream()
 							.filter(row -> row instanceof JsonObject)
 							.map(JsonObject.class::cast)
 							.map(row -> {
