@@ -58,7 +58,9 @@ export function InfoDetailsForm({
 
   useEffect(() => {
     setDetailsForm(infoDetails || defaultValues);
-    trigger();
+    if (infoDetails) {
+      trigger();
+    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -135,6 +137,7 @@ export function InfoDetailsForm({
                   placeholderOption={t(
                     'actualites.info.createForm.selectThreadPlaceholder',
                   )}
+                  data-testid="actualites.info.thread.select"
                 />
               )}
             />
@@ -158,6 +161,7 @@ export function InfoDetailsForm({
             placeholder={t('actualites.info.createForm.titlePlaceholder')}
             showCounter
             maxLength={60}
+            data-testid="actualites.info.title.input"
             {...register('title', { required: true })}
           />
         </FormControl>
@@ -167,6 +171,7 @@ export function InfoDetailsForm({
           <Switch
             {...register('headline')}
             label={t('actualites.info.createForm.headlineLabel')}
+            data-testid="actualites.info.headline.switch"
           />
         </Flex>
       </FormControl>
@@ -180,13 +185,14 @@ export function InfoDetailsForm({
           name="content"
           control={control}
           rules={{ required: true }}
-          render={({ field }) => (
+          render={() => (
             <Flex wrap="nowrap" className="info-details-form_content">
               <Editor
-                content={field.value}
+                content={infoDetails?.content || ''}
                 mode="edit"
                 id="info-content"
                 onContentChange={handleEditorChange}
+                data-testid="actualites.info.content.editor"
               />
             </Flex>
           )}
