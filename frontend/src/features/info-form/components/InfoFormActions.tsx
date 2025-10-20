@@ -61,7 +61,12 @@ export function InfoFormActions() {
       gap="12"
       wrap="reverse"
     >
-      <Button color="primary" variant="ghost" onClick={handleCancelClick}>
+      <Button
+        color="primary"
+        variant="ghost"
+        onClick={handleCancelClick}
+        data-testid="actualites.info.form.cancelButton"
+      >
         {t(
           isInfoDetailsStep
             ? 'actualites.info.createForm.cancel'
@@ -76,6 +81,7 @@ export function InfoFormActions() {
           leftIcon={<IconSave />}
           onClick={handleSaveDraftClick}
           disabled={disableSaveDraft}
+          data-testid="actualites.info.form.saveDraftButton"
         >
           {t('actualites.info.createForm.saveDraft')}
         </Button>
@@ -85,6 +91,7 @@ export function InfoFormActions() {
           rightIcon={<IconArrowRight />}
           onClick={handleSubmitClick}
           disabled={!detailsFormState.isValid}
+          data-testid="actualites.info.form.submitButton"
         >
           {t(
             isInfoDetailsStep
