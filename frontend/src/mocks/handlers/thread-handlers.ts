@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw';
 import { ThreadMode } from '~/models/thread';
-import { baseUrl } from '~/services';
+import { baseUrlAPI } from '~/services';
 import { mockThreads, mockThreadShare } from '../datas/threads';
 
 /**
@@ -8,18 +8,18 @@ import { mockThreads, mockThreadShare } from '../datas/threads';
  * Mock HTTP methods for thread service
  */
 export const threadHandlers = [
-  //// Get all threads
-  http.get(`${baseUrl}/threads`, () => {
+  // Get all threads
+  http.get(`${baseUrlAPI}/threads`, () => {
     return HttpResponse.json(mockThreads, { status: 200 });
   }),
-  //// Create a thread
+  // Create a thread
   http.post<
     object,
     {
       mode: ThreadMode;
       title: string;
     }
-  >(`${baseUrl}/thread`, async () =>
+  >(`${baseUrlAPI}/threads`, async () =>
     HttpResponse.json(
       {
         id: 3,
@@ -27,14 +27,14 @@ export const threadHandlers = [
       { status: 200 },
     ),
   ),
-  //// Update a thread
+  // Update a thread
   http.put<
     { threadId: string },
     {
       mode: ThreadMode;
       title: string;
     }
-  >(`${baseUrl}/thread/:threadId`, async ({ request }) => {
+  >(`${baseUrlAPI}/threads/:threadId`, async ({ request }) => {
     const payload = await request.json();
     if (!payload) {
       return HttpResponse.text('Bad Request', { status: 400 });
@@ -46,23 +46,25 @@ export const threadHandlers = [
       { status: 200 },
     );
   }),
-  //// Delete a thread
-  http.delete<{ threadId: string }>(`${baseUrl}/thread/:threadId`, async () =>
-    HttpResponse.json(
-      {
-        rows: 1,
-      },
-      { status: 200 },
-    ),
+  // Delete a thread
+  http.delete<{ threadId: string }>(
+    `${baseUrlAPI}/threads/:threadId`,
+    async () =>
+      HttpResponse.json(
+        {
+          rows: 1,
+        },
+        { status: 200 },
+      ),
   ),
-  //// Get thread's share
+  // Get thread's share
   http.get<
     { threadId: string },
     {
       mode: ThreadMode;
       title: string;
     }
-  >(`${baseUrl}/thread/share/json/:threadId`, async () =>
+  >(`${baseUrlAPI}/threads/share/json/:threadId`, async () =>
     HttpResponse.json(mockThreadShare, { status: 200 }),
   ),
 ];
