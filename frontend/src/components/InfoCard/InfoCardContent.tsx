@@ -46,7 +46,7 @@ export const InfoCardContent = ({
 
   return (
     <div>
-      {!collapse && info.content && <InfoCardPreviousContent info={info} />}
+      {/* Collapsed Content */}
       <div
         className={classNameContentCollapsed}
         ref={collapseContentRef}
@@ -56,6 +56,8 @@ export const InfoCardContent = ({
       >
         <EditorPreview content={info.content} variant="ghost" />
       </div>
+
+      {/* Full Content */}
       <div
         className={classNameContentFull}
         ref={fullContentRef}
@@ -63,6 +65,7 @@ export const InfoCardContent = ({
           height: collapse ? 0 : fullHeight,
         }}
       >
+        {!collapse && info.content && <InfoCardPreviousContent info={info} />}
         <Editor content={info.content} mode="read" variant="ghost" />
       </div>
     </div>
