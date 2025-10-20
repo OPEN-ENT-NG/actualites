@@ -1,5 +1,5 @@
 import { delay, http, HttpResponse } from 'msw';
-import { baseUrlAPI } from '~/services';
+import { baseUrl, baseUrlAPI } from '~/services';
 import {
   mockInfoRevisions,
   mockInfos,
@@ -22,7 +22,7 @@ export const infoHandlers = [
   }),
   // Create a draft info
   http.post<{ threadId: string }>(
-    `${baseUrlAPI}/threads/:threadId/info`,
+    `${baseUrl}/thread/:threadId/info`,
     async ({ request }) => {
       const payload = await request.json();
       if (!payload) {
@@ -38,7 +38,7 @@ export const infoHandlers = [
   ),
   // Update an info or its status.
   http.put<{ threadId: string; infoId: string; action: string }>(
-    `${baseUrlAPI}/threads/:threadId/info/:infoId/:action`,
+    `${baseUrl}/thread/:threadId/info/:infoId/:action`,
     async ({ params }) => {
       const { action } = params;
       const availableActions = [
@@ -63,7 +63,7 @@ export const infoHandlers = [
   ),
   // Delete an info
   http.delete<{ threadId: string; infoId: string }>(
-    `${baseUrlAPI}/threads/:threadId/info/:infoId`,
+    `${baseUrl}/thread/:threadId/info/:infoId`,
     async () =>
       HttpResponse.json(
         {
@@ -74,17 +74,16 @@ export const infoHandlers = [
   ),
   // Get info's share
   http.get<{ threadId: string; infoId: string }>(
-    `${baseUrlAPI}/threads/:threadId/info/share/json/:infoId`,
+    `${baseUrl}/thread/:threadId/info/share/json/:infoId`,
     async () => HttpResponse.json(mockInfoShare, { status: 200 }),
   ),
   // Get info's revisions
-  http.get<{ infoId: string }>(
-    `${baseUrlAPI}/infos/:infoId/timeline`,
-    async () => HttpResponse.json(mockInfoRevisions, { status: 200 }),
+  http.get<{ infoId: string }>(`${baseUrl}/info/:infoId/timeline`, async () =>
+    HttpResponse.json(mockInfoRevisions, { status: 200 }),
   ),
   // Get original info
   http.get<{ threadId: string; infoId: string }>(
-    `${baseUrlAPI}/threads/:threadId/info/:infoId`,
+    `${baseUrl}/thread/:threadId/info/:infoId`,
     async ({ request }) => {
       const url = new URL(request.url);
       if (!url.searchParams.get('originalFormat')) {
