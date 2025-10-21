@@ -19,30 +19,26 @@
 
 package net.atos.entng.actualites.filters;
 
-import static org.entcore.common.sql.Sql.parseId;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
+import fr.wseduc.webutils.http.Binding;
+import io.vertx.core.Handler;
+import io.vertx.core.eventbus.Message;
+import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.controllers.InfoController;
-
-import org.apache.commons.lang3.time.StopWatch;
 import org.entcore.common.http.filter.ResourcesProvider;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlConf;
 import org.entcore.common.sql.SqlConfs;
 import org.entcore.common.sql.SqlResult;
 import org.entcore.common.user.UserInfos;
-import io.vertx.core.Handler;
-import io.vertx.core.eventbus.Message;
-import io.vertx.core.http.HttpServerRequest;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
-
-import fr.wseduc.webutils.http.Binding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.entcore.common.sql.Sql.parseId;
 
 public class InfoFilter implements ResourcesProvider {
 
