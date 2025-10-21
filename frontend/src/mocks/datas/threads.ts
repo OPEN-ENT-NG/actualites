@@ -10,6 +10,7 @@ export const RESPONSE_DELAY = 500;
 const mockGroupId = '58671-1434376996066';
 export const mockThreadAsOwner = {
   _id: 1,
+  id: 1,
   title: 'Echange scolaire Erasmus lycée Diderot!',
   icon: null,
   mode: 0 as ThreadMode,
@@ -22,7 +23,8 @@ export const mockThreadAsOwner = {
 };
 
 export const mockThreadAsCatherine = {
-  _id: 1,
+  _id: 2,
+  id: 2,
   title: 'Echange scolaire Erasmus lycée Diderot!',
   icon: null,
   mode: 0 as ThreadMode,
@@ -35,7 +37,8 @@ export const mockThreadAsCatherine = {
 };
 
 export const mockThreadAsCatherineWithContributeRight = {
-  _id: 1,
+  _id: 3,
+  id: 3,
   title: 'Echange scolaire Erasmus lycée Diderot!',
   icon: null,
   mode: 0 as ThreadMode,
