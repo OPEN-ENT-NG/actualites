@@ -2,8 +2,6 @@ import { Thread, ThreadMode } from '~/models/thread';
 import { mockUserCatherine, mockUserLogged } from './users';
 import { CREATE_DRAFT_RIGHT } from '~/config/rights';
 
-export const RESPONSE_DELAY = 500;
-
 //---------------------------------------
 //--------------- THREADS ---------------
 //---------------------------------------

@@ -1,4 +1,4 @@
-import { delay, http, HttpResponse } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { baseUrl, baseUrlAPI } from '~/services';
 import {
   mockInfoRevisions,
@@ -6,16 +6,12 @@ import {
   mockInfoShare,
   mockOriginalInfo,
 } from '../datas/infos';
-import { RESPONSE_DELAY } from '../datas/threads';
 
 /**
  * MSW Handlers
  * Mock HTTP methods for info service
  */
 export const infoHandlers = [
-  http.all(baseUrlAPI, async () => {
-    await delay(RESPONSE_DELAY);
-  }),
   // Get all infos
   http.get(`${baseUrlAPI}/infos`, () => {
     return HttpResponse.json(mockInfos, { status: 200 });
