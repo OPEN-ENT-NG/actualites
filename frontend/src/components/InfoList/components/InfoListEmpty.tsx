@@ -6,14 +6,13 @@ import illuEmpty from '@images/emptyscreen/illu-timelinegenerator.svg';
 // import illuEmptyDraft from '@images/emptyscreen/illu-search.svg';
 import { useI18n } from '~/hooks/useI18n';
 
-import { useInfoListEmptyScreen } from '../hooks/useInfoListEmptyScreen';
+import { EmptyScreenType } from '../hooks/useInfoListEmptyScreen';
 
-export function InfoListEmpty() {
+export function InfoListEmpty({ type }: { type: EmptyScreenType }) {
   const { t } = useI18n();
-  const emptyScreenType = useInfoListEmptyScreen();
   return (
     <Flex direction="column" align="center" justify="center">
-      {emptyScreenType === 'create-thread' && (
+      {type === 'create-thread' && (
         <EmptyScreen
           imageSrc={illuEmptyCreate}
           imageAlt={t('actualites.info-list.empty.create-thread.title')}
@@ -21,7 +20,7 @@ export function InfoListEmpty() {
           text={t('actualites.info-list.empty.create-thread.text')}
         />
       )}
-      {emptyScreenType === 'create-info' && (
+      {type === 'create-info' && (
         <EmptyScreen
           imageSrc={illuEmptyCreate}
           imageAlt={t('actualites.info-list.empty.create-info.title')}
@@ -29,7 +28,7 @@ export function InfoListEmpty() {
           text={t('actualites.info-list.empty.create-info.text')}
         />
       )}
-      {emptyScreenType === 'default' && (
+      {type === 'default' && (
         <EmptyScreen
           imageSrc={illuEmpty}
           imageAlt={t('actualites.info-list.empty.default.title')}
