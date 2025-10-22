@@ -41,7 +41,7 @@ export function CreateInfoDetails() {
   if (info) {
     infoDetails = {
       infoId: info.id,
-      thread_id: info.threadId || info.thread?.id,
+      thread_id: info.thread?.id,
       title: info.title,
       content: info.content,
       headline: info.headline,

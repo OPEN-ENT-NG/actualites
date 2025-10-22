@@ -20,10 +20,8 @@ export enum InfoExtendedStatus {
   INCOMING = 'INCOMING',
 }
 
-export interface Info {
+export interface InfoBase {
   id: InfoId;
-  threadId?: ThreadId;
-  thread?: Thread;
   content: string;
   status: InfoStatus;
   owner: InfoOwner;
@@ -41,6 +39,13 @@ export interface Info {
   sharedRights: any[];
   contentVersion: number;
   previousContentVersion: number;
+}
+export interface Info extends InfoBase {
+  threadId: ThreadId;
+}
+
+export interface InfoDetails extends InfoBase {
+  thread: Thread;
 }
 
 export enum InfoRevisionEvent {
