@@ -56,7 +56,6 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
           },
           {
             path: ':infoId',
-            index: true,
             async lazy() {
               const { loader, CreateInfoDetails: Component } = await import(
                 '~/routes/pages/CreateInfoDetails'
