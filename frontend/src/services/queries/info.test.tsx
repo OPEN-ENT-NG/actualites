@@ -58,10 +58,10 @@ describe('Info Queries', () => {
     const serviceSpy = vi.spyOn(infoService, 'update');
 
     const variables = {
-      threadId: 1,
       infoId: 123,
       infoStatus: InfoStatus.PUBLISHED,
       payload: {
+        thread_id: 1,
         title: 'Changement de titre',
         content: 'Changement de contenu',
         is_headline: true,
@@ -74,7 +74,6 @@ describe('Info Queries', () => {
 
     await waitFor(() => {
       expect(serviceSpy).toHaveBeenCalledWith(
-        variables.threadId,
         variables.infoId,
         variables.infoStatus,
         variables.payload,

@@ -22,7 +22,7 @@ export const infoHandlers = [
   }),
   // Create a draft info
   http.post<{ threadId: string }>(
-    `${baseUrl}/thread/:threadId/info`,
+    `${baseUrlAPI}/infos`,
     async ({ request }) => {
       const payload = await request.json();
       if (!payload) {
@@ -31,6 +31,23 @@ export const infoHandlers = [
       return HttpResponse.json(
         {
           id: 1,
+        },
+        { status: 200 },
+      );
+    },
+  ),
+  // Update an info or its status.
+  http.put<{ threadId: string; infoId: string; action: string }>(
+    `${baseUrlAPI}/infos/:infoId`,
+    async ({ request }) => {
+      const payload = await request.json();
+      if (!payload) {
+        return HttpResponse.text('Bad Request', { status: 400 });
+      }
+
+      return HttpResponse.json(
+        {
+          rows: 1,
         },
         { status: 200 },
       );
