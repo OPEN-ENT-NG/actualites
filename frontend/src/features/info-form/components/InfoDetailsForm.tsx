@@ -13,7 +13,7 @@ import {
 } from '@edifice.io/react';
 import { Editor, EditorInstance } from '@edifice.io/react/editor';
 import { IconQuestion } from '@edifice.io/react/icons';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { ThreadIcon } from '~/components/ThreadIcon';
 import { Thread } from '~/models/thread';
@@ -106,6 +106,14 @@ export function InfoDetailsForm({
     });
   };
 
+  const thread = useMemo(() => {
+    if (!infoDetails) return threads[0];
+    return (
+      threads.find((thread) => thread.id === infoDetails.thread_id) ||
+      threads[0]
+    );
+  }, [infoDetails, threads]);
+
   return (
     <Flex direction="column" gap="24">
       <Flex
@@ -134,6 +142,7 @@ export function InfoDetailsForm({
                   size="md"
                   onValueChange={field.onChange}
                   icon={<IconQuestion />}
+                  defaultValue={String(infoDetails?.thread_id)}
                   placeholderOption={t(
                     'actualites.info.createForm.selectThreadPlaceholder',
                   )}
@@ -142,9 +151,14 @@ export function InfoDetailsForm({
               )}
             />
           ) : (
-            <Flex align="center" gap="8" className="border rounded py-4 px-8">
-              <ThreadIcon thread={threads[0]} iconSize={iconSize} />
-              <span>{threads[0]?.title}</span>
+            <Flex
+              align="center"
+              gap="8"
+              className="border rounded py-4 px-8"
+              style={{ height: '40px' }}
+            >
+              <ThreadIcon thread={thread} iconSize={iconSize} />
+              <span>{thread?.title}</span>
             </Flex>
           )}
         </FormControl>
