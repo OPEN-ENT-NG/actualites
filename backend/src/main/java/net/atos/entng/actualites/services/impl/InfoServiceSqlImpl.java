@@ -581,7 +581,8 @@ public class InfoServiceSqlImpl implements InfoService {
 					"    OR " +
 					"    (t.id IN (SELECT id FROM thread_for_user) AND i.status >= " + NewsStatus.PENDING.getValue() + ") " + // thread shared with publish: PENDING + PUBLISHED
 					") " +
-					"AND (i.status <> " + NewsStatus.PUBLISHED.getValue() + " OR ((i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) " + // for PUBLISHED: check dates
+					"AND (i.status <> " + NewsStatus.PUBLISHED.getValue() +
+					"     OR ((i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) " + // for PUBLISHED: check dates
 					"     AND (i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL))) ";
 			if (threadIds != null && !threadIds.isEmpty()) {
 				String threadIdsSql = Sql.listPrepared(threadIds.toArray());
@@ -860,44 +861,47 @@ public class InfoServiceSqlImpl implements InfoService {
 
 			String query =
 					"WITH " +
+					"    user_groups AS MATERIALIZED ( " +
+					"        SELECT id::varchar from ( "	+
+					"        SELECT ? as id UNION ALL " +
+					"        SELECT id FROM " + GROUPS_TABLE + " WHERE id IN " + 	ids +
+					"    	) as u_groups )," +
 					"	 info_for_user AS ( " +
-					"		 SELECT i.id, array_agg(DISTINCT ish.action) AS rights " +
-					"    	 FROM " + NEWS_INFO_TABLE + " AS i " +
-					"        	 JOIN " + NEWS_INFO_SHARE_TABLE + " AS ish ON i.id = ish.resource_id " +
-					"    	 WHERE ish.member_id IN " + ids + " " +
-					"    	 GROUP BY i.id " +
+					"		 SELECT ish.resource_id AS id " +
+					"    	 FROM " + NEWS_INFO_SHARE_TABLE + " AS ish  " +
+					"    	 WHERE ish.member_id IN (SELECT id FROM user_groups) " +
+					"    	 GROUP BY ish.resource_id " +
 					"	 ), " +
 					"	 thread_for_user AS ( " +
-					"	 	 SELECT t.id, array_agg(DISTINCT tsh.action) AS rights " +
-					"    	 FROM " + NEWS_THREAD_TABLE + " AS t " +
-					"        	 INNER JOIN " + NEWS_THREAD_SHARE_TABLE + " AS tsh ON t.id = tsh.resource_id " +
-					"    	 WHERE tsh.member_id IN " + ids + " " +
-					"    	 GROUP BY t.id " +
+					"	 	 SELECT tsh.resource_id AS id" +
+					"    	 FROM " + NEWS_THREAD_SHARE_TABLE + " AS tsh " +
+					"    	 WHERE tsh.member_id IN (SELECT id FROM user_groups)" +
+					"              AND tsh.action = 'net-atos-entng-actualites-controllers-InfoController|publish' " +
+					"    	 GROUP BY tsh.resource_id " +
 					"	 ) " +
 					"SELECT t.id, " +
-					"       COUNT(i.id) FILTER (WHERE " +
-					"           (i.owner = ? OR " +
-					"            (i.id IN (SELECT id from info_for_user) AND i.status >= " + NewsStatus.PUBLISHED.getValue() + ") OR " +
-					"            (t.owner = ? AND i.status >= " + NewsStatus.PENDING.getValue() + ") OR " +
-					"            (t.id IN (SELECT id FROM thread_for_user WHERE '" + THREAD_PUBLISH_RIGHT + "' = ANY(rights)) AND i.status >= " + NewsStatus.PENDING.getValue() + ")) " +
-					"           AND (i.status <> " + NewsStatus.PUBLISHED.getValue() + " OR " +
-					"                ((i.publication_date IS NULL OR i.publication_date <= LOCALTIMESTAMP) " +
-					"                 AND (i.expiration_date IS NULL OR i.expiration_date > LOCALTIMESTAMP)))) AS infos_count, " +
+					"       COUNT(i.id) AS infos_count, " +
 					"       " + statusAggregation + "::text AS status " +
 					"FROM " + NEWS_THREAD_TABLE + " AS t " +
 					"    LEFT JOIN " + NEWS_INFO_TABLE + " AS i ON t.id = i.thread_id " +
 					"    LEFT JOIN info_for_user ON info_for_user.id = i.id " +
 					" 	 LEFT JOIN thread_for_user ON thread_for_user.id = i.thread_id " +
-					"WHERE t.owner = ? OR t.id IN (SELECT DISTINCT thread_id FROM " + NEWS_INFO_TABLE + " WHERE owner = ?) " +
-					"      OR t.id IN (SELECT id FROM thread_for_user) " +
+					"WHERE (t.owner = ?  AND i.status >= 2  " +
+					"      OR t.id IN ( SELECT id  FROM thread_for_user ) AND i.status >= 2  " +
+					"      OR i.id IN ( SELECT id FROM info_for_user ) AND i.status >= 3" +
+					"      OR i.owner = ?) AND ( " +
+					"        i.status <> 3 " +
+					"        OR ( " +
+					"          (i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL)" +
+					"          AND ( i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL)" +
+					"        )" +
+					"      ) " +
 					"GROUP BY t.id " +
 					"ORDER BY t.id";
 
 			JsonArray params = new JsonArray();
-			groupsAndUserIds.forEach(params::add);	// ish.member_id IN
-			groupsAndUserIds.forEach(params::add);	// tsh.member_id IN
-			params.add(user.getUserId());			// i.owner
-			params.add(user.getUserId());			// t.owner
+			params.add(user.getUserId());	// user groups => owner
+			groupsAndUserIds.forEach(params::add);	// user groups => clause in
 			params.add(user.getUserId());			// t.owner
 			params.add(user.getUserId());			// info owner
 
