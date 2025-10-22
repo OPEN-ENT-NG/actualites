@@ -3,8 +3,9 @@ import { routes, ng, model } from 'entcore';
 import { actualiteController } from './controller';
 ng.controllers.push(actualiteController);
 
-import { preview } from './directives';
+import { preview, mainNav } from './directives';
 ng.directives.push(preview);
+ng.directives.push(mainNav);
 
 import { buildModel } from './model';
 
