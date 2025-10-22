@@ -202,7 +202,7 @@ public class InfosControllerV1 extends ControllerHelper {
 						}
 					};
 				}
-				infoService.create(resource, user, events.name() ,handler);
+				infoService.create(resource, user, events.name(), handler);
 			});
 		});
 	}
