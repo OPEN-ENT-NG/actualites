@@ -247,7 +247,14 @@ public class InfosControllerV1 extends ControllerHelper {
 						if (resource.getString("title") == null) {
 							resource.put("title", actualInfo.getString("title"));
 						}
-						notifyOwner(request, user, resource, infoId, actualInfo, notificationFromTransition);
+						if (notificationFromTransition.equals(NEWS_UPDATE_EVENT_TYPE)) {
+							notifyOwner(request, user, resource, infoId, actualInfo, notificationFromTransition);
+						} else {
+							UserInfos owner = new UserInfos();
+							owner.setUserId(actualInfo.getString("owner"));
+							notificationTimelineService.notifyTimeline(request, user, owner, actualInfo.getString("thread_id"),
+									infoId, resource.getString("title"), notificationFromTransition);
+						}
 					}
 					if (event == Events.UPDATE || event == Events.PENDING) {
 						if (!resource.containsKey("expiration_date")) {
@@ -264,6 +271,15 @@ public class InfosControllerV1 extends ControllerHelper {
 	}
 
 	private String getNotificationFromTransition(int updatedStatus, int actualStatus) {
+		if (actualStatus == 1 && updatedStatus == 2) {
+			return NEWS_SUBMIT_EVENT_TYPE;
+		}
+		if (actualStatus == 2 && updatedStatus == 3) {
+			return NEWS_PUBLISH_EVENT_TYPE;
+		}
+		if (actualStatus == 3 && updatedStatus == 2) {
+			return NEWS_UNPUBLISH_EVENT_TYPE;
+		}
 		//notify owner except he unsubmits
 		if (!(actualStatus == 2 && updatedStatus == 1)) {
 			return NEWS_UPDATE_EVENT_TYPE;
