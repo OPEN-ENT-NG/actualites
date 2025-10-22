@@ -44,6 +44,10 @@ public class InfoTransformerServiceImpl implements InfoService {
     public void create(JsonObject data, UserInfos user, String eventStatus, Handler<Either<String, JsonObject>> handler) {
         log.info(String.format("[%s] Transform content of info for user %s ", getClass().getSimpleName(), user.getUserId()));
 
+        if( StringUtils.isEmpty(data.getString("content"))) {
+            infoService.create(data, user, eventStatus, handler);
+            return;
+        }
         applyTransformation(user, data, handler, (response) -> {
                     data.put("content", response.getCleanHtml());
                     this.infoService.create(data, user, eventStatus, handler);
@@ -58,13 +62,21 @@ public class InfoTransformerServiceImpl implements InfoService {
                 return;
             }
             JsonObject actualInfo = h.right().getValue();
-            //update content only if we update the content or the content is in old version
-            if (StringUtils.isEmpty(data.getString("content")) && "1".equals(actualInfo.getString("content_version"))) {
+            //update content only if we update the content or the content is in old version with no update
+            if ( (!data.containsKey("content") || data.getString("content") == null )
+                    && "1".equals(actualInfo.getString("content_version"))) {
                 this.infoService.update(id, data, user, eventStatus, handler);
                 return;
             }
-            if (StringUtils.isEmpty(data.getString("content"))) {
+            //keep content if we receive a null or no content
+            if (!data.containsKey("content") || data.getString("content") == null) {
               data.put("content", actualInfo.getString("content"));
+            }
+            //transform only if we have something to transform
+            if (StringUtils.isEmpty(data.getString("content"))) {
+                this.infoService.update(id, data, user, eventStatus, handler);
+                data.put("content_version", 1);
+                return;
             }
             applyTransformation(user, data, handler, (response) -> {
                 data.put("content", response.getCleanHtml());
@@ -173,7 +185,7 @@ public class InfoTransformerServiceImpl implements InfoService {
     private Future<List<News>> transformAndUpdateNewsContent(Future<List<News>> newsRes) {
         return newsRes.compose(newsList -> {
             List<Future<News>> futures = newsList.stream()
-                    .map(news -> news.getContentVersion() == 0
+                    .map(news -> news.getContentVersion() == 0 && !StringUtils.isEmpty(news.getContent())
                             ? updateNewsContent(news)
                             : Future.succeededFuture(news))
                     .collect(Collectors.toList());
