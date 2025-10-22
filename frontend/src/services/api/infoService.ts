@@ -55,7 +55,7 @@ export const createInfoService = () => {
     }) {
       return odeServices.http().post<{
         id: InfoId;
-      }>(`${baseUrl}/thread/${payload.thread_id}/info`, {
+      }>(`${baseUrlAPI}/infos`, {
         title: payload.title,
         content: payload.content,
         status: 1, // DRAFT
@@ -72,31 +72,30 @@ export const createInfoService = () => {
      * @returns ID of the updated Info
      */
     update(
-      threadId: ThreadId,
       infoId: InfoId,
       infoStatus: InfoStatus,
       payload: {
-        // thread_id: ThreadId; // FIXME Is uncommenting this line useful, or dangerous ?
-        title: string;
-        content: string;
+        thread_id?: ThreadId; // FIXME Is uncommenting this line useful, or dangerous ?
+        title?: string;
+        content?: string;
         is_headline: boolean;
         publication_date?: string;
         expiration_date?: string;
       },
     ) {
-      const action =
+      const status =
         infoStatus === InfoStatus.DRAFT
-          ? 'draft'
+          ? 1
           : infoStatus === InfoStatus.PENDING
-            ? 'pending'
+            ? 2
             : infoStatus === InfoStatus.PUBLISHED
-              ? 'published'
+              ? 3
               : null;
-      if (!action) throw new Error('Cannot update a trashed Info');
+      if (!status) throw new Error('Cannot update a trashed Info');
 
       return odeServices.http().put<{
         id: InfoId;
-      }>(`${baseUrl}/thread/${threadId}/info/${infoId}/${action}`, payload);
+      }>(`${baseUrlAPI}/infos/${infoId}`, { ...payload, status });
     },
 
     /**
