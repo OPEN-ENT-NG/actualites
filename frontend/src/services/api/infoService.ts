@@ -2,6 +2,7 @@ import { odeServices } from '@edifice.io/client';
 import { baseUrl, baseUrlAPI } from '.';
 import {
   Info,
+  InfoDetails,
   InfoId,
   InfoRevision,
   InfoStatus,
@@ -17,8 +18,10 @@ export const createInfoService = () => {
      * @param param0 - The ID of the Info to retrieve.
      * @returns The requested Info object.
      */
-    getInfo({ infoId }: { infoId?: InfoId }) {
-      return odeServices.http().get<Info>(`${baseUrlAPI}/infos/${infoId}`);
+    getInfo({ infoId }: { infoId: InfoId }) {
+      return odeServices
+        .http()
+        .get<InfoDetails>(`${baseUrlAPI}/infos/${infoId}`);
     },
     /**
      * Get a page of Infos results.
