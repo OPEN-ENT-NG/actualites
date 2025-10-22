@@ -1,9 +1,9 @@
 package net.atos.entng.actualites.services.impl;
 
+import com.google.common.collect.Lists;
 import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.Server;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
+import io.vertx.core.*;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonArray;
@@ -17,7 +17,9 @@ import org.entcore.common.user.UserInfos;
 import org.entcore.common.user.UserUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static net.atos.entng.actualites.controllers.InfoController.*;
@@ -95,50 +97,45 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
 
     private void extractUserIds(final HttpServerRequest request, final JsonArray shared, final UserInfos user, final UserInfos owner,
                                 final String threadId, final String infoId, final String title, final String notificationName){
-        final List<String> ids = new ArrayList<String>();
-        if (shared.size() > 0) {
-            JsonObject jo = null;
-            String groupId = null;
-            String id = null;
-            final AtomicInteger remaining = new AtomicInteger(shared.size());
-            // Extract shared with
+        final Set<String> ids = new HashSet<>();
+        if (!shared.isEmpty()) {
+            List<Future<?>> futures = new ArrayList<>();
             for(int i=0; i<shared.size(); i++){
-                jo = shared.getJsonObject(i);
+                JsonObject jo = shared.getJsonObject(i);
                 if(jo.containsKey("userId")){
-                    id = jo.getString("userId");
-                    if(!ids.contains(id) && !(user.getUserId().equals(id)) && !(owner.getUserId().equals(id))){
+                    String id = jo.getString("userId");
+                    if(!(user.getUserId().equals(id)) && !(owner.getUserId().equals(id))){
                         ids.add(id);
                     }
-                    remaining.getAndDecrement();
-                }
-                else{
+                } else {
                     if(jo.containsKey("groupId")){
-                        groupId = jo.getString("groupId");
+                        String groupId = jo.getString("groupId");
                         if (groupId != null) {
-                            UserUtils.findUsersInProfilsGroups(groupId, eventBus, user.getUserId(), false, new Handler<JsonArray>() {
-                                @Override
-                                public void handle(JsonArray event) {
-                                    if (event != null) {
-                                        String userId = null;
-                                        for (Object o : event) {
-                                            if (!(o instanceof JsonObject)) continue;
-                                            userId = ((JsonObject) o).getString("id");
-                                            if(!ids.contains(userId) && !(user.getUserId().equals(userId)) && !(owner.getUserId().equals(userId))){
-                                                ids.add(userId);
-                                            }
+                            Promise<?> promise = Promise.promise();
+                            UserUtils.findUsersInProfilsGroups(groupId, eventBus, user.getUserId(), false, event -> {
+                                if (event != null) {
+                                    for (Object o : event) {
+                                        if (!(o instanceof JsonObject)) continue;
+                                        String userId = ((JsonObject) o).getString("id");
+                                        if(!(user.getUserId().equals(userId)) && !(owner.getUserId().equals(userId))){
+                                            ids.add(userId);
                                         }
                                     }
-                                    if (remaining.decrementAndGet() < 1) {
-                                        sendNotify(request, ids, owner, threadId, infoId, title, notificationName);
-                                    }
                                 }
+                                promise.complete();
                             });
+                            futures.add(promise.future());
                         }
                     }
                 }
             }
-            if (remaining.get() < 1) {
-                sendNotify(request, ids, owner, threadId, infoId, title, notificationName);
+            //synchronous (no group in shared)
+            if (futures.isEmpty()) {
+                sendNotify(request, Lists.newArrayList(ids), owner, threadId, infoId, title, notificationName);
+            } else {
+                Future.any(futures).onComplete(h ->
+                        sendNotify(request, Lists.newArrayList(ids), owner, threadId, infoId, title, notificationName)
+                        );
             }
         }
     }
