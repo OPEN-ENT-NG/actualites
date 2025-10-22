@@ -139,22 +139,21 @@ export const useCreateDraftInfo = () =>
 export const useUpdateInfo = () =>
   useMutation({
     mutationFn: ({
-      threadId,
       infoId,
       infoStatus,
       payload,
     }: {
-      threadId: ThreadId;
       infoId: InfoId;
       infoStatus: InfoStatus;
       payload: {
+        thread_id: ThreadId;
         title: string;
         content: string;
         is_headline: boolean;
         publication_date?: string;
         expiration_date?: string;
       };
-    }) => infoService.update(threadId, infoId, infoStatus, payload),
+    }) => infoService.update(infoId, infoStatus, payload),
     // TODO optimistic update
   });
 
