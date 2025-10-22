@@ -18,8 +18,7 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
     errorElement: <PageError />,
     children: [
       {
-        path: 'create',
-        index: true,
+        path: 'create/info',
         async lazy() {
           const { loader, CreateInfo: Component } = await import(
             '~/routes/pages/CreateInfo'
@@ -29,6 +28,45 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
             Component,
           };
         },
+        children: [
+          {
+            path: '',
+            index: true,
+            async lazy() {
+              const { loader, CreateInfoDetails: Component } = await import(
+                '~/routes/pages/CreateInfoDetails'
+              );
+              return {
+                loader: loader(queryClient),
+                Component,
+              };
+            },
+          },
+          {
+            path: ':infoId/rights',
+            async lazy() {
+              const { loader, CreateInfoRights: Component } = await import(
+                '~/routes/pages/CreateInfoRights'
+              );
+              return {
+                loader: loader(queryClient),
+                Component,
+              };
+            },
+          },
+          {
+            path: ':infoId',
+            async lazy() {
+              const { loader, CreateInfoDetails: Component } = await import(
+                '~/routes/pages/CreateInfoDetails'
+              );
+              return {
+                loader: loader(queryClient),
+                Component,
+              };
+            },
+          },
+        ],
       },
       {
         path: '',

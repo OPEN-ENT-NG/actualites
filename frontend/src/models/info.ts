@@ -1,4 +1,4 @@
-import { ThreadId } from './thread';
+import { Thread, ThreadId } from './thread';
 
 export type InfoId = number;
 
@@ -20,9 +20,8 @@ export enum InfoExtendedStatus {
   INCOMING = 'INCOMING',
 }
 
-export interface Info {
+export interface InfoBase {
   id: InfoId;
-  threadId: ThreadId;
   content: string;
   status: InfoStatus;
   owner: InfoOwner;
@@ -40,6 +39,13 @@ export interface Info {
   sharedRights: any[];
   contentVersion: number;
   previousContentVersion: number;
+}
+export interface Info extends InfoBase {
+  threadId: ThreadId;
+}
+
+export interface InfoDetails extends InfoBase {
+  thread: Thread;
 }
 
 export enum InfoRevisionEvent {
