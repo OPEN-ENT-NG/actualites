@@ -22,10 +22,10 @@ export function useInfoDetailsForm() {
       if (infoFormValues.thread_id && infoFormValues.infoStatus) {
         return updateDraftInfo(
           {
-            threadId: infoFormValues.thread_id,
             infoId: infoFormValues.infoId,
             infoStatus: infoFormValues.infoStatus,
             payload: {
+              thread_id: Number(infoFormValues.thread_id),
               content: infoFormValues.content,
               title: infoFormValues.title,
               is_headline: infoFormValues.headline,

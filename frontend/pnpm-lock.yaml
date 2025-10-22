@@ -10,13 +10,13 @@ importers:
     dependencies:
       '@edifice.io/bootstrap':
         specifier: develop-b2school-actualites
-        version: 2.3.2-develop-b2school-actualites.20251020144208
+        version: 2.3.2-develop-b2school-actualites.20251022111214
       '@edifice.io/client':
         specifier: develop-b2school-actualites
-        version: 2.3.2-develop-b2school-actualites.20251020144208
+        version: 2.3.2-develop-b2school-actualites.20251022111214
       '@edifice.io/react':
         specifier: develop-b2school-actualites
-        version: 2.3.2-develop-b2school-actualites.20251020144208(eukjcnewzgut4esd5adw6cw2we)
+        version: 2.3.2-develop-b2school-actualites.20251022111214(eukjcnewzgut4esd5adw6cw2we)
       '@react-spring/web':
         specifier: ^9.7.5
         version: 9.7.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -309,20 +309,20 @@ packages:
     peerDependencies:
       react: '>=16.8.0'
 
-  '@edifice.io/bootstrap@2.3.2-develop-b2school-actualites.20251020144208':
-    resolution: {integrity: sha512-WGPrSxfKTeRPqQfGaz3qqyhG5OxRf94/4JebZnnVjbQA8q4VQHBAN3ns8R91A4oMzufJIncveeiYUuoYJXmuhQ==}
+  '@edifice.io/bootstrap@2.3.2-develop-b2school-actualites.20251022111214':
+    resolution: {integrity: sha512-S1ZCIgfMUQ5KuhQ6cEzpaD8pEKQQDw6uKpCCCPuLa+Vsw/N7GrqkyWVErtIUveafZGfjPAuhMeEzVh/tHsNxzw==}
 
   '@edifice.io/bootstrap@2.4.2-develop-b2school.20251020120458':
     resolution: {integrity: sha512-xCCfEaNWpgu7THLTLGNLeBq+H5KH0kadPa8FgCNuJIvIXw1SdhjCO/OG65FkdAKNCbK8nrZgzU6bD5Rodlu4Kw==}
 
-  '@edifice.io/client@2.3.2-develop-b2school-actualites.20251020144208':
-    resolution: {integrity: sha512-nDCCQqKZFJKc0vPUT1tbfGSX2OFVjUI4jlUPL6ZJz7ukfeUBtKbSr57DrqsBu6VPMJBhcsO/+7OCe6pZcmpKXA==}
+  '@edifice.io/client@2.3.2-develop-b2school-actualites.20251022111214':
+    resolution: {integrity: sha512-ypYcLg64hqdUccB9/4Te9Jg8AZQvt/RmObDpULY/sJLPhMAZeEenQc0aypcuIxjWcvzhr1nWUPJCTr+eoAEV+g==}
 
   '@edifice.io/client@2.4.2-develop-b2school.20251020120458':
     resolution: {integrity: sha512-IY1MnoXeutmZoe+0ffRt9YYZ/xgI3drF6mNLr/CC5fRQcwjsn7iAp9pJAO1QiOvjzJ2J3WkwtqZ1y55QPs9idQ==}
 
-  '@edifice.io/react@2.3.2-develop-b2school-actualites.20251020144208':
-    resolution: {integrity: sha512-+CKDjET+V/9heh5AccGxWpOUibvnHQ5nFr97gUfLM33WG4p8PjT/S0WaJ08GrWtOQOsX1ey/VGHxYkzQEm0NYw==}
+  '@edifice.io/react@2.3.2-develop-b2school-actualites.20251022111214':
+    resolution: {integrity: sha512-sqKKSIo5JkLg8Hkh6BCp+CtZZZtPHkgGKwYfEeQ7wDXCgImd6G1iNXepWSDsZWDuIvuQpUdDbPFHevzx4CvgQg==}
     peerDependencies:
       '@react-spring/web': ^9.7.5
       '@tanstack/react-query': 5.62.7
@@ -341,14 +341,14 @@ packages:
       react-hook-form: ^7.53.0
       react-i18next: ^14.1.0
 
-  '@edifice.io/tiptap-extensions@2.3.2-develop-b2school-actualites.20251020144208':
-    resolution: {integrity: sha512-35QyXzph9g+A2qw45ejtUEkn7N5GpNf9DvxreyxHMxExa9P81BxrFYm6aW4p8UH/yq2uMovCnG78jH9A5zDMAw==}
+  '@edifice.io/tiptap-extensions@2.3.2-develop-b2school-actualites.20251022111214':
+    resolution: {integrity: sha512-RNkafnM9XAFnsZxfCNEgKMYNSBlswyT8eTxEr4qrEjbK27b1H4tZmQQCA7c/F7kVfdctxZRPMwDrnbdRHt62yw==}
 
   '@edifice.io/tiptap-extensions@2.4.2-develop-b2school.20251020120458':
     resolution: {integrity: sha512-dBlFhACXQkg3jqKXMwuCBJ9t4IRSTEcIC3hqKGNoqWMUe8iq7xMpnlUklKa+Er8qJDqQGC3M0Gpr+uxrGG4Y/w==}
 
-  '@edifice.io/utilities@2.3.2-develop-b2school-actualites.20251020144208':
-    resolution: {integrity: sha512-ygO2Medw5FWivTwmJkQTmehhhVxhc78K3wACO+roOdTut8y4AbgD3wk1f/UpN7iZ7ebLNFqiICAYMRyjmG/EKw==}
+  '@edifice.io/utilities@2.3.2-develop-b2school-actualites.20251022111214':
+    resolution: {integrity: sha512-f3DYgyL1JzUlWqcgLtnPiFIebx03GI/WDoq81WXoNoXz0E/bPfNeGTE3RK+IhYPrlq2HZoW7YT4UkW06za8chw==}
 
   '@edifice.io/utilities@2.4.2-develop-b2school.20251020120458':
     resolution: {integrity: sha512-2q/0vAvAReCt/atyGzlZGx5XwDaANww5eyLsQdT1Q4pYVfjTvv/XNFP6ZDh8fK8BzMgHNYRv6ZCIDRmuXSDj5g==}
@@ -658,11 +658,11 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@microsoft/api-extractor-model@7.31.1':
-    resolution: {integrity: sha512-Dhnip5OFKbl85rq/ICHBFGhV4RA5UQSl8AC/P/zoGvs+CBudPkatt5kIhMGiYgVPnUWmfR6fcp38+1AFLYNtUw==}
+  '@microsoft/api-extractor-model@7.31.2':
+    resolution: {integrity: sha512-d0WwxwBLZaHokTrOngqHVkQK59NlveV5RE4wEpjaybhSNmEK9N7KPCcT5n8JcpH6k5o6AhxG47g1km2D7BZw8Q==}
 
-  '@microsoft/api-extractor@7.53.1':
-    resolution: {integrity: sha512-bul5eTNxijLdDBqLye74u9494sRmf+9QULtec9Od0uHnifahGeNt8CC4/xCdn7mVyEBrXIQyQ5+sc4Uc0QfBSA==}
+  '@microsoft/api-extractor@7.53.2':
+    resolution: {integrity: sha512-hG3+wJY6aZlkQhGpUbhq1C5F1uJLsmDjrwVea+WT18RbD1XtIGn/c4uyMF7gdXLjLNwErB47hnRk9QNjpEHUWA==}
     hasBin: true
 
   '@microsoft/tsdoc-config@0.17.1':
@@ -1153,8 +1153,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@rushstack/node-core-library@5.17.0':
-    resolution: {integrity: sha512-24vt1GbHN6kyIglRMTVpyEiNRRRJK8uZHc1XoGAhmnTDKnrWet8OmOpImMswJIe6gM78eV8cMg1HXwuUHkSSgg==}
+  '@rushstack/node-core-library@5.17.1':
+    resolution: {integrity: sha512-Mtcsa0aRJgYJOpeTe4qElLTRBlijNohdliq/xOhqce5rlzMIfLr73j9wUuj6GYPZPbG0S+is/RL2l0m/vnL55A==}
     peerDependencies:
       '@types/node': '*'
     peerDependenciesMeta:
@@ -1172,16 +1172,16 @@ packages:
   '@rushstack/rig-package@0.6.0':
     resolution: {integrity: sha512-ZQmfzsLE2+Y91GF15c65L/slMRVhF6Hycq04D4TwtdGaUAbIXXg9c5pKA5KFU7M4QMaihoobp9JJYpYcaY3zOw==}
 
-  '@rushstack/terminal@0.19.1':
-    resolution: {integrity: sha512-jsBuSad67IDVMO2yp0hDfs0OdE4z3mDIjIL2pclDT3aEJboeZXE85e1HjuD0F6JoW3XgHvDwoX+WOV+AVTDQeA==}
+  '@rushstack/terminal@0.19.2':
+    resolution: {integrity: sha512-SJLC+6oUrJ0OOpuuwXxhktCTE3jeYVIwtvREdNhbcnVQrYGaDJpAoBgNVfw+VH0pTPpFLBqoPHsRRz7mj7WlbA==}
     peerDependencies:
       '@types/node': '*'
     peerDependenciesMeta:
       '@types/node':
         optional: true
 
-  '@rushstack/ts-command-line@5.1.1':
-    resolution: {integrity: sha512-HPzFsUcr+wZ3oQI08Ec/E6cuiAVHKzrXZGHhwiwIGygAFiqN5QzX+ff30n70NU2WyE26CykgMwBZZSSyHCJrzA==}
+  '@rushstack/ts-command-line@5.1.2':
+    resolution: {integrity: sha512-jn0EnSefYrkZDrBGd6KGuecL84LI06DgzL4hVQ46AUijNBt2nRU/ST4HhrfII/w91siCd1J/Okvxq/BS75Me/A==}
 
   '@sinclair/typebox@0.27.8':
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
@@ -3099,8 +3099,8 @@ packages:
   prosemirror-menu@1.2.5:
     resolution: {integrity: sha512-qwXzynnpBIeg1D7BAtjOusR+81xCp53j7iWu/IargiRZqRjGIlQuu1f3jFi+ehrHhWMLoyOQTSRx/IWZJqOYtQ==}
 
-  prosemirror-model@1.25.3:
-    resolution: {integrity: sha512-dY2HdaNXlARknJbrManZ1WyUtos+AP97AmvqdOQtWtrrC5g4mohVX5DTi9rXNFSk09eczLq9GuNTtq3EfMeMGA==}
+  prosemirror-model@1.25.4:
+    resolution: {integrity: sha512-PIM7E43PBxKce8OQeezAs9j4TP+5yDpZVbuurd1h5phUxEKIu+G2a+EUZzIC5nS1mJktDJWzbqS23n1tsAf5QA==}
 
   prosemirror-schema-basic@1.2.4:
     resolution: {integrity: sha512-ELxP4TlX3yr2v5rM7Sb70SqStq5NvI15c0j9j/gjsrO5vaw+fnnpovCLEGIcpeGfifkuqJwl4fon6b+KdrODYQ==}
@@ -3261,8 +3261,8 @@ packages:
     resolution: {integrity: sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==}
     engines: {node: '>=4'}
 
-  resolve@1.22.10:
-    resolution: {integrity: sha512-NPRy+/ncIMeDlTAsuqwKIiferiawhefFJtkNSW0qZJEqMEb+qBt/77B/jGeeek+F0uOeN05CDa6HXbbIgtVX4w==}
+  resolve@1.22.11:
+    resolution: {integrity: sha512-RfqAvLnMl313r7c9oclB1HhUEAezcpLjz95wFH4LVuhk9JF/r22qmVP9AMmOU4vMX7Q8pN8jwNg/CSpdFnMjTQ==}
     engines: {node: '>= 0.4'}
     hasBin: true
 
@@ -4063,7 +4063,7 @@ snapshots:
       react: 18.3.1
       tslib: 2.8.1
 
-  '@edifice.io/bootstrap@2.3.2-develop-b2school-actualites.20251020144208':
+  '@edifice.io/bootstrap@2.3.2-develop-b2school-actualites.20251022111214':
     dependencies:
       '@popperjs/core': 2.11.8
       bootstrap: 5.3.2(@popperjs/core@2.11.8)
@@ -4073,9 +4073,9 @@ snapshots:
       '@popperjs/core': 2.11.8
       bootstrap: 5.3.2(@popperjs/core@2.11.8)
 
-  '@edifice.io/client@2.3.2-develop-b2school-actualites.20251020144208':
+  '@edifice.io/client@2.3.2-develop-b2school-actualites.20251022111214':
     dependencies:
-      '@edifice.io/utilities': 2.3.2-develop-b2school-actualites.20251020144208
+      '@edifice.io/utilities': 2.3.2-develop-b2school-actualites.20251022111214
       axios: 1.12.2
       core-js: 3.46.0
     transitivePeerDependencies:
@@ -4089,14 +4089,14 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@edifice.io/react@2.3.2-develop-b2school-actualites.20251020144208(eukjcnewzgut4esd5adw6cw2we)':
+  '@edifice.io/react@2.3.2-develop-b2school-actualites.20251022111214(eukjcnewzgut4esd5adw6cw2we)':
     dependencies:
       '@dnd-kit/core': 6.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@dnd-kit/sortable': 8.0.0(@dnd-kit/core@6.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       '@dnd-kit/utilities': 3.2.2(react@18.3.1)
-      '@edifice.io/bootstrap': 2.3.2-develop-b2school-actualites.20251020144208
-      '@edifice.io/tiptap-extensions': 2.3.2-develop-b2school-actualites.20251020144208(@types/node@18.19.130)(rollup@4.52.5)(typescript@5.9.3)
-      '@edifice.io/utilities': 2.3.2-develop-b2school-actualites.20251020144208
+      '@edifice.io/bootstrap': 2.3.2-develop-b2school-actualites.20251022111214
+      '@edifice.io/tiptap-extensions': 2.3.2-develop-b2school-actualites.20251022111214(@types/node@18.19.130)(rollup@4.52.5)(typescript@5.9.3)
+      '@edifice.io/utilities': 2.3.2-develop-b2school-actualites.20251022111214
       '@floating-ui/react': 0.26.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@pixi/mixin-get-child-by-name': 7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2))
       '@pixi/react': 7.1.2(p7odtnnenfgvhs76mwyuql6w3u)
@@ -4291,9 +4291,9 @@ snapshots:
       - terser
       - typescript
 
-  '@edifice.io/tiptap-extensions@2.3.2-develop-b2school-actualites.20251020144208(@types/node@18.19.130)(rollup@4.52.5)(typescript@5.9.3)':
+  '@edifice.io/tiptap-extensions@2.3.2-develop-b2school-actualites.20251022111214(@types/node@18.19.130)(rollup@4.52.5)(typescript@5.9.3)':
     dependencies:
-      '@edifice.io/utilities': 2.3.2-develop-b2school-actualites.20251020144208
+      '@edifice.io/utilities': 2.3.2-develop-b2school-actualites.20251022111214
       '@tiptap/core': 2.11.0(@tiptap/pm@2.11.0)
       '@tiptap/extension-blockquote': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
       '@tiptap/extension-bold': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
@@ -4320,7 +4320,7 @@ snapshots:
       '@tiptap/html': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))(@tiptap/pm@2.11.0)
       '@tiptap/pm': 2.11.0
       '@tiptap/starter-kit': 2.11.0
-      prosemirror-model: 1.25.3
+      prosemirror-model: 1.25.4
       prosemirror-state: 1.4.3
       prosemirror-transform: 1.10.4
       prosemirror-view: 1.41.3
@@ -4368,7 +4368,7 @@ snapshots:
       '@tiptap/html': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))(@tiptap/pm@2.11.0)
       '@tiptap/pm': 2.11.0
       '@tiptap/starter-kit': 2.11.0
-      prosemirror-model: 1.25.3
+      prosemirror-model: 1.25.4
       prosemirror-state: 1.4.3
       prosemirror-transform: 1.10.4
       prosemirror-view: 1.41.3
@@ -4387,7 +4387,7 @@ snapshots:
       - terser
       - typescript
 
-  '@edifice.io/utilities@2.3.2-develop-b2school-actualites.20251020144208': {}
+  '@edifice.io/utilities@2.3.2-develop-b2school-actualites.20251022111214': {}
 
   '@edifice.io/utilities@2.4.2-develop-b2school.20251020120458': {}
 
@@ -4632,26 +4632,26 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@microsoft/api-extractor-model@7.31.1(@types/node@18.19.130)':
+  '@microsoft/api-extractor-model@7.31.2(@types/node@18.19.130)':
     dependencies:
       '@microsoft/tsdoc': 0.15.1
       '@microsoft/tsdoc-config': 0.17.1
-      '@rushstack/node-core-library': 5.17.0(@types/node@18.19.130)
+      '@rushstack/node-core-library': 5.17.1(@types/node@18.19.130)
     transitivePeerDependencies:
       - '@types/node'
 
-  '@microsoft/api-extractor@7.53.1(@types/node@18.19.130)':
+  '@microsoft/api-extractor@7.53.2(@types/node@18.19.130)':
     dependencies:
-      '@microsoft/api-extractor-model': 7.31.1(@types/node@18.19.130)
+      '@microsoft/api-extractor-model': 7.31.2(@types/node@18.19.130)
       '@microsoft/tsdoc': 0.15.1
       '@microsoft/tsdoc-config': 0.17.1
-      '@rushstack/node-core-library': 5.17.0(@types/node@18.19.130)
+      '@rushstack/node-core-library': 5.17.1(@types/node@18.19.130)
       '@rushstack/rig-package': 0.6.0
-      '@rushstack/terminal': 0.19.1(@types/node@18.19.130)
-      '@rushstack/ts-command-line': 5.1.1(@types/node@18.19.130)
+      '@rushstack/terminal': 0.19.2(@types/node@18.19.130)
+      '@rushstack/ts-command-line': 5.1.2(@types/node@18.19.130)
       lodash: 4.17.21
       minimatch: 10.0.3
-      resolve: 1.22.10
+      resolve: 1.22.11
       semver: 7.5.4
       source-map: 0.6.1
       typescript: 5.8.2
@@ -4663,7 +4663,7 @@ snapshots:
       '@microsoft/tsdoc': 0.15.1
       ajv: 8.12.0
       jju: 1.4.0
-      resolve: 1.22.10
+      resolve: 1.22.11
 
   '@microsoft/tsdoc@0.15.1': {}
 
@@ -5077,7 +5077,7 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.52.5':
     optional: true
 
-  '@rushstack/node-core-library@5.17.0(@types/node@18.19.130)':
+  '@rushstack/node-core-library@5.17.1(@types/node@18.19.130)':
     dependencies:
       ajv: 8.13.0
       ajv-draft-04: 1.0.0(ajv@8.13.0)
@@ -5085,7 +5085,7 @@ snapshots:
       fs-extra: 11.3.2
       import-lazy: 4.0.0
       jju: 1.4.0
-      resolve: 1.22.10
+      resolve: 1.22.11
       semver: 7.5.4
     optionalDependencies:
       '@types/node': 18.19.130
@@ -5096,20 +5096,20 @@ snapshots:
 
   '@rushstack/rig-package@0.6.0':
     dependencies:
-      resolve: 1.22.10
+      resolve: 1.22.11
       strip-json-comments: 3.1.1
 
-  '@rushstack/terminal@0.19.1(@types/node@18.19.130)':
+  '@rushstack/terminal@0.19.2(@types/node@18.19.130)':
     dependencies:
-      '@rushstack/node-core-library': 5.17.0(@types/node@18.19.130)
+      '@rushstack/node-core-library': 5.17.1(@types/node@18.19.130)
       '@rushstack/problem-matcher': 0.1.1(@types/node@18.19.130)
       supports-color: 8.1.1
     optionalDependencies:
       '@types/node': 18.19.130
 
-  '@rushstack/ts-command-line@5.1.1(@types/node@18.19.130)':
+  '@rushstack/ts-command-line@5.1.2(@types/node@18.19.130)':
     dependencies:
-      '@rushstack/terminal': 0.19.1(@types/node@18.19.130)
+      '@rushstack/terminal': 0.19.2(@types/node@18.19.130)
       '@types/argparse': 1.0.38
       argparse: 1.0.10
       string-argv: 0.3.2
@@ -5380,12 +5380,12 @@ snapshots:
       prosemirror-keymap: 1.2.3
       prosemirror-markdown: 1.13.2
       prosemirror-menu: 1.2.5
-      prosemirror-model: 1.25.3
+      prosemirror-model: 1.25.4
       prosemirror-schema-basic: 1.2.4
       prosemirror-schema-list: 1.5.1
       prosemirror-state: 1.4.3
       prosemirror-tables: 1.8.1
-      prosemirror-trailing-node: 3.0.0(prosemirror-model@1.25.3)(prosemirror-state@1.4.3)(prosemirror-view@1.41.3)
+      prosemirror-trailing-node: 3.0.0(prosemirror-model@1.25.4)(prosemirror-state@1.4.3)(prosemirror-view@1.41.3)
       prosemirror-transform: 1.10.4
       prosemirror-view: 1.41.3
 
@@ -7187,7 +7187,7 @@ snapshots:
 
   prosemirror-commands@1.7.1:
     dependencies:
-      prosemirror-model: 1.25.3
+      prosemirror-model: 1.25.4
       prosemirror-state: 1.4.3
       prosemirror-transform: 1.10.4
 
@@ -7200,7 +7200,7 @@ snapshots:
   prosemirror-gapcursor@1.4.0:
     dependencies:
       prosemirror-keymap: 1.2.3
-      prosemirror-model: 1.25.3
+      prosemirror-model: 1.25.4
       prosemirror-state: 1.4.3
       prosemirror-view: 1.41.3
 
@@ -7225,7 +7225,7 @@ snapshots:
     dependencies:
       '@types/markdown-it': 14.1.2
       markdown-it: 14.1.0
-      prosemirror-model: 1.25.3
+      prosemirror-model: 1.25.4
 
   prosemirror-menu@1.2.5:
     dependencies:
@@ -7234,49 +7234,49 @@ snapshots:
       prosemirror-history: 1.4.1
       prosemirror-state: 1.4.3
 
-  prosemirror-model@1.25.3:
+  prosemirror-model@1.25.4:
     dependencies:
       orderedmap: 2.1.1
 
   prosemirror-schema-basic@1.2.4:
     dependencies:
-      prosemirror-model: 1.25.3
+      prosemirror-model: 1.25.4
 
   prosemirror-schema-list@1.5.1:
     dependencies:
-      prosemirror-model: 1.25.3
+      prosemirror-model: 1.25.4
       prosemirror-state: 1.4.3
       prosemirror-transform: 1.10.4
 
   prosemirror-state@1.4.3:
     dependencies:
-      prosemirror-model: 1.25.3
+      prosemirror-model: 1.25.4
       prosemirror-transform: 1.10.4
       prosemirror-view: 1.41.3
 
   prosemirror-tables@1.8.1:
     dependencies:
       prosemirror-keymap: 1.2.3
-      prosemirror-model: 1.25.3
+      prosemirror-model: 1.25.4
       prosemirror-state: 1.4.3
       prosemirror-transform: 1.10.4
       prosemirror-view: 1.41.3
 
-  prosemirror-trailing-node@3.0.0(prosemirror-model@1.25.3)(prosemirror-state@1.4.3)(prosemirror-view@1.41.3):
+  prosemirror-trailing-node@3.0.0(prosemirror-model@1.25.4)(prosemirror-state@1.4.3)(prosemirror-view@1.41.3):
     dependencies:
       '@remirror/core-constants': 3.0.0
       escape-string-regexp: 4.0.0
-      prosemirror-model: 1.25.3
+      prosemirror-model: 1.25.4
       prosemirror-state: 1.4.3
       prosemirror-view: 1.41.3
 
   prosemirror-transform@1.10.4:
     dependencies:
-      prosemirror-model: 1.25.3
+      prosemirror-model: 1.25.4
 
   prosemirror-view@1.41.3:
     dependencies:
-      prosemirror-model: 1.25.3
+      prosemirror-model: 1.25.4
       prosemirror-state: 1.4.3
       prosemirror-transform: 1.10.4
 
@@ -7388,7 +7388,7 @@ snapshots:
 
   resolve-from@4.0.0: {}
 
-  resolve@1.22.10:
+  resolve@1.22.11:
     dependencies:
       is-core-module: 2.16.1
       path-parse: 1.0.7
@@ -7777,7 +7777,7 @@ snapshots:
 
   vite-plugin-dts@4.5.4(@types/node@18.19.130)(rollup@4.52.5)(typescript@5.9.3)(vite@5.4.21(@types/node@18.19.130)):
     dependencies:
-      '@microsoft/api-extractor': 7.53.1(@types/node@18.19.130)
+      '@microsoft/api-extractor': 7.53.2(@types/node@18.19.130)
       '@rollup/pluginutils': 5.3.0(rollup@4.52.5)
       '@volar/typescript': 2.4.23
       '@vue/language-core': 2.2.0(typescript@5.9.3)
