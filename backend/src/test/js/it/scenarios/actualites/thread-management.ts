@@ -63,23 +63,33 @@ export function setup() {
   describe("[Tread-Management-Init] Initialize data", () => {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     head = initStructure(`${schoolName} - Head`);
+    var i = 0;
+    console.log(i++);
     const teacherProfileGroup = getTeacherRole(head);
+    console.log(i++);
     const attachedStructuresGroups: string[] = [];
     //const i = Math.floor(Math.random() * 1000000);
     const school = initStructure(`${schoolName} - School`);
+    console.log(i++);
     structures.push(school);
     attachStructureAsChild(head, school);
+    console.log(i++);
     const parentRole = getParentRole(school);
+    console.log(i++);
     const schoolProfileGroup = getRolesOfStructure(school.id);
+    console.log(schoolProfileGroup);
     attachedStructuresGroups.push(...schoolProfileGroup.map((s) => s.id));
 
     for (let group of attachedStructuresGroups) {
       addCommRuleToGroup(group, [teacherProfileGroup.id]);
     }
+    console.log(i++);
     const role: Role = createAndSetRole("Actualites");
-
+    console.log(i++);
     linkRoleToUsers(head, role, [teacherProfileGroup.name]);
+    console.log(i++);
     linkRoleToUsers(school, role, [parentRole.name]);
+    console.log(i++);
   });
   return { head, structures };
 }

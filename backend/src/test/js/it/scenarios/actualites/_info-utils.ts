@@ -19,7 +19,7 @@ export type InfoResponse = {
   threadId: number;
   title: string;
   content: string;
-  status: number;
+  status: string;
   owner: {
     userId: string;
     username: string;
@@ -28,9 +28,12 @@ export type InfoResponse = {
   modified: string;
   publicationDate?: string;
   expirationDate?: string;
-  isHeadline: boolean;
+  headline: boolean;
   numberOfComments: number;
   sharedRights: string[];
+  thread?: {
+    id:number;
+  }
 }
 
 export type Identifier = {
