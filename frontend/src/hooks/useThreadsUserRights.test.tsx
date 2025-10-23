@@ -39,7 +39,7 @@ describe('useThreadsUserRights', () => {
     {
       description:
         'should return canContributeOnOneThread as true when user is owner of a thread',
-      threads: [mockThreadAsOwner],
+      threads: [mockThreadAsCatherine, mockThreadAsOwner],
       expected: true,
     },
     {
@@ -61,9 +61,10 @@ describe('useThreadsUserRights', () => {
     const { result } = renderHook(() => useThreadsUserRights(), {
       wrapper,
     });
-
+    expect(result.current.isSuccess).toBe(false);
     await waitFor(() => {
       expect(result.current.canContributeOnOneThread).toBe(expected);
+      expect(result.current.isSuccess).toBe(true);
     });
 
     expect(serviceSpy).toHaveBeenCalled();

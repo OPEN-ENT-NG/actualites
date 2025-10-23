@@ -3,22 +3,22 @@ import { useMemo } from 'react';
 import { useThreads } from '~/services/queries';
 import { getThreadUserRights } from './utils/threads';
 
-const defaultThreadsUserRights = {
-  canContributeOnOneThread: false,
+type ThreadsUserRights = {
+  canContributeOnOneThread: boolean | undefined;
+  isSuccess: boolean;
 };
-type ThreadsUserRights = typeof defaultThreadsUserRights;
-
 export function useThreadsUserRights(): ThreadsUserRights {
-  const { data: threads } = useThreads();
+  const { data: threads, isSuccess } = useThreads();
   const { user } = useUser();
 
   const canContributeOnOneThread = useMemo(() => {
     return threads?.some(
       (thread) => getThreadUserRights(thread, user?.userId)?.canContribute,
     );
-  }, [threads, user?.userId]);
+  }, [threads, user?.userId, isSuccess]);
 
   return {
-    canContributeOnOneThread: canContributeOnOneThread ?? false,
+    canContributeOnOneThread,
+    isSuccess,
   };
 }
