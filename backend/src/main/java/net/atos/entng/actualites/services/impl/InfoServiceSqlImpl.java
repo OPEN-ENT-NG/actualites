@@ -635,10 +635,10 @@ public class InfoServiceSqlImpl implements InfoService {
 
 			values.add(user.getUserId()); //for user_groups
 			groupsAndUserIds.forEach(values::add); //for user_groups
-			statusValues.forEach(values::add); // for status filtering
 			if (threadIds != null) {
 				threadIds.forEach(values::add); // for thread filtering
 			}
+			statusValues.forEach(values::add); // for status filtering
 			values.add(user.getUserId()); // for info owning clause
 			values.add(user.getUserId()); // for thread owning clause
 			values.add(page * pageSize); // offset clause
@@ -719,19 +719,24 @@ public class InfoServiceSqlImpl implements InfoService {
 
 			String query =
 					"WITH " +
+					"    user_groups AS MATERIALIZED ( " +
+					"        SELECT id::varchar from ( "	+
+					"        SELECT ? as id UNION ALL " +
+					"        SELECT id FROM " + GROUPS_TABLE + " WHERE id IN " + ids +
+					"    	) as u_groups )," +
 					"	 info_for_user AS ( " + // Every info owned of shared to the user
 					"		 SELECT i.id, array_agg(DISTINCT ish.action) AS rights " +
 					"    	 FROM " + NEWS_INFO_TABLE + " AS i " +
 					"        	 JOIN " + NEWS_INFO_SHARE_TABLE + " AS ish ON i.id = ish.resource_id " +
 					"    	 WHERE " +
-					"        	 ish.member_id IN " + ids + " " +
+					"        	 ish.member_id IN (SELECT id FROM user_groups) " +
 					"    	 GROUP BY i.id " +
 					"	 ), " +
 					"	 thread_for_user AS ( " + // Every thread owned of shared to the user with publish rights
 					"	 	 SELECT t.id, array_agg(DISTINCT tsh.action) AS rights" +
 					"    	 FROM " + NEWS_THREAD_TABLE + " AS t " +
 					"        	 INNER JOIN " + NEWS_THREAD_SHARE_TABLE + " AS tsh ON t.id = tsh.resource_id " +
-					"    	 WHERE tsh.member_id IN " + ids + " " +
+					"    	 WHERE tsh.member_id IN (SELECT id FROM user_groups) " +
 					"    	 GROUP BY t.id, tsh.member_id " +
 					"	 ) " +
 					"SELECT i.id, i.title, " + getContentFieldQuery(originalContent) + " as content , i.created, i.modified, i.is_headline, i.number_of_comments, " + // info data
@@ -756,9 +761,7 @@ public class InfoServiceSqlImpl implements InfoService {
 					"		 thread_owner, thread_owner_name, thread_owner_deleted";
 
 			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
-			for(String value : groupsAndUserIds){
-				values.add(value);
-			}
+			values.add(user.getUserId());
 			for(String value : groupsAndUserIds){
 				values.add(value);
 			}
