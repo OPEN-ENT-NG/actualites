@@ -3,13 +3,17 @@ import { useRef } from 'react';
 import { useInfoList } from '~/features';
 import { useInfiniteScroll } from '~/hooks/useInfiniteScroll';
 import { DEFAULT_PAGE_SIZE } from '~/services/queries/info';
-import { InfoCard, InfoCardSkeleton } from '.';
+import { InfoCard, InfoCardSkeleton } from '..';
+import { InfoListEmpty } from './components/InfoListEmpty';
+import { useInfoListEmptyScreen } from './hooks/useInfoListEmptyScreen';
 
 export const InfoList = () => {
   const loadNextRef = useRef<HTMLElement>(null);
 
   const { infos, hasNextPage, loadNextPage, isLoading, reload } =
     useInfoList(DEFAULT_PAGE_SIZE);
+  const { type: emptyScreenType, isReady: emptyScreenIsReady } =
+    useInfoListEmptyScreen();
 
   useInfiniteScroll({
     callback: () => {
@@ -26,6 +30,10 @@ export const InfoList = () => {
         <Button onClick={reload}>Recharger</Button>
       </header>
 
+      {!isLoading && infos.length === 0 && emptyScreenIsReady && (
+        <InfoListEmpty type={emptyScreenType} />
+      )}
+
       {infos.map((info) => (
         <InfoCard key={info.id} info={info}></InfoCard>
       ))}
@@ -36,10 +44,8 @@ export const InfoList = () => {
           <InfoCardSkeleton />
           <InfoCardSkeleton />
         </>
-      ) : hasNextPage ? (
-        <InfoCardSkeleton ref={loadNextRef} />
       ) : (
-        <></>
+        hasNextPage && <InfoCardSkeleton ref={loadNextRef} />
       )}
     </div>
   );

@@ -11,6 +11,7 @@ export const threadHandlers = [
   // Get all threads
   http.get(`${baseUrlAPI}/threads`, () => {
     return HttpResponse.json(mockThreads, { status: 200 });
+    // return HttpResponse.json([], { status: 200 }); // empty array to test empty screen
   }),
   // Create a thread
   http.post<
