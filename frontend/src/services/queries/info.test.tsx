@@ -1,6 +1,5 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { act } from 'react';
-import { describe, expect, test, vi } from 'vitest';
 import { wrapper } from '~/mocks/setup';
 import { InfoStatus } from '~/models/info';
 import { infoService } from '../api';

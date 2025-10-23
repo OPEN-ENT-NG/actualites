@@ -1,11 +1,57 @@
 import { Thread, ThreadMode } from '~/models/thread';
-
-export const RESPONSE_DELAY = 500;
+import { mockUserCatherine, mockUserLogged } from './users';
+import { CREATE_DRAFT_RIGHT } from '~/config/rights';
 
 //---------------------------------------
 //--------------- THREADS ---------------
 //---------------------------------------
+const mockGroupId = '58671-1434376996066';
+export const mockThreadAsOwner = {
+  id: 1,
+  title: 'Echange scolaire Erasmus lycée Diderot!',
+  icon: null,
+  mode: 0 as ThreadMode,
+  created: '2025-08-07T16:33:54.698',
+  modified: '2025-08-07T16:33:54.698',
+  structure_id: 'de8743c1-97f0-408c-b5ec-ec735ad65fd8',
+  owner: mockUserLogged.id,
+  username: mockUserLogged.displayName,
+  shared: [],
+};
+
+export const mockThreadAsCatherine = {
+  id: 2,
+  title: 'Echange scolaire Erasmus lycée Diderot!',
+  icon: null,
+  mode: 0 as ThreadMode,
+  created: '2025-08-07T16:33:54.698',
+  modified: '2025-08-07T16:33:54.698',
+  structure_id: 'de8743c1-97f0-408c-b5ec-ec735ad65fd8',
+  owner: mockUserCatherine.id,
+  username: mockUserCatherine.displayName,
+  shared: [],
+};
+
+export const mockThreadAsCatherineWithContributeRight = {
+  id: 3,
+  title: 'Echange scolaire Erasmus lycée Diderot!',
+  icon: null,
+  mode: 0 as ThreadMode,
+  created: '2025-08-07T16:33:54.698',
+  modified: '2025-08-07T16:33:54.698',
+  structure_id: 'de8743c1-97f0-408c-b5ec-ec735ad65fd8',
+  owner: mockUserCatherine.id,
+  username: mockUserCatherine.displayName,
+  shared: [
+    {
+      groupId: mockGroupId,
+      [CREATE_DRAFT_RIGHT]: true,
+    },
+  ],
+};
+
 export const mockThreads: Array<Thread> = [
+  mockThreadAsOwner,
   {
     id: 176,
     title: 'Echange scolaire Erasmus lycée Diderot!',
