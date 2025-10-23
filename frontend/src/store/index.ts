@@ -4,4 +4,5 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
-export * from './rights';
+export * from './rights/resource';
+export * from './rights/action';
