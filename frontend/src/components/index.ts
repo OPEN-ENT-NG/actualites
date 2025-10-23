@@ -7,4 +7,4 @@
  */
 export * from './InfoCard/InfoCard';
 export * from './InfoCard/InfoCardSkeleton';
-export * from './InfoList';
+export * from './InfoList/InfoList';
