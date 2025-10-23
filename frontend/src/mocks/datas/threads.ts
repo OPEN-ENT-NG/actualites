@@ -7,7 +7,6 @@ import { CREATE_DRAFT_RIGHT } from '~/config/rights';
 //---------------------------------------
 const mockGroupId = '58671-1434376996066';
 export const mockThreadAsOwner = {
-  _id: 1,
   id: 1,
   title: 'Echange scolaire Erasmus lycée Diderot!',
   icon: null,
@@ -21,7 +20,6 @@ export const mockThreadAsOwner = {
 };
 
 export const mockThreadAsCatherine = {
-  _id: 2,
   id: 2,
   title: 'Echange scolaire Erasmus lycée Diderot!',
   icon: null,
@@ -35,7 +33,6 @@ export const mockThreadAsCatherine = {
 };
 
 export const mockThreadAsCatherineWithContributeRight = {
-  _id: 3,
   id: 3,
   title: 'Echange scolaire Erasmus lycée Diderot!',
   icon: null,
