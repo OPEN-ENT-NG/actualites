@@ -42,6 +42,9 @@ import io.vertx.core.json.JsonObject;
 
 import fr.wseduc.webutils.http.Binding;
 
+/**
+ * Filter that give access for users that own or have rights (publish, contrib, manage) on a thread
+ */
 public class ThreadFilter implements ResourcesProvider {
 
 	@Override
@@ -71,26 +74,29 @@ public class ThreadFilter implements ResourcesProvider {
 			// Query
 			StringBuilder query = new StringBuilder();
 			JsonArray values = new JsonArray();
-			query.append("SELECT count(*)")
+
+			query.append("WITH user_groups AS MATERIALIZED ( ")
+				.append("   SELECT id::varchar FROM ( ")
+				.append("   SELECT ? as id UNION ALL ")
+				.append("   SELECT id FROM actualites.groups WHERE id in ").append(Sql.listPrepared(groupsAndUserIds))
+				.append(" ) as u_groups )")
+				.append("SELECT count(*)")
 				.append(" FROM actualites.thread AS t")
 				.append(" LEFT JOIN actualites.thread_shares AS ts ON t.id = ts.resource_id")
 				.append(" WHERE t.id = ? ")
 				.append(" AND (")
-				.append("   (ts.member_id IN "+ Sql.listPrepared(groupsAndUserIds) +" AND ts.action = ?)")
+				.append("   (ts.member_id IN (SELECT id FROM user_groups) AND ts.action = ?)")
 				.append("   OR t.owner = ?");
 			if(!admlStructuresIds.isEmpty()) {
 				query.append("   OR t.structure_id IN "+ Sql.listPrepared(admlStructuresIds));
 			}
 			query.append(" )");
+			values.add(user.getUserId());
+			groupsAndUserIds.forEach(values::add);
 			values.add(Sql.parseId(id));
-			for(String value : groupsAndUserIds){
-				values.add(value);
-			}
 			values.add(sharedMethod);
 			values.add(user.getUserId());
-			for(String value : admlStructuresIds){
-				values.add(value);
-			}
+			admlStructuresIds.forEach(values::add);
 
 			// Execute
 			Sql.getInstance().prepared(query.toString(), values, new Handler<Message<JsonObject>>() {
