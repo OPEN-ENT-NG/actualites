@@ -123,29 +123,34 @@ public class QueryHelperSql {
         final String memberIds = Sql.listPrepared(groupsAndUserIds.toArray());
         //get infos ids
         final StringBuilder queryIds = new StringBuilder();
+        queryIds.append("WITH user_groups AS MATERIALIZED ( ");
+        queryIds.append("  SELECT id::varchar FROM ( ");
+        queryIds.append("    SELECT ? as id UNION ");
+        queryIds.append("    SELECT id FROM actualites.groups WHERE id IN ").append(memberIds);
+        queryIds.append("  ) as u_groups) ");
         queryIds.append("(SELECT id, (CASE WHEN publication_date > modified THEN publication_date ELSE modified END) as date ");
-        queryIds.append("FROM actualites.info WHERE info.owner = ?) ");
+        queryIds.append("  FROM actualites.info WHERE info.owner = ?) ");
         queryIds.append("UNION ");
-        queryIds.append("(SELECT id, (CASE WHEN publication_date > modified THEN publication_date ELSE modified END) as date ");
-        queryIds.append("FROM actualites.info_shares ");
-        queryIds.append("INNER JOIN actualites.info ON (info.id = info_shares.resource_id) ");
-        queryIds.append("WHERE info_shares.member_id IN ").append(memberIds);
-        queryIds.append(" AND info.status > 2 ");
-        queryIds.append(" AND (info.publication_date <= LOCALTIMESTAMP OR info.publication_date IS NULL)");
-        queryIds.append(" AND (info.expiration_date > LOCALTIMESTAMP OR info.expiration_date IS NULL)) ");
+        queryIds.append("  (SELECT id, (CASE WHEN publication_date > modified THEN publication_date ELSE modified END) as date ");
+        queryIds.append("    FROM actualites.info_shares ");
+        queryIds.append("    INNER JOIN actualites.info ON (info.id = info_shares.resource_id) ");
+        queryIds.append("    WHERE info_shares.member_id IN (SELECT id FROM user_groups)");
+        queryIds.append("    AND info.status > 2 ");
+        queryIds.append("    AND (info.publication_date <= LOCALTIMESTAMP OR info.publication_date IS NULL)");
+        queryIds.append("    AND (info.expiration_date > LOCALTIMESTAMP OR info.expiration_date IS NULL)) ");
         queryIds.append("UNION ");
-        queryIds.append("(SELECT info.id as id, (CASE WHEN publication_date > info.modified THEN publication_date ELSE info.modified END) as date ");
-        queryIds.append("FROM actualites.thread ");
-        queryIds.append("INNER JOIN actualites.info ON (info.thread_id = thread.id) ");
-        queryIds.append("WHERE thread.owner = ?) ");
+        queryIds.append("  (SELECT info.id as id, (CASE WHEN publication_date > info.modified THEN publication_date ELSE info.modified END) as date ");
+        queryIds.append("    FROM actualites.thread ");
+        queryIds.append("    INNER JOIN actualites.info ON (info.thread_id = thread.id) ");
+        queryIds.append("    WHERE thread.owner = ?) ");
         queryIds.append("UNION ");
-        queryIds.append("(SELECT info.id as id, (CASE WHEN publication_date > info.modified THEN publication_date ELSE info.modified END) as date ");
-        queryIds.append("FROM actualites.thread_shares ");
-        queryIds.append("INNER JOIN actualites.thread ON (thread.id = thread_shares.resource_id) ");
-        queryIds.append("INNER JOIN actualites.info ON (info.thread_id = thread.id) ");
-        queryIds.append("WHERE (thread_shares.member_id IN ").append(memberIds);
-        queryIds.append("AND thread_shares.action = '" + THREAD_PUBLISH + "' ");
-        queryIds.append("AND info.status > 1)) ");
+        queryIds.append("  (SELECT info.id as id, (CASE WHEN publication_date > info.modified THEN publication_date ELSE info.modified END) as date ");
+        queryIds.append("    FROM actualites.thread_shares ");
+        queryIds.append("    INNER JOIN actualites.thread ON (thread.id = thread_shares.resource_id) ");
+        queryIds.append("    INNER JOIN actualites.info ON (info.thread_id = thread.id) ");
+        queryIds.append("    WHERE (thread_shares.member_id IN (SELECT id FROM user_groups)");
+        queryIds.append("    AND thread_shares.action = '" + THREAD_PUBLISH + "' ");
+        queryIds.append("    AND info.status > 1)) ");
         queryIds.append("ORDER BY date DESC ");
         if (limit != null) {
             queryIds.append("LIMIT ?");
@@ -154,7 +159,7 @@ public class QueryHelperSql {
                 .add(user.getUserId())
                 .addAll(new JsonArray(groupsAndUserIds))
                 .add(user.getUserId())
-                .addAll(new JsonArray(groupsAndUserIds));
+                .add(user.getUserId());
         if (limit != null) {
             values.add(limit);
         }

@@ -23,7 +23,6 @@ public class ThreadControllerV1 extends ControllerHelper {
 
     @Get("/api/v1/threads")
     @ApiDoc("Get all threads ")
-    @ResourceFilter(ThreadFilter.class)
     @SecuredAction(value = "actualites.threads.list", right = ROOT_RIGHT + "|listThreads")
     public void getThreads(HttpServerRequest request) {
         threadController.listThreadsV2(request);
