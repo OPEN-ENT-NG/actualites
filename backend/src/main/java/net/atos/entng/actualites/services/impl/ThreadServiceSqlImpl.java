@@ -66,6 +66,8 @@ public class ThreadServiceSqlImpl implements ThreadService {
 	private final String infosTable = "actualites.info";
 	private final String infosSharesTable = "actualites.info_shares";
 	private final String usersTable = "actualites.users";
+	private final String membersTable = "actualites.members";
+	private final String groupsTable = "actualites.groups";
 
 	private EventBus eb;
 
@@ -111,26 +113,28 @@ public class ThreadServiceSqlImpl implements ThreadService {
 			final List<String> admlStructuresIds = user.isADML() 
 				? user.getFunctions().get(ADMIN_LOCAL).getScope() 
 				: Collections.EMPTY_LIST;
-			query = "SELECT t.id as _id, t.title, t.icon, t.mode, t.created, t.modified, t.structure_id, t.owner, u.username" +
-				", json_agg(row_to_json(row(ts.member_id, ts.action)::actualites.share_tuple)) as shared" +
-				", array_to_json(array_agg(group_id)) as groups" +
-				" FROM actualites.thread AS t" +
-				" LEFT JOIN actualites.users AS u ON t.owner = u.id" +
-				" LEFT JOIN actualites.thread_shares AS ts ON t.id = ts.resource_id" +
-				" LEFT JOIN actualites.members AS m ON (ts.member_id = m.id AND m.group_id IS NOT NULL)" +
-				" WHERE t.id = ? " +
-				" AND (ts.member_id IN " + Sql.listPrepared(groupsAndUserIds.toArray()) +
-				( admlStructuresIds.isEmpty() ? "" : " OR t.structure_id IN "+ Sql.listPrepared(admlStructuresIds)) +
-				" OR t.owner = ?) " +
-				" GROUP BY t.id, u.username" +
-				" ORDER BY t.modified DESC";
+			query = "WITH user_groups AS MATERIALIZED ( " +
+					"  SELECT id::varchar from ( "	+
+					"    SELECT ? as id UNION ALL " +
+					"    SELECT id FROM " + groupsTable + " WHERE id IN " + 	Sql.listPrepared(groupsAndUserIds.toArray()) +
+					" ) as u_groups )" +
+					" SELECT t.id as _id, t.title, t.icon, t.mode, t.created, t.modified, t.structure_id, t.owner, u.username," +
+					"	     json_agg(row_to_json(row(ts.member_id, ts.action)::actualites.share_tuple)) as shared," +
+					"	     array_to_json(array_agg(group_id)) as groups" +
+					" FROM " + threadsTable + " AS t" +
+					" LEFT JOIN " + usersTable + " AS u ON t.owner = u.id" +
+					" LEFT JOIN " + threadsSharesTable + " AS ts ON t.id = ts.resource_id" +
+					" LEFT JOIN " + membersTable + " AS m ON (ts.member_id = m.id AND m.group_id IS NOT NULL)" +
+					" WHERE t.id = ? " +
+					" 		AND (ts.member_id IN (SELECT id FROM user_groups)" +
+							( admlStructuresIds.isEmpty() ? "" : " OR t.structure_id IN "+ Sql.listPrepared(admlStructuresIds)) +
+					" 		OR t.owner = ?) " +
+					" GROUP BY t.id, u.username" +
+					" ORDER BY t.modified DESC";
+			values.add(user.getUserId());
+			groupsAndUserIds.forEach(values::add);
 			values.add(Sql.parseId(id));
-			for(String value : groupsAndUserIds){
-				values.add(value);
-			}
-			for(String value : admlStructuresIds){
-				values.add(value);
-			}
+			admlStructuresIds.forEach(values::add);
 			values.add(user.getUserId());
 			Sql.getInstance().prepared(query.toString(), values, SqlResult.parseSharedUnique(handler));
 		}
@@ -236,14 +240,33 @@ public class ThreadServiceSqlImpl implements ThreadService {
 
 			final String ids = Sql.listPrepared(groupsAndUserIds.toArray());
 			String query =
-					"WITH thread_with_info_for_user AS ( " +
+					"WITH user_groups AS MATERIALIZED (" +
+					" SELECT id::varchar FROM ( " +
+					"    SELECT ? as id " +
+					"    UNION ALL " +
+					"    SELECT id FROM " + groupsTable +
+					"        WHERE id IN " + ids +
+					" ) as u_groups ), " +
+					"thread_with_info_for_user AS ( " +
 					"    SELECT DISTINCT i.thread_id AS id " +
 					"    FROM " + infosTable + " AS i " +
 					"        LEFT JOIN " + infosSharesTable + " AS ish ON i.id = ish.resource_id " +
 					"    WHERE " +
 					"		 ( " +
-					"			 ish.member_id IN " + ids + " " +
-					"			 OR " +
+					"			 ish.member_id IN   (SELECT id FROM user_groups) " +
+					"		 ) " +
+					"		 AND " +
+					"		 (i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) " + // Publish date crossed
+					"		 AND " +
+					"		 (i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL) " + // Expiration date not crossed
+					"		 AND " +
+					"		 (i.status = " + NewsStatus.PUBLISHED.ordinal() + ") " + // PUBLISHED
+					"    UNION ALL " +
+					"    SELECT DISTINCT i.thread_id AS id " +
+					"    FROM " + infosTable + " AS i " +
+					"        LEFT JOIN " + infosSharesTable + " AS ish ON i.id = ish.resource_id " +
+					"    WHERE " +
+					"		 ( " +
 					"			 i.owner = ? " +
 					"		 ) " +
 					"		 AND " +
@@ -256,7 +279,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 					"    SELECT t.id, array_agg(DISTINCT tsh.action) AS rights " +
 					"    FROM " + threadsTable + " AS t " +
 					"        INNER JOIN " + threadsSharesTable + " AS tsh ON t.id = tsh.resource_id " +
-					"    WHERE tsh.member_id IN " + ids + " " +
+					"    WHERE tsh.member_id IN  (SELECT id FROM user_groups) " +
 					"    GROUP BY t.id, tsh.member_id " +
 					") SELECT t.id, t.owner, u.username AS owner_name, u.deleted as owner_deleted, t.title, t.icon," +
 					"    t.created, t.modified, t.structure_id, max(thread_for_user.rights) as rights " + // note : we can use max() here only because the rights are inclusive of each other
@@ -269,13 +292,12 @@ public class ThreadServiceSqlImpl implements ThreadService {
 					"	 GROUP BY t.id, t.owner, owner_name, owner_deleted, t.title, t.icon, t.created, t.modified, t.structure_id " +
 					"    ORDER BY t.title";
 			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
+			values.add(user.getUserId());
+
 			for(String value : groupsAndUserIds){
 				values.add(value);
 			}
 			values.add(user.getUserId());
-			for(String value : groupsAndUserIds){
-				values.add(value);
-			}
 			values.add(user.getUserId());
 
 			// 3. Retrieve & parse data
