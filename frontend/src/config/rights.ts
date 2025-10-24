@@ -1,6 +1,6 @@
-export const THREAD_CREATION_RIGHT =
+export const THREAD_MANAGER = 'thread.manager';
+export const THREAD_CONTRIBUTOR = 'thread.contrib';
+export const THREAD_PUBLISHER = 'thread.publish';
+
+export const THREADS_CREATOR =
   'net.atos.entng.actualites.controllers.ThreadController|createThread';
-export const CREATE_DRAFT_RIGHT =
-  'net-atos-entng-actualites-controllers-InfoController|createDraft';
-export const PUBLISH_RIGHT =
-  'net-atos-entng-actualites-controllers-InfoController|publish';

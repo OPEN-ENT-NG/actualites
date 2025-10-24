@@ -2,23 +2,33 @@ import { useUser } from '@edifice.io/react';
 import { useMemo } from 'react';
 import { useThreads } from '~/services/queries';
 import { getThreadUserRights } from './utils/threads';
+import { Thread } from '~/models/thread';
 
-type ThreadsUserRights = {
+export function useThreadsUserRights(): {
+  threadsWithContributeRight: Thread[] | undefined;
   canContributeOnOneThread: boolean | undefined;
-  isSuccess: boolean;
-};
-export function useThreadsUserRights(): ThreadsUserRights {
+  isReady: boolean;
+} {
   const { data: threads, isSuccess } = useThreads();
   const { user } = useUser();
 
-  const canContributeOnOneThread = useMemo(() => {
-    return threads?.some(
-      (thread) => getThreadUserRights(thread, user?.userId)?.canContribute,
-    );
-  }, [threads, user?.userId, isSuccess]);
+  return useMemo(() => {
+    if (!isSuccess || !threads || !user?.userId) {
+      return {
+        threadsWithContributeRight: undefined,
+        canContributeOnOneThread: undefined,
+        isReady: false,
+      };
+    }
 
-  return {
-    canContributeOnOneThread,
-    isSuccess,
-  };
+    const threadsWithRights = threads.filter(
+      (thread) => getThreadUserRights(thread, user.userId)?.canContribute,
+    );
+
+    return {
+      threadsWithContributeRight: threadsWithRights,
+      canContributeOnOneThread: threadsWithRights.length > 0,
+      isReady: true,
+    };
+  }, [threads, user?.userId, isSuccess]);
 }

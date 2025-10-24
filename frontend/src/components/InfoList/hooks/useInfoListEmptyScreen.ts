@@ -10,10 +10,11 @@ export function useInfoListEmptyScreen(): {
 } {
   const { data: threads, isSuccess: isThreadsSuccess } = useThreads();
   const rights = useUserRights();
-  const { canContributeOnOneThread, isSuccess: isThreadsUserRightsSuccess } =
+
+  const { canContributeOnOneThread, isReady: isThreadsUserRightsReady } =
     useThreadsUserRights();
 
-  const isReady = isThreadsSuccess && isThreadsUserRightsSuccess;
+  const isReady = isThreadsSuccess && isThreadsUserRightsReady;
   let type: EmptyScreenType = 'default';
 
   if (isReady) {
