@@ -63,6 +63,7 @@ public class Actualites extends BaseServer {
 	public final static String INFO_REVISION_TABLE = "info_revision";
 
 	public final static String USER_TABLE = "users";
+	public final static String GROUP_TABLE = "groups";
 	public final static String MEMBER_TABLE = "members";
 	public final static String COMMENT_TABLE = "comment";
 
