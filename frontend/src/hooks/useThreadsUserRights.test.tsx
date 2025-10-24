@@ -37,14 +37,12 @@ describe('useThreadsUserRights', () => {
 
   test.each([
     {
-      description:
-        'returns false when user can contribute on no thread but can manage one',
+      description: 'returns false when user cannot contribute on any thread',
       threads: [mockThreadAsCatherine],
       expected: false,
     },
     {
-      description:
-        'returns true when user can contribute on at least one thread',
+      description: 'returns true when user can manage on at least one thread',
       threads: [mockThreadAsCatherine, mockThreadAsOwner],
       expected: true,
     },
