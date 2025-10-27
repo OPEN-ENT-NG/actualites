@@ -16,8 +16,8 @@ import { IconQuestion } from '@edifice.io/react/icons';
 import { useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { ThreadIcon } from '~/components/ThreadIcon';
+import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
 import { Thread } from '~/models/thread';
-import { useThreads } from '~/services/queries';
 import { InfoDetailsFormParams } from '~/store/infoFormStore';
 import { useInfoDetailsForm } from '../hooks/useInfoDetailsForm';
 import './InfoDetailsForm.css';
@@ -28,7 +28,8 @@ export function InfoDetailsForm({
   infoDetails?: InfoDetailsFormParams;
 }) {
   const { t } = useI18n();
-  const { data: threads } = useThreads();
+
+  const { threadsWithContributeRight: threads } = useThreadsUserRights();
   const { md } = useBreakpoint();
 
   const { setDetailsForm, setResetDetailsForm, setDetailsFormState } =
