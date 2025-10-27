@@ -11,12 +11,13 @@ import {
 import {
   matchPath,
   Outlet,
-  useNavigate,
   useLoaderData,
+  useNavigate,
 } from 'react-router-dom';
 
 import { IWebApp } from '@edifice.io/client';
 import { existingActions } from '~/config';
+import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
 import { queryClient } from '~/providers';
 import { actionsQueryOptions } from '~/services/queries/actions';
 import { useActionUserRights } from '~/store';
@@ -78,6 +79,7 @@ export const Root = () => {
 
   const { currentApp, init } = useEdificeClient();
   const navigate = useNavigate();
+  const { canContributeOnOneThread } = useThreadsUserRights();
   const displayApp = {
     displayName: 'news',
     icon: 'actualites-large',
@@ -97,7 +99,9 @@ export const Root = () => {
         <Breadcrumb app={(currentApp as IWebApp) ?? displayApp} />
         {!isCreateRoute && (
           <Flex fill align="center" justify="end">
-            <Button onClick={handleClickNewInfo}>New Article</Button>
+            {canContributeOnOneThread && (
+              <Button onClick={handleClickNewInfo}>New Article</Button>
+            )}
           </Flex>
         )}
       </AppHeader>
