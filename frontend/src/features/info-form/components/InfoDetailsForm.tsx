@@ -143,7 +143,7 @@ export function InfoDetailsForm({
                   size="md"
                   onValueChange={field.onChange}
                   icon={<IconQuestion />}
-                  defaultValue={String(infoDetails?.thread_id)}
+                  defaultValue={String(infoDetails?.thread_id) + ''}
                   placeholderOption={t(
                     'actualites.info.createForm.selectThreadPlaceholder',
                   )}

@@ -6,7 +6,7 @@ export function useThreadInfoParams() {
 
   function stringToId(idAsString?: string) {
     const id = idAsString ? Number.parseInt(idAsString) : NaN;
-    return isNaN(id) ? -1 : id;
+    return isNaN(id) ? undefined : id;
   }
 
   return {

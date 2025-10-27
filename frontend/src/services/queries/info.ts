@@ -1,5 +1,11 @@
-import { queryOptions, useMutation, useQuery } from '@tanstack/react-query';
-import { InfoId, InfoStatus } from '~/models/info';
+import {
+  infiniteQueryOptions,
+  queryOptions,
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+} from '@tanstack/react-query';
+import { Info, InfoId, InfoStatus } from '~/models/info';
 import { ThreadId } from '~/models/thread';
 import { infoService } from '../api';
 import { threadQueryKeys } from './thread';
@@ -21,15 +27,9 @@ export const infoQueryKeys = {
     infoId,
   ],
 
-  pageFromThread: ({
-    page,
-    ...options
-  }: {
-    page: number;
-    threadId?: ThreadId;
-  }) => [...infoQueryKeys.info(options), 'page', page],
-
-  page: (options: { page: number }) => infoQueryKeys.pageFromThread(options),
+  getInfos: ({ ...options }: { threadId?: ThreadId }) => [
+    ...infoQueryKeys.info(options),
+  ],
 
   share: (options: { threadId: ThreadId; infoId: InfoId }) => [
     ...infoQueryKeys.info(options),
@@ -42,7 +42,7 @@ export const infoQueryKeys = {
     'revisions',
   ],
 
-  originalFormat: (options: { threadId: ThreadId; infoId: InfoId }) => [
+  originalFormat: (options: { threadId?: ThreadId; infoId?: InfoId }) => [
     ...infoQueryKeys.info(options),
     'originalFormat',
   ],
@@ -68,13 +68,30 @@ export const infoQueryOptions = {
   /**
    * @returns Query options for fetching a page of infos, optionnally from a given thread.
    */
-  getInfos(options: { page: number; pageSize: number; threadId?: ThreadId }) {
-    return queryOptions({
-      queryKey: infoQueryKeys.pageFromThread(options),
-      queryFn: () => {
-        return infoService.getInfos(options);
+  getInfos(options: { pageSize: number; threadId?: ThreadId }) {
+    return infiniteQueryOptions({
+      queryKey: infoQueryKeys.getInfos(options),
+      queryFn: ({ pageParam = 0 }) => {
+        return infoService.getInfos({
+          ...options,
+          page: pageParam,
+        });
       },
-      staleTime: Infinity, // will be unvalidated manually when needed only
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      initialPageParam: 0,
+      getNextPageParam: (
+        _lastPage: Info[],
+        allPages: Info[][],
+        lastPageParam: number,
+      ) => {
+        if (
+          allPages[lastPageParam]?.length &&
+          allPages[lastPageParam]?.length === options.pageSize
+        ) {
+          return lastPageParam + 1;
+        }
+        return undefined;
+      },
     });
   },
 
@@ -99,10 +116,14 @@ export const infoQueryOptions = {
     });
   },
 
-  getOriginalFormat(threadId: ThreadId, infoId: InfoId) {
+  getOriginalFormat(
+    threadId: ThreadId | undefined,
+    infoId: InfoId | undefined,
+  ) {
     return queryOptions({
       queryKey: infoQueryKeys.originalFormat({ infoId, threadId }),
       queryFn: () => infoService.getOriginalFormat(threadId, infoId),
+      enabled: !!threadId && !!infoId,
     });
   },
 };
@@ -112,8 +133,8 @@ export const infoQueryOptions = {
 export const useInfoById = (infoId?: InfoId) =>
   useQuery(infoQueryOptions.getInfoById(infoId));
 
-export const useInfos = (page: number, pageSize = DEFAULT_PAGE_SIZE) =>
-  useQuery(infoQueryOptions.getInfos({ page, pageSize }));
+export const useInfos = (threadId?: ThreadId, pageSize = DEFAULT_PAGE_SIZE) =>
+  useInfiniteQuery(infoQueryOptions.getInfos({ pageSize, threadId }));
 
 export const useInfoShares = (threadId: ThreadId, infoId: InfoId) =>
   useQuery(infoQueryOptions.getShares(threadId, infoId));
@@ -121,7 +142,7 @@ export const useInfoShares = (threadId: ThreadId, infoId: InfoId) =>
 export const useInfoRevisions = (infoId: InfoId) =>
   useQuery(infoQueryOptions.getRevisions(infoId));
 
-export const useInfoOriginalFormat = (threadId: ThreadId, infoId: InfoId) =>
+export const useInfoOriginalFormat = (threadId?: ThreadId, infoId?: InfoId) =>
   useQuery(infoQueryOptions.getOriginalFormat(threadId, infoId));
 
 export const useCreateDraftInfo = () =>

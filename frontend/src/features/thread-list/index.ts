@@ -5,5 +5,8 @@
  This folder should contain all features in an app
  * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
-export * from './info-form/';
-export * from './thread-list/';
+export * from './ThreadList';
+
+export * from './components/DesktopMenu';
+export * from './components/DesktopMenuThread';
+export * from './components/MobileMenu';

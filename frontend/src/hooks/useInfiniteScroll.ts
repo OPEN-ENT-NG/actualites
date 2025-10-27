@@ -1,17 +1,19 @@
-import { RefObject, useEffect } from 'react';
+import { RefObject, useEffect, useRef } from 'react';
 
 export function useInfiniteScroll({
   elementRef,
   callback,
-  options,
+  options = { threshold: 0.1 },
 }: {
   elementRef: RefObject<HTMLElement>;
-  callback: () => Promise<void>;
+  callback: () => Promise<any>;
   options?: IntersectionObserverInit;
 }) {
+  const observer = useRef<IntersectionObserver | null>(null);
   useEffect(() => {
     if (elementRef?.current) {
-      const observer = new IntersectionObserver((entries) => {
+      if (observer?.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
         entries.forEach(async (entry) => {
           // Each entry describes an intersection change for one observed
           // target element:
@@ -29,12 +31,11 @@ export function useInfiniteScroll({
         });
       }, options);
 
-      observer.observe(elementRef.current);
-
-      return () => {
-        observer.disconnect();
-      };
+      observer.current.observe(elementRef.current);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [elementRef?.current]);
+
+    return () => {
+      observer.current?.disconnect();
+    };
+  }, [elementRef, callback, options]);
 }

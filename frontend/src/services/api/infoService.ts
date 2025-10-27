@@ -37,12 +37,21 @@ export const createInfoService = () => {
       pageSize: number;
       threadId?: ThreadId;
     }) {
+      const queryParams: {
+        page: number;
+        pageSize: number;
+        threadIds?: number;
+      } = {
+        page,
+        pageSize,
+      };
+
+      if (threadId) {
+        queryParams.threadIds = Number(threadId);
+      }
+
       return odeServices.http().get<Info[]>(`${baseUrlAPI}/infos`, {
-        queryParams: {
-          page,
-          pageSize,
-          threadId,
-        },
+        queryParams,
       });
     },
 
@@ -179,7 +188,7 @@ export const createInfoService = () => {
         .get<InfoRevision[]>(`${baseUrl}/info/${infoId}/timeline`);
     },
 
-    getOriginalFormat(threadId: ThreadId, infoId: InfoId) {
+    getOriginalFormat(threadId?: ThreadId, infoId?: InfoId) {
       return odeServices
         .http()
         .get<OriginalInfo>(
