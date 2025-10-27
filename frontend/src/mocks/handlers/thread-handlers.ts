@@ -65,7 +65,7 @@ export const threadHandlers = [
       mode: ThreadMode;
       title: string;
     }
-  >(`${baseUrlAPI}/threads/share/json/:threadId`, async () =>
+  >(`${baseUrlAPI}/threads/:threadId/shares`, async () =>
     HttpResponse.json(mockThreadShare, { status: 200 }),
   ),
 ];
