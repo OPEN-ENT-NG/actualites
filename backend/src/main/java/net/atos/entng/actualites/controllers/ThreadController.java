@@ -157,12 +157,10 @@ public class ThreadController extends ControllerHelper {
 	@SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE)
 	public void getThread(final HttpServerRequest request) {
 		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
-		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
-			@Override
-			public void handle(final UserInfos user) {
-				threadService.retrieve(threadId, user, notEmptyResponseHandler(request));
-			}
-		});
+		UserUtils.getUserInfos(eb, request, user ->
+				threadService.retrieve(threadId, user, securedActions)
+						.onSuccess(thread -> render(request, thread))
+						.onFailure(ex -> renderError(request)));
 	}
 
 	@Put("/thread/:" + Actualites.THREAD_RESOURCE_ID)

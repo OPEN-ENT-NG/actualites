@@ -24,6 +24,7 @@ import fr.wseduc.webutils.security.SecuredAction;
 import io.vertx.core.Future;
 import net.atos.entng.actualites.to.News;
 import net.atos.entng.actualites.to.NewsComplete;
+import net.atos.entng.actualites.to.NewsLight;
 import net.atos.entng.actualites.to.NewsStatus;
 
 import org.entcore.common.user.UserInfos;
@@ -75,6 +76,8 @@ public interface InfoService {
 	public void listByThreadId(String id, UserInfos user, Handler<Either<String, JsonArray>> handler);
 
 	public void listLastPublishedInfos(UserInfos user, int resultSize, boolean optimized, Handler<Either<String, JsonArray>> handler);
+
+	public Future<List<NewsLight>> listLastPublishedInfos(UserInfos user, int resultSize);
 
 	public void listForLinker(UserInfos user, Handler<Either<String, JsonArray>> handler);
 
