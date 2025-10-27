@@ -12,7 +12,6 @@ describe('Thread GET Methods', () => {
 
   test('makes a GET request to get the shares of a thread', async () => {
     const response = await threadService.getShares(1);
-
     expect(response).toBeDefined();
     expect(response).toStrictEqual(mockThreadShare);
   });

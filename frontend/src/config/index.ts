@@ -7,11 +7,11 @@
  */
 
 import { ACTION, IAction } from '@edifice.io/client';
-import { THREAD_CREATION_RIGHT } from './rights';
+import { THREADS_CREATOR } from './rights';
 
 export const existingActions: IAction[] = [
   {
     id: ACTION.CREATE,
-    workflow: THREAD_CREATION_RIGHT,
+    workflow: THREADS_CREATOR,
   },
 ];

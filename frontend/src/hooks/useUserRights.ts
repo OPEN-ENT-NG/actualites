@@ -1,6 +1,6 @@
 // import { useActionsStore } from '../store/actions';
 
-import { THREAD_CREATION_RIGHT } from '~/config/rights';
+import { THREADS_CREATOR } from '~/config/rights';
 import { useActionUserRights } from '~/store';
 
 // /**
@@ -9,7 +9,7 @@ import { useActionUserRights } from '~/store';
 //  */
 export function useUserRights() {
   const rights = useActionUserRights.use.rights();
-  const canCreateThread = rights?.[THREAD_CREATION_RIGHT] ?? false;
+  const canCreateThread = rights?.[THREADS_CREATOR] ?? false;
 
   return { canCreateThread };
 }

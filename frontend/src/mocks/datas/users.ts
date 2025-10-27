@@ -4,15 +4,15 @@
 export const mockUserLoggedId = 'a1b2c3d4';
 export const mockUserLogged = {
   id: mockUserLoggedId,
-  login: 'fake.user',
-  displayName: 'Fake User',
+  login: 'stephane.loison',
+  displayName: 'Stephane',
   type: ['Personnel'],
   visibleInfos: [],
   schools: [
     {
       exports: null,
       classes: [],
-      name: 'Fake School',
+      name: 'Lycée Paul Bert',
       id: 'd4c3b2a1',
       UAI: null,
     },
