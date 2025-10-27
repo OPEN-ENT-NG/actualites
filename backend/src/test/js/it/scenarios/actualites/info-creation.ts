@@ -89,7 +89,7 @@ export function testInfoCreation(data: InitData) {
   // ============================================================
   // TESTS DE CRÉATION AVEC SUCCÈS
   // ============================================================
-/**
+
   describe('[Info] Test creating an info with DRAFT status as thread owner', () => {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
@@ -164,7 +164,7 @@ export function testInfoCreation(data: InitData) {
       "Retrieved info has correct thread_id": (info) => info.thread?.id === infoData.thread_id,
     });
   });
-**/
+
   describe('[Info] Test creating a PUBLISHED info as thread owner', () => {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
