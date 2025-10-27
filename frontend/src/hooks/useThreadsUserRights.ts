@@ -4,6 +4,23 @@ import { useThreads } from '~/services/queries';
 import { getThreadUserRights } from './utils/threads';
 import { Thread } from '~/models/thread';
 
+/**
+ * Custom hook that filters threads based on the user's contribute rights.
+ *
+ * @returns An object containing:
+ * - `threadsWithContributeRight`: Array of threads where the current user has contribute rights, or undefined if not ready
+ * - `canContributeOnOneThread`: Boolean indicating if the user can contribute to at least one thread, or undefined if not ready
+ * - `isReady`: Boolean indicating if the hook has finished loading and the data is available
+ *
+ * @example
+ * ```tsx
+ * const { threadsWithContributeRight, canContributeOnOneThread, isReady } = useThreadsUserRights();
+ *
+ * if (isReady && canContributeOnOneThread) {
+ *   // User can contribute to at least one thread
+ * }
+ * ```
+ */
 export function useThreadsUserRights(): {
   threadsWithContributeRight: Thread[] | undefined;
   canContributeOnOneThread: boolean | undefined;
