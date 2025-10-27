@@ -77,7 +77,6 @@ export function setup() {
       addCommRuleToGroup(group, [teacherProfileGroup.id]);
     }
     const role: Role = createAndSetRole("Actualites");
-
     linkRoleToUsers(head, role, [teacherProfileGroup.name]);
     linkRoleToUsers(school, role, [parentRole.name]);
   });
