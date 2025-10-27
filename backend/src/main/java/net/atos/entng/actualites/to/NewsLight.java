@@ -1,5 +1,8 @@
 package net.atos.entng.actualites.to;
 
+/**
+ * DTO for widget to display last published info. /!\ Share with wordline on PSN.
+ */
 public class NewsLight {
 
     private final int id;

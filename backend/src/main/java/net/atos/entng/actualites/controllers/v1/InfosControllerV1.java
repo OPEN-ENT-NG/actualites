@@ -33,7 +33,6 @@ import java.util.List;
 
 import static net.atos.entng.actualites.Actualites.INFO_RESOURCE_ID;
 import static net.atos.entng.actualites.controllers.InfoController.*;
-import static org.entcore.common.http.response.DefaultResponseHandler.arrayResponseHandler;
 import static org.entcore.common.http.response.DefaultResponseHandler.notEmptyResponseHandler;
 
 public class InfosControllerV1 extends ControllerHelper {

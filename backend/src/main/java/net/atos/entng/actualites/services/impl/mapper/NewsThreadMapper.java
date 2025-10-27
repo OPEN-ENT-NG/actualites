@@ -11,6 +11,10 @@ import org.entcore.common.user.UserInfos;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Convert database data into a NewsThread (ie News info + thread info). Use simplified rights to
+ * give actual effective rights on the resource
+ */
 public class NewsThreadMapper {
 
     public static NewsThread map(JsonObject row, UserInfos user, Map<String, SecuredAction> securedActions) {

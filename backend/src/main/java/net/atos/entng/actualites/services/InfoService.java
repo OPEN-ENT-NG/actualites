@@ -77,6 +77,12 @@ public interface InfoService {
 
 	public void listLastPublishedInfos(UserInfos user, int resultSize, boolean optimized, Handler<Either<String, JsonArray>> handler);
 
+	/**
+	 * List last published infos and map it to a NewsLight dto
+	 * @param user the current user
+	 * @param resultSize max size of the list
+	 * @return list of visible published info ordered by modification date or publication date (the sooner).
+	 */
 	public Future<List<NewsLight>> listLastPublishedInfos(UserInfos user, int resultSize);
 
 	public void listForLinker(UserInfos user, Handler<Either<String, JsonArray>> handler);
