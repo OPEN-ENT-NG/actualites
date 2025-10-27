@@ -37,12 +37,12 @@ export interface Thread {
   /** Name of the user who created this thread. */
   username: string;
   /** 
-     * Old shared rights, such as
-       [{
-            "groupId": "58671-1434376996066",
-            "net-atos-entng-actualites-controllers-ThreadController|getThread": true,
-            "net-atos-entng-actualites-controllers-InfoController|shareInfoSubmit": true
-        }]
-     */
-  shared?: Array<any>;
+    Shared rights for the thread.
+    Example: [
+            "thread.publish",
+            "thread.manager",
+            "thread.contrib"
+        ]
+    */
+  sharedRights?: Array<string>;
 }
