@@ -37,20 +37,18 @@ describe('useThreadsUserRights', () => {
 
   test.each([
     {
-      description:
-        'should return canContributeOnOneThread as true when user is owner of a thread',
+      description: 'returns false when user cannot contribute on any thread',
+      threads: [mockThreadAsCatherine],
+      expected: false,
+    },
+    {
+      description: 'returns true when user can manage on at least one thread',
       threads: [mockThreadAsCatherine, mockThreadAsOwner],
       expected: true,
     },
     {
       description:
-        'should return canContributeOnOneThread as false when an other user is owner of a thread',
-      threads: [mockThreadAsCatherine],
-      expected: false,
-    },
-    {
-      description:
-        'should return canContributeOnOneThread as true when not owner but have contribute right on a thread',
+        'returns true when user can contribute on at least one thread ',
       threads: [mockThreadAsCatherineWithContributeRight],
       expected: true,
     },
@@ -61,10 +59,10 @@ describe('useThreadsUserRights', () => {
     const { result } = renderHook(() => useThreadsUserRights(), {
       wrapper,
     });
-    expect(result.current.isSuccess).toBe(false);
+    expect(result.current.isReady).toBe(false);
     await waitFor(() => {
       expect(result.current.canContributeOnOneThread).toBe(expected);
-      expect(result.current.isSuccess).toBe(true);
+      expect(result.current.isReady).toBe(true);
     });
 
     expect(serviceSpy).toHaveBeenCalled();

@@ -1,49 +1,43 @@
-import { CREATE_DRAFT_RIGHT, PUBLISH_RIGHT } from '~/config/rights';
+import {
+  THREAD_CONTRIBUTOR,
+  THREAD_MANAGER,
+  THREAD_PUBLISHER,
+} from '~/config/rights';
 import { Thread } from '~/models/thread';
 
-const defaultThreadRights = {
-  canContribute: false,
-  canPublish: false,
+type ThreadUserRights = {
+  canContribute: boolean;
+  canPublish: boolean;
+  canManage: boolean;
 };
-type ThreadUserRights = typeof defaultThreadRights;
 
 export function getThreadUserRights(
   thread?: Thread,
   userId?: string,
 ): ThreadUserRights {
-  if (!thread || !userId) {
-    return defaultThreadRights;
+  if (!thread || !userId || !thread.sharedRights?.length) {
+    return { canContribute: false, canPublish: false, canManage: false };
   }
 
-  if (thread.owner === userId) {
-    return {
-      canContribute: true,
-      canPublish: true,
-    };
-  }
-
-  if (!thread.shared || thread.shared.length === 0) {
-    return defaultThreadRights;
-  }
-
-  const rights = new Set<string>();
-
-  thread.shared.forEach((rightsGroup) => {
-    Object.entries(rightsGroup).forEach(([key, value]) => {
-      if (value === true) {
-        rights.add(key);
+  return thread.sharedRights.reduce(
+    (rights, right) => {
+      switch (right) {
+        case THREAD_MANAGER:
+          rights.canManage = true;
+          break;
+        case THREAD_CONTRIBUTOR:
+          rights.canContribute = true;
+          break;
+        case THREAD_PUBLISHER:
+          rights.canPublish = true;
+          break;
       }
-    });
-  });
-
-  if (rights.size === 0) {
-    return defaultThreadRights;
-  }
-
-  const hasRight = (rightName: string) => rights.has(rightName);
-
-  return {
-    canContribute: hasRight(CREATE_DRAFT_RIGHT),
-    canPublish: hasRight(PUBLISH_RIGHT),
-  };
+      return rights;
+    },
+    {
+      canContribute: false,
+      canPublish: false,
+      canManage: false,
+    } as ThreadUserRights,
+  );
 }
