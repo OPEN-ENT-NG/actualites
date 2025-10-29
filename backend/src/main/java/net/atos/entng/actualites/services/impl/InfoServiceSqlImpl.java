@@ -31,6 +31,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.services.InfoService;
 import net.atos.entng.actualites.to.*;
+import net.atos.entng.actualites.to.NewsState;
 import net.atos.entng.actualites.utils.Events;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
@@ -568,11 +569,16 @@ public class InfoServiceSqlImpl implements InfoService {
 		List<Integer> threadIds = new ArrayList<>();
 		if (threadId != null) threadIds.add(threadId);
 
-		return listPaginated(securedActions, user, page, pageSize, threadIds, Arrays.asList(NewsStatus.PUBLISHED));
+		return listPaginated(securedActions, user, page, pageSize, threadIds, Arrays.asList(NewsStatus.PUBLISHED), new ArrayList<>());
 	}
 
 	@Override
 	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, List<Integer> threadIds, List<NewsStatus> statuses) {
+		return listPaginated(securedActions, user, page, pageSize, threadIds, statuses, new ArrayList<>());
+	}
+
+	@Override
+	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, List<Integer> threadIds, List<NewsStatus> statuses, List<NewsState> states) {
 		final Promise<List<News>> promise = Promise.promise();
 		if (user == null) {
 			promise.fail("user not provided");
@@ -594,6 +600,23 @@ public class InfoServiceSqlImpl implements InfoService {
 			List<Integer> statusValues = statuses.stream().map(NewsStatus::getValue).collect(Collectors.toList());
 			String statusFilter = "i.status IN " + Sql.listPrepared(statusValues.toArray());
 
+			// Build date filter based on states parameter
+			String dateFilter;
+			if (states == null || states.isEmpty()) {
+				dateFilter = "(i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) " +
+							 "AND (i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL)";
+			} else {
+				List<String> stateConditions = new ArrayList<>();
+				for (NewsState state : states) {
+					if (state == NewsState.EXPIRED) {
+						stateConditions.add("(i.expiration_date < LOCALTIMESTAMP)");
+					} else if (state == NewsState.INCOMING) {
+						stateConditions.add("(i.publication_date > LOCALTIMESTAMP)");
+					}
+				}
+				dateFilter = String.join(" OR ", stateConditions);
+			}
+
 			// Different visibility rules per status
 			// - DRAFT: only owner sees it
 			// - PENDING: owner + thread contributors with publish right
@@ -610,8 +633,7 @@ public class InfoServiceSqlImpl implements InfoService {
 					"    (t.id IN (SELECT id FROM thread_for_user) AND i.status >= " + NewsStatus.PENDING.getValue() + ") " + // thread shared with publish: PENDING + PUBLISHED
 					") " +
 					"AND (i.status <> " + NewsStatus.PUBLISHED.getValue() +
-					"     OR ((i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) " + // for PUBLISHED: check dates
-					"     AND (i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL))) ";
+					"     OR (" + dateFilter + ")) ";
 			if (threadIds != null && !threadIds.isEmpty()) {
 				String threadIdsSql = Sql.listPrepared(threadIds.toArray());
 				whereClause = "i.thread_id IN " + threadIdsSql + " AND ( " + whereClause + ") ";
