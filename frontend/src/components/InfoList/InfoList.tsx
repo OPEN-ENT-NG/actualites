@@ -1,4 +1,5 @@
 import { Button, Flex } from '@edifice.io/react';
+import clsx from 'clsx';
 import { useRef } from 'react';
 import { useInfiniteScroll } from '~/hooks/useInfiniteScroll';
 import { useInfoList } from '~/hooks/useInfoList';
@@ -9,13 +10,7 @@ import { useInfoListEmptyScreen } from './hooks/useInfoListEmptyScreen';
 export const InfoList = () => {
   const loadNextRef = useRef<HTMLElement>(null);
 
-  const {
-    infos,
-    hasNextPage,
-    fetchNextPage: loadNextPage,
-    isLoading,
-    reload,
-  } = useInfoList();
+  const { infos, hasNextPage, loadNextPage, isLoading, reload } = useInfoList();
   const { type: emptyScreenType, isReady: emptyScreenIsReady } =
     useInfoListEmptyScreen();
 
@@ -43,15 +38,17 @@ export const InfoList = () => {
       {infos.map((info) => (
         <InfoCard key={info.id} info={info}></InfoCard>
       ))}
-      {isLoading ? (
+      {isLoading && (
         <>
           <InfoCardSkeleton />
           <InfoCardSkeleton />
           <InfoCardSkeleton />
         </>
-      ) : (
-        hasNextPage && <InfoCardSkeleton ref={loadNextRef} />
       )}
+      <InfoCardSkeleton
+        className={clsx({ 'd-none': hasNextPage && !isLoading })}
+        ref={loadNextRef}
+      />
     </Flex>
   );
 };

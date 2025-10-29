@@ -11,7 +11,7 @@ export function useInfoList() {
   return {
     infos: infosQuery.data?.pages.flatMap((page) => page) || [],
     hasNextPage: infosQuery.hasNextPage,
-    fetchNextPage: () => infosQuery.fetchNextPage(),
+    loadNextPage: () => infosQuery.fetchNextPage(),
     isLoading: infosQuery.isLoading,
     reload: () => {
       invalidateQueriesWithFirstPage(queryClient, {

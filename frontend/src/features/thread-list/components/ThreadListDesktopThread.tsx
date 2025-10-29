@@ -4,7 +4,7 @@ import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
 import { Thread } from '~/models/thread';
 import { ThreadIcon } from '../../../components/ThreadIcon';
 
-export const DesktopMenuThread = ({ thread }: { thread: Thread }) => {
+export const ThreadListDesktopThread = ({ thread }: { thread: Thread }) => {
   const { threadId } = useThreadInfoParams();
   const title = thread?.title || '';
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ export const DesktopMenuThread = ({ thread }: { thread: Thread }) => {
   const selected = threadId === thread.id;
 
   return (
-    <Menu.Item>
+    <Menu.Item key={thread.id}>
       <Menu.Button
         onClick={handleThreadClick}
         selected={selected}

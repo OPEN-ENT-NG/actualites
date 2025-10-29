@@ -188,7 +188,7 @@ export const createInfoService = () => {
         .get<InfoRevision[]>(`${baseUrl}/info/${infoId}/timeline`);
     },
 
-    getOriginalFormat(threadId?: ThreadId, infoId?: InfoId) {
+    getOriginalFormat(threadId: ThreadId, infoId: InfoId) {
       return odeServices
         .http()
         .get<OriginalInfo>(

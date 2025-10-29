@@ -19,7 +19,6 @@ export const InfoCard = ({ info }: InfoCardProps) => {
   const { t } = useI18n();
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const infoId = `info-${info.id}`;
   const isIncoming =
     info.status === InfoStatus.PUBLISHED &&
     !!info.publicationDate &&
@@ -66,9 +65,9 @@ export const InfoCard = ({ info }: InfoCardProps) => {
       className={className}
       isClickable={false}
       isSelectable={false}
-      key={infoId}
+      key={info.id}
     >
-      <article id={infoId} className="overflow-hidden">
+      <article id={info.id + ''} className="overflow-hidden">
         <InfoCardHeader info={info} extendedStatus={extendedStatus} />
 
         {isExpired && (

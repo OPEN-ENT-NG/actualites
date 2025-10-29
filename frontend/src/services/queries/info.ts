@@ -122,7 +122,7 @@ export const infoQueryOptions = {
   ) {
     return queryOptions({
       queryKey: infoQueryKeys.originalFormat({ infoId, threadId }),
-      queryFn: () => infoService.getOriginalFormat(threadId, infoId),
+      queryFn: () => infoService.getOriginalFormat(threadId!, infoId!),
       enabled: !!threadId && !!infoId,
     });
   },

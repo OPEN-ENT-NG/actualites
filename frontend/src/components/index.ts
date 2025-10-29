@@ -5,7 +5,6 @@
  All UI components shared across the application
  * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
-export * from '../features/thread-list/components/DesktopMenu';
 export * from './InfoCard/InfoCard';
 export * from './InfoCard/InfoCardContent';
 export * from './InfoCard/InfoCardFooter';

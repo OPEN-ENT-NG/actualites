@@ -3,10 +3,10 @@ import { IconBulletList } from '@edifice.io/react/icons';
 import { useNavigate } from 'react-router-dom';
 import { useI18n } from '~/hooks/useI18n';
 import { useThreads } from '~/services/queries';
-import './DesktopMenu.css';
-import { DesktopMenuThread } from './DesktopMenuThread';
+import './ThreadListDesktop.css';
+import { ThreadListDesktopThread } from './ThreadListDesktopThread';
 
-export const DesktopMenu = () => {
+export const ThreadListDesktop = () => {
   const { t } = useI18n();
   const { data: threads, isLoading, isFetched } = useThreads();
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ export const DesktopMenu = () => {
         <ButtonSkeleton size="lg" className="col-12" />
       ) : (
         <Menu label="threadlist">
-          <Menu.Item>
+          <Menu.Item key="all-threads">
             <Menu.Button
               onClick={handleAllThreadsClick}
               className="thread-list-menu-btn"
@@ -36,7 +36,7 @@ export const DesktopMenu = () => {
             </Menu.Button>
           </Menu.Item>
           {threads?.map((thread) => (
-            <DesktopMenuThread thread={thread} />
+            <ThreadListDesktopThread thread={thread} key={thread.id} />
           ))}
         </Menu>
       )}

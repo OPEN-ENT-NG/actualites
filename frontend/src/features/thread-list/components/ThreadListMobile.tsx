@@ -8,7 +8,7 @@ import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
 import { Thread } from '~/models/thread';
 import { useThreads } from '~/services/queries';
 
-export const MobileMenu = () => {
+export const ThreadListMobile = () => {
   const { t } = useI18n();
   const { data: threads, isFetched } = useThreads();
   const { threadId } = useThreadInfoParams();
@@ -29,17 +29,14 @@ export const MobileMenu = () => {
   }
 
   if (!threads) {
-    return <></>;
+    return null;
   }
 
   return (
     <div className="position-relative mx-n16 p-16 border-bottom bg-gray-200">
       <Dropdown block>
         <Dropdown.Trigger
-          label={
-            (threadSelected && threadSelected.title) ||
-            t('actualites.threadList.allThreads')
-          }
+          label={threadSelected?.title || t('actualites.threadList.allThreads')}
           icon={
             threadSelected ? (
               <ThreadIcon thread={threadSelected} />
