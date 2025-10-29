@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import fr.wseduc.webutils.http.Renders;
 import net.atos.entng.actualites.Actualites;
 import net.atos.entng.actualites.filters.ThreadFilter;
 import net.atos.entng.actualites.services.ThreadService;
@@ -160,7 +161,10 @@ public class ThreadController extends ControllerHelper {
 		UserUtils.getUserInfos(eb, request, user ->
 				threadService.retrieve(threadId, user, securedActions)
 						.onSuccess(thread -> render(request, thread))
-						.onFailure(ex -> renderError(request)));
+						.onFailure(ex -> {
+							JsonObject error = (new JsonObject()).put("error", ex.getMessage());
+							Renders.renderJson(request, error, 400);
+						}));
 	}
 
 	@Put("/thread/:" + Actualites.THREAD_RESOURCE_ID)
