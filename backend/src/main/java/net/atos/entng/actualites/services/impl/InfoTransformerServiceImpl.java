@@ -16,6 +16,7 @@ import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.services.InfoService;
 import net.atos.entng.actualites.to.News;
 import net.atos.entng.actualites.to.NewsComplete;
+import net.atos.entng.actualites.to.NewsLight;
 import net.atos.entng.actualites.to.NewsStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -139,6 +140,11 @@ public class InfoTransformerServiceImpl implements InfoService {
     @Override
     public void listLastPublishedInfos(UserInfos user, int resultSize, boolean optimized, Handler<Either<String, JsonArray>> handler) {
         infoService.listLastPublishedInfos(user,  resultSize, optimized, handler);
+    }
+
+    @Override
+    public Future<List<NewsLight>> listLastPublishedInfos(UserInfos user, int resultSize) {
+        return infoService.listLastPublishedInfos(user, resultSize);
     }
 
     @Override
