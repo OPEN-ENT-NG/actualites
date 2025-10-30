@@ -14,7 +14,6 @@ import {
 export const infoHandlers = [
   // Get all infos
   http.get(`${baseUrlAPI}/infos`, () => {
-    console.log('infoHandlers - GET /infos', mockInfos.length);
     return HttpResponse.json(mockInfos, { status: 200 });
     // return HttpResponse.json([], { status: 200 }); // empty array to test empty screen
   }),
