@@ -29,7 +29,7 @@ import {
   threadPublisherRights,
   updateThread,
 } from "./_thread-utils.ts";
-import { check } from "k6";
+import { check, sleep } from "k6";
 import { RefinedResponse } from "k6/http";
 
 const maxDuration = __ENV.MAX_DURATION || "5m";
@@ -224,40 +224,40 @@ export function testThreadRights(data: InitData) {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
     const headTeacher = getRandomUserWithProfile(headUsers, "Teacher");
-    const headRelative = getRandomUserWithProfile(headUsers, "Relative");
-    let headRelative2 = getRandomUserWithProfile(headUsers, "Relative");
-    let i = 0;
-    while(headRelative.id === headRelative2.id && i < 10) {
-      i++;
-      headRelative2 = getRandomUserWithProfile(headUsers, "Relative");
-    }
+    let headTeacher2 = getRandomUserWithProfile(headUsers, "Teacher");
 
-    //now call create bookmark that call get bookmark that check visible
     console.log("Authenticate head teacher " + headTeacher.login);
     authenticateWeb(headTeacher.login);
+    let i = 0;
+    while(headTeacher.id === headTeacher2.id && i < 10) {
+      i++;
+      headTeacher2 = getRandomUserWithProfile(headUsers, "Teacher");
+    }
 
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const title = `Creation test ${seed}`;
     const thread: Identifier = createThreadOrFail(title);
-    shareThreadOrFail(thread.id, [headRelative.id],
+
+    shareThreadOrFail(thread.id, [headTeacher2.id],
       [...threadManagerRights, ...threadContributorRights, ...threadPublisherRights],
       ShareTargetType.USER);
 
-    authenticateWeb(headRelative.login);
-    console.log(`Sharing the thread with headRelative ${headRelative.id}.`);
+    authenticateWeb(headTeacher2.login);
+    console.log(`Sharing the thread with headTeacher2 ${headTeacher2.id}.`);
 
+    let headRelative = getRandomUserWithProfile(headUsers, "Relative");
+
+    console.log(`Sharing the thread to ${headRelative.id}.`);
     shareThreadOrFail(thread.id,
-                      [headRelative2.id],
-                      threadContributorRights,
+                      [headRelative.id, headTeacher2.id],
+                      [...threadManagerRights, ...threadContributorRights, ...threadPublisherRights],
                       ShareTargetType.USER);
-
-    authenticateWeb(headTeacher.login);
 
     const shareResp = getShareThread(thread.id);
 
     const rightCheck = function(r: RefinedResponse<any>): boolean {
-      let rights = JSON.parse(r.body as string).users.checked[headRelative2.id];
+      let rights = JSON.parse(r.body as string).users.checked[headRelative.id];
       let rightIncluded = true;
       threadContributorRights.forEach( right=> rightIncluded &&= rights.includes(right));
       return rightIncluded;
@@ -265,7 +265,7 @@ export function testThreadRights(data: InitData) {
 
     check(shareResp, {
       "Get share for owner must be successful": (r) => r.status < 300,
-      "User must be in the share": (r) => JSON.parse(r.body as string).users.checked[headRelative2.id] !== undefined,
+      "User must be in the share": (r) => JSON.parse(r.body as string).users.checked[headRelative.id] !== undefined,
       "User share must contain contributor right": rightCheck
     });
   });
