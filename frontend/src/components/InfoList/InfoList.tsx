@@ -15,9 +15,7 @@ export const InfoList = () => {
     useInfoListEmptyScreen();
 
   useInfiniteScroll({
-    callback: () => {
-      return loadNextPage();
-    },
+    callback: loadNextPage,
     elementRef: loadNextRef,
   });
 
