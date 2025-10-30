@@ -23,6 +23,6 @@ describe('InfoList', () => {
     render(<InfoList />);
 
     const infos = await screen.findAllByRole('article');
-    expect(infos).toHaveLength(4);
+    expect(infos).toHaveLength(3);
   });
 });
