@@ -99,14 +99,11 @@ public class ThreadFilter implements ResourcesProvider {
 			admlStructuresIds.forEach(values::add);
 
 			// Execute
-			Sql.getInstance().prepared(query.toString(), values, new Handler<Message<JsonObject>>() {
-				@Override
-				public void handle(Message<JsonObject> message) {
-					request.resume();
-					Long count = SqlResult.countResult(message);
-					handler.handle(count != null && count > 0);
-				}
-			});
+			Sql.getInstance().prepared(query.toString(), values, message -> {
+                request.resume();
+                Long count = SqlResult.countResult(message);
+                handler.handle(count != null && count > 0);
+            });
 		} else {
 			handler.handle(false);
 		}
