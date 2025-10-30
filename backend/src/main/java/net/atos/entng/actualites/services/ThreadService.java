@@ -38,7 +38,7 @@ public interface ThreadService {
 
 	public void retrieve(String id, Handler<Either<String, JsonObject>> handler);
 	
-	public void retrieve(String id, UserInfos user, Handler<Either<String, JsonObject>> handler);
+	public Future<NewsThread> retrieve(String id, UserInfos user, Map<String, SecuredAction> securedActions);
 
 	public void getPublishSharedWithIds(String threadId, Handler<Either<String, JsonArray>> handler);
 

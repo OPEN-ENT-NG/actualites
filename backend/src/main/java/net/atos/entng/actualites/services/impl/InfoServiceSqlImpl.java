@@ -354,6 +354,34 @@ public class InfoServiceSqlImpl implements InfoService {
 		}
 	}
 
+	@Override
+	public Future<List<NewsLight>> listLastPublishedInfos(UserInfos user, int resultSize) {
+		Promise<List<NewsLight>> promise = Promise.promise();
+		listLastPublishedInfosOptimized(user, resultSize, h -> {
+			//filter necessary line
+			List<NewsLight> pojo = h.right().getValue().stream()
+					.filter(row -> row instanceof JsonObject)
+					.map(JsonObject.class::cast)
+					.map(row -> {
+						final NewsThreadInfo thread = new NewsThreadInfo(
+								row.getInteger("thread_id"),
+								row.getString("thread_title"),
+								row.getString("thread_icon")
+						);
+						return new NewsLight(
+								row.getInteger("_id"),
+								thread,
+								row.getString("username"),
+								row.getString("date"),
+								row.getString("title")
+								);
+					})
+					.collect(Collectors.toList());
+			promise.complete(pojo);
+		});
+		return promise.future();
+	}
+
 	private void listLastPublishedInfosNotOptimized(UserInfos user, int resultSize, Handler<Either<String, JsonArray>> handler) {
 		if (user != null) {
 			String query;
@@ -668,6 +696,7 @@ public class InfoServiceSqlImpl implements InfoService {
 										row.getString("owner_name"),
 										row.getBoolean("owner_deleted")
 								);
+								final boolean isOwner = user.getUserId().equals(row.getString("owner"));
 								final List<String> rawRights = SqlResult.sqlArrayToList(row.getJsonArray("rights"), String.class);
 								return new News(
 										row.getInteger("id"),
@@ -682,7 +711,7 @@ public class InfoServiceSqlImpl implements InfoService {
 										row.getString("expiration_date"),
 										row.getBoolean("is_headline"),
 										row.getInteger("number_of_comments"),
-										Rights.fromRawRights(securedActions, rawRights),
+										Rights.fromRawRights(securedActions, rawRights, isOwner, Rights.ResourceType.INFO),
 										row.getInteger("content_version"),
 										row.getInteger("previous_content_version")
 								);
@@ -790,6 +819,8 @@ public class InfoServiceSqlImpl implements InfoService {
 							);
 							final List<String> rawRights = SqlResult.sqlArrayToList(row.getJsonArray("rights"), String.class);
 							final List<String> rawThreadRights = SqlResult.sqlArrayToList(row.getJsonArray("thread_rights"), String.class);
+							final boolean isInfoOwner = user.getUserId().equals(row.getString("owner"));
+							final boolean isThreadOwner = user.getUserId().equals(row.getString("thread_owner"));
 							final ResourceOwner threadOwner = new ResourceOwner(
 									row.getString("thread_owner"),
 									row.getString("thread_owner_name"),
@@ -800,7 +831,7 @@ public class InfoServiceSqlImpl implements InfoService {
 									row.getString("thread_title"),
 									row.getString("thread_icon"),
 									threadOwner,
-									Rights.fromRawRights(securedActions, rawThreadRights)
+									Rights.fromRawRights(securedActions, rawThreadRights, isThreadOwner, Rights.ResourceType.THREAD)
 							);
 							return new NewsComplete(
 									row.getInteger("id"),
@@ -815,7 +846,7 @@ public class InfoServiceSqlImpl implements InfoService {
 									row.getString("expiration_date"),
 									row.getBoolean("is_headline"),
 									row.getInteger("number_of_comments"),
-									Rights.fromRawRights(securedActions, rawRights),
+									Rights.fromRawRights(securedActions, rawRights, isInfoOwner, Rights.ResourceType.INFO),
 									row.getInteger("content_version")
 							);
 						}).collect(Collectors.toList()).get(0);
