@@ -24,6 +24,7 @@ import fr.wseduc.webutils.security.SecuredAction;
 import io.vertx.core.Future;
 import net.atos.entng.actualites.to.News;
 import net.atos.entng.actualites.to.NewsComplete;
+import net.atos.entng.actualites.to.NewsLight;
 import net.atos.entng.actualites.to.NewsStatus;
 
 import org.entcore.common.user.UserInfos;
@@ -75,6 +76,14 @@ public interface InfoService {
 	public void listByThreadId(String id, UserInfos user, Handler<Either<String, JsonArray>> handler);
 
 	public void listLastPublishedInfos(UserInfos user, int resultSize, boolean optimized, Handler<Either<String, JsonArray>> handler);
+
+	/**
+	 * List last published infos and map it to a NewsLight dto
+	 * @param user the current user
+	 * @param resultSize max size of the list
+	 * @return list of visible published info ordered by modification date or publication date (the sooner).
+	 */
+	public Future<List<NewsLight>> listLastPublishedInfos(UserInfos user, int resultSize);
 
 	public void listForLinker(UserInfos user, Handler<Either<String, JsonArray>> handler);
 
