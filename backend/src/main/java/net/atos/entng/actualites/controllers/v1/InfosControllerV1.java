@@ -126,7 +126,27 @@ public class InfosControllerV1 extends ControllerHelper {
 	@ApiDoc("List last infos, accept query param resultSize.")
 	@SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")
 	public void getLastInfos(HttpServerRequest request) {
-		infoController.listLastPublishedInfos(request);
+		UserUtils.getUserInfos(eb, request, user -> {
+            String resultSize = request.params().get(RESULT_SIZE_PARAMETER);
+            int size;
+            if (resultSize == null || resultSize.trim().isEmpty()) {
+                badRequest(request);
+                return;
+            }
+			try {
+				size = Integer.parseInt(resultSize);
+			} catch (NumberFormatException e) {
+				badRequest(request, "actualites.widget.bad.request.size.must.be.an.integer");
+				return;
+			}
+			if(size <=0 || size > 20) {
+				badRequest(request, "actualites.widget.bad.request.invalid.size");
+				return;
+			}
+            infoService.listLastPublishedInfos(user, size)
+					.onSuccess( newsLight -> render(request, newsLight))
+					.onFailure( ex -> renderError(request));
+        });
 	}
 
 	@Get("/api/v1/infos/:" + INFO_RESOURCE_ID)

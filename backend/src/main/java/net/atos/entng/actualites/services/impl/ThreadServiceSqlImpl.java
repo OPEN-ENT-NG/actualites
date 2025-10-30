@@ -19,42 +19,31 @@
 
 package net.atos.entng.actualites.services.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import fr.wseduc.webutils.Either;
+import fr.wseduc.webutils.security.SecuredAction;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.Promise;
+import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
-import net.atos.entng.actualites.Actualites;
+import net.atos.entng.actualites.services.ThreadService;
+import net.atos.entng.actualites.services.impl.mapper.NewsThreadMapper;
 import net.atos.entng.actualites.to.NewsStatus;
-import net.atos.entng.actualites.to.ResourceOwner;
-import net.atos.entng.actualites.to.Rights;
-
+import net.atos.entng.actualites.to.NewsThread;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
 import org.entcore.common.sql.SqlStatementsBuilder;
 import org.entcore.common.user.UserInfos;
 
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.Promise;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
-
-import fr.wseduc.webutils.Either;
-import fr.wseduc.webutils.security.SecuredAction;
-import net.atos.entng.actualites.services.ThreadService;
-import net.atos.entng.actualites.to.NewsThread;
+import java.util.*;
 
 import static fr.wseduc.webutils.Utils.handlerToAsyncHandler;
 import static fr.wseduc.webutils.Utils.isNotEmpty;
-import static org.entcore.common.user.DefaultFunctions.ADMIN_LOCAL;
-
 import static java.util.stream.Collectors.toList;
-
-import io.vertx.core.eventbus.EventBus;
+import static org.entcore.common.user.DefaultFunctions.ADMIN_LOCAL;
 
 
 public class ThreadServiceSqlImpl implements ThreadService {
@@ -100,8 +89,9 @@ public class ThreadServiceSqlImpl implements ThreadService {
 	}
 	
 	@Override
-	public void retrieve(String id, UserInfos user, Handler<Either<String, JsonObject>> handler) {
+	public Future<NewsThread> retrieve(String id, UserInfos user, Map<String, SecuredAction> securedActions) {
 		String query;
+		final Promise<NewsThread> promise = Promise.promise();
 		JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
 		if (id != null && user != null) {
 			List<String> groupsAndUserIds = new ArrayList<>();
@@ -118,7 +108,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 					"    SELECT ? as id UNION ALL " +
 					"    SELECT id FROM " + groupsTable + " WHERE id IN " + 	Sql.listPrepared(groupsAndUserIds.toArray()) +
 					" ) as u_groups )" +
-					" SELECT t.id as _id, t.title, t.icon, t.mode, t.created, t.modified, t.structure_id, t.owner, u.username," +
+					" SELECT t.id as id, t.title, t.icon, t.mode, t.created, t.modified, t.structure_id, t.owner, u.username,  u.deleted as owner_deleted," +
 					"	     json_agg(row_to_json(row(ts.member_id, ts.action)::actualites.share_tuple)) as shared," +
 					"	     array_to_json(array_agg(group_id)) as groups" +
 					" FROM " + threadsTable + " AS t" +
@@ -129,15 +119,29 @@ public class ThreadServiceSqlImpl implements ThreadService {
 					" 		AND (ts.member_id IN (SELECT id FROM user_groups)" +
 							( admlStructuresIds.isEmpty() ? "" : " OR t.structure_id IN "+ Sql.listPrepared(admlStructuresIds)) +
 					" 		OR t.owner = ?) " +
-					" GROUP BY t.id, u.username" +
+					" GROUP BY t.id, u.username, owner_deleted" +
 					" ORDER BY t.modified DESC";
 			values.add(user.getUserId());
 			groupsAndUserIds.forEach(values::add);
 			values.add(Sql.parseId(id));
 			admlStructuresIds.forEach(values::add);
 			values.add(user.getUserId());
-			Sql.getInstance().prepared(query.toString(), values, SqlResult.parseSharedUnique(handler));
+			Sql.getInstance().prepared(query, values,  (sqlResult) -> {
+				final Either<String, JsonObject> result = SqlResult.validUniqueResult(sqlResult);
+				if (result.isLeft()) {
+					promise.fail("internal server error");
+				} else {
+					try {
+						NewsThread newsThread = NewsThreadMapper.map(result.right().getValue(), user, securedActions);
+						promise.complete(newsThread);
+					} catch (Exception e) {
+						log.error("Failed to parse JsonObject", e);
+						promise.fail(e.getMessage());
+					}
+				}
+			});
 		}
+		return promise.future();
 	}
 
 	@Override
@@ -308,25 +312,11 @@ public class ThreadServiceSqlImpl implements ThreadService {
 					promise.fail(result.left().getValue());
 				} else {
 					try {
-						List<NewsThread> pojo = result.right().getValue().stream().filter(row -> row instanceof JsonObject).map(o -> {
-							final JsonObject row = (JsonObject)o;
-							final ResourceOwner owner = new ResourceOwner(
-									row.getString("owner"),
-									row.getString("owner_name"),
-									row.getBoolean("owner_deleted")
-							);
-							final List<String> rawRights = SqlResult.sqlArrayToList(row.getJsonArray("rights"), String.class);
-							return new NewsThread(
-										row.getInteger("id"),
-										row.getString("title"),
-										row.getString("icon"),
-										row.getString("created"),
-										row.getString("modified"),
-										row.getString("structure_id"),
-										owner,
-										Rights.fromRawRights(securedActions, rawRights)
-									);
-						}).collect(toList());
+						List<NewsThread> pojo = result.right().getValue().stream()
+																		.filter(row -> row instanceof JsonObject)
+																		.map(JsonObject.class::cast)
+																		.map( row -> NewsThreadMapper.map(row, user, securedActions))
+																		.collect(toList());
 						promise.complete(pojo);
 					} catch (Exception e) {
 						log.error("Failed to parse JsonObject", e);
