@@ -31,7 +31,6 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.services.InfoService;
 import net.atos.entng.actualites.to.*;
-import net.atos.entng.actualites.to.NewsState;
 import net.atos.entng.actualites.utils.Events;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
@@ -43,6 +42,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -569,12 +569,12 @@ public class InfoServiceSqlImpl implements InfoService {
 		List<Integer> threadIds = new ArrayList<>();
 		if (threadId != null) threadIds.add(threadId);
 
-		return listPaginated(securedActions, user, page, pageSize, threadIds, Arrays.asList(NewsStatus.PUBLISHED), new ArrayList<>());
+		return listPaginated(securedActions, user, page, pageSize, threadIds, Arrays.asList(NewsStatus.PUBLISHED), Collections.emptyList());
 	}
 
 	@Override
 	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, List<Integer> threadIds, List<NewsStatus> statuses) {
-		return listPaginated(securedActions, user, page, pageSize, threadIds, statuses, new ArrayList<>());
+		return listPaginated(securedActions, user, page, pageSize, threadIds, statuses, Collections.emptyList());
 	}
 
 	@Override
@@ -601,20 +601,30 @@ public class InfoServiceSqlImpl implements InfoService {
 			String statusFilter = "i.status IN " + Sql.listPrepared(statusValues.toArray());
 
 			// Build date filter based on states parameter
-			String dateFilter;
-			if (states == null || states.isEmpty()) {
-				dateFilter = "(i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) " +
-							 "AND (i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL)";
-			} else {
+			String dateFilter = null;
+			if (states != null && !states.isEmpty()) {
 				List<String> stateConditions = new ArrayList<>();
 				for (NewsState state : states) {
-					if (state == NewsState.EXPIRED) {
-						stateConditions.add("(i.expiration_date < LOCALTIMESTAMP)");
-					} else if (state == NewsState.INCOMING) {
-						stateConditions.add("(i.publication_date > LOCALTIMESTAMP)");
+					switch(state) {
+						case EXPIRED:
+							stateConditions.add("(i.expiration_date < LOCALTIMESTAMP)");
+							break;
+						case INCOMING:
+							stateConditions.add("(i.publication_date > LOCALTIMESTAMP)");
+							break;
+						default:
+							log.warn("Unknown NewsState: " + state);
+							break;
 					}
 				}
-				dateFilter = String.join(" OR ", stateConditions);
+				if (!stateConditions.isEmpty()) {
+					dateFilter = String.join(" OR ", stateConditions);
+				}
+			}
+
+			if (dateFilter == null) {
+				dateFilter = "(i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) " +
+							 "AND (i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL)";
 			}
 
 			// Different visibility rules per status

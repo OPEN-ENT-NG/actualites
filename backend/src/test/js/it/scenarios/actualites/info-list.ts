@@ -113,16 +113,21 @@ export function testInfoList(data: InitData) {
     const thread: ThreadIdentifier = createThreadOrFail(`Thread 1 ${seed}`);
     console.log(`Thread 1 id: ${thread.id}`);
 
-    // Create EXPIRED published info
-    const expiredCreated = createPublishedInfoOrFail({
-      title: `Expired info ${seed}`,
-      content: `Expired content`,
-      thread_id: parseInt(thread.id as string),
-      status: 3,
-      publication_date: "2020-01-01",
-      expiration_date: "2020-12-31",
-    } as any);
-    console.log(`Expired info id: ${expiredCreated.id}`);
+    // Create 25 EXPIRED published infos for pagination testing
+    console.log("Creating 25 expired infos for pagination testing");
+    const expiredIds: number[] = [];
+    for (let i = 0; i < 25; i++) {
+      const expiredCreated = createPublishedInfoOrFail({
+        title: `Expired info ${i} ${seed}`,
+        content: `Expired content ${i}`,
+        thread_id: parseInt(thread.id as string),
+        status: 3,
+        publication_date: "2020-01-01",
+        expiration_date: "2020-12-31",
+      } as any);
+      expiredIds.push(expiredCreated.id);
+    }
+    console.log(`Created ${expiredIds.length} expired infos`);
 
     // Create INCOMING published info
     const incomingCreated = createPublishedInfoOrFail({
@@ -181,7 +186,7 @@ export function testInfoList(data: InitData) {
     console.log(`Thread 2 info id: ${thread2InfoCreated.id}`);
 
     // Store IDs for validation
-    (data as any).expiredId = expiredCreated.id;
+    (data as any).expiredId = expiredIds[0];
     (data as any).incomingId = incomingCreated.id;
     (data as any).currentId = currentCreated.id;
     (data as any).draftId = draftCreated.id;
@@ -239,7 +244,10 @@ export function testInfoList(data: InitData) {
   describe('[Info-List] Test pagination', () => {
     authenticateWeb(data.teacher.login);
 
-    const url1 = `${rootUrl}/actualites/api/v1/infos?page=0&pageSize=1&state=expired`;
+    const threadId = (data as any).threadId;
+
+    // Test page 0 with pageSize=20 (we created 25 expired infos)
+    const url1 = `${rootUrl}/actualites/api/v1/infos?page=0&pageSize=20&state=expired&threadIds=${threadId}`;
     const res1 = http.get(url1, { headers: getHeaders() });
 
     check(res1, {
@@ -248,14 +256,22 @@ export function testInfoList(data: InitData) {
 
     const page0 = JSON.parse(res1.body as string);
     check(page0, {
-      "Page 0 should have at most 1 result": (list) => Array.isArray(list) && list.length <= 1,
+      "Page 0 should return exactly 20 results": (list) => Array.isArray(list) && list.length === 20,
+      "Page 0 results should all be expired": (list) => list.every((info: any) => isExpired(info.expirationDate)),
     });
 
-    const url2 = `${rootUrl}/actualites/api/v1/infos?page=1&pageSize=1&state=expired`;
+    // Test page 1 should have the remaining 5 expired infos
+    const url2 = `${rootUrl}/actualites/api/v1/infos?page=1&pageSize=20&state=expired&threadIds=${threadId}`;
     const res2 = http.get(url2, { headers: getHeaders() });
 
     check(res2, {
       "Pagination page 1 should succeed": (r) => r.status === 200,
+    });
+
+    const page1 = JSON.parse(res2.body as string);
+    check(page1, {
+      "Page 1 should return exactly 5 results": (list) => Array.isArray(list) && list.length === 5,
+      "Page 1 results should all be expired": (list) => list.every((info: any) => isExpired(info.expirationDate)),
     });
   });
 
