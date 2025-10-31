@@ -22,6 +22,9 @@ import {
 import {
   createInfoOrFail,
   createPublishedInfoOrFail,
+  getStats,
+  getThreadStats,
+  formatDate,
 } from "./_info-utils.ts";
 import { check } from "k6";
 import http from "k6/http";
@@ -53,22 +56,6 @@ type InitData = {
   teacher: any;
   teacher2: any;
   mainThreadId: string;
-}
-
-// Helper functions
-function getStats() {
-  const res = http.get(statsUrl, { headers: getHeaders() });
-  check(res, { "Stats query should succeed": (r) => r.status === 200 });
-  return JSON.parse(res.body as string);
-}
-
-function getThreadStats(threadId: number | string) {
-  const stats = getStats();
-  return stats.threads.find((t: any) => t.id === parseInt(threadId as string));
-}
-
-function formatDate(date: Date): string {
-  return date.toISOString().split('.')[0];
 }
 
 export function setup() {
@@ -188,7 +175,7 @@ export function testInfoStats(data: InitData) {
   describe('[Info-Stats] Basic stats structure and counts', () => {
     authenticateWeb(data.teacher.login);
 
-    const stats = getStats();
+    const stats = getStats(statsUrl);
     check(stats, {
       "Stats should have threads array": (s) => Array.isArray(s.threads),
     });
@@ -232,7 +219,7 @@ export function testInfoStats(data: InitData) {
       publication_date: "2020-01-01",
     } as any);
 
-    const threadStats = getThreadStats(data.mainThreadId);
+    const threadStats = getThreadStats(statsUrl, data.mainThreadId);
     check(threadStats, {
       "expiredCount should still be 2 after adding NULL expiration": (t) => t.expiredCount === 2,
     });
@@ -249,7 +236,7 @@ export function testInfoStats(data: InitData) {
       expiration_date: "2035-12-31",
     } as any);
 
-    const threadStats = getThreadStats(data.mainThreadId);
+    const threadStats = getThreadStats(statsUrl, data.mainThreadId);
     check(threadStats, {
       "incomingCount should still be 2 after adding NULL publication": (t) => t.incomingCount === 2,
     });
@@ -280,7 +267,7 @@ export function testInfoStats(data: InitData) {
       expiration_date: "2035-12-31",
     } as any);
 
-    const threadStats = getThreadStats(data.mainThreadId);
+    const threadStats = getThreadStats(statsUrl, data.mainThreadId);
     check(threadStats, {
       "expiredCount should have increased": (t) => t.expiredCount >= 3,
       "incomingCount should have increased": (t) => t.incomingCount >= 3,
@@ -301,7 +288,7 @@ export function testInfoStats(data: InitData) {
       status: 2,
     } as any);
 
-    const threadStats = getThreadStats(data.mainThreadId);
+    const threadStats = getThreadStats(statsUrl, data.mainThreadId);
     check(threadStats.status, {
       "Status should have PENDING count": (s) => typeof s.PENDING === "number",
       "PENDING count should be at least 1": (s) => s.PENDING >= 1,
@@ -327,7 +314,7 @@ export function testInfoStats(data: InitData) {
       status: 2,
     } as any);
 
-    const threadStats = getThreadStats(thread.id as string);
+    const threadStats = getThreadStats(statsUrl, thread.id as string);
     check(threadStats, {
       "Thread should have infosCount = 2": (t) => t.infosCount === 2,
       "Thread should have expiredCount = 0": (t) => t.expiredCount === 0,
@@ -377,7 +364,7 @@ export function testInfoStats(data: InitData) {
       expiration_date: "2035-12-31",
     } as any);
 
-    const threadStats = getThreadStats(tid);
+    const threadStats = getThreadStats(statsUrl, tid);
     check(threadStats, {
       "Thread should have infosCount = 5": (t) => t.infosCount === 5,
       "Thread should have expiredCount = 1": (t) => t.expiredCount === 1,
@@ -417,7 +404,7 @@ export function testInfoStats(data: InitData) {
       "Update to TRASH should succeed": (r) => r.status === 200,
     });
 
-    const threadStats = getThreadStats(thread.id as string);
+    const threadStats = getThreadStats(statsUrl, thread.id as string);
     check(threadStats, {
       "Status should have TRASH count": (s) => s && typeof s.status.TRASH === "number",
       "TRASH count should be 1": (s) => s && s.status.TRASH === 1,
@@ -449,7 +436,7 @@ export function testInfoStats(data: InitData) {
       status: 1,
     } as any);
 
-    const stats = getStats();
+    const stats = getStats(statsUrl);
     const thread1Stats = stats.threads.find((t: any) => t.id === parseInt(data.mainThreadId));
     const thread2Stats = stats.threads.find((t: any) => t.id === parseInt(thread2.id as string));
 
@@ -466,7 +453,7 @@ export function testInfoStats(data: InitData) {
 
     const emptyThread = createThreadOrFail(`Empty thread ${seed}`);
 
-    const stats = getStats();
+    const stats = getStats(statsUrl);
     const emptyThreadStats = stats.threads.find((t: any) => t.id === parseInt(emptyThread.id as string));
 
     check({ emptyThreadStats }, {
@@ -497,7 +484,7 @@ export function testInfoStats(data: InitData) {
 
     authenticateWeb(data.teacher2.login);
 
-    const sharedThreadStats = getThreadStats(sharedThread.id as string);
+    const sharedThreadStats = getThreadStats(statsUrl, sharedThread.id as string);
     check(sharedThreadStats, {
       "Shared thread should appear for teacher2": (t) => t !== undefined,
       "Shared thread should have infosCount = 1": (t) => t && t.infosCount === 1,
@@ -520,7 +507,7 @@ export function testInfoStats(data: InitData) {
 
     authenticateWeb(data.teacher2.login);
 
-    const stats = getStats();
+    const stats = getStats(statsUrl);
     const privateThreadStats = stats.threads.find((t: any) => t.id === parseInt(privateThread.id as string));
 
     check({ privateThreadStats }, {
@@ -560,7 +547,7 @@ export function testInfoStats(data: InitData) {
 
     authenticateWeb(data.teacher2.login);
 
-    const threadStats = getThreadStats(thread.id as string);
+    const threadStats = getThreadStats(statsUrl, thread.id as string);
     check(threadStats, {
       "Thread with shared info should appear for teacher2": (t) => t !== undefined,
       "Thread should have infosCount = 1": (t) => t && t.infosCount === 1,
