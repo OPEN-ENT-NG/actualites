@@ -198,7 +198,7 @@ export function testInfoStats(data: InitData) {
     check(threadStats.status, {
       "Status should have PUBLISHED count": (s) => typeof s.PUBLISHED === "number",
       "Status should have DRAFT count of 2": (s) => s.DRAFT === 2,
-      "PUBLISHED count should be 5": (s) => s.PUBLISHED === 5,
+      "PUBLISHED count should be 1 (only current, not expired/incoming)": (s) => s.PUBLISHED === 1,
     });
 
     console.log(`Thread stats: ${JSON.stringify(threadStats)}`);
@@ -247,7 +247,7 @@ export function testInfoStats(data: InitData) {
 
     const now = new Date();
     const oneSecondAgo = new Date(now.getTime() - 1000);
-    const oneSecondLater = new Date(now.getTime() + 1000);
+    const fiveSecondsLater = new Date(now.getTime() + 5000);
 
     createPublishedInfoOrFail({
       title: `Expiring now ${seed}`,
@@ -263,7 +263,7 @@ export function testInfoStats(data: InitData) {
       content: `Content`,
       thread_id: parseInt(data.mainThreadId),
       status: 3,
-      publication_date: formatDate(oneSecondLater),
+      publication_date: formatDate(fiveSecondsLater),
       expiration_date: "2035-12-31",
     } as any);
 
@@ -374,7 +374,7 @@ export function testInfoStats(data: InitData) {
     check(threadStats.status, {
       "Status should have DRAFT = 1": (s) => s.DRAFT === 1,
       "Status should have PENDING = 1": (s) => s.PENDING === 1,
-      "Status should have PUBLISHED = 3": (s) => s.PUBLISHED === 3,
+      "Status should have PUBLISHED = 1 (only current, not expired/incoming)": (s) => s.PUBLISHED === 1,
     });
   });
 

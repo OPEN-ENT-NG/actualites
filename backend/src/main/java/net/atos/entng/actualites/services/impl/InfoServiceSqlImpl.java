@@ -857,8 +857,13 @@ public class InfoServiceSqlImpl implements InfoService {
 				if (i > 0) {
 					statusAggregation.append(", ");
 				}
-				statusAggregation.append("'").append(statuses[i].name()).append("', ")
-					.append("COUNT(*) FILTER (WHERE i.status = ").append(statuses[i].getValue()).append(")");
+				statusAggregation.append("'").append(statuses[i].name()).append("', ");
+				if (statuses[i] == NewsStatus.PUBLISHED) {
+					statusAggregation.append("COUNT(*) FILTER (WHERE i.status = ").append(statuses[i].getValue())
+						.append(" AND (i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) AND (i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL))");
+				} else {
+					statusAggregation.append("COUNT(*) FILTER (WHERE i.status = ").append(statuses[i].getValue()).append(")");
+				}
 			}
 			statusAggregation.append(")");
 
@@ -893,7 +898,7 @@ public class InfoServiceSqlImpl implements InfoService {
 					" 	 LEFT JOIN thread_for_user ON thread_for_user.id = i.thread_id " +
 					"WHERE (t.owner = ?  AND i.status >= 2  " +
 					"      OR t.id IN ( SELECT id  FROM thread_for_user ) AND i.status >= 2  " +
-					"      OR i.id IN ( SELECT id FROM info_for_user ) AND i.status >= 3 AND (i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) AND (i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL)" +
+					"      OR i.id IN ( SELECT id FROM info_for_user ) AND i.status >= 3" +
 					"      OR i.owner = ?) " +
 					"GROUP BY t.id " +
 					"ORDER BY t.id";
