@@ -8,13 +8,21 @@ vi.mock('./hooks/useInfoListEmptyScreen', () => ({
   })),
 }));
 
+const mockIntersectionObserver = vi.fn().mockReturnValue({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+});
+
 describe('InfoList', () => {
-  it('should render', async () => {
+  beforeAll(() => {
+    window.IntersectionObserver = mockIntersectionObserver;
+  });
+
+  it('should render placeholder when loading', async () => {
     render(<InfoList />);
 
-    const header = await screen.findAllByRole('article');
-    expect(header).toHaveLength(3);
-
-    screen.debug();
+    const infos = await screen.findAllByRole('article');
+    expect(infos).toHaveLength(3);
   });
 });

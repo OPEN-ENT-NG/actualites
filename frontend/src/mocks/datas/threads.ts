@@ -1,10 +1,10 @@
-import { Thread, ThreadMode } from '~/models/thread';
-import { mockUserCatherine, mockUserLogged } from './users';
 import {
   THREAD_CONTRIBUTOR,
   THREAD_MANAGER,
   THREAD_PUBLISHER,
 } from '~/config/rights';
+import { Thread, ThreadMode } from '~/models/thread';
+import { mockUserCatherine, mockUserLogged } from './users';
 
 //---------------------------------------
 //--------------- THREADS ---------------
