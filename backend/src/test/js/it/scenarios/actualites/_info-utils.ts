@@ -145,3 +145,34 @@ export function deleteInfoOrFail(infoId: number): any {
   });
   return JSON.parse(res.body as string);
 }
+
+/**
+ * Get stats from the API
+ * @param statsUrl The stats endpoint URL
+ * @returns The parsed stats response
+ */
+export function getStats(statsUrl: string) {
+  const res = http.get(statsUrl, { headers: getHeaders() });
+  check(res, { "Stats query should succeed": (r) => r.status === 200 });
+  return JSON.parse(res.body as string);
+}
+
+/**
+ * Get stats for a specific thread
+ * @param statsUrl The stats endpoint URL
+ * @param threadId The thread ID
+ * @returns The thread stats object
+ */
+export function getThreadStats(statsUrl: string, threadId: number | string) {
+  const stats = getStats(statsUrl);
+  return stats.threads.find((t: any) => t.id === parseInt(threadId as string));
+}
+
+/**
+ * Format a date to ISO string without milliseconds
+ * @param date The date to format
+ * @returns The formatted date string
+ */
+export function formatDate(date: Date): string {
+  return date.toISOString().split('.')[0];
+}
