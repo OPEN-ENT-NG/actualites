@@ -120,8 +120,9 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
   {
     path: 'oldformat/:threadIdAsString/:infoIdAsString',
     async lazy() {
-      const { Component } = await import('./old-format');
+      const { loader, Component } = await import('./old-format');
       return {
+        loader,
         Component,
       };
     },
