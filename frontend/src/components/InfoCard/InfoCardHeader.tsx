@@ -11,8 +11,8 @@ import {
 } from '@edifice.io/react';
 import { IconClock, IconClockAlert, IconSave } from '@edifice.io/react/icons';
 import iconHeadline from '~/assets/icon-headline.svg';
-import { useThread } from '~/hooks/useThread';
 import { useI18n } from '~/hooks/useI18n';
+import { useThread } from '~/hooks/useThread';
 import { InfoExtendedStatus } from '~/models/info';
 import { InfoCardProps } from './InfoCard';
 import { InfoCardThreadHeader } from './InfoCardThreadHeader';
