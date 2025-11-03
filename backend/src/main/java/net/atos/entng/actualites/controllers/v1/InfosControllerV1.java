@@ -17,6 +17,7 @@ import net.atos.entng.actualites.filters.InfoFilter;
 import net.atos.entng.actualites.filters.UpdateInfoFilter;
 import net.atos.entng.actualites.services.InfoService;
 import net.atos.entng.actualites.services.NotificationTimelineService;
+import net.atos.entng.actualites.to.NewsState;
 import net.atos.entng.actualites.to.NewsStatus;
 import net.atos.entng.actualites.utils.Events;
 import org.apache.commons.lang3.StringUtils;
@@ -111,9 +112,22 @@ public class InfosControllerV1 extends ControllerHelper {
 			statuses.add(NewsStatus.PUBLISHED);
 		}
 
+		// state argument
+		final List<NewsState> states = new ArrayList<>();
+		List<String> stateParams = request.params().getAll("state");
+		if (stateParams != null && !stateParams.isEmpty()) {
+			for (String stateParam : stateParams) {
+				try {
+					states.add(NewsState.valueOf(stateParam.toUpperCase()));
+				} catch (IllegalArgumentException e) {
+					// Pas un état valide, on skip !
+				}
+			}
+		}
+
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
-				infoService.listPaginated(securedActions, user, page, pageSize, threadIds, statuses)
+				infoService.listPaginated(securedActions, user, page, pageSize, threadIds, statuses, states)
 					.onSuccess(news -> render(request, news))
 					.onFailure(ex -> renderError(request));
 			} else {

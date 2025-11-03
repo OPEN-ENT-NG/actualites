@@ -17,6 +17,7 @@ import net.atos.entng.actualites.services.InfoService;
 import net.atos.entng.actualites.to.News;
 import net.atos.entng.actualites.to.NewsComplete;
 import net.atos.entng.actualites.to.NewsLight;
+import net.atos.entng.actualites.to.NewsState;
 import net.atos.entng.actualites.to.NewsStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -176,6 +177,11 @@ public class InfoTransformerServiceImpl implements InfoService {
     @Override
     public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, List<Integer> threadIds, List<NewsStatus> statuses) {
         return transformAndUpdateNewsContent(this.infoService.listPaginated(securedActions, user, page, pageSize, threadIds, statuses));
+    }
+
+    @Override
+    public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, List<Integer> threadIds, List<NewsStatus> statuses, List<NewsState> states) {
+        return transformAndUpdateNewsContent(this.infoService.listPaginated(securedActions, user, page, pageSize, threadIds, statuses, states));
     }
 
     @Override

@@ -42,6 +42,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -568,11 +569,16 @@ public class InfoServiceSqlImpl implements InfoService {
 		List<Integer> threadIds = new ArrayList<>();
 		if (threadId != null) threadIds.add(threadId);
 
-		return listPaginated(securedActions, user, page, pageSize, threadIds, Arrays.asList(NewsStatus.PUBLISHED));
+		return listPaginated(securedActions, user, page, pageSize, threadIds, Arrays.asList(NewsStatus.PUBLISHED), Collections.emptyList());
 	}
 
 	@Override
 	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, List<Integer> threadIds, List<NewsStatus> statuses) {
+		return listPaginated(securedActions, user, page, pageSize, threadIds, statuses, Collections.emptyList());
+	}
+
+	@Override
+	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, List<Integer> threadIds, List<NewsStatus> statuses, List<NewsState> states) {
 		final Promise<List<News>> promise = Promise.promise();
 		if (user == null) {
 			promise.fail("user not provided");
@@ -594,6 +600,33 @@ public class InfoServiceSqlImpl implements InfoService {
 			List<Integer> statusValues = statuses.stream().map(NewsStatus::getValue).collect(Collectors.toList());
 			String statusFilter = "i.status IN " + Sql.listPrepared(statusValues.toArray());
 
+			// Build date filter based on states parameter
+			String dateFilter = null;
+			if (states != null && !states.isEmpty()) {
+				List<String> stateConditions = new ArrayList<>();
+				for (NewsState state : states) {
+					switch(state) {
+						case EXPIRED:
+							stateConditions.add("(i.expiration_date < LOCALTIMESTAMP)");
+							break;
+						case INCOMING:
+							stateConditions.add("(i.publication_date > LOCALTIMESTAMP)");
+							break;
+						default:
+							log.warn("Unknown NewsState: " + state);
+							break;
+					}
+				}
+				if (!stateConditions.isEmpty()) {
+					dateFilter = String.join(" OR ", stateConditions);
+				}
+			}
+
+			if (dateFilter == null) {
+				dateFilter = "(i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) " +
+							 "AND (i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL)";
+			}
+
 			// Different visibility rules per status
 			// - DRAFT: only owner sees it
 			// - PENDING: owner + thread contributors with publish right
@@ -610,8 +643,7 @@ public class InfoServiceSqlImpl implements InfoService {
 					"    (t.id IN (SELECT id FROM thread_for_user) AND i.status >= " + NewsStatus.PENDING.getValue() + ") " + // thread shared with publish: PENDING + PUBLISHED
 					") " +
 					"AND (i.status <> " + NewsStatus.PUBLISHED.getValue() +
-					"     OR ((i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) " + // for PUBLISHED: check dates
-					"     AND (i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL))) ";
+					"     OR (" + dateFilter + ")) ";
 			if (threadIds != null && !threadIds.isEmpty()) {
 				String threadIdsSql = Sql.listPrepared(threadIds.toArray());
 				whereClause = "i.thread_id IN " + threadIdsSql + " AND ( " + whereClause + ") ";
