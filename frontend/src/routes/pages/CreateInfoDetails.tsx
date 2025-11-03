@@ -1,12 +1,13 @@
 import { QueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import { LoaderFunctionArgs, useParams } from 'react-router-dom';
+import { LoaderFunctionArgs } from 'react-router-dom';
 import { InfoDetailsForm } from '~/features/info-form/components/InfoDetailsForm';
 import { InfoFormActions } from '~/features/info-form/components/InfoFormActions';
 import { InfoFormActionsSkeleton } from '~/features/info-form/components/InfoFormActionsSkeleton';
 import { InfoFormHeader } from '~/features/info-form/components/InfoFormHeader';
 import { InfoFormHeaderSkeleton } from '~/features/info-form/components/InfoFormHeaderSkeleton';
 import { InfoFormSkeleton } from '~/features/info-form/components/InfoFormSkeleton';
+import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
 import { infoQueryOptions, useInfoById, useThreads } from '~/services/queries';
 import {
   CreationStep,
@@ -28,7 +29,7 @@ export const loader =
 
 export function CreateInfoDetails() {
   const { data: threads } = useThreads();
-  const { infoId } = useParams();
+  const { infoId } = useThreadInfoParams();
 
   const { data: info } = useInfoById(Number(infoId));
   const setCurrentCreationStep = useInfoFormStore.use.setCurrentCreationStep();

@@ -1,10 +1,12 @@
 import {
   AppIcon,
   AppIconSize,
+  Flex,
   Image,
   useEdificeClient,
 } from '@edifice.io/react';
 import { Thread } from '~/models/thread';
+import './ThreadIcon.css';
 
 export const ThreadIcon = ({
   thread,
@@ -37,11 +39,13 @@ export const ThreadIcon = ({
           />
         </div>
       ) : (
-        <AppIcon
-          app={appCode}
-          variant="square"
-          size={(iconSize + '') as AppIconSize}
-        ></AppIcon>
+        <Flex
+          align="center"
+          justify="center"
+          className="bg-orange-200 rounded thread-icon"
+        >
+          <AppIcon app={appCode} variant="square" />
+        </Flex>
       )}
     </>
   );
