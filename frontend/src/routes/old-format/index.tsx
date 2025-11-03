@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { LoadingScreen, useEdificeTheme } from '@edifice.io/react';
 
 import { useTranslation } from 'react-i18next';
-import { useLoaderData } from 'react-router-dom';
+import { LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
 import { useInfoOriginalFormat } from '~/services/queries';
 
 interface OldFormatProps {
@@ -14,17 +14,16 @@ interface OldFormatProps {
 /** Loader to get threadId and infoId from params */
 export const loader = async ({
   params,
-}: {
-  params: Record<string, string>;
-}): Promise<OldFormatProps> => {
-  const threadId = params['threadId']
-    ? Number.parseInt(params['threadId'])
-    : -1;
-  const infoId = params['infoId'] ? Number.parseInt(params['infoId']) : -1;
-  if (!threadId || !infoId) {
-    throw new Response('Invalid threadId or infoId');
+}: LoaderFunctionArgs): Promise<OldFormatProps> => {
+  const threadId = params['threadIdAsString']
+    ? Number.parseInt(params['threadIdAsString'])
+    : NaN;
+  const infoId = params['infoIdAsString']
+    ? Number.parseInt(params['infoIdAsString'])
+    : NaN;
+  if (isNaN(threadId) || isNaN(infoId)) {
+    throw new Error('Invalid threadId or infoId');
   }
-
   return { threadId, infoId };
 };
 
