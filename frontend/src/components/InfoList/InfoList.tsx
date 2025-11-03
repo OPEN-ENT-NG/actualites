@@ -1,43 +1,35 @@
-import { Button } from '@edifice.io/react';
-import { useRef } from 'react';
-import { useInfoList } from '~/features';
-import { useInfiniteScroll } from '~/hooks/useInfiniteScroll';
-import { DEFAULT_PAGE_SIZE } from '~/services/queries/info';
+import { Button, Flex, useInfiniteScroll } from '@edifice.io/react';
+import { useInfoList } from '~/hooks/useInfoList';
 import { InfoCard, InfoCardSkeleton } from '..';
 import { InfoListEmpty } from './components/InfoListEmpty';
 import { useInfoListEmptyScreen } from './hooks/useInfoListEmptyScreen';
 
 export const InfoList = () => {
-  const loadNextRef = useRef<HTMLElement>(null);
-
-  const { infos, hasNextPage, loadNextPage, isLoading, reload } =
-    useInfoList(DEFAULT_PAGE_SIZE);
+  const { infos, hasNextPage, loadNextPage, isLoading, reload } = useInfoList();
   const { type: emptyScreenType, isReady: emptyScreenIsReady } =
     useInfoListEmptyScreen();
 
-  useInfiniteScroll({
-    callback: () => {
-      loadNextPage();
-      return Promise.resolve();
-    },
-    elementRef: loadNextRef,
+  const loadNextRef = useInfiniteScroll({
+    callback: loadNextPage,
   });
 
   return (
-    <div>
-      <header className="mt-16 mb-24">
+    <Flex
+      direction="column"
+      fill
+      className="p-md-24 mt-16 mt-md-0 overflow-hidden"
+      gap="16"
+    >
+      <header>
         <span>Mettre le Segmented Control ici =&gt; </span>
         <Button onClick={reload}>Recharger</Button>
       </header>
-
       {!isLoading && infos.length === 0 && emptyScreenIsReady && (
         <InfoListEmpty type={emptyScreenType} />
       )}
-
       {infos.map((info) => (
         <InfoCard key={info.id} info={info}></InfoCard>
       ))}
-      <br />
       {isLoading ? (
         <>
           <InfoCardSkeleton />
@@ -47,6 +39,6 @@ export const InfoList = () => {
       ) : (
         hasNextPage && <InfoCardSkeleton ref={loadNextRef} />
       )}
-    </div>
+    </Flex>
   );
 };

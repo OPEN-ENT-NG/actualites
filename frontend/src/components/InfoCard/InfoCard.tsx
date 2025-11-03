@@ -19,7 +19,6 @@ export const InfoCard = ({ info }: InfoCardProps) => {
   const { t } = useI18n();
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const infoId = `info-${info.id}`;
   const isIncoming =
     info.status === InfoStatus.PUBLISHED &&
     !!info.publicationDate &&
@@ -30,7 +29,7 @@ export const InfoCard = ({ info }: InfoCardProps) => {
     new Date(info.expirationDate) < new Date();
   const [collapse, setCollapse] = useState(true);
   const className = clsx(
-    'mb-16 px-24 py-16 info-card position-relative border-none overflow-visible',
+    'px-24 py-16 info-card position-relative border-none overflow-visible',
     {
       'info-card-incoming': isIncoming,
       'info-card-draft': info.status === InfoStatus.DRAFT,
@@ -66,9 +65,9 @@ export const InfoCard = ({ info }: InfoCardProps) => {
       className={className}
       isClickable={false}
       isSelectable={false}
-      key={infoId}
+      key={info.id}
     >
-      <article id={infoId} className="overflow-hidden">
+      <article id={String(info.id)} className="overflow-hidden">
         <InfoCardHeader info={info} extendedStatus={extendedStatus} />
 
         {isExpired && (
