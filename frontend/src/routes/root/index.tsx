@@ -97,7 +97,7 @@ export const Root = () => {
     <Layout>
       <AppHeader>
         <Breadcrumb app={(currentApp as IWebApp) ?? displayApp} />
-        {!isCreateRoute && (
+        {!isCreateRoute && canContributeOnOneThread && (
           <Flex fill align="center" justify="end">
             {canContributeOnOneThread && (
               <Button onClick={handleClickNewInfo}>New Article</Button>

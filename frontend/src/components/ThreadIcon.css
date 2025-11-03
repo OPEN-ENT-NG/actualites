@@ -1,0 +1,7 @@
+.thread-icon .app-icon {
+  width: auto !important;
+  height: auto !important;
+}
+.thread-icon svg {
+  margin: 0.4rem;
+}

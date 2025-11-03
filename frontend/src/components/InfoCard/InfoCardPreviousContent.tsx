@@ -39,7 +39,7 @@ export const InfoCardPreviousContent = ({
           </div>
           <Button
             color="tertiary"
-            className="previouscontent-alert-view-more text-gray-700"
+            className="previouscontent-alert-view-more text-gray-700 h-auto"
             type="button"
             variant="ghost"
             rightIcon={<IconRafterRight />}
