@@ -39,10 +39,10 @@ export const InfoCardPreviousContent = ({
           </div>
           <Button
             color="tertiary"
-            className="previouscontent-alert-view-more text-gray-700 h-auto"
+            className="text-gray-700 h-auto"
             type="button"
             variant="ghost"
-            rightIcon={<IconRafterRight />}
+            rightIcon={<IconRafterRight className="text-gray-700" />}
             onClick={handlePreviousContentClick}
           >
             {t('actualites.previouscontent.alert.button')}
