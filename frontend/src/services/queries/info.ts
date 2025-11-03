@@ -113,13 +113,10 @@ export const infoQueryOptions = {
     });
   },
 
-  getOriginalFormat(
-    threadId: ThreadId | undefined,
-    infoId: InfoId | undefined,
-  ) {
+  getOriginalFormat(threadId: ThreadId, infoId: InfoId) {
     return queryOptions({
       queryKey: infoQueryKeys.originalFormat({ infoId, threadId }),
-      queryFn: () => infoService.getOriginalFormat(threadId!, infoId!),
+      queryFn: () => infoService.getOriginalFormat(threadId, infoId),
       enabled: !!threadId && !!infoId,
     });
   },
@@ -139,7 +136,7 @@ export const useInfoShares = (threadId: ThreadId, infoId: InfoId) =>
 export const useInfoRevisions = (infoId: InfoId) =>
   useQuery(infoQueryOptions.getRevisions(infoId));
 
-export const useInfoOriginalFormat = (threadId?: ThreadId, infoId?: InfoId) =>
+export const useInfoOriginalFormat = (threadId: ThreadId, infoId: InfoId) =>
   useQuery(infoQueryOptions.getOriginalFormat(threadId, infoId));
 
 export const useCreateDraftInfo = () =>

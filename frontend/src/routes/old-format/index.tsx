@@ -3,12 +3,34 @@ import { useEffect } from 'react';
 import { LoadingScreen, useEdificeTheme } from '@edifice.io/react';
 
 import { useTranslation } from 'react-i18next';
-import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
+import { useLoaderData } from 'react-router-dom';
 import { useInfoOriginalFormat } from '~/services/queries';
+
+interface OldFormatProps {
+  threadId: number;
+  infoId: number;
+}
+
+/** Loader to get threadId and infoId from params */
+export const loader = async ({
+  params,
+}: {
+  params: Record<string, string>;
+}): Promise<OldFormatProps> => {
+  const threadId = params['threadId']
+    ? Number.parseInt(params['threadId'])
+    : -1;
+  const infoId = params['infoId'] ? Number.parseInt(params['infoId']) : -1;
+  if (!threadId || !infoId) {
+    throw new Response('Invalid threadId or infoId');
+  }
+
+  return { threadId, infoId };
+};
 
 /** Get info content in previous format */
 export const Component = () => {
-  const { threadId, infoId } = useThreadInfoParams();
+  const { threadId, infoId } = useLoaderData() as OldFormatProps;
   const query = useInfoOriginalFormat(threadId, infoId);
   const { theme } = useEdificeTheme();
   const { t } = useTranslation('actualites'); // Do not replace by useI18n
