@@ -25,6 +25,7 @@ import io.vertx.core.Future;
 import net.atos.entng.actualites.to.News;
 import net.atos.entng.actualites.to.NewsComplete;
 import net.atos.entng.actualites.to.NewsLight;
+import net.atos.entng.actualites.to.NewsState;
 import net.atos.entng.actualites.to.NewsStatus;
 
 import org.entcore.common.user.UserInfos;
@@ -101,6 +102,8 @@ public interface InfoService {
 	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, Integer threadId);
 
 	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, List<Integer> threadIds, List<NewsStatus> statuses);
+
+	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, List<Integer> threadIds, List<NewsStatus> statuses, List<NewsState> states);
 
 	public Future<NewsComplete> getFromId(Map<String, SecuredAction> securedActions, UserInfos user, int infoId, boolean originalContent);
 
