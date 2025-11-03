@@ -920,8 +920,13 @@ public class InfoServiceSqlImpl implements InfoService {
 				if (i > 0) {
 					statusAggregation.append(", ");
 				}
-				statusAggregation.append("'").append(statuses[i].name()).append("', ")
-					.append("COUNT(*) FILTER (WHERE i.status = ").append(statuses[i].getValue()).append(")");
+				statusAggregation.append("'").append(statuses[i].name()).append("', ");
+				if (statuses[i] == NewsStatus.PUBLISHED) {
+					statusAggregation.append("COUNT(*) FILTER (WHERE i.status = ").append(statuses[i].getValue())
+						.append(" AND (i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) AND (i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL))");
+				} else {
+					statusAggregation.append("COUNT(*) FILTER (WHERE i.status = ").append(statuses[i].getValue()).append(")");
+				}
 			}
 			statusAggregation.append(")");
 
@@ -947,7 +952,9 @@ public class InfoServiceSqlImpl implements InfoService {
 					"	 ) " +
 					"SELECT t.id, " +
 					"       COUNT(i.id) AS infos_count, " +
-					"       " + statusAggregation + "::text AS status " +
+					"       " + statusAggregation + "::text AS status, " +
+					"       COUNT(*) FILTER (WHERE i.status = " + NewsStatus.PUBLISHED.getValue() + " AND i.expiration_date < LOCALTIMESTAMP) AS expired_count, " +
+					"       COUNT(*) FILTER (WHERE i.status = " + NewsStatus.PUBLISHED.getValue() + " AND i.publication_date > LOCALTIMESTAMP) AS incoming_count " +
 					"FROM " + NEWS_THREAD_TABLE + " AS t " +
 					"    LEFT JOIN " + NEWS_INFO_TABLE + " AS i ON t.id = i.thread_id " +
 					"    LEFT JOIN info_for_user ON info_for_user.id = i.id " +
@@ -955,13 +962,7 @@ public class InfoServiceSqlImpl implements InfoService {
 					"WHERE (t.owner = ?  AND i.status >= 2  " +
 					"      OR t.id IN ( SELECT id  FROM thread_for_user ) AND i.status >= 2  " +
 					"      OR i.id IN ( SELECT id FROM info_for_user ) AND i.status >= 3" +
-					"      OR i.owner = ?) AND ( " +
-					"        i.status <> 3 " +
-					"        OR ( " +
-					"          (i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL)" +
-					"          AND ( i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL)" +
-					"        )" +
-					"      ) " +
+					"      OR i.owner = ?) " +
 					"GROUP BY t.id " +
 					"ORDER BY t.id";
 
@@ -993,6 +994,8 @@ public class InfoServiceSqlImpl implements InfoService {
 							statusObj = new JsonObject();
 						}
 						thread.put("status", statusObj);
+					thread.put("expiredCount", row.getInteger("expired_count", 0));
+					thread.put("incomingCount", row.getInteger("incoming_count", 0));
 
 						threads.add(thread);
 					}

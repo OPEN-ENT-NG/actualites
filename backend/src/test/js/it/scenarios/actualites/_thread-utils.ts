@@ -149,7 +149,8 @@ export function shareThread(threadId: string, ids: string[], rights: string[], s
   }
 
   return http.put(`${rootUrl}/actualites/api/v1/threads/${threadId}/shares`,
-      JSON.stringify(body))
+      JSON.stringify(body),
+      { headers: getHeaders() })
 }
 
 export function getShareThread(threadId: string) :  RefinedResponse<any> {
