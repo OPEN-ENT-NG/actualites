@@ -43,7 +43,7 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
             },
           },
           {
-            path: ':infoId/rights',
+            path: ':infoIdAsString/rights',
             async lazy() {
               const { loader, CreateInfoRights: Component } = await import(
                 '~/routes/pages/CreateInfoRights'
@@ -55,7 +55,7 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
             },
           },
           {
-            path: ':infoId',
+            path: ':infoIdAsString',
             async lazy() {
               const { loader, CreateInfoDetails: Component } = await import(
                 '~/routes/pages/CreateInfoDetails'

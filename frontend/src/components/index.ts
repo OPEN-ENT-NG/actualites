@@ -6,5 +6,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
 export * from './InfoCard/InfoCard';
+export * from './InfoCard/InfoCardContent';
+export * from './InfoCard/InfoCardFooter';
+export * from './InfoCard/InfoCardHeader';
 export * from './InfoCard/InfoCardSkeleton';
 export * from './InfoList/InfoList';
