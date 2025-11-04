@@ -1,5 +1,6 @@
 import { getHeaders } from "../../../node_modules/edifice-k6-commons/dist/index.js";
 import http, { RefinedResponse } from "k6/http";
+import { check } from "k6";
 
 const rootUrl = __ENV.ROOT_URL;
 
@@ -20,10 +21,22 @@ export function shareInfos(infoId: string, shares: Shares) :  RefinedResponse<an
     { headers: getHeaders() })
 }
 
+export function shareInfosOrFail(infoId: string, shares: Shares) {
+  const resp = shareInfos(infoId, shares);
+  check(resp, { "Share update should succeed": (r) => r.status === 200 });
+  return resp;
+}
+
 export function shareThreads(threadId: string, shares: Shares) :  RefinedResponse<any> {
   return http.put(`${rootUrl}/actualites/api/v1/threads/${threadId}/shares`,
     JSON.stringify(shares),
     { headers: getHeaders() })
+}
+
+export function shareThreadsOrFail(threadId: string, shares: Shares) {
+  const resp = shareThreads(threadId, shares);
+  check(resp, { "Share update should succeed": (r) => r.status === 200 });
+  return resp;
 }
 
 export function addUserSharesInfos(shares: Shares, userId: string, rights: string[]) :  Shares {

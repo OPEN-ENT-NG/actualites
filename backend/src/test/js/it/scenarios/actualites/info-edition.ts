@@ -21,18 +21,14 @@ import {
   Identifier as ThreadIdentifier, threadContributorRights, threadPublisherRights,
 } from "./_thread-utils.ts";
 import {
-  createInfo,
   createInfoOrFail,
-  createPublishedInfo,
   createPublishedInfoOrFail,
   getInfoById,
-  tryGetInfoById,
   Info,
   InfoResponse, Identifier, updateInfo, updateInfoOrFail,
 } from "./_info-utils.ts";
 import { check } from "k6";
-import { RefinedResponse } from "k6/http";
-import { addUserSharesInfos, shareThreads } from "./_shares_utils.ts";
+import { addUserSharesInfos, shareThreadsOrFail } from "./_shares_utils.ts";
 
 const maxDuration = __ENV.MAX_DURATION || "5m";
 const schoolName = __ENV.DATA_SCHOOL_NAME || "Info Update";
@@ -335,7 +331,7 @@ export function testInfoUpdateOwner(data: InitData) {
       sharedBookmarks: {}
     }, headTeacher2.id, threadContributorRights);
 
-    shareThreads(thread.id, shares);
+    shareThreadsOrFail(thread.id, shares);
 
     console.log("Authenticate head teacher " + headTeacher2.login);
     authenticateWeb(headTeacher2.login);
@@ -389,7 +385,7 @@ export function testInfoUpdateOwner(data: InitData) {
       sharedBookmarks: {}
     }, headTeacher2.id, threadContributorRights);
 
-    shareThreads(thread.id, shares);
+    shareThreadsOrFail(thread.id, shares);
 
     console.log("Authenticate head teacher " + headTeacher2.login);
     authenticateWeb(headTeacher2.login);
@@ -451,7 +447,7 @@ export function testInfoUpdateOwner(data: InitData) {
       sharedBookmarks: {}
     }, headTeacher2.id, [...threadContributorRights, ...threadPublisherRights]);
 
-    shareThreads(thread.id, shares);
+    shareThreadsOrFail(thread.id, shares);
 
     console.log("Authenticate head teacher " + headTeacher2.login);
     authenticateWeb(headTeacher2.login);
@@ -518,7 +514,7 @@ export function testInfoUpdateContributor(data: InitData) {
       sharedBookmarks: {}
     }, headTeacher2.id, threadContributorRights);
 
-    shareThreads(thread.id, shares);
+    shareThreadsOrFail(thread.id, shares);
 
     // Create an info with PENDING status
     console.log("Creating an info with PENDING status");
@@ -569,7 +565,7 @@ export function testInfoUpdateContributor(data: InitData) {
       sharedBookmarks: {}
     }, headTeacher2.id, threadContributorRights);
 
-    shareThreads(thread.id, shares);
+    shareThreadsOrFail(thread.id, shares);
 
     // Create an info with PUBLISHED status
     console.log("Creating an info with PUBLISHED status");
@@ -620,7 +616,7 @@ export function testInfoUpdateContributor(data: InitData) {
       sharedBookmarks: {}
     }, headTeacher2.id, threadContributorRights);
 
-    shareThreads(thread.id, shares);
+    shareThreadsOrFail(thread.id, shares);
 
     // Create an info with PUBLISHED status
     console.log("Creating an info with PUBLISHED status");
@@ -672,7 +668,7 @@ export function testInfoUpdateContributor(data: InitData) {
       sharedBookmarks: {}
     }, headTeacher2.id, threadContributorRights);
 
-    shareThreads(thread.id, shares);
+    shareThreadsOrFail(thread.id, shares);
 
     // Create an info with PUBLISHED status
     console.log("Creating an info with DRAFT status");
@@ -724,7 +720,7 @@ export function testInfoUpdateContributor(data: InitData) {
       sharedBookmarks: {}
     }, headTeacher2.id, threadContributorRights);
 
-    shareThreads(thread.id, shares);
+    shareThreadsOrFail(thread.id, shares);
 
     // Create an info with PUBLISHED status
     console.log("Creating an info with DRAFT status");
@@ -781,7 +777,7 @@ export function testInfoUpdatePublisher(data: InitData) {
     const shares = addUserSharesInfos({ users: {}, groups: {}, sharedBookmarks: {} },
       headTeacher2.id, [...threadContributorRights, ...threadPublisherRights]);
 
-    shareThreads(thread.id, shares);
+    shareThreadsOrFail(thread.id, shares);
 
     // Create an info with PUBLISHED status
     console.log("Creating an info with PUBLISHED status");
@@ -829,7 +825,7 @@ export function testInfoUpdatePublisher(data: InitData) {
     const shares = addUserSharesInfos({ users: {}, groups: {}, sharedBookmarks: {} }, headTeacher2.id,
       [...threadContributorRights, ...threadPublisherRights]);
 
-    shareThreads(thread.id, shares);
+    shareThreadsOrFail(thread.id, shares);
 
     // Create an info with PUBLISHED status
     console.log("Creating an info with PUBLISHED status");
@@ -878,7 +874,7 @@ export function testInfoUpdatePublisher(data: InitData) {
     const shares = addUserSharesInfos({ users: {}, groups: {}, sharedBookmarks: {} }, headTeacher2.id,
       [...threadContributorRights, ...threadPublisherRights]);
 
-    shareThreads(thread.id, shares);
+    shareThreadsOrFail(thread.id, shares);
 
     // Create an info with PUBLISHED status
     console.log("Creating an info with DRAFT status");
@@ -927,7 +923,7 @@ export function testInfoUpdatePublisher(data: InitData) {
     const shares = addUserSharesInfos({ users: {}, groups: {}, sharedBookmarks: {} }, headTeacher2.id,
       [...threadContributorRights, ...threadPublisherRights]);
 
-    shareThreads(thread.id, shares);
+    shareThreadsOrFail(thread.id, shares);
 
     // Create an info with PUBLISHED status
     console.log("Creating an info with DRAFT status");
@@ -980,7 +976,7 @@ export function testInfoUpdateOwnerTransition(data: InitData) {
 
     const shares = addUserSharesInfos({ users : {}, groups: {}, sharedBookmarks: {}}, headTeacher2.id, threadContributorRights);
 
-    shareThreads(thread.id, shares);
+    shareThreadsOrFail(thread.id, shares);
 
     console.log("Authenticate head teacher " + headTeacher2.login);
     authenticateWeb(headTeacher2.login);
@@ -1027,7 +1023,7 @@ export function testInfoUpdateOwnerTransition(data: InitData) {
 
     const shares = addUserSharesInfos({ users : {}, groups: {}, sharedBookmarks: {}}, headTeacher2.id, threadContributorRights);
 
-    shareThreads(thread.id, shares);
+    shareThreadsOrFail(thread.id, shares);
 
     console.log("Authenticate head teacher " + headTeacher2.login);
     authenticateWeb(headTeacher2.login);
@@ -1087,7 +1083,7 @@ export function testInfoUpdateOwnerTransition(data: InitData) {
 
     const shares = addUserSharesInfos({ users : {}, groups: {}, sharedBookmarks: {}}, headTeacher2.id, threadContributorRights);
 
-    shareThreads(thread.id, shares);
+    shareThreadsOrFail(thread.id, shares);
 
     // Create an info with PUBLISHED status
     console.log("Creating an info with PUBLISHED status");
@@ -1135,7 +1131,7 @@ export function testInfoUpdateOwnerTransition(data: InitData) {
 
     const shares = addUserSharesInfos({ users : {}, groups: {}, sharedBookmarks: {}}, headTeacher2.id, threadContributorRights);
 
-    shareThreads(thread.id, shares);
+    shareThreadsOrFail(thread.id, shares);
 
     console.log("Authenticate head teacher " + headTeacher2.login);
     authenticateWeb(headTeacher2.login);
@@ -1183,7 +1179,7 @@ export function testInfoUpdateOwnerTransition(data: InitData) {
 
     const shares = addUserSharesInfos({ users : {}, groups: {}, sharedBookmarks: {}}, headTeacher2.id, threadContributorRights);
 
-    shareThreads(thread.id, shares);
+    shareThreadsOrFail(thread.id, shares);
 
     console.log("Authenticate head teacher " + headTeacher2.login);
     authenticateWeb(headTeacher2.login);
