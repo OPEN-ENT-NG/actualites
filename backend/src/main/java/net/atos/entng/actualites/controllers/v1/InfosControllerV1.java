@@ -136,7 +136,7 @@ public class InfosControllerV1 extends ControllerHelper {
 		});
 	}
 
-	@Get("/api/v1/infos/last/:" + InfoController.RESULT_SIZE_PARAMETER)
+	@Get("/api/v1/infos/preview/last/:" + InfoController.RESULT_SIZE_PARAMETER)
 	@ApiDoc("List last infos, accept query param resultSize.")
 	@SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")
 	public void getLastInfos(HttpServerRequest request) {
@@ -216,6 +216,7 @@ public class InfosControllerV1 extends ControllerHelper {
 				if (StringUtils.isEmpty(status) || !(status.equals("1") || status.equals("2"))) {
 					JsonObject error = new JsonObject().put("error", "Status should be in DRAFT or PENDING");
 					renderJson(request, error, 400);
+					return;
 				}
 				Events events = resource.getString("status").equals("1") ? Events.DRAFT : Events.CREATE_AND_PENDING;
 
