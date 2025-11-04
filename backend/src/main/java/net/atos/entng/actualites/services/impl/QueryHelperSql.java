@@ -1,5 +1,6 @@
 package net.atos.entng.actualites.services.impl;
 
+import com.google.common.collect.Lists;
 import fr.wseduc.webutils.Either;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
@@ -9,6 +10,8 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+import net.atos.entng.actualites.to.NewsState;
+import net.atos.entng.actualites.to.NewsStatus;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
 import org.entcore.common.user.UserInfos;
@@ -114,13 +117,54 @@ public class QueryHelperSql {
         return promiseInfoIds.future();
     }
 
-    public Future<Set<Long>> getInfosIdsByUnion(final UserInfos user, final Integer limit){
+    public Future<Set<Long>> getInfosIdsByUnion(final UserInfos user, final Integer limit, final int offset,
+                                                final List<NewsStatus> status, final List<Integer> threadIds, final List<NewsState> states){
         final List<String> groupsAndUserIds = new ArrayList<>();
+
         groupsAndUserIds.add(user.getUserId());
         if (user.getGroupsIds() != null) {
             groupsAndUserIds.addAll(user.getGroupsIds());
         }
         final String memberIds = Sql.listPrepared(groupsAndUserIds.toArray());
+
+        String dateFilter = null;
+        if (states != null && !states.isEmpty()) {
+            List<String> stateConditions = new ArrayList<>();
+            for (NewsState state : states) {
+                switch (state) {
+                    case EXPIRED:
+                        stateConditions.add("(i.expiration_date < LOCALTIMESTAMP)");
+                        break;
+                    case INCOMING:
+                        stateConditions.add("(i.publication_date > LOCALTIMESTAMP)");
+                        break;
+                    default:
+                        log.warn("Unknown NewsState: " + state);
+                        break;
+                }
+            }
+            if (!stateConditions.isEmpty()) {
+                dateFilter = String.join(" OR ", stateConditions);
+            }
+        }
+
+        if (states == null || states.isEmpty()) {
+            dateFilter = "(i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) " +
+                    "AND (i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL)";
+        }
+
+        String threadFilter = "";
+        boolean addThreadFilter = false;
+        if (threadIds != null && !threadIds.isEmpty()) {
+            addThreadFilter = true;
+            String threadIdsSql = Sql.listPrepared(threadIds.toArray());
+            threadFilter = " i.thread_id IN " + threadIdsSql + " ";
+        }
+
+        // Build status filter
+        List<Integer> statusValues = status.stream().map(NewsStatus::ordinal).collect(Collectors.toList());
+        String statusFilter = "i.status IN " + Sql.listPrepared(statusValues.toArray());
+
         //get infos ids
         final StringBuilder queryIds = new StringBuilder();
         queryIds.append("WITH user_groups AS MATERIALIZED ( ");
@@ -128,41 +172,77 @@ public class QueryHelperSql {
         queryIds.append("    SELECT ? as id UNION ");
         queryIds.append("    SELECT id FROM actualites.groups WHERE id IN ").append(memberIds);
         queryIds.append("  ) as u_groups) ");
-        queryIds.append("(SELECT id, (CASE WHEN publication_date > modified THEN publication_date ELSE modified END) as date ");
-        queryIds.append("  FROM actualites.info WHERE info.owner = ?) ");
+        queryIds.append("(SELECT i.id, (CASE WHEN i.publication_date > i.modified THEN i.publication_date ELSE i.modified END) as date ");
+        queryIds.append("  FROM actualites.info AS i WHERE i.owner = ? AND ");
+        if (!threadFilter.isEmpty()) {
+            queryIds.append(threadFilter).append(" AND ");
+        }
+        queryIds.append(        statusFilter ).append(" AND ");
+        queryIds.append("       (i.status <> 3 OR ( " + dateFilter + " ) ) )");
         queryIds.append("UNION ");
-        queryIds.append("  (SELECT id, (CASE WHEN publication_date > modified THEN publication_date ELSE modified END) as date ");
+        queryIds.append("  (SELECT i.id, (CASE WHEN i.publication_date > i.modified THEN i.publication_date ELSE i.modified END) as date ");
         queryIds.append("    FROM actualites.info_shares ");
-        queryIds.append("    INNER JOIN actualites.info ON (info.id = info_shares.resource_id) ");
+        queryIds.append("    INNER JOIN actualites.info AS i ON i.id = info_shares.resource_id AND i.status = 3  ");
         queryIds.append("    WHERE info_shares.member_id IN (SELECT id FROM user_groups)");
-        queryIds.append("    AND info.status > 2 ");
-        queryIds.append("    AND (info.publication_date <= LOCALTIMESTAMP OR info.publication_date IS NULL)");
-        queryIds.append("    AND (info.expiration_date > LOCALTIMESTAMP OR info.expiration_date IS NULL)) ");
+        if (!threadFilter.isEmpty()) {
+            queryIds.append("    AND " + threadFilter + " ");
+        }
+        queryIds.append("    AND " + statusFilter);
+        queryIds.append("    AND ( " + dateFilter + " ) )");
         queryIds.append("UNION ");
-        queryIds.append("  (SELECT info.id as id, (CASE WHEN publication_date > info.modified THEN publication_date ELSE info.modified END) as date ");
+        queryIds.append("  (SELECT i.id as id, (CASE WHEN i.publication_date > i.modified THEN i.publication_date ELSE i.modified END) as date ");
         queryIds.append("    FROM actualites.thread ");
-        queryIds.append("    INNER JOIN actualites.info ON (info.thread_id = thread.id) ");
-        queryIds.append("    WHERE thread.owner = ?) ");
+        queryIds.append("    INNER JOIN actualites.info AS i ON (i.thread_id = thread.id) ");
+        queryIds.append("    WHERE thread.owner = ? ");
+        if (!threadFilter.isEmpty()) {
+            queryIds.append("    AND " + threadFilter + " ");
+        }
+        queryIds.append("    AND " + statusFilter);
+        queryIds.append("    AND (i.status <> 3 OR ( " + dateFilter + " ) ) )");
         queryIds.append("UNION ");
-        queryIds.append("  (SELECT info.id as id, (CASE WHEN publication_date > info.modified THEN publication_date ELSE info.modified END) as date ");
+        queryIds.append("  (SELECT i.id as id, (CASE WHEN i.publication_date > i.modified THEN i.publication_date ELSE i.modified END) as date ");
         queryIds.append("    FROM actualites.thread_shares ");
         queryIds.append("    INNER JOIN actualites.thread ON (thread.id = thread_shares.resource_id) ");
-        queryIds.append("    INNER JOIN actualites.info ON (info.thread_id = thread.id) ");
+        queryIds.append("    INNER JOIN actualites.info AS i ON (i.thread_id = thread.id) ");
         queryIds.append("    WHERE (thread_shares.member_id IN (SELECT id FROM user_groups)");
         queryIds.append("    AND thread_shares.action = '" + THREAD_PUBLISH + "' ");
-        queryIds.append("    AND info.status > 1)) ");
+        queryIds.append("    AND i.status > 1) AND ");
+        if (!threadFilter.isEmpty()) {
+            queryIds.append(threadFilter + " AND ");
+        }
+        queryIds.append(     statusFilter + " AND ");
+        queryIds.append("    (i.status <> 3 OR ( " + dateFilter + " ) ) )");
         queryIds.append("ORDER BY date DESC ");
         if (limit != null) {
             queryIds.append("LIMIT ?");
         }
+        queryIds.append(" OFFSET ? ");
         final JsonArray values = new JsonArray()
                 .add(user.getUserId())
                 .addAll(new JsonArray(groupsAndUserIds))
-                .add(user.getUserId())
                 .add(user.getUserId());
+        if (addThreadFilter) {
+            threadIds.forEach(values::add);
+        }
+        statusValues.forEach(values::add);
+        if (addThreadFilter) {
+            threadIds.forEach(values::add);
+        }
+        statusValues.forEach(values::add);
+        values.add(user.getUserId());
+        if (addThreadFilter) {
+           threadIds.forEach(values::add);
+        }
+        statusValues.forEach(values::add);
+        if (addThreadFilter) {
+            threadIds.forEach(values::add);
+        }
+        statusValues.forEach(values::add);
+
         if (limit != null) {
             values.add(limit);
         }
+        values.add(offset);
         final Promise<Set<Long>> promise = Promise.promise();
         Sql.getInstance().prepared(queryIds.toString(), values, SqlResult.validResultHandler(resIds -> {
             if(resIds.isLeft()){
@@ -177,7 +257,7 @@ public class QueryHelperSql {
     }
 
     private void fetchInfosOptimzed(final UserInfos user, final Handler<Either<String, JsonArray>> handler){
-        getInfosIdsByUnion(user, null).onComplete(resIds -> {
+        getInfosIdsByUnion(user, null, 0, Lists.newArrayList(NewsStatus.PUBLISHED), null, null).onComplete(resIds -> {
             if(resIds.failed()){
                 handler.handle(new Either.Left<>(resIds.cause().getMessage()));
             }else{
