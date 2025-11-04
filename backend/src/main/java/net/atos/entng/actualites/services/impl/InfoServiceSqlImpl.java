@@ -19,6 +19,7 @@
 
 package net.atos.entng.actualites.services.impl;
 
+import com.google.common.collect.Lists;
 import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.http.Renders;
 import fr.wseduc.webutils.security.SecuredAction;
@@ -40,12 +41,7 @@ import org.entcore.common.utils.StopWatch;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.entcore.common.sql.SqlResult.validUniqueResultHandler;
@@ -424,7 +420,7 @@ public class InfoServiceSqlImpl implements InfoService {
 	private void listLastPublishedInfosOptimized(UserInfos user, int resultSize, Handler<Either<String, JsonArray>> handler) {
 		final StopWatch watch1 = new StopWatch();
 		log.debug("Starting optimized query...");
-		helperSql.getInfosIdsByUnion(user, resultSize).onComplete(resIds -> {
+		helperSql.getInfosIdsByUnion(user, resultSize, 0, Lists.newArrayList(NewsStatus.PUBLISHED), null, null).onComplete(resIds -> {
 			log.debug("Infos IDS query..." + watch1.elapsedTimeSeconds());
 			if (resIds.failed()) {
 				handler.handle(new Either.Left<>(resIds.cause().getMessage()));
@@ -582,134 +578,54 @@ public class InfoServiceSqlImpl implements InfoService {
 		final Promise<List<News>> promise = Promise.promise();
 		if (user == null) {
 			promise.fail("user not provided");
-		} else {
-
-			// 1. Get all ids corresponding to the user
-
-			List<String> groupsAndUserIds = new ArrayList<>();
-			groupsAndUserIds.add(user.getUserId());
-			if (user.getGroupsIds() != null) {
-				groupsAndUserIds.addAll(user.getGroupsIds());
-			}
-
-			// 2. Prepare SQL request
-
-			final String ids = Sql.listPrepared(groupsAndUserIds.toArray());
-
-			// Build status filter
-			List<Integer> statusValues = statuses.stream().map(NewsStatus::getValue).collect(Collectors.toList());
-			String statusFilter = "i.status IN " + Sql.listPrepared(statusValues.toArray());
-
-			// Build date filter based on states parameter
-			String dateFilter = null;
-			if (states != null && !states.isEmpty()) {
-				List<String> stateConditions = new ArrayList<>();
-				for (NewsState state : states) {
-					switch(state) {
-						case EXPIRED:
-							stateConditions.add("(i.expiration_date < LOCALTIMESTAMP)");
-							break;
-						case INCOMING:
-							stateConditions.add("(i.publication_date > LOCALTIMESTAMP)");
-							break;
-						default:
-							log.warn("Unknown NewsState: " + state);
-							break;
+			return promise.future();
+		}
+		List<String> groupsAndUserIds = new ArrayList<>();
+		groupsAndUserIds.add(user.getUserId());
+		if (user.getGroupsIds() != null) {
+			groupsAndUserIds.addAll(user.getGroupsIds());
+		}
+		helperSql.getInfosIdsByUnion(user, pageSize,page * pageSize, statuses, threadIds, states)
+				.onSuccess( ids -> {
+					if (ids.isEmpty()) {
+						promise.complete(Collections.emptyList());
+						return;
 					}
-				}
-				if (!stateConditions.isEmpty()) {
-					dateFilter = String.join(" OR ", stateConditions);
-				}
-			}
+					String query = "WITH " +
+									"    user_groups AS MATERIALIZED ( " +
+									"        SELECT id::varchar from ( "	+
+									"        SELECT ? as id UNION ALL " +
+									"        SELECT id FROM " + GROUPS_TABLE + " WHERE id IN " + 	Sql.listPrepared(groupsAndUserIds.toArray()) +
+									"    	) as u_groups )" +
+									"    SELECT i.id, i.thread_id, i.title, i.content, i.status, i.owner, u.username AS owner_name, " +
+									"        u.deleted as owner_deleted, i.created, i.modified, i.publication_date, i.expiration_date, " +
+									"        i.is_headline, i.number_of_comments," +
+									"        (SELECT array_agg(DISTINCT ish.action) " +
+									"            FROM actualites.info_shares AS ish  " +
+									"            WHERE ish.resource_id = i.id " +
+									"            AND ish.member_id IN (select id from user_groups)) as rights," +
+									"		 i.content_version, " +
+									"        COALESCE(( " +
+									"         SELECT MAX(_inf.content_version) FROM " + NEWS_INFO_REVISION_TABLE + " _inf " +
+									"         WHERE _inf.info_id = i.id AND _inf.content_version < i.content_version " +
+									"        ), 1) as previous_content_version " +
+									"    FROM " + NEWS_INFO_TABLE + " AS i " +
+									"        LEFT JOIN " + NEWS_USER_TABLE + " AS u ON i.owner = u.id " +
+									"    WHERE i.id IN " +  Sql.listPrepared(ids.toArray(new Object[0])) +
+									"    ORDER BY i.modified DESC ";
 
-			if (dateFilter == null) {
-				dateFilter = "(i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) " +
-							 "AND (i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL)";
-			}
+					JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
+					values.add(user.getUserId());
+					groupsAndUserIds.forEach(values::add);
 
-			// Different visibility rules per status
-			// - DRAFT: only owner sees it
-			// - PENDING: owner + thread contributors with publish right
-			// - PUBLISHED: owner + thread contributors + info shares (with date filtering)
-			String whereClause =
-					statusFilter + " " +
-					"AND ( " +
-					"	 i.owner = ? " + // user is owner of info: all statuses
-					"	 OR " +
-					"	 (i.id IN (SELECT id from info_for_user) AND i.status >= " + NewsStatus.PUBLISHED.getValue() + ") " + // info shared: only PUBLISHED
-					" 	 OR " +
-					"    (t.owner = ? AND i.status >= " + NewsStatus.PENDING.getValue() + ") " + // thread owner: PENDING + PUBLISHED
-					"    OR " +
-					"    (t.id IN (SELECT id FROM thread_for_user) AND i.status >= " + NewsStatus.PENDING.getValue() + ") " + // thread shared with publish: PENDING + PUBLISHED
-					") " +
-					"AND (i.status <> " + NewsStatus.PUBLISHED.getValue() +
-					"     OR (" + dateFilter + ")) ";
-			if (threadIds != null && !threadIds.isEmpty()) {
-				String threadIdsSql = Sql.listPrepared(threadIds.toArray());
-				whereClause = "i.thread_id IN " + threadIdsSql + " AND ( " + whereClause + ") ";
-			}
-			String query =
-					"WITH " +
-					"    user_groups AS MATERIALIZED ( " +
-					"        SELECT id::varchar from ( "	+
-					"        SELECT ? as id UNION ALL " +
-					"        SELECT id FROM " + GROUPS_TABLE + " WHERE id IN " + 	Sql.listPrepared(groupsAndUserIds.toArray()) +
-					"    	) as u_groups )," +
-					"	 info_for_user AS ( " + // Every info owned of shared to the user
-					"		 SELECT i.id, array_agg(DISTINCT ish.action) AS rights " +
-					"    	 FROM " + NEWS_INFO_TABLE + " AS i " +
-					"        	 JOIN " + NEWS_INFO_SHARE_TABLE + " AS ish ON i.id = ish.resource_id " +
-					"    	 WHERE " +
-					"        	 ish.member_id IN (SELECT id FROM user_groups) " +
-					"    	 GROUP BY i.id " +
-					"	 ), " +
-					"	 thread_for_user AS ( " + // Every thread owned of shared to the user with publish rights
-					"	 	 SELECT t.id " +
-					"    	 FROM " + NEWS_THREAD_TABLE + " AS t " +
-					"        	 INNER JOIN " + NEWS_THREAD_SHARE_TABLE + " AS tsh ON t.id = tsh.resource_id " +
-					"    	 WHERE tsh.member_id IN (SELECT id FROM user_groups) " +
-					"		 	AND tsh.action = '" + THREAD_PUBLISH_RIGHT + "' " +
-					"    	 GROUP BY t.id, tsh.member_id " +
-					"	 ) " +
-					"SELECT i.id, i.thread_id, i.title, i.content, i.status, i.owner, u.username AS owner_name, " +
-					"        u.deleted as owner_deleted, i.created, i.modified, i.publication_date, i.expiration_date, " +
-					"        i.is_headline, i.number_of_comments, max(info_for_user.rights) as rights, i.content_version, " +
-					"        COALESCE(( " +
-					"         SELECT MAX(_inf.content_version) FROM "+NEWS_INFO_REVISION_TABLE+" _inf " + 
-					"         WHERE _inf.info_id = i.id AND _inf.content_version < i.content_version "+
-					"        ), 1) as previous_content_version " +
-					"    FROM " + NEWS_INFO_TABLE + " AS i " +
-					"        LEFT JOIN info_for_user ON info_for_user.id = i.id " +
-					" 		 LEFT JOIN thread_for_user ON thread_for_user.id = i.thread_id " +
-					"        LEFT JOIN " + NEWS_USER_TABLE + " AS u ON i.owner = u.id " +
-					" 		 LEFT JOIN " + NEWS_THREAD_TABLE + " AS t ON t.id = i.thread_id " +
-					"    WHERE " + whereClause +
-					"    GROUP BY i.id, i.thread_id, i.title, i.content, i.status, i.owner, owner_name, owner_deleted, " +
-					"        i.created, i.modified, i.publication_date, i.expiration_date, i.is_headline, " +
-					"        i.number_of_comments, i.content_version " +
-					"    ORDER BY i.modified DESC " +
-					"    OFFSET ? " +
-					"    LIMIT ? ";
+					ids.forEach(values::add);
 
-			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
-
-			values.add(user.getUserId()); //for user_groups
-			groupsAndUserIds.forEach(values::add); //for user_groups
-			if (threadIds != null) {
-				threadIds.forEach(values::add); // for thread filtering
-			}
-			statusValues.forEach(values::add); // for status filtering
-			values.add(user.getUserId()); // for info owning clause
-			values.add(user.getUserId()); // for thread owning clause
-			values.add(page * pageSize); // offset clause
-			values.add(pageSize); // limit clause
-
-			// 3. Retrieve & parse data
-			SqlStatementsBuilder builder = new SqlStatementsBuilder();
-			//for optimization deactivate jit has it trigger, it take time to execute and give nothing in term of optimisation
-			builder.prepared("set jit = off", new JsonArray());
-			builder.prepared(query, values);
-			builder.prepared("set jit = on", new JsonArray());
+					// Retrieve & parse data
+					SqlStatementsBuilder builder = new SqlStatementsBuilder();
+					//for optimization deactivate jit has it trigger, it take time to execute and give nothing in term of optimisation
+					builder.prepared("set jit = off", new JsonArray());
+					builder.prepared(query, values);
+					builder.prepared("set jit = on", new JsonArray());
 
 			Sql.getInstance().transaction(builder.build(), (sqlResult) -> {
 				final Either<String, JsonArray> result = SqlResult.validResults(sqlResult);
@@ -728,7 +644,7 @@ public class InfoServiceSqlImpl implements InfoService {
 										row.getString("owner_name"),
 										row.getBoolean("owner_deleted")
 								);
-								final boolean isOwner = user.getUserId().equals(row.getString("owner"));
+                                final boolean isOwner = user.getUserId().equals(row.getString("owner"));
 								final List<String> rawRights = SqlResult.sqlArrayToList(row.getJsonArray("rights"), String.class);
 								return new News(
 										row.getInteger("id"),
@@ -756,7 +672,7 @@ public class InfoServiceSqlImpl implements InfoService {
 					}
 				}
 			});
-		}
+		}).onFailure( h->	promise.fail(h.getMessage()));
 		return promise.future();
 	}
 
