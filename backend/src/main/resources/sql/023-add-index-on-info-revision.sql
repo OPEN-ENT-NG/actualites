@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS idx_info_revision_info_id ON actualites.info_revision(info_id);
