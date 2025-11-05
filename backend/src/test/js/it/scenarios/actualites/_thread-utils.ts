@@ -1,6 +1,7 @@
 import { getHeaders } from "../../../node_modules/edifice-k6-commons/dist/index.js";
 import { check } from "k6";
 import http, { RefinedResponse } from "k6/http";
+import { ShareTargetType } from "./_shares_utils.ts";
 
 const rootUrl = __ENV.ROOT_URL;
 
@@ -117,11 +118,6 @@ export function threadExists(id: String) : void {
   });
 }
 
-export enum ShareTargetType {
-  USER = 'USER',
-  GROUP = 'GROUP'
-}
-
 export function shareThreadOrFail(threadId: string, ids: string[], rights: string[], shareTargetType: ShareTargetType) {
   const resp = shareThread(threadId, ids, rights, shareTargetType);
   check(resp, {
@@ -149,8 +145,8 @@ export function shareThread(threadId: string, ids: string[], rights: string[], s
   }
 
   return http.put(`${rootUrl}/actualites/api/v1/threads/${threadId}/shares`,
-      JSON.stringify(body),
-      { headers: getHeaders() })
+    JSON.stringify(body),
+    { headers: getHeaders() })
 }
 
 export function getShareThread(threadId: string) :  RefinedResponse<any> {
