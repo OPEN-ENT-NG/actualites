@@ -5,8 +5,8 @@ import http, { RefinedResponse } from "k6/http";
 const rootUrl = __ENV.ROOT_URL;
 
 export type Info = {
-  title: string;
-  content: string;
+  title?: string;
+  content?: string;
   status?: number;
   thread_id: number;
   publication_date?: string;
@@ -65,6 +65,35 @@ export function createInfoOrFail(info: Info): Identifier {
   });
   return JSON.parse(res.body as string);
 }
+
+/**
+ * Update an info
+ * @param infoId The id of the info to update
+ * @param info The info object to update
+ * @returns HTTP response
+ */
+export function updateInfo(infoId: number, info: Info): RefinedResponse<any> {
+  return http.put(
+    `${rootUrl}/actualites/api/v1/infos/${infoId}`,
+    JSON.stringify(info),
+    { headers: getHeaders() },
+  );
+}
+
+/**
+ * Update an info and fail if status is not 200
+ * @param infoId The id of the info to update
+ * @param info The info object to update
+ * @returns The created info identifier
+ */
+export function updateInfoOrFail(infoId: number, info: Info): Identifier {
+  const res = updateInfo(infoId, info);
+  check(res, {
+    "Updating info should be ok": (r) => r.status == 200,
+  });
+  return JSON.parse(res.body as string);
+}
+
 
 /**
  * Create a published info directly
