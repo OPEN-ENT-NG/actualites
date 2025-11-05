@@ -1,10 +1,12 @@
-import { Button, Flex } from '@edifice.io/react';
+import { Button, Flex, SeparatedInfo } from '@edifice.io/react';
+import { ViewsCounter } from '@edifice.io/react/audience';
 import { IconRafterDown, IconRafterUp } from '@edifice.io/react/icons';
 import { useI18n } from '~/hooks/useI18n';
+import CommentsCounter from '../comments-counter/CommentsCounter';
 import { InfoCardProps } from './InfoCard';
 
 export const InfoCardFooter = ({
-  info: _info,
+  info,
   collapse,
   onMoreClick,
 }: Pick<InfoCardProps, 'info'> & {
@@ -15,12 +17,14 @@ export const InfoCardFooter = ({
   return (
     <footer className="mt-12">
       <Flex align="center" justify="between">
-        <div>
-          {/* <SeparatedInfo>
-          // TODO : nombre de vues
-          // TODO : nombre de commentaires
-          </SeparatedInfo> */}
-        </div>
+        <SeparatedInfo>
+          <ViewsCounter viewsCounter={0} />
+          <CommentsCounter
+            commentsCounter={info.numberOfComments}
+            onClick={onMoreClick}
+          />
+        </SeparatedInfo>
+
         <Button
           type="button"
           color="secondary"

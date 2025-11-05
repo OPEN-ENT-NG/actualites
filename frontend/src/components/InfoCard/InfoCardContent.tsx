@@ -1,6 +1,7 @@
 import { Editor, EditorPreview } from '@edifice.io/react/editor';
 import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
+import { CommentList } from '../comment-list/CommentList';
 import { InfoCardProps } from './InfoCard';
 import { InfoCardPreviousContent } from './InfoCardPreviousContent';
 
@@ -13,6 +14,7 @@ export const InfoCardContent = ({
   const [fullHeight, setFullHeight] = useState<number>(0);
   const [collapseHeight, setCollapseHeight] = useState<number>(0);
 
+  // TODO : attendre le chargement des commentaires + render React avant de calculer la hauteur totale
   useEffect(() => {
     // Calculate heights full and collapsed for animation purposes
     if (
@@ -67,6 +69,8 @@ export const InfoCardContent = ({
       >
         {!collapse && info.content && <InfoCardPreviousContent info={info} />}
         <Editor content={info.content} mode="read" variant="ghost" />
+
+        {!collapse && <CommentList info={info} />}
       </div>
     </div>
   );
