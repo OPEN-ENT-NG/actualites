@@ -101,34 +101,29 @@ public class UpdateInfoFilter implements ResourcesProvider {
                     .append("   OR ts.member_id IN ").append(Sql.listPrepared(groupsAndUserIds.toArray()))
                     .append("   AND ts.action = '" + RIGHT_PUBLISH + "' \n")
                     .append(" ) \n")
-                    .append(" AND (i.status > 1 OR i.owner = ?) \n")
+                    .append(" AND (i.status > 1) \n")
                     .append(")\n");
             values.add(user.getUserId());
             groupsAndUserIds.forEach(values::add);
-            values.add(user.getUserId());
         } else if(targetStatus == 2) { //unpublish an info or submit a pending info or update a pending info
             /**
-             * Either owner of the info or in shared groups publishor on a published info
-             * or owner of the thread or in shared groups publishor on an owned info or in status (pending or publish)
+             * Either owner of the info or in shared groups publisher on a published info
+             * or owner of the thread or in shared groups publisher on an owned info or in status (pending or publish)
              */
             query.append(" (\n")
                     .append(" ( \n")
-                    .append("   i.owner = ?  \n")
-                    .append("   OR (ios.member_id IN ").append(Sql.listPrepared(groupsAndUserIds.toArray()))
-                    .append("   AND ios.action = '" + RIGHT_PUBLISH + "' AND i.status > 2)\n")
+                    .append("   i.owner = ? AND i.status != 3 \n")
                     .append("  ) OR ( \n")
                     .append("      ( \n")
                     .append("        t.owner = ? \n")
                     .append("        OR (ts.member_id IN ").append(Sql.listPrepared(groupsAndUserIds.toArray()))
                     .append("            AND ts.action = '" + RIGHT_PUBLISH + "') \n")
-                    .append("       ) AND (i.status > 1 OR i.owner = ?)\n")
+                    .append("       ) AND i.status > 1 \n")
                     .append("  )\n")
                 .append("   )\n");
             values.add(user.getUserId());
-            groupsAndUserIds.forEach(values::add);
             values.add(user.getUserId());
             groupsAndUserIds.forEach(values::add);
-            values.add(user.getUserId());
         } else { // to draft or update draft or submit a draft
             /**
              * Either owner of the info or in shared groups contributor on a published info
@@ -136,29 +131,25 @@ public class UpdateInfoFilter implements ResourcesProvider {
              */
             query.append(" (\n")
                     .append(" ( \n")
-                    .append("   i.owner = ? \n")
-                    .append("   OR (ios.member_id IN ").append(Sql.listPrepared(groupsAndUserIds.toArray()))
-                    .append("   AND ios.action = '" + RIGHT_CONTRIB + "' AND i.status > 2)\n")
+                    .append("   i.owner = ? ")
                     .append("  ) OR ( \n")
                     .append("      ( \n")
-                    .append("        t.owner = ? \n")
+                    .append("        t.owner = ? AND i.status > 1 \n")
                     .append("        OR (ts.member_id IN ").append(Sql.listPrepared(groupsAndUserIds.toArray()))
-                    .append("            AND ts.action = '" + RIGHT_CONTRIB + "') \n")
-                    .append("       ) AND (i.status > 1 OR i.owner = ?)\n")
+                    .append("           AND ( ts.action = '" + RIGHT_PUBLISH + "' AND i.status = 3 ) )\n")
+                    .append("       )\n")
                     .append("  )\n")
                     .append("   )\n");
             values.add(user.getUserId());
-            groupsAndUserIds.forEach(values::add);
             values.add(user.getUserId());
             groupsAndUserIds.forEach(values::add);
-            values.add(user.getUserId());
         }
         if (!admlStructuresIds.isEmpty()) {
             query.append(")");
         }
         // Execute
         Sql.getInstance().prepared(query.toString(), values, SqlResult.validUniqueResultHandler(res -> {
-             handler.handle(res.isRight());
+             handler.handle(res.isRight() && !res.right().getValue().getString("count").equals("0"));
         }));
     }
 
