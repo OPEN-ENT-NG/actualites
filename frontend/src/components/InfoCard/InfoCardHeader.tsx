@@ -96,10 +96,17 @@ export const InfoCardHeader = ({
             variant="circle"
             loading="lazy"
           />
-          <SeparatedInfo className="fs-6">
-            <div>{info.owner.displayName}</div>
-            <div>{formatDate(info.modified, 'long')}</div>
-          </SeparatedInfo>
+          {md ? (
+            <SeparatedInfo className="fs-6 text-gray-700">
+              <div>{info.owner.displayName}</div>
+              <div>{formatDate(info.modified, 'long')}</div>
+            </SeparatedInfo>
+          ) : (
+            <Flex direction="column" className="fs-6 text-gray-700">
+              <div>{info.owner.displayName}</div>
+              <div>{formatDate(info.modified, 'long')}</div>
+            </Flex>
+          )}
         </Divider>
         {info.headline && !isExpired && (
           <Image
