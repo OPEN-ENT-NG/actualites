@@ -1,5 +1,5 @@
 import { QueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { LoaderFunctionArgs } from 'react-router-dom';
 import { InfoDetailsForm } from '~/features/info-form/components/InfoDetailsForm';
 import { InfoFormActions } from '~/features/info-form/components/InfoFormActions';
@@ -38,17 +38,19 @@ export function CreateInfoDetails() {
     setCurrentCreationStep(CreationStep.INFO_DETAILS);
   }, [setCurrentCreationStep]);
 
-  let infoDetails: InfoDetailsFormParams | undefined;
-  if (info) {
-    infoDetails = {
-      infoId: info.id,
-      thread_id: info.thread?.id,
-      title: info.title,
-      content: info.content,
-      headline: info.headline,
-      infoStatus: info.status,
-    };
-  }
+  const infoDetails: InfoDetailsFormParams | undefined = useMemo(() => {
+    if (infoId && info) {
+      return {
+        infoId: info.id,
+        thread_id: info.thread?.id,
+        title: info.title,
+        content: info.content,
+        headline: info.headline,
+        infoStatus: info.status,
+      };
+    }
+    return undefined;
+  }, [infoId, info]);
 
   return (
     <>

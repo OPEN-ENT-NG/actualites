@@ -16,7 +16,9 @@ import {
 } from 'react-router-dom';
 
 import { IWebApp } from '@edifice.io/client';
+import { IconPlus } from '@edifice.io/react/icons';
 import { existingActions } from '~/config';
+import { useI18n } from '~/hooks/useI18n';
 import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
 import { queryClient } from '~/providers';
 import { actionsQueryOptions } from '~/services/queries/actions';
@@ -71,6 +73,7 @@ export const loader = async () => {
 };
 
 export const Root = () => {
+  const { t } = useI18n();
   const { actionUserRights } = useLoaderData() as {
     actionUserRights: Record<string, boolean>;
   };
@@ -100,7 +103,9 @@ export const Root = () => {
         {!isCreateRoute && canContributeOnOneThread && (
           <Flex fill align="center" justify="end">
             {canContributeOnOneThread && (
-              <Button onClick={handleClickNewInfo}>New Article</Button>
+              <Button onClick={handleClickNewInfo} leftIcon={<IconPlus />}>
+                {t('actualites.info.create')}
+              </Button>
             )}
           </Flex>
         )}
