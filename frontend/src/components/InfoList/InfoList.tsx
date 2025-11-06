@@ -17,7 +17,7 @@ export const InfoList = () => {
     <Flex
       direction="column"
       fill
-      className="p-md-24 mt-16 mt-md-0 overflow-hidden"
+      className="p-md-24 mt-16 mt-md-0 overflow-hidden me-n16 me-md-0 pe-16"
       gap="16"
     >
       <header>
