@@ -6,6 +6,7 @@ import fr.wseduc.security.SecuredAction;
 import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.request.RequestUtils;
 import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
@@ -26,11 +27,14 @@ import org.entcore.common.events.EventHelper;
 import org.entcore.common.events.EventStore;
 import org.entcore.common.events.EventStoreFactory;
 import org.entcore.common.http.filter.ResourceFilter;
+import org.entcore.common.share.ShareRoles;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.user.UserUtils;
+import org.vertx.java.core.http.RouteMatcher;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static net.atos.entng.actualites.Actualites.INFO_RESOURCE_ID;
 import static net.atos.entng.actualites.controllers.InfoController.*;
@@ -43,11 +47,13 @@ public class InfosControllerV1 extends ControllerHelper {
 
 	protected InfoService infoService;
 
+	private JsonObject rights;
 	private final NotificationTimelineService notificationTimelineService;
 	private final InfoController infoController;
 	private final EventHelper eventHelper;
 	private static final String ROOT_RIGHT = "net.atos.entng.actualites.controllers.InfoController";
 	private static final Logger LOGGER = LoggerFactory.getLogger(InfosControllerV1.class);
+
 
     public InfosControllerV1(InfoController infoController, NotificationTimelineService notificationTimelineService) {
 		this.infoController = infoController;
@@ -60,7 +66,13 @@ public class InfosControllerV1 extends ControllerHelper {
         this.infoService = infoService;
     }
 
-    @Get("/api/v1/infos")
+	@Override
+	public void init(Vertx vertx, JsonObject config, RouteMatcher rm, Map<String, fr.wseduc.webutils.security.SecuredAction> securedActions) {
+		super.init(vertx, config, rm, securedActions);
+		rights = ShareRoles.getSecuredActionNameByNormalizedRole(securedActions);
+	}
+
+	@Get("/api/v1/infos")
 	@SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")
 	public void infos(final HttpServerRequest request) {
 		// page argument
@@ -82,7 +94,7 @@ public class InfosControllerV1 extends ControllerHelper {
 			pageSizeParsed = DEFAULT_PAGE_SIZE;
 		}
 		final int pageSize = pageSizeParsed > MAX_PAGE_SIZE ? DEFAULT_PAGE_SIZE : pageSizeParsed;
-		
+
 		// threadIds argument
 		final List<Integer> threadIds = new ArrayList<>();
 		final List<String> threadIdsParam = request.params().getAll("threadIds");
@@ -359,6 +371,13 @@ public class InfosControllerV1 extends ControllerHelper {
 		});
 	}
 
+	@Get("/api/v1/rights/sharing")
+	@SecuredAction(type = ActionType.AUTHENTICATED, value = "")
+	public void getSharedActions(HttpServerRequest request) {
+		UserUtils.getUserInfos(eb, request, user -> {
+			renderJson(request, rights);
+        });
+	}
 
 	private void notifyOwner(final HttpServerRequest request, final UserInfos user, final JsonObject updatedInfo,
 							 final String infoId, final JsonObject actualInfo, final String eventType) {
