@@ -27,7 +27,7 @@ import http, { RefinedResponse } from "k6/http";
 import { getHeaders } from "../../../node_modules/edifice-k6-commons/dist/index.js";
 
 const maxDuration = __ENV.MAX_DURATION || "5m";
-const schoolName = __ENV.DATA_SCHOOL_NAME || `Info list tests ${Math.random().toString(36).substring(7)}`;
+const schoolName = __ENV.DATA_SCHOOL_NAME || `Info Widget tests `;
 const gracefulStop = parseInt(__ENV.GRACEFUL_STOP || "2s");
 const rootUrl = __ENV.ROOT_URL;
 
