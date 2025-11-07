@@ -1,6 +1,6 @@
 import { useI18n } from '~/hooks/useI18n';
 
-import { Button, Flex, useBreakpoint } from '@edifice.io/react';
+import { Button, Flex, useBreakpoint, useToast } from '@edifice.io/react';
 import { IconArrowRight, IconSave } from '@edifice.io/react/icons';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -14,6 +14,7 @@ export function InfoFormActions() {
   const { detailsForm, detailsFormState, onSaveDetails, onNextStep } =
     useInfoDetailsForm();
   const navigate = useNavigate();
+  const toast = useToast();
 
   const isInfoDetailsStep = currentCreationStep === CreationStep.INFO_DETAILS;
 
@@ -39,6 +40,7 @@ export function InfoFormActions() {
 
   const handleSaveDraftClick = () => {
     onSaveDetails(() => {
+      toast.success(t('actualites.info.createForm.draftSaved'));
       navigate('/');
     });
   };
@@ -59,7 +61,6 @@ export function InfoFormActions() {
       justify="end"
       align={md ? 'center' : 'end'}
       gap="12"
-      wrap="reverse"
     >
       <Button
         color="primary"
