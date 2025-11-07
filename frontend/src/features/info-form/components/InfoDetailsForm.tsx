@@ -187,6 +187,7 @@ export function InfoDetailsForm({
             {...register('headline')}
             label={t('actualites.info.createForm.headlineLabel')}
             data-testid="actualites.info.headline.switch"
+            variant="secondary"
           />
         </Flex>
       </FormControl>
