@@ -13,8 +13,13 @@ export type CommentListProps = {
 
 export const CommentList = ({ info }: CommentListProps) => {
   const { t } = useI18n();
-  const { comments, /*hasMore,*/ type, callbacks /*options*/ } =
-    useCommentList(info);
+  const {
+    comments,
+    hasMore,
+    viewMore: handleViewMoreClick,
+    type,
+    callbacks /*options*/,
+  } = useCommentList(info);
 
   return comments ? (
     <>
@@ -24,9 +29,16 @@ export const CommentList = ({ info }: CommentListProps) => {
         comments={comments}
       ></CommentProvider>
 
-      <Button color="tertiary" variant="ghost" size="sm">
-        {t('actualites.comments.read.more')}
-      </Button>
+      {hasMore && (
+        <Button
+          color="tertiary"
+          variant="ghost"
+          size="sm"
+          onClick={handleViewMoreClick}
+        >
+          {t('actualites.comments.read.more')}
+        </Button>
+      )}
     </>
   ) : null;
 };

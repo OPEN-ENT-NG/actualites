@@ -1,6 +1,8 @@
+import { useDate, useUser } from '@edifice.io/react';
 import { queryOptions, useMutation, useQuery } from '@tanstack/react-query';
-import { CommentId } from '~/models/comments';
+import { Comment, CommentId } from '~/models/comments';
 import { InfoId } from '~/models/info';
+import { queryClient } from '~/providers';
 import { commentService } from '../api';
 
 /**
@@ -37,14 +39,58 @@ export const commentQueryOptions = {
 export const useComments = (infoId: InfoId) =>
   useQuery(commentQueryOptions.getComments({ infoId }));
 
-export const useCreateComment = () =>
-  useMutation({
+export const useCreateComment = () => {
+  // TODO Inject queryClient instead of importing it ?
+  const { user } = useUser();
+  const { formatDate } = useDate();
+
+  return useMutation({
     mutationFn: (payload: {
       title: string;
       comment: string;
-      info_id: number;
+      info_id: InfoId;
     }) => commentService.create(payload),
+    // When mutate is called:
+    onMutate: async ({ info_id, comment }) => {
+      const queryKey = commentQueryKeys.all({ infoId: info_id });
+      const now = formatDate(Date.now(), 'YYYY-MM-DDTHH:mm:SS');
+
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey });
+
+      // Snapshot the previous value
+      const previousComments = queryClient.getQueryData<Comment[]>(queryKey);
+
+      const newComment = {
+        info_id,
+        comment,
+        _id: 0,
+        owner: user!.userId,
+        created: now,
+        modified: now,
+        username: user!.username,
+      };
+      // Optimistically update comments list
+      queryClient.setQueryData<Comment[]>(queryKey, (old) =>
+        [newComment].concat(old ?? []),
+      );
+      // Return a result with the snapshotted value
+      return { previousComments, queryKey };
+    },
+    // If the mutation fails, use the result returned from onMutate to roll back.
+    onError: (_err, { info_id }, onMutateResult) => {
+      queryClient.setQueryData(
+        commentQueryKeys.all({ infoId: info_id }),
+        onMutateResult?.previousComments,
+      );
+    },
+    // Always refetch after error or success.
+    onSettled: (_data, _error, { info_id }) =>
+      queryClient.invalidateQueries({
+        queryKey: commentQueryKeys.all({ infoId: info_id }),
+      }),
   });
+};
 
 export const useUpdateComment = () =>
   useMutation({
