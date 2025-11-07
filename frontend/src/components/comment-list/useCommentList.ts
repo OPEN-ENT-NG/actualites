@@ -1,5 +1,4 @@
-import { useReducer } from 'react';
-import { Comment } from '~/models/comments';
+import { useMemo } from 'react';
 import { Info } from '~/models/info';
 import {
   useComments,
@@ -16,21 +15,6 @@ declare interface CommentProps {
   authorName: string;
   createdAt: number;
   updatedAt: number;
-}
-
-// Reducer to mimic pagination
-function reducer(
-  state: { nbVisible: any; comments: CommentProps[] },
-  action: { type: string },
-) {
-  switch (action.type) {
-    case 'more': {
-      let { nbVisible, comments } = state;
-      nbVisible = Math.min(nbVisible + 10, comments.length);
-      return { ...state, nbVisible, hasMore: nbVisible >= comments.length };
-    }
-  }
-  throw Error('Unknown action: ' + action.type);
 }
 
 /**
@@ -50,31 +34,23 @@ function reducer(
  *   - maxComments: Maximum number of comments allowed
  *   - maxReplies: Maximum number of replies allowed
  *   - maxReplyLength: Maximum length for replies
- * - hasMore: Boolean indicating if more comments can be loaded
- * - comments: Array of currently visible comments
- * - viewMore: Function to load additional comments
+ * - comments: Array of comments
  */
 export function useCommentList(info: Info) {
   const type: 'read' | 'edit' = 'edit'; // TODO: adapt value depending on user's right.
 
   const { data } = useComments(info.id);
-  const [state, dispatch] = useReducer(
-    reducer,
-    data,
-    (initialData: Comment[] | undefined) => {
-      // Init fonction
-      const comments =
-        initialData?.map((comment) => ({
-          id: '' + comment._id,
-          comment: comment.comment,
-          authorId: comment.owner,
-          authorName: comment.username,
-          createdAt: comment.created as unknown as number,
-          updatedAt: comment.modified as unknown as number,
-        })) ?? [];
-      const nbVisible = Math.min(2, comments.length);
-      return { comments, nbVisible, hasMore: nbVisible >= comments.length };
-    },
+  const comments = useMemo(
+    () =>
+      data?.map((comment) => ({
+        id: '' + comment._id,
+        comment: comment.comment,
+        authorId: comment.owner,
+        authorName: comment.username,
+        createdAt: comment.created as unknown as number,
+        updatedAt: comment.modified as unknown as number,
+      })) ?? [],
+    [data],
   );
 
   const createCommentMutation = useCreateComment();
@@ -114,10 +90,7 @@ export function useCommentList(info: Info) {
 
   const options = {
     additionalComments: 10,
-    additionalReplies: 0,
-    maxCommentLength: 800,
-    maxComments: 5,
-    maxReplies: 0,
+    maxComments: 2,
     maxReplyLength: 0,
   };
 
@@ -125,10 +98,6 @@ export function useCommentList(info: Info) {
     type,
     callbacks,
     options,
-    hasMore: state.nbVisible < state.comments.length,
-    comments: state.comments.slice(0, state.nbVisible),
-    viewMore() {
-      dispatch({ type: 'more' });
-    },
+    comments,
   };
 }

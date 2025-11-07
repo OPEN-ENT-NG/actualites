@@ -1,6 +1,4 @@
-import { Button } from '@edifice.io/react';
 import { CommentProvider } from '@edifice.io/react/comments';
-import { useI18n } from '~/hooks/useI18n';
 import { Info } from '~/models/info';
 import { useCommentList } from './useCommentList';
 
@@ -12,14 +10,7 @@ export type CommentListProps = {
 };
 
 export const CommentList = ({ info }: CommentListProps) => {
-  const { t } = useI18n();
-  const {
-    comments,
-    hasMore,
-    viewMore: handleViewMoreClick,
-    type,
-    callbacks /*options*/,
-  } = useCommentList(info);
+  const { comments, type, callbacks, options } = useCommentList(info);
 
   return comments ? (
     <>
@@ -27,18 +18,8 @@ export const CommentList = ({ info }: CommentListProps) => {
         type={type}
         callbacks={callbacks}
         comments={comments}
+        options={options}
       ></CommentProvider>
-
-      {hasMore && (
-        <Button
-          color="tertiary"
-          variant="ghost"
-          size="sm"
-          onClick={handleViewMoreClick}
-        >
-          {t('actualites.comments.read.more')}
-        </Button>
-      )}
     </>
   ) : null;
 };
