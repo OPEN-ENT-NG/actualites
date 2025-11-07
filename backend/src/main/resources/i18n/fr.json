@@ -32,5 +32,6 @@
   "actualites.info.createForm.nextStep": "Suivant",
   "actualites.info.createForm.publish": "Publier",
   "actualites.info.createForm.saveDraft": "Brouillon",
+  "actualites.info.createForm.draftSaved": "L'actualité a été enregistrée en brouillon",
   "actualites.threadList.allThreads": "Tous les fils d’actus"
 }
