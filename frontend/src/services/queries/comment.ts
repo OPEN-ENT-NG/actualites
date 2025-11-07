@@ -1,4 +1,4 @@
-import { useDate, useUser } from '@edifice.io/react';
+import { useEdificeClient } from '@edifice.io/react';
 import { queryOptions, useMutation, useQuery } from '@tanstack/react-query';
 import { Comment, CommentId } from '~/models/comments';
 import { InfoId } from '~/models/info';
@@ -41,8 +41,7 @@ export const useComments = (infoId: InfoId) =>
 
 export const useCreateComment = () => {
   // TODO Inject queryClient instead of importing it ?
-  const { user } = useUser();
-  const { formatDate } = useDate();
+  const { user } = useEdificeClient();
 
   return useMutation({
     mutationFn: (payload: {
@@ -53,7 +52,7 @@ export const useCreateComment = () => {
     // When mutate is called:
     onMutate: async ({ info_id, comment }) => {
       const queryKey = commentQueryKeys.all({ infoId: info_id });
-      const now = formatDate(Date.now(), 'YYYY-MM-DDTHH:mm:SS');
+      const now = new Date().toISOString();
 
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey });
@@ -65,10 +64,10 @@ export const useCreateComment = () => {
         info_id,
         comment,
         _id: 0,
-        owner: user!.userId,
+        owner: user?.userId ?? '',
         created: now,
         modified: now,
-        username: user!.username,
+        username: user?.username ?? '',
       };
       // Optimistically update comments list
       queryClient.setQueryData<Comment[]>(queryKey, (old) =>
