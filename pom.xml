@@ -14,7 +14,7 @@
     <artifactId>actualites</artifactId>
     <version>2.1-develop-b2school-SNAPSHOT</version>
     <properties>
-        <web-utils.version>3.2-SNAPSHOT</web-utils.version>
+        <web-utils.version>3.2-develop-b2school-SNAPSHOT</web-utils.version>
         <jacksonDatabindVersion>2.15.2</jacksonDatabindVersion>
         <entCoreVersion>6.11-SNAPSHOT</entCoreVersion>
         <gatlingHighchartsVersion>2.3.1</gatlingHighchartsVersion>
