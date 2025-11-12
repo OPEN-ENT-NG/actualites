@@ -42,7 +42,7 @@ public interface ThreadService {
 
 	public void getPublishSharedWithIds(String threadId, Handler<Either<String, JsonArray>> handler);
 
-	Future<List<NewsThread>> list(Map<String, SecuredAction> securedActions, UserInfos user);
+	Future<List<NewsThread>> list(Map<String, SecuredAction> securedActions, UserInfos user, String viewHidden);
 
 	/** Utility method to attach threads without a structure to their owner's structure, when a single one exists. */
 	Future<Void> attachThreadsWithNullStructureToDefault();

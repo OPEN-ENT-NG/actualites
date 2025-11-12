@@ -29,6 +29,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+import net.atos.entng.actualites.services.GroupService;
 import net.atos.entng.actualites.services.ThreadService;
 import net.atos.entng.actualites.services.impl.mapper.NewsThreadMapper;
 import net.atos.entng.actualites.to.NewsStatus;
@@ -57,11 +58,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 	private final String usersTable = "actualites.users";
 	private final String membersTable = "actualites.members";
 	private final String groupsTable = "actualites.groups";
-
 	private EventBus eb;
-
-	public ThreadServiceSqlImpl() {
-	}
 
 	public ThreadServiceSqlImpl setEventBus(EventBus eb) {
 		this.eb = eb;
@@ -223,15 +220,22 @@ public class ThreadServiceSqlImpl implements ThreadService {
 	 * - threads created by the user
 	 * - threads shared to the user or with one of its groups
 	 * - threads containing news that are shared to the user or one of its groups
+	 * @param viewHidden show hidden thread (hidden by default for adml group automatically added)
 	 * @param user info about the user (needed for groups)
 	 * @return the list of the threads visible by the user
 	 */
 	@Override
-	public Future<List<NewsThread>> list(Map<String, SecuredAction> securedActions, UserInfos user) {
+	public Future<List<NewsThread>> list(Map<String, SecuredAction> securedActions, UserInfos user, String viewHidden) {
 		final Promise<List<NewsThread>> promise = Promise.promise();
 		if (user == null) {
 			promise.fail("user not provided");
 		} else {
+			boolean filterMultiAdmlActivated = user.isADML() && user.getStructures().size() > 1;
+			String filterAdml = "";
+			if(filterMultiAdmlActivated && "false".equals(viewHidden)) {
+				filterAdml = " AND tsh.adml_group = false ";
+			}
+
 			// 1. Get all ids corresponding to the user
 
 			List<String> groupsAndUserIds = new ArrayList<>();
@@ -283,7 +287,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 					"    SELECT t.id, array_agg(DISTINCT tsh.action) AS rights " +
 					"    FROM " + threadsTable + " AS t " +
 					"        INNER JOIN " + threadsSharesTable + " AS tsh ON t.id = tsh.resource_id " +
-					"    WHERE tsh.member_id IN  (SELECT id FROM user_groups) " +
+					"    WHERE tsh.member_id IN  (SELECT id FROM user_groups) " + filterAdml +
 					"    GROUP BY t.id, tsh.member_id " +
 					") SELECT t.id, t.owner, u.username AS owner_name, u.deleted as owner_deleted, t.title, t.icon," +
 					"    t.created, t.modified, t.structure_id, max(thread_for_user.rights) as rights " + // note : we can use max() here only because the rights are inclusive of each other

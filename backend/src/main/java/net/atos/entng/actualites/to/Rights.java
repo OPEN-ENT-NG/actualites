@@ -17,6 +17,10 @@ public class Rights {
     private final Set<SecuredAction> actions;
     private final ResourceType resourceType;
 
+    public static final String THREAD_CONTRIB = "thread.contrib";
+    public static final String THREAD_PUBLISH = "thread.publish";
+    public static final String THREAD_MANAGER = "thread.manager";
+
 
     public Rights(Set<SecuredAction> actions, ResourceType resourceType) {
         this.actions = actions;

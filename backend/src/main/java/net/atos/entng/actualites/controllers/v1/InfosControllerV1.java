@@ -55,22 +55,19 @@ public class InfosControllerV1 extends ControllerHelper {
 	private static final Logger LOGGER = LoggerFactory.getLogger(InfosControllerV1.class);
 
 
-    public InfosControllerV1(InfoController infoController, NotificationTimelineService notificationTimelineService) {
+    public InfosControllerV1(InfoController infoController,
+							 NotificationTimelineService notificationTimelineService,
+							 JsonObject	rights) {
 		this.infoController = infoController;
         this.notificationTimelineService = notificationTimelineService;
         final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(Actualites.class.getSimpleName());
 		eventHelper = new EventHelper(eventStore);
+		this.rights = rights;
     }
 
 	public void setInfoService(InfoService infoService) {
         this.infoService = infoService;
     }
-
-	@Override
-	public void init(Vertx vertx, JsonObject config, RouteMatcher rm, Map<String, fr.wseduc.webutils.security.SecuredAction> securedActions) {
-		super.init(vertx, config, rm, securedActions);
-		rights = ShareRoles.getSecuredActionNameByNormalizedRole(securedActions);
-	}
 
 	@Get("/api/v1/infos")
 	@SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")
