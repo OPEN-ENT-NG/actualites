@@ -42,14 +42,16 @@ export function useCommentList(info: Info) {
   const { data } = useComments(info.id);
   const comments = useMemo(
     () =>
-      data?.map((comment) => ({
-        id: '' + comment._id,
-        comment: comment.comment,
-        authorId: comment.owner,
-        authorName: comment.username,
-        createdAt: comment.created as unknown as number,
-        updatedAt: comment.modified as unknown as number,
-      })) ?? [],
+      (
+        data?.map((comment) => ({
+          id: '' + comment._id,
+          comment: comment.comment,
+          authorId: comment.owner,
+          authorName: comment.username,
+          createdAt: Date.parse(comment.created),
+          updatedAt: Date.parse(comment.modified),
+        })) ?? []
+      ).sort((a, b) => a.createdAt - b.createdAt),
     [data],
   );
 
