@@ -22,6 +22,7 @@ package net.atos.entng.actualites.services;
 import java.util.List;
 import java.util.Map;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.entcore.common.user.UserInfos;
 
 import fr.wseduc.webutils.Either;
@@ -36,11 +37,11 @@ public interface ThreadService {
 
 	public void list(UserInfos user, Handler<Either<String, JsonArray>> handler);
 
-	public void retrieve(String id, Handler<Either<String, JsonObject>> handler);
+	public void retrieve(String id, Boolean filterAdmlGroup, UserInfos user, Handler<Either<String, JsonObject>> handler);
 	
 	public Future<NewsThread> retrieve(String id, UserInfos user, Map<String, SecuredAction> securedActions);
 
-	public void getPublishSharedWithIds(String threadId, Handler<Either<String, JsonArray>> handler);
+	public void getPublishSharedWithIds(String threadId, Boolean filterAdmlGroup, UserInfos user, Handler<Either<String, JsonArray>> handler);
 
 	Future<List<NewsThread>> list(Map<String, SecuredAction> securedActions, UserInfos user, String viewHidden);
 

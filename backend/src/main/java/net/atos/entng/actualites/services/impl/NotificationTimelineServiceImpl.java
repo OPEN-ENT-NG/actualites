@@ -55,7 +55,7 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
     public void notifyTimeline(HttpServerRequest request, UserInfos user, UserInfos owner, String threadId, String infoId,
                                String title, String eventType) {
         if (eventType.equals(NEWS_SUBMIT_EVENT_TYPE)) {
-            threadService.getPublishSharedWithIds(threadId, event -> {
+            threadService.getPublishSharedWithIds(threadId, true, user, event -> {
                 if (event.isRight()) {
                     // get all ids
                     JsonArray shared = event.right().getValue();
@@ -63,7 +63,7 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
                 }
             });
         } else if(eventType.equals(NEWS_UNSUBMIT_EVENT_TYPE)){
-            threadService.getPublishSharedWithIds(threadId, event -> {
+            threadService.getPublishSharedWithIds(threadId, true, user, event -> {
                 if (event.isRight()) {
                     // get all ids
                     JsonArray shared = event.right().getValue();
@@ -71,7 +71,7 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
                 }
             });
         } else if(eventType.equals(NEWS_PUBLISH_EVENT_TYPE)){
-            infoService.getSharedWithIds(infoId, event -> {
+            infoService.getSharedWithIds(infoId, true, event -> {
                 if (event.isRight()) {
                     // get all ids
                     JsonArray shared = event.right().getValue();
@@ -79,7 +79,7 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
                 }
             });
         } else if(eventType.equals(NEWS_UNPUBLISH_EVENT_TYPE)){
-            infoService.getSharedWithIds(infoId, event -> {
+            infoService.getSharedWithIds(infoId, true, event -> {
                 if (event.isRight()) {
                     // get all ids
                     JsonArray shared = event.right().getValue();
@@ -151,7 +151,7 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
             params.put("resourceUri", params.getString("actuUri"));
             if("news.news-published".equals(notificationName)) {
                 params.put("pushNotif", new JsonObject().put("title", "push.notif.actu.info.published").put("body", owner.getUsername()+ " : "+ title));
-                infoService.retrieve(infoId, actu -> {
+                infoService.retrieve(infoId, false, actu -> {
                     JsonObject preview = null;
                     if (actu.isRight()) {
                         preview = NotificationUtils.htmlContentToPreview(

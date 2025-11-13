@@ -58,7 +58,7 @@ public class InfoTransformerServiceImpl implements InfoService {
 
     @Override
     public void update(String id, JsonObject data, UserInfos user, String eventStatus, Handler<Either<String, JsonObject>> handler) {
-        infoService.retrieve(id, h -> {
+        infoService.retrieve(id, false, h -> {
             if (h.isLeft()) {
                 handler.handle(new Either.Left<>("This info doesn't exists"));
                 return;
@@ -109,8 +109,9 @@ public class InfoTransformerServiceImpl implements InfoService {
     }
 
     @Override
-    public void retrieve(String id, Handler<Either<String, JsonObject>> handler) {
-        infoService.retrieve(id, handler);
+    public void retrieve(String id, Boolean filterAdmlGroup,
+                         Handler<Either<String, JsonObject>> handler) {
+        infoService.retrieve(id, filterAdmlGroup, handler);
     }
 
     @Override
@@ -154,8 +155,8 @@ public class InfoTransformerServiceImpl implements InfoService {
     }
 
     @Override
-    public void getSharedWithIds(String infoId, Handler<Either<String, JsonArray>> handler) {
-        infoService.getSharedWithIds(infoId, handler);
+    public void getSharedWithIds(String infoId, Boolean filterAdmlGroup, Handler<Either<String, JsonArray>> handler) {
+        infoService.getSharedWithIds(infoId, filterAdmlGroup, handler);
     }
 
     @Override

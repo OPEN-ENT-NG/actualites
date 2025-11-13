@@ -19,6 +19,7 @@
 
 package net.atos.entng.actualites.services.impl;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.security.SecuredAction;
 import io.vertx.core.Future;
@@ -66,10 +67,14 @@ public class ThreadServiceSqlImpl implements ThreadService {
 	}	
 
 	@Override
-	public void retrieve(String id, Handler<Either<String, JsonObject>> handler) {
+	public void retrieve(String id, Boolean filterAdmlGroup, UserInfos user, Handler<Either<String, JsonObject>> handler) {
 		String query;
 		JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
 		if (id != null) {
+			String filterAdml = "";
+			if(filterAdmlGroup) {
+				filterAdml = " AND ts.adml_group = false ";
+			}
 			query = "SELECT t.id as _id, t.title, t.icon, t.mode, t.created, t.modified, t.owner, u.username" +
 				", json_agg(row_to_json(row(ts.member_id, ts.action)::actualites.share_tuple)) as shared" +
 				", array_to_json(array_agg(group_id)) as groups" +
@@ -77,7 +82,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 				" LEFT JOIN actualites.users AS u ON t.owner = u.id" +
 				" LEFT JOIN actualites.thread_shares AS ts ON t.id = ts.resource_id" +
 				" LEFT JOIN actualites.members AS m ON (ts.member_id = m.id AND m.group_id IS NOT NULL)" +
-				" WHERE t.id = ? " +
+				" WHERE t.id = ? " + filterAdml +
 				" GROUP BY t.id, u.username" +
 				" ORDER BY t.modified DESC";
 			values.add(Sql.parseId(id));
@@ -177,41 +182,38 @@ public class ThreadServiceSqlImpl implements ThreadService {
 	}
 
 	@Override
-	public void getPublishSharedWithIds(String threadId, final Handler<Either<String, JsonArray>> handler) {
-		this.retrieve(threadId, new Handler<Either<String, JsonObject>>() {
-			@Override
-			public void handle(Either<String, JsonObject> event) {
-				JsonArray sharedWithIds = new fr.wseduc.webutils.collections.JsonArray();
-				if (event.isRight()) {
-					try {
-						JsonObject thread = event.right().getValue();
-						if (thread.containsKey("owner")) {
-							JsonObject owner = new JsonObject();
-							owner.put("userId", thread.getString("owner"));
-							sharedWithIds.add(owner);
-						}
-						if (thread.containsKey("shared")) {
-							JsonArray shared = thread.getJsonArray("shared");
-							for(Object jo : shared){
-								if(((JsonObject) jo).containsKey("net-atos-entng-actualites-controllers-InfoController|publish")){
-									sharedWithIds.add(jo);
-								}
-							}
-							handler.handle(new Either.Right<String, JsonArray>(sharedWithIds));
-						}
-						else {
-							handler.handle(new Either.Right<String, JsonArray>(new fr.wseduc.webutils.collections.JsonArray()));
-						}
-					}
-					catch (Exception e) {
-						handler.handle(new Either.Left<String, JsonArray>("Malformed response : " + e.getClass().getName() + " : " + e.getMessage()));
-					}
-				}
-				else {
-					handler.handle(new Either.Left<String, JsonArray>(event.left().getValue()));
-				}
-			}
-		});
+	public void getPublishSharedWithIds(String threadId, Boolean filterShared, UserInfos user, final Handler<Either<String, JsonArray>> handler) {
+		this.retrieve(threadId, filterShared, user, event -> {
+            JsonArray sharedWithIds = new fr.wseduc.webutils.collections.JsonArray();
+            if (event.isRight()) {
+                try {
+                    JsonObject thread = event.right().getValue();
+                    if (thread.containsKey("owner")) {
+                        JsonObject owner = new JsonObject();
+                        owner.put("userId", thread.getString("owner"));
+                        sharedWithIds.add(owner);
+                    }
+                    if (thread.containsKey("shared")) {
+                        JsonArray shared = thread.getJsonArray("shared");
+                        for(Object jo : shared){
+                            if(((JsonObject) jo).containsKey("net-atos-entng-actualites-controllers-InfoController|publish")){
+                                sharedWithIds.add(jo);
+                            }
+                        }
+                        handler.handle(new Either.Right<String, JsonArray>(sharedWithIds));
+                    }
+                    else {
+                        handler.handle(new Either.Right<String, JsonArray>(new fr.wseduc.webutils.collections.JsonArray()));
+                    }
+                }
+                catch (Exception e) {
+                    handler.handle(new Either.Left<String, JsonArray>("Malformed response : " + e.getClass().getName() + " : " + e.getMessage()));
+                }
+            }
+            else {
+                handler.handle(new Either.Left<String, JsonArray>(event.left().getValue()));
+            }
+        });
 	}
 
 
