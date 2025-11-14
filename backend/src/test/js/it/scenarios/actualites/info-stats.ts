@@ -15,7 +15,6 @@ import {
   createThreadOrFail,
   Identifier as ThreadIdentifier,
   shareThreadOrFail,
-  ShareTargetType,
   threadContributorRights,
   threadPublisherRights,
 } from "./_thread-utils.ts";
@@ -28,6 +27,7 @@ import {
 } from "./_info-utils.ts";
 import { check } from "k6";
 import http from "k6/http";
+import { ShareTargetType } from "./_shares_utils.ts";
 
 const maxDuration = __ENV.MAX_DURATION || "5m";
 const schoolName = __ENV.DATA_SCHOOL_NAME || `Info stats tests ${Math.random().toString(36).substring(7)}`;
