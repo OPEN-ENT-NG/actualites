@@ -1,10 +1,10 @@
 import { CommentProvider } from '@edifice.io/react/comments';
+import { useCommentList } from '~/hooks/useCommentList';
 import { Info } from '~/models/info';
-import { useCommentList } from './useCommentList';
 
 export type CommentListProps = {
   /**
-   * Comments to display in the card
+   * Comments to display in the card.
    */
   info: Info;
 };
@@ -12,14 +12,14 @@ export type CommentListProps = {
 export const CommentList = ({ info }: CommentListProps) => {
   const { comments, type, callbacks, options } = useCommentList(info);
 
-  return comments ? (
-    <>
+  return (
+    comments && (
       <CommentProvider
         type={type}
         callbacks={callbacks}
         comments={comments}
         options={options}
-      ></CommentProvider>
-    </>
-  ) : null;
+      />
+    )
+  );
 };

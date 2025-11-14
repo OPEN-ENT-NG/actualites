@@ -1,3 +1,4 @@
+import { CommentOptions } from 'node_modules/@edifice.io/react/dist/modules/comments/types';
 import { useMemo } from 'react';
 import { Info } from '~/models/info';
 import {
@@ -34,6 +35,7 @@ declare interface CommentProps {
  *   - maxComments: Maximum number of comments allowed
  *   - maxReplies: Maximum number of replies allowed
  *   - maxReplyLength: Maximum length for replies
+ *   - disableReplies: Truthy when user cannot reply to comments
  * - comments: Array of comments
  */
 export function useCommentList(info: Info) {
@@ -93,8 +95,8 @@ export function useCommentList(info: Info) {
   const options = {
     additionalComments: 10,
     maxComments: 2,
-    maxReplyLength: 0,
-  };
+    disableReply: true,
+  } as Partial<CommentOptions>;
 
   return {
     type,

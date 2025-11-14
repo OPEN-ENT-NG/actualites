@@ -79,13 +79,9 @@ export const InfoCard = ({ info }: InfoCardProps) => {
           </Alert>
         )}
 
-        <InfoCardContent info={info} collapse={collapse} />
+        <InfoCardContent info={info} collapse />
 
-        <InfoCardFooter
-          info={info}
-          collapse={collapse}
-          onMoreClick={handleMoreClick}
-        />
+        <InfoCardFooter info={info} collapse onMoreClick={handleMoreClick} />
       </article>
     </Card>
   );
