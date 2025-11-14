@@ -19,7 +19,6 @@
 
 package net.atos.entng.actualites.services.impl;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.security.SecuredAction;
 import io.vertx.core.Future;
@@ -30,7 +29,6 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
-import net.atos.entng.actualites.services.GroupService;
 import net.atos.entng.actualites.services.ThreadService;
 import net.atos.entng.actualites.services.impl.mapper.NewsThreadMapper;
 import net.atos.entng.actualites.to.NewsStatus;
@@ -227,14 +225,14 @@ public class ThreadServiceSqlImpl implements ThreadService {
 	 * @return the list of the threads visible by the user
 	 */
 	@Override
-	public Future<List<NewsThread>> list(Map<String, SecuredAction> securedActions, UserInfos user, String viewHidden) {
+	public Future<List<NewsThread>> list(Map<String, SecuredAction> securedActions, UserInfos user, Boolean viewHidden) {
 		final Promise<List<NewsThread>> promise = Promise.promise();
 		if (user == null) {
 			promise.fail("user not provided");
 		} else {
 			boolean filterMultiAdmlActivated = user.isADML() && user.getStructures().size() > 1;
 			String filterAdml = "";
-			if(filterMultiAdmlActivated && "false".equals(viewHidden)) {
+			if(filterMultiAdmlActivated && !viewHidden) {
 				filterAdml = " AND tsh.adml_group = false ";
 			}
 
