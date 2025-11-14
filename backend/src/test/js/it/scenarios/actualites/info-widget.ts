@@ -17,9 +17,7 @@ import {
   Identifier as ThreadIdentifier,
 } from "./_thread-utils.ts";
 import {
-  createInfo,
   createInfoOrFail,
-  createPublishedInfo,
   createPublishedInfoOrFail,
 } from "./_info-utils.ts";
 import { check } from "k6";

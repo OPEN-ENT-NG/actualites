@@ -15,13 +15,15 @@ import {
   Role,
   Session,
   Structure,
+  addAdminFunction,
+  getProfileGroupsOfStructure,
+  ProfileGroup
 } from "../../../node_modules/edifice-k6-commons/dist/index.js";
 import {
   createThread,
   createThreadOrFail,
   deleteThread, getShareThread,
   Identifier,
-  ShareTargetType,
   shareThreadOrFail,
   Thread,
   threadContributorRights,
@@ -31,6 +33,7 @@ import {
 } from "./_thread-utils.ts";
 import { check, sleep } from "k6";
 import { RefinedResponse } from "k6/http";
+import { ShareTargetType } from "./_shares_utils.ts";
 
 const maxDuration = __ENV.MAX_DURATION || "5m";
 const schoolName = __ENV.DATA_SCHOOL_NAME || "Thread-rights";
@@ -81,6 +84,12 @@ export function setup() {
 
     linkRoleToUsers(head, role, [teacherProfileGroup.name]);
     linkRoleToUsers(school, role, [parentRole.name]);
+
+    const headUsers = getUsersOfSchool(head);
+    const headTeacher = getRandomUserWithProfile(headUsers, "Teacher");
+
+    addAdminFunction(headTeacher.id, [head.id]);
+
   });
   return { head, structures };
 }
@@ -268,6 +277,37 @@ export function testThreadRights(data: InitData) {
       "User must be in the share": (r) => JSON.parse(r.body as string).users.checked[headRelative.id] !== undefined,
       "User share must contain contributor right": rightCheck
     });
+  });
+
+
+  describe("[Thread] Test that created thread has admin local group", () => {
+    <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
+    const headUsers = getUsersOfSchool(data.head);
+    const headTeacher = getRandomUserWithProfile(headUsers, "Teacher");
+
+    //now call create bookmark that call get bookmark that check visible
+    console.log("Authenticate head teacher " + headTeacher.login);
+    authenticateWeb(headTeacher.login);
+
+    console.log("Creating a thread");
+    const seed = Math.random().toString(36).substring(7);
+    const title = `Creation test ${seed}`;
+    const thread: Identifier = createThreadOrFail(title);
+
+    const shareResp = getShareThread(thread.id);
+
+    <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
+    const groups : ProfileGroup[] = getProfileGroupsOfStructure(data.head.id);
+
+    const adminLocalGroups = groups.filter(g => g.filter === "AdminLocal");
+    const adminLocalGroup = adminLocalGroups[0];
+
+    const shareGroups: any[] = JSON.parse(shareResp.body as any).groups.visibles;
+    console.log("Created groups for admin local group " + shareGroups);
+    check(shareGroups, {
+      "share groups should contain admin group ": shareGroups => shareGroups.filter( g => g.id === adminLocalGroup.id).length > 0
+    });
+
   });
 
 }

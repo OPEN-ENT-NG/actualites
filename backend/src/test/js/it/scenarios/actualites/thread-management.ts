@@ -22,7 +22,6 @@ import {
   deleteThread,
   getThreadById,
   Identifier,
-  ShareTargetType,
   shareThread,
   Thread,
   threadContributorRights,
@@ -31,6 +30,7 @@ import {
 } from "./_thread-utils.ts";
 import { check } from "k6";
 import { RefinedResponse } from "k6/http";
+import {ShareTargetType} from "./_shares_utils.ts";
 
 const maxDuration = __ENV.MAX_DURATION || "5m";
 const schoolName = __ENV.DATA_SCHOOL_NAME || "Thread management";

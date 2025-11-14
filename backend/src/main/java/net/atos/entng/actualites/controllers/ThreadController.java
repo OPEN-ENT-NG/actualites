@@ -29,9 +29,13 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import fr.wseduc.webutils.http.Renders;
+import io.vertx.core.Promise;
 import net.atos.entng.actualites.Actualites;
 import net.atos.entng.actualites.filters.ThreadFilter;
+import net.atos.entng.actualites.services.GroupService;
+import net.atos.entng.actualites.services.ThreadMigrationService;
 import net.atos.entng.actualites.services.ThreadService;
+import net.atos.entng.actualites.services.impl.ThreadMigrationServiceImpl;
 import net.atos.entng.actualites.services.impl.ThreadServiceSqlImpl;
 
 import org.entcore.common.controller.ControllerHelper;
@@ -73,10 +77,12 @@ public class ThreadController extends ControllerHelper {
 	
 
 	protected final ThreadService threadService;
+	protected final ThreadMigrationService threadMigrationService;
 	protected final EventHelper eventHelper;
 
-	public ThreadController(EventBus eb){
+	public ThreadController(EventBus eb, ThreadMigrationService threadMigrationService){
 		this.threadService = new ThreadServiceSqlImpl().setEventBus(eb);
+		this.threadMigrationService = threadMigrationService;
 		final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(Actualites.class.getSimpleName());
 		eventHelper = new EventHelper(eventStore);
 	}
@@ -133,21 +139,25 @@ public class ThreadController extends ControllerHelper {
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
 			public void handle(final UserInfos user) {
-				RequestUtils.bodyToJson(request, pathPrefix + SCHEMA_THREAD_CREATE, new Handler<JsonObject>() {
-					@Override
-					public void handle(JsonObject resource) {
-						// WB-1402 auto-attach the thread to this user's structure, iif only one exists.
-						final List<String> structures = user.getStructures();
-						if(structures!=null && structures.size() == 1) {
-							String structure_id = structures.get(0);
-							if(structure_id!=null && structure_id.length()>0) {
-								resource.put("structure_id", structure_id);
-							}
-						}
-						final Handler<Either<String,JsonObject>> handler = notEmptyResponseHandler(request);
-						crudService.create(resource, user, eventHelper.onCreateResource(request, RESOURCE_NAME, handler));
-					}
-				});
+				RequestUtils.bodyToJson(request, pathPrefix + SCHEMA_THREAD_CREATE, resource -> {
+                    // WB-1402 auto-attach the thread to this user's structure, iif only one exists.
+                    final List<String> structures = user.getStructures();
+                    if(structures!=null && structures.size() == 1) {
+                        String structure_id = structures.get(0);
+                        if(structure_id!=null && structure_id.length()>0) {
+                            resource.put("structure_id", structure_id);
+                        }
+                    }
+                    final Handler<Either<String,JsonObject>> handler = notEmptyResponseHandler(request);
+                    crudService.create(resource, user, h -> {
+                        if(h.isRight()) {
+                            Promise<Void> promise = Promise.promise();
+                            threadMigrationService.addAdmlShare(h.right().getValue().getString("id"), promise);
+                            promise.future().onSuccess( migr ->
+                                eventHelper.onCreateResource(request, RESOURCE_NAME, handler).handle(h));
+                        }
+                    });
+                });
 			}
 		});
 	}
@@ -341,7 +351,8 @@ public class ThreadController extends ControllerHelper {
 	public void listThreadsV2(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
-				threadService.list(securedActions, user)
+				Boolean viewHidden = Boolean.parseBoolean(request.getParam("viewHidden", "false"));
+				threadService.list(securedActions, user, viewHidden)
 					.onSuccess(threads -> render(request, threads))
 					.onFailure(ex -> renderError(request));
 			} else {

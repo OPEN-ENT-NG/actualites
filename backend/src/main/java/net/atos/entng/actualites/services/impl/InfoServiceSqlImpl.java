@@ -204,9 +204,10 @@ public class InfoServiceSqlImpl implements InfoService {
 	}
 
 	@Override
-	public void retrieve(String id, Handler<Either<String, JsonObject>> handler) {
+	public void retrieve(String id, Boolean filterAdmlGroup, Handler<Either<String, JsonObject>> handler) {
 			String query;
 			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
+			String admlFilter = filterAdmlGroup ? " AND ts.adml_group = false " : "";
 			query = "SELECT i.id as _id, i.title, i.content, i.status, i.publication_date, i.expiration_date, i.is_headline, i.thread_id, i.created, i.modified" +
 				", i.owner, i.content_version, u.username, t.title AS thread_title, t.icon AS thread_icon" +
 				", (SELECT json_agg(cr.*) FROM (" +
@@ -224,7 +225,7 @@ public class InfoServiceSqlImpl implements InfoService {
 				" LEFT JOIN "+NEWS_USER_TABLE+" AS u ON i.owner = u.id" +
 				" LEFT JOIN "+NEWS_INFO_SHARE_TABLE+" AS ios ON i.id = ios.resource_id" +
 				" LEFT JOIN "+NEWS_MEMBER_TABLE+" AS m ON ((ts.member_id = m.id OR ios.member_id = m.id) AND m.group_id IS NOT NULL)" +
-				" WHERE i.id = ? " +
+				" WHERE i.id = ? " + admlFilter +
 				" GROUP BY i.id, u.username, t.id" +
 				" ORDER BY i.modified DESC";
 			values.add(Sql.parseId(id));
@@ -502,39 +503,36 @@ public class InfoServiceSqlImpl implements InfoService {
 	}
 
 	@Override
-	public void getSharedWithIds(String infoId, final Handler<Either<String, JsonArray>> handler) {
-		this.retrieve(infoId, new Handler<Either<String, JsonObject>>() {
-			@Override
-			public void handle(Either<String, JsonObject> event) {
-				JsonArray sharedWithIds = new fr.wseduc.webutils.collections.JsonArray();
-				if (event.isRight()) {
-					try {
-						JsonObject info = event.right().getValue();
-						if (info.containsKey("owner")) {
-							JsonObject owner = new JsonObject();
-							owner.put("userId", info.getString("owner"));
-							sharedWithIds.add(owner);
-						}
-						if (info.containsKey("shared")) {
-							JsonArray shared = info.getJsonArray("shared");
-							for(Object jo : shared){
-								sharedWithIds.add(jo);
-							}
-							handler.handle(new Either.Right<String, JsonArray>(sharedWithIds));
-						}
-						else {
-							handler.handle(new Either.Right<String, JsonArray>(new fr.wseduc.webutils.collections.JsonArray()));
-						}
-					}
-					catch (Exception e) {
-						handler.handle(new Either.Left<String, JsonArray>("Malformed response : " + e.getClass().getName() + " : " + e.getMessage()));
-					}
-				}
-				else {
-					handler.handle(new Either.Left<String, JsonArray>(event.left().getValue()));
-				}
-			}
-		});
+	public void getSharedWithIds(String infoId, Boolean filterAdmlGroup, final Handler<Either<String, JsonArray>> handler) {
+		this.retrieve(infoId, filterAdmlGroup, event -> {
+            JsonArray sharedWithIds = new fr.wseduc.webutils.collections.JsonArray();
+            if (event.isRight()) {
+                try {
+                    JsonObject info = event.right().getValue();
+                    if (info.containsKey("owner")) {
+                        JsonObject owner = new JsonObject();
+                        owner.put("userId", info.getString("owner"));
+                        sharedWithIds.add(owner);
+                    }
+                    if (info.containsKey("shared")) {
+                        JsonArray shared = info.getJsonArray("shared");
+                        for(Object jo : shared){
+                            sharedWithIds.add(jo);
+                        }
+                        handler.handle(new Either.Right<String, JsonArray>(sharedWithIds));
+                    }
+                    else {
+                        handler.handle(new Either.Right<String, JsonArray>(new fr.wseduc.webutils.collections.JsonArray()));
+                    }
+                }
+                catch (Exception e) {
+                    handler.handle(new Either.Left<String, JsonArray>("Malformed response : " + e.getClass().getName() + " : " + e.getMessage()));
+                }
+            }
+            else {
+                handler.handle(new Either.Left<String, JsonArray>(event.left().getValue()));
+            }
+        });
 	}
 
 	@Override

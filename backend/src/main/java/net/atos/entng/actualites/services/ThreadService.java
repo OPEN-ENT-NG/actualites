@@ -19,11 +19,6 @@
 
 package net.atos.entng.actualites.services;
 
-import java.util.List;
-import java.util.Map;
-
-import org.entcore.common.user.UserInfos;
-
 import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.security.SecuredAction;
 import io.vertx.core.Future;
@@ -31,18 +26,22 @@ import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.to.NewsThread;
+import org.entcore.common.user.UserInfos;
+
+import java.util.List;
+import java.util.Map;
 
 public interface ThreadService {
 
 	public void list(UserInfos user, Handler<Either<String, JsonArray>> handler);
 
-	public void retrieve(String id, Handler<Either<String, JsonObject>> handler);
+	public void retrieve(String id, Boolean filterAdmlGroup, UserInfos user, Handler<Either<String, JsonObject>> handler);
 	
 	public Future<NewsThread> retrieve(String id, UserInfos user, Map<String, SecuredAction> securedActions);
 
-	public void getPublishSharedWithIds(String threadId, Handler<Either<String, JsonArray>> handler);
+	public void getPublishSharedWithIds(String threadId, Boolean filterAdmlGroup, UserInfos user, Handler<Either<String, JsonArray>> handler);
 
-	Future<List<NewsThread>> list(Map<String, SecuredAction> securedActions, UserInfos user);
+	Future<List<NewsThread>> list(Map<String, SecuredAction> securedActions, UserInfos user, Boolean viewHidden);
 
 	/** Utility method to attach threads without a structure to their owner's structure, when a single one exists. */
 	Future<Void> attachThreadsWithNullStructureToDefault();
