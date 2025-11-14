@@ -64,7 +64,7 @@ public interface InfoService {
 	 */
 	void transformerUpdateQuietly(News newsComplete);
 
-	public void retrieve(String id, Handler<Either<String, JsonObject>> handler);
+	public void retrieve(String id, Boolean filterAdmlGroup, Handler<Either<String, JsonObject>> handler);
 	
 	public void retrieve(String id, UserInfos user, boolean originalContent, Handler<Either<String, JsonObject>> handler);
 
@@ -88,7 +88,7 @@ public interface InfoService {
 
 	public void listForLinker(UserInfos user, Handler<Either<String, JsonArray>> handler);
 
-	public void getSharedWithIds(String infoId, Handler<Either<String, JsonArray>> handler);
+	public void getSharedWithIds(String infoId, Boolean filterAdmlGroup, Handler<Either<String, JsonArray>> handler);
 
 	/**
 	 * Get revisions filtered on infoId.

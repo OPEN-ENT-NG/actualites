@@ -57,11 +57,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 	private final String usersTable = "actualites.users";
 	private final String membersTable = "actualites.members";
 	private final String groupsTable = "actualites.groups";
-
 	private EventBus eb;
-
-	public ThreadServiceSqlImpl() {
-	}
 
 	public ThreadServiceSqlImpl setEventBus(EventBus eb) {
 		this.eb = eb;
@@ -69,10 +65,14 @@ public class ThreadServiceSqlImpl implements ThreadService {
 	}	
 
 	@Override
-	public void retrieve(String id, Handler<Either<String, JsonObject>> handler) {
+	public void retrieve(String id, Boolean filterAdmlGroup, UserInfos user, Handler<Either<String, JsonObject>> handler) {
 		String query;
 		JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
 		if (id != null) {
+			String filterAdml = "";
+			if(filterAdmlGroup) {
+				filterAdml = " AND ts.adml_group = false ";
+			}
 			query = "SELECT t.id as _id, t.title, t.icon, t.mode, t.created, t.modified, t.owner, u.username" +
 				", json_agg(row_to_json(row(ts.member_id, ts.action)::actualites.share_tuple)) as shared" +
 				", array_to_json(array_agg(group_id)) as groups" +
@@ -80,7 +80,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 				" LEFT JOIN actualites.users AS u ON t.owner = u.id" +
 				" LEFT JOIN actualites.thread_shares AS ts ON t.id = ts.resource_id" +
 				" LEFT JOIN actualites.members AS m ON (ts.member_id = m.id AND m.group_id IS NOT NULL)" +
-				" WHERE t.id = ? " +
+				" WHERE t.id = ? " + filterAdml +
 				" GROUP BY t.id, u.username" +
 				" ORDER BY t.modified DESC";
 			values.add(Sql.parseId(id));
@@ -180,41 +180,38 @@ public class ThreadServiceSqlImpl implements ThreadService {
 	}
 
 	@Override
-	public void getPublishSharedWithIds(String threadId, final Handler<Either<String, JsonArray>> handler) {
-		this.retrieve(threadId, new Handler<Either<String, JsonObject>>() {
-			@Override
-			public void handle(Either<String, JsonObject> event) {
-				JsonArray sharedWithIds = new fr.wseduc.webutils.collections.JsonArray();
-				if (event.isRight()) {
-					try {
-						JsonObject thread = event.right().getValue();
-						if (thread.containsKey("owner")) {
-							JsonObject owner = new JsonObject();
-							owner.put("userId", thread.getString("owner"));
-							sharedWithIds.add(owner);
-						}
-						if (thread.containsKey("shared")) {
-							JsonArray shared = thread.getJsonArray("shared");
-							for(Object jo : shared){
-								if(((JsonObject) jo).containsKey("net-atos-entng-actualites-controllers-InfoController|publish")){
-									sharedWithIds.add(jo);
-								}
-							}
-							handler.handle(new Either.Right<String, JsonArray>(sharedWithIds));
-						}
-						else {
-							handler.handle(new Either.Right<String, JsonArray>(new fr.wseduc.webutils.collections.JsonArray()));
-						}
-					}
-					catch (Exception e) {
-						handler.handle(new Either.Left<String, JsonArray>("Malformed response : " + e.getClass().getName() + " : " + e.getMessage()));
-					}
-				}
-				else {
-					handler.handle(new Either.Left<String, JsonArray>(event.left().getValue()));
-				}
-			}
-		});
+	public void getPublishSharedWithIds(String threadId, Boolean filterShared, UserInfos user, final Handler<Either<String, JsonArray>> handler) {
+		this.retrieve(threadId, filterShared, user, event -> {
+            JsonArray sharedWithIds = new fr.wseduc.webutils.collections.JsonArray();
+            if (event.isRight()) {
+                try {
+                    JsonObject thread = event.right().getValue();
+                    if (thread.containsKey("owner")) {
+                        JsonObject owner = new JsonObject();
+                        owner.put("userId", thread.getString("owner"));
+                        sharedWithIds.add(owner);
+                    }
+                    if (thread.containsKey("shared")) {
+                        JsonArray shared = thread.getJsonArray("shared");
+                        for(Object jo : shared){
+                            if(((JsonObject) jo).containsKey("net-atos-entng-actualites-controllers-InfoController|publish")){
+                                sharedWithIds.add(jo);
+                            }
+                        }
+                        handler.handle(new Either.Right<String, JsonArray>(sharedWithIds));
+                    }
+                    else {
+                        handler.handle(new Either.Right<String, JsonArray>(new fr.wseduc.webutils.collections.JsonArray()));
+                    }
+                }
+                catch (Exception e) {
+                    handler.handle(new Either.Left<String, JsonArray>("Malformed response : " + e.getClass().getName() + " : " + e.getMessage()));
+                }
+            }
+            else {
+                handler.handle(new Either.Left<String, JsonArray>(event.left().getValue()));
+            }
+        });
 	}
 
 
@@ -223,15 +220,22 @@ public class ThreadServiceSqlImpl implements ThreadService {
 	 * - threads created by the user
 	 * - threads shared to the user or with one of its groups
 	 * - threads containing news that are shared to the user or one of its groups
+	 * @param viewHidden show hidden thread (hidden by default for adml group automatically added)
 	 * @param user info about the user (needed for groups)
 	 * @return the list of the threads visible by the user
 	 */
 	@Override
-	public Future<List<NewsThread>> list(Map<String, SecuredAction> securedActions, UserInfos user) {
+	public Future<List<NewsThread>> list(Map<String, SecuredAction> securedActions, UserInfos user, Boolean viewHidden) {
 		final Promise<List<NewsThread>> promise = Promise.promise();
 		if (user == null) {
 			promise.fail("user not provided");
 		} else {
+			boolean filterMultiAdmlActivated = user.isADML() && user.getStructures().size() > 1;
+			String filterAdml = "";
+			if(filterMultiAdmlActivated && !viewHidden) {
+				filterAdml = " AND tsh.adml_group = false ";
+			}
+
 			// 1. Get all ids corresponding to the user
 
 			List<String> groupsAndUserIds = new ArrayList<>();
@@ -283,7 +287,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 					"    SELECT t.id, array_agg(DISTINCT tsh.action) AS rights " +
 					"    FROM " + threadsTable + " AS t " +
 					"        INNER JOIN " + threadsSharesTable + " AS tsh ON t.id = tsh.resource_id " +
-					"    WHERE tsh.member_id IN  (SELECT id FROM user_groups) " +
+					"    WHERE tsh.member_id IN  (SELECT id FROM user_groups) " + filterAdml +
 					"    GROUP BY t.id, tsh.member_id " +
 					") SELECT t.id, t.owner, u.username AS owner_name, u.deleted as owner_deleted, t.title, t.icon," +
 					"    t.created, t.modified, t.structure_id, max(thread_for_user.rights) as rights " + // note : we can use max() here only because the rights are inclusive of each other
