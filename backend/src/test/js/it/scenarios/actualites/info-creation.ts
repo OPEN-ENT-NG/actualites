@@ -24,9 +24,7 @@ import {
   createInfo,
   createInfoOrFail,
   createPublishedInfo,
-  createPublishedInfoOrFail,
   getInfoById,
-  tryGetInfoById,
   Info,
   InfoResponse,
 } from "./_info-utils.ts";

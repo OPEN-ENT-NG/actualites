@@ -152,16 +152,13 @@ public class CommentController extends ControllerHelper {
 
 	private void notifyTimeline(final HttpServerRequest request, final UserInfos user, final String infoId, final String commentId, final String title, final String commentText, final String eventType){
 		if (eventType.equals(NEWS_COMMENT_EVENT_TYPE)) {
-			infoService.retrieve(infoId, new Handler<Either<String, JsonObject>>() {
-				@Override
-				public void handle(Either<String, JsonObject> event) {
-					if (event.isRight()) {
-						// get all ids
-						JsonObject info = event.right().getValue();
-						String infoOwner = info.getString("owner");
-						if (infoOwner != null) {
-							sendNotify(request, Collections.singletonList(infoOwner), user, infoId, commentId, title, commentText, "news.news-comment");
-						}
+			infoService.retrieve(infoId, true, event -> {
+				if (event.isRight()) {
+					// get all ids
+					JsonObject info = event.right().getValue();
+					String infoOwner = info.getString("owner");
+					if (infoOwner != null) {
+						sendNotify(request, Collections.singletonList(infoOwner), user, infoId, commentId, title, commentText, "news.news-comment");
 					}
 				}
 			});

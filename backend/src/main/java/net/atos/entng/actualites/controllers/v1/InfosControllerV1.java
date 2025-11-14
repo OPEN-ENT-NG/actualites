@@ -55,22 +55,19 @@ public class InfosControllerV1 extends ControllerHelper {
 	private static final Logger LOGGER = LoggerFactory.getLogger(InfosControllerV1.class);
 
 
-    public InfosControllerV1(InfoController infoController, NotificationTimelineService notificationTimelineService) {
+    public InfosControllerV1(InfoController infoController,
+							 NotificationTimelineService notificationTimelineService,
+							 JsonObject	rights) {
 		this.infoController = infoController;
         this.notificationTimelineService = notificationTimelineService;
         final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(Actualites.class.getSimpleName());
 		eventHelper = new EventHelper(eventStore);
+		this.rights = rights;
     }
 
 	public void setInfoService(InfoService infoService) {
         this.infoService = infoService;
     }
-
-	@Override
-	public void init(Vertx vertx, JsonObject config, RouteMatcher rm, Map<String, fr.wseduc.webutils.security.SecuredAction> securedActions) {
-		super.init(vertx, config, rm, securedActions);
-		rights = ShareRoles.getSecuredActionNameByNormalizedRole(securedActions);
-	}
 
 	@Get("/api/v1/infos")
 	@SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")
@@ -239,8 +236,8 @@ public class InfosControllerV1 extends ControllerHelper {
 							eventHelper.onCreateResource(request, RESOURCE_NAME);
 							JsonObject info = event.right().getValue();
 							String infoId = info.getLong("id").toString();
-							String threadId = info.getString("thread_id");
-							String title = info.getString("title");
+							String threadId = resource.getString("thread_id");
+							String title = resource.getString("title");
 							notificationTimelineService.notifyTimeline(request, user, threadId, infoId, title, NEWS_SUBMIT_EVENT_TYPE);
 							renderJson(request, event.right().getValue(), 200);
 						} else {
@@ -280,7 +277,7 @@ public class InfosControllerV1 extends ControllerHelper {
 			RequestUtils.bodyToJson(request, pathPrefix + SCHEMA_INFO_UPDATE, resource -> {
 				LOGGER.info(String.format("User %s update info %s", user.getUserId(), infoId));
 
-				infoService.retrieve(infoId, infoEither -> {
+				infoService.retrieve(infoId, false, infoEither -> {
 					if(infoEither.isLeft()) {
 						notFound(request);
 						return;
@@ -288,21 +285,8 @@ public class InfosControllerV1 extends ControllerHelper {
 					JsonObject actualInfo = infoEither.right().getValue();
 					int actualStatus = actualInfo.getInteger("status");
 					int targetStatus = resource.getInteger("status");
-					String notificationFromTransition = getNotificationFromTransition(targetStatus, actualStatus);
 					Events event = getEventFromTransition(targetStatus, actualStatus);
-					if (notificationFromTransition != null) {
-						if (resource.getString("title") == null) {
-							resource.put("title", actualInfo.getString("title"));
-						}
-						if (notificationFromTransition.equals(NEWS_UPDATE_EVENT_TYPE)) {
-							notifyOwner(request, user, resource, infoId, actualInfo, notificationFromTransition);
-						} else {
-							UserInfos owner = new UserInfos();
-							owner.setUserId(actualInfo.getString("owner"));
-							notificationTimelineService.notifyTimeline(request, user, owner, actualInfo.getString("thread_id"),
-									infoId, resource.getString("title"), notificationFromTransition);
-						}
-					}
+
 					if (event == Events.UPDATE || event == Events.PENDING) {
 						if (!resource.containsKey("expiration_date")) {
 							resource.putNull("expiration_date");
@@ -311,7 +295,23 @@ public class InfosControllerV1 extends ControllerHelper {
 							resource.putNull("publication_date");
 						}
 					}
-					infoService.update(infoId, resource, user, event.name(), notEmptyResponseHandler(request));
+					infoService.update(infoId, resource, user, event.name(), h -> {
+						notEmptyResponseHandler(request).handle(h);
+						String notificationFromTransition = getNotificationFromTransition(targetStatus, actualStatus);
+						if (notificationFromTransition != null) {
+							if (resource.getString("title") == null) {
+								resource.put("title", actualInfo.getString("title"));
+							}
+							if (notificationFromTransition.equals(NEWS_UPDATE_EVENT_TYPE)) {
+								notifyOwner(request, user, resource, infoId, actualInfo, notificationFromTransition);
+							} else {
+								UserInfos owner = new UserInfos();
+								owner.setUserId(actualInfo.getString("owner"));
+								notificationTimelineService.notifyTimeline(request, user, owner, actualInfo.getString("thread_id"),
+										infoId, resource.getString("title"), notificationFromTransition);
+							}
+						}
+					});
 				});
 			});
 		});
