@@ -33,16 +33,14 @@ import net.atos.entng.actualites.controllers.ThreadController;
 import net.atos.entng.actualites.controllers.v1.CommentControllerV1;
 import net.atos.entng.actualites.controllers.v1.InfosControllerV1;
 import net.atos.entng.actualites.controllers.v1.ThreadControllerV1;
-import net.atos.entng.actualites.services.ConfigService;
-import net.atos.entng.actualites.services.InfoService;
-import net.atos.entng.actualites.services.NotificationTimelineService;
-import net.atos.entng.actualites.services.ThreadService;
+import net.atos.entng.actualites.services.*;
 import net.atos.entng.actualites.services.impl.*;
 import org.entcore.common.editor.ContentTransformerConfig;
 import org.entcore.common.http.BaseServer;
 import org.entcore.common.http.filter.ShareAndOwner;
 import org.entcore.common.service.impl.SqlCrudService;
 import org.entcore.common.service.impl.SqlSearchService;
+import org.entcore.common.share.ShareRoles;
 import org.entcore.common.share.impl.SqlShareService;
 import org.entcore.common.sql.SqlConf;
 import org.entcore.common.sql.SqlConfs;
@@ -71,11 +69,17 @@ public class Actualites extends BaseServer {
 
 	public final static String SHARE_CONF_KEY = "share";
 
+	private JsonObject rights;
+	private ThreadMigrationService threadMigrationService;
+
 	@Override
 	public void start(Promise<Void> startPromise) throws Exception {
 		super.start(startPromise);
 		final EventBus eb = getEventBus(vertx);
 		final JsonObject config = config();
+		rights = ShareRoles.getSecuredActionNameByNormalizedRole(securedActions);
+		threadMigrationService = new ThreadMigrationServiceImpl(new GroupServiceImpl(getEventBus(vertx)), rights);
+
 		// Subscribe to events published for transition
 		setRepositoryEvents(new ActualitesRepositoryEvents(config.getBoolean("share-old-groups-to-users", false),vertx));
 
@@ -105,7 +109,7 @@ public class Actualites extends BaseServer {
 		confThread.setSchema(getSchema());
 
 		// thread controller
-		ThreadController threadController = new ThreadController(eb);
+		ThreadController threadController = new ThreadController(eb, threadMigrationService);
 		SqlCrudService threadSqlCrudService = new SqlCrudService(getSchema(), THREAD_TABLE, THREAD_SHARE_TABLE, new JsonArray().add("*"), new JsonArray().add("*"), true);
 		threadController.setCrudService(threadSqlCrudService);
 		threadController.setShareService(new SqlShareService(getSchema(),THREAD_SHARE_TABLE, eb, securedActions, null));
@@ -136,8 +140,7 @@ public class Actualites extends BaseServer {
 		infoController.setShareService(new SqlShareService(getSchema(),INFO_SHARE_TABLE, eb, securedActions, null));
 		addController(infoController);
 
-
-		InfosControllerV1 infosControllerV1 = new InfosControllerV1(infoController, notificationTimelineService);
+		InfosControllerV1 infosControllerV1 = new InfosControllerV1(infoController, notificationTimelineService, rights);
 		infosControllerV1.setInfoService(infoService);
 		infosControllerV1.setCrudService(infoSqlCrudService);
 		infosControllerV1.setShareService(new SqlShareService(getSchema(),INFO_SHARE_TABLE, eb, securedActions, null));
@@ -162,7 +165,9 @@ public class Actualites extends BaseServer {
 	@Override
 	protected Future<Void> postSqlScripts() {
 		final ThreadService threadService = new ThreadServiceSqlImpl().setEventBus(getEventBus(vertx));
-		return super.postSqlScripts().compose(Void -> threadService.attachThreadsWithNullStructureToDefault());
+		return super.postSqlScripts()
+				.compose(Void -> threadService.attachThreadsWithNullStructureToDefault())
+				.compose(Void -> threadMigrationService.addAdminLocalToThreads());
 	}
 
 }

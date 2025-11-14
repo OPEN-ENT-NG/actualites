@@ -126,7 +126,11 @@ public class QueryHelperSql {
             groupsAndUserIds.addAll(user.getGroupsIds());
         }
         final String memberIds = Sql.listPrepared(groupsAndUserIds.toArray());
-
+        boolean filterMultiAdmlActivated = user.isADML() && user.getStructures().size() > 1;
+        String filterAdml = "";
+        if(filterMultiAdmlActivated) {
+            filterAdml = " AND thread_shares.adml_group = false ";
+        }
         String dateFilter = null;
         if (states != null && !states.isEmpty()) {
             List<String> stateConditions = new ArrayList<>();
@@ -206,6 +210,7 @@ public class QueryHelperSql {
         queryIds.append("    INNER JOIN actualites.info AS i ON (i.thread_id = thread.id) ");
         queryIds.append("    WHERE (thread_shares.member_id IN (SELECT id FROM user_groups)");
         queryIds.append("    AND thread_shares.action = '" + THREAD_PUBLISH + "' ");
+        queryIds.append(     filterAdml);
         queryIds.append("    AND i.status > 1) AND ");
         if (!threadFilter.isEmpty()) {
             queryIds.append(threadFilter + " AND ");
