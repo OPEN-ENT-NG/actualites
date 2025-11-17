@@ -1,22 +1,29 @@
-import { ReactNode } from 'react';
-import { useExpand } from '~/hooks/useExpand';
+import { ReactNode, TransitionEvent, useRef } from 'react';
+import { useExpandable } from '~/hooks/useExpandable';
 import './Expandable.css';
 
-export const Expandable = ({
-  children,
-  expanded = false,
-}: {
-  children: ReactNode;
-  expanded?: boolean;
-}) => {
-  const { onToggled, visible, ...content } = useExpand(expanded);
+export type ExpandableContent = ReactNode | (() => ReactNode);
+
+export type ExpandableProps = {
+  collapse: boolean;
+  expandedContent: ExpandableContent;
+  collapsedContent?: ExpandableContent;
+};
+
+export const Expandable = (props: ExpandableProps) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const { content, className, onTransitionEnd } = useExpandable(props);
+
+  const handleTransitionEnd = (e: TransitionEvent) => {
+    if (e.target === ref.current && e.propertyName === 'grid-template-rows') {
+      onTransitionEnd();
+    }
+  };
 
   return (
-    <div
-      className={`expandable-content ${content.expanded ? 'expanded' : ''}`}
-      onTransitionEnd={onToggled}
-    >
-      <div>{visible && children}</div>
+    <div ref={ref} className={className} onTransitionEnd={handleTransitionEnd}>
+      <div>{content}</div>
     </div>
   );
 };
