@@ -1,5 +1,5 @@
 import { Editor, EditorPreview } from '@edifice.io/react/editor';
-import { useCallback } from 'react';
+import { useState } from 'react';
 import { CommentList } from '../comment-list/CommentList';
 import { Expandable } from '../Expandable';
 import { InfoCardProps } from './InfoCard';
@@ -9,33 +9,29 @@ export const InfoCardContent = ({
   info,
   collapse = true,
 }: Pick<InfoCardProps, 'info'> & { collapse?: boolean }) => {
-  // Function rendering a collapsed content.
-  const renderCollapsed = useCallback(
-    () => (
-      <div className="info-card-content px-md-24">
-        <EditorPreview content={info.content} variant="ghost" />
-      </div>
-    ),
-    [collapse, info.content],
-  );
+  const [showFullContent, setShowFullContent] = useState(!collapse);
 
-  // Function rendering an expanded content.
-  const renderExpanded = useCallback(
-    () => (
-      <div className="info-card-content px-md-24">
-        {info.content && <InfoCardPreviousContent info={info} />}
-        <Editor content={info.content} mode="read" variant="ghost" />
-        <CommentList info={info} />
-      </div>
-    ),
-    [collapse, info.content],
-  );
+  const handleToggle = () => {
+    setShowFullContent(!collapse);
+  };
 
   return (
-    <Expandable
-      collapse={collapse}
-      collapsedContent={renderCollapsed}
-      expandedContent={renderExpanded}
-    />
+    <Expandable collapse={collapse} hasPreview onToggle={handleToggle}>
+      <div className="info-card-content px-md-24">
+        {!showFullContent && (
+          <EditorPreview content={info.content} variant="ghost" />
+        )}
+
+        {showFullContent && info.content && (
+          <InfoCardPreviousContent info={info} />
+        )}
+        <Editor
+          content={showFullContent ? info.content : ''}
+          mode="read"
+          variant="ghost"
+        />
+        {showFullContent && <CommentList info={info} />}
+      </div>
+    </Expandable>
   );
 };

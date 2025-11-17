@@ -1,27 +1,24 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ExpandableContent, ExpandableProps } from '~/components/Expandable';
-
-function render(content: ExpandableContent) {
-  return typeof content == 'function' ? content() : content;
-}
+import { ExpandableProps } from '~/components/Expandable';
 
 export const useExpandable = ({
   collapse,
-  collapsedContent,
-  expandedContent,
-}: ExpandableProps) => {
-  const [expanded, setExpanded] = useState(!collapse || !!collapsedContent);
-  const [content, setContent] = useState(() =>
-    render(collapse ? collapsedContent : expandedContent),
-  );
+  hasPreview,
+  onToggle,
+}: Pick<ExpandableProps, 'collapse' | 'hasPreview' | 'onToggle'>) => {
+  const [expanded, setExpanded] = useState(!collapse || hasPreview);
 
   // When CSS transition ends
   const onTransitionEnd = useCallback(() => {
-    // Determine which content to display.
-    setContent(render(collapse ? collapsedContent : expandedContent));
-    // Determine if content needs expansion.
-    setExpanded(!collapse || !!collapsedContent);
-  }, [collapse, collapsedContent]);
+    // Expand content if needed.
+    setExpanded((previous) => {
+      const newValue = !collapse || hasPreview;
+      if (previous !== newValue) {
+        onToggle();
+      }
+      return newValue;
+    });
+  }, [collapse, hasPreview]);
 
   // When `collapse` changes
   useEffect(() => {
@@ -30,14 +27,13 @@ export const useExpandable = ({
         // Close previously expanded content, and finish rendering in `onTransitionEnd`
         return false;
       } else {
-        return !collapse || !!collapsedContent;
+        return !collapse || hasPreview;
       }
     });
   }, [collapse]);
 
   return {
     onTransitionEnd,
-    content,
     className: `expandable ${expanded ? 'expanded' : ''}`,
   };
 };
