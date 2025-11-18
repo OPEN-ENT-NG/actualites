@@ -1,7 +1,11 @@
 import { useI18n } from '~/hooks/useI18n';
 
 import { Button, Flex, useBreakpoint, useToast } from '@edifice.io/react';
-import { IconArrowRight, IconSave } from '@edifice.io/react/icons';
+import {
+  IconArrowLeft,
+  IconArrowRight,
+  IconSave,
+} from '@edifice.io/react/icons';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CreationStep, useInfoFormStore } from '~/store/infoFormStore';
@@ -68,6 +72,7 @@ export function InfoFormActions() {
         variant="ghost"
         onClick={handleCancelClick}
         data-testid="actualites.info.form.cancelButton"
+        leftIcon={!isInfoDetailsStep ? <IconArrowLeft /> : undefined}
       >
         {t(
           isInfoDetailsStep

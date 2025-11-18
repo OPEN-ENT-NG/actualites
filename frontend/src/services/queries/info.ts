@@ -1,3 +1,4 @@
+import { ShareRight } from '@edifice.io/client';
 import {
   infiniteQueryOptions,
   queryOptions,
@@ -27,7 +28,11 @@ export const infoQueryKeys = {
     infoId,
   ],
 
-  share: (options: { threadId: ThreadId; infoId: InfoId }) => [
+  getInfos: ({ ...options }: { threadId?: ThreadId }) => [
+    ...infoQueryKeys.info(options),
+  ],
+
+  share: (options: { infoId: InfoId }) => [
     ...infoQueryKeys.info(options),
     'share',
     'json',
@@ -95,10 +100,10 @@ export const infoQueryOptions = {
    * @param infoId - The ID of the info.
    * @returns Query options for fetching the share rights.
    */
-  getShares(threadId: ThreadId, infoId: InfoId) {
+  getShares(infoId: InfoId) {
     return queryOptions({
-      queryKey: infoQueryKeys.share({ threadId, infoId }),
-      queryFn: () => infoService.getShares(threadId, infoId),
+      queryKey: infoQueryKeys.share({ infoId }),
+      queryFn: () => infoService.getShares(infoId),
     });
   },
 
@@ -126,8 +131,8 @@ export const useInfoById = (infoId?: InfoId) =>
 export const useInfos = (threadId?: ThreadId, pageSize = DEFAULT_PAGE_SIZE) =>
   useInfiniteQuery(infoQueryOptions.getInfos({ pageSize, threadId }));
 
-export const useInfoShares = (threadId: ThreadId, infoId: InfoId) =>
-  useQuery(infoQueryOptions.getShares(threadId, infoId));
+export const useInfoShares = (infoId: InfoId) =>
+  useQuery(infoQueryOptions.getShares(infoId));
 
 export const useInfoRevisions = (infoId: InfoId) =>
   useQuery(infoQueryOptions.getRevisions(infoId));
@@ -165,6 +170,18 @@ export const useUpdateInfo = () =>
         expiration_date?: string;
       };
     }) => infoService.update(infoId, infoStatus, payload),
+    // TODO optimistic update
+  });
+
+export const useSharesInfo = () =>
+  useMutation({
+    mutationFn: ({
+      resourceId,
+      rights,
+    }: {
+      resourceId: InfoId;
+      rights: ShareRight[];
+    }) => infoService.putShares(resourceId, rights),
     // TODO optimistic update
   });
 

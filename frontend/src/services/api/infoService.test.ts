@@ -16,7 +16,7 @@ describe('Info GET Methods', () => {
   });
 
   test('makes a GET request to get the shares of an info', async () => {
-    const response = await infoService.getShares(229, 466);
+    const response = await infoService.getShares(466);
 
     expect(response).toBeDefined();
     expect(response).toStrictEqual(mockInfoShare);
