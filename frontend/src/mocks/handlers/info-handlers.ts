@@ -88,7 +88,7 @@ export const infoHandlers = [
   ),
   // Get info's share
   http.get<{ threadId: string; infoId: string }>(
-    `${baseUrl}/thread/:threadId/info/share/json/:infoId`,
+    `${baseUrlAPI}/infos/:infoId/shares`,
     async () => HttpResponse.json(mockInfoShare, { status: 200 }),
   ),
   // Get info's revisions
