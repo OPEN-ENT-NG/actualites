@@ -54,6 +54,7 @@ describe('useInfoListEmptyScreen', () => {
   });
 
   it('should do nothing default when no rights and not ready', () => {
+    mocks.useThreadInfoParams.mockReturnValue({ threadId: undefined });
     mocks.useThreads.mockReturnValue({ data: undefined, isSuccess: false });
     mocks.useThreadsUserRights.mockReturnValue({
       canContributeOnOneThread: undefined,

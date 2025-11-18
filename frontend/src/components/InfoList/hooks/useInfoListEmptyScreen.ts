@@ -23,16 +23,12 @@ export function useInfoListEmptyScreen(): {
   let type: EmptyScreenType = 'default';
 
   if (isReady) {
-    const shouldCreateThread = threads?.length === 0 && rights.canCreateThread;
-    if (shouldCreateThread) type = 'create-thread';
-
-    if (!threadId) {
-      if (canContributeOnOneThread) {
-        type = 'create-info';
-      }
-    } else {
+    if (threads?.length === 0 && rights.canCreateThread) {
+      type = 'create-thread';
+    } else if (canContributeOnOneThread) {
       if (
-        threadsWithContributeRight?.some((thread) => thread.id === threadId)
+        !threadId || // when filter on all threads (path: root/)
+        threadsWithContributeRight?.some((thread) => thread.id === threadId) // when filter on a specific thread (path: root/[threadId]/)
       ) {
         type = 'create-info';
       }
