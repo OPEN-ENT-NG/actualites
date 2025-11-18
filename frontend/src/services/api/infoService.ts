@@ -1,4 +1,4 @@
-import { odeServices } from '@edifice.io/client';
+import { odeServices, ShareRight } from '@edifice.io/client';
 import { baseUrl, baseUrlAPI } from '.';
 import {
   Info,
@@ -176,10 +176,19 @@ export const createInfoService = () => {
       }>(`${baseUrl}/thread/${threadId}/info/${infoId}`);
     },
 
-    getShares(threadId: ThreadId, infoId: InfoId) {
+    getShares(infoId: InfoId) {
       return odeServices
         .http()
-        .get<Share>(`${baseUrl}/thread/${threadId}/info/share/json/${infoId}`);
+        .get<Share>(`${baseUrlAPI}/infos/${infoId}/shares`);
+    },
+
+    async putShares(infoId: InfoId, rights: ShareRight[]) {
+      const payload = await odeServices
+        .share()
+        .getPutSharePayload('actualites', rights);
+      return odeServices
+        .http()
+        .put<Share>(`${baseUrlAPI}/infos/${infoId}/shares`, payload);
     },
 
     getRevisions(infoId: InfoId) {
