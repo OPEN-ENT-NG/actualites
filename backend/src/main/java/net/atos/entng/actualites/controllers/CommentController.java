@@ -28,6 +28,7 @@ import java.util.Collections;
 import net.atos.entng.actualites.Actualites;
 import net.atos.entng.actualites.filters.CommentFilter;
 import net.atos.entng.actualites.filters.InfoFilter;
+import net.atos.entng.actualites.filters.UpdateCommentFilter;
 import net.atos.entng.actualites.services.InfoService;
 import net.atos.entng.actualites.services.ThreadService;
 import net.atos.entng.actualites.services.impl.InfoServiceSqlImpl;
@@ -112,7 +113,7 @@ public class CommentController extends ControllerHelper {
 
 	@Put("/info/:"+Actualites.INFO_RESOURCE_ID+"/comment/:"+COMMENT_ID_PARAMETER)
 	@ApiDoc("Comment : modify a comment of an Info by info and comment id")
-	@ResourceFilter(InfoFilter.class)
+	@ResourceFilter(UpdateCommentFilter.class)
 	@SecuredAction(value = "info.comment", type = ActionType.RESOURCE)
 	public void updateComment(final HttpServerRequest request) {
 		final String commentId = request.params().get(COMMENT_ID_PARAMETER);
