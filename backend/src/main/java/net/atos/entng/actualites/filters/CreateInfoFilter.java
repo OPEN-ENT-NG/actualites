@@ -27,10 +27,18 @@ public class CreateInfoFilter implements ResourcesProvider {
         RequestUtils.bodyToJson(request, h -> {
             String id = h.getString("thread_id");
             String sStatus = h.getString("status");
-            if (!StringUtils.isEmpty(id) && (parseId(id) instanceof Integer)
-                && !StringUtils.isEmpty(sStatus) && (parseId(sStatus) instanceof Integer)) {
+
+            // Determine if this is a publish action based on status or URL
+            Integer status = null;
+            if (!StringUtils.isEmpty(sStatus) && (parseId(sStatus) instanceof Integer)) {
+                status = (Integer) parseId(sStatus);
+            } else if (request.path().contains("/published")) {
+                // For /api/v1/infos/published endpoint, status is set by the controller
+                status = 3;
+            }
+
+            if (!StringUtils.isEmpty(id) && (parseId(id) instanceof Integer) && status != null) {
                 // Method
-                Integer status = (Integer) parseId(sStatus);
                 String sharedMethod = status == 3 ? RIGHT_PUBLISH : CREATE_RIGHT_DRAFT;
 
                 // Groups and users
