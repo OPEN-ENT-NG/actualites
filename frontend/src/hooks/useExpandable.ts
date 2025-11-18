@@ -25,7 +25,7 @@ export const useExpandable = ({
       }
       return newValue;
     });
-  }, [collapse]);
+  }, [collapse, onCollapseApplied, onTogglePreview]);
 
   // When `collapse` changes
   useEffect(() => {
