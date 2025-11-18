@@ -8,6 +8,7 @@ import net.atos.entng.actualites.Actualites;
 import net.atos.entng.actualites.controllers.CommentController;
 import net.atos.entng.actualites.controllers.InfoController;
 import net.atos.entng.actualites.filters.InfoFilter;
+import net.atos.entng.actualites.filters.UpdateCommentFilter;
 import org.entcore.common.controller.ControllerHelper;
 import org.entcore.common.http.filter.ResourceFilter;
 
@@ -40,7 +41,7 @@ public class CommentControllerV1 extends ControllerHelper {
 
     @Put("/api/v1/infos/:" + Actualites.INFO_RESOURCE_ID + "/comments/:id")
     @ApiDoc("Comment : modify a comment of an Info by info and comment id")
-    @ResourceFilter(InfoFilter.class)
+    @ResourceFilter(UpdateCommentFilter.class)
     @SecuredAction(value = "info.comment", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|updateComment")
     public void updateComment(HttpServerRequest request) {
         commentController.updateComment(request);
