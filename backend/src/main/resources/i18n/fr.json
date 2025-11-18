@@ -30,8 +30,12 @@
   "actualites.info.createForm.headlineLabel": "Actualité taguée “Mettre en avant”",
   "actualites.info.createForm.cancel": "Annuler",
   "actualites.info.createForm.nextStep": "Suivant",
+  "actualites.info.createForm.previousStep": "Précédent",
+  "actualites.info.createForm.rights.title": "Création d’une actualité",
+  "actualites.info.createForm.rights.subtitle": "Définissez qui pourra lire et commenter l’actualité.",
   "actualites.info.createForm.publish": "Publier",
   "actualites.info.createForm.saveDraft": "Brouillon",
   "actualites.info.createForm.draftSaved": "L'actualité a été enregistrée en brouillon",
+  "actualites.info.createForm.publishedSuccess": "L'actualité a été publiée avec succès",
   "actualites.threadList.allThreads": "Tous les fils d’actus"
 }

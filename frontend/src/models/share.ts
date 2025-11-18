@@ -24,4 +24,6 @@ export interface Share {
     }>;
     checked: { [right: string]: Array<string> };
   };
+  rights: string[];
+  owner: string;
 }

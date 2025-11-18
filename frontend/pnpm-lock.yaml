@@ -12,14 +12,17 @@ importers:
         specifier: ^6.0.2
         version: 6.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@edifice.io/bootstrap':
-        specifier: develop-b2school
-        version: 2.3.0-develop-b2school.20250902101143
+        specifier: develop-b2school-actualites
+        version: 2.4.2-develop-b2school-actualites.20251126114120
       '@edifice.io/client':
-        specifier: develop-b2school
-        version: 2.3.0-develop-b2school.20250902101143
+        specifier: develop-b2school-actualites
+        version: 2.4.2-develop-b2school-actualites.20251126114120
       '@edifice.io/react':
-        specifier: develop-b2school
-        version: 2.3.0-develop-b2school.20250902101143(wrv2q7ldq4ov5m526lec6qugga)
+        specifier: develop-b2school-actualites
+        version: 2.4.2-develop-b2school-actualites.20251126114120(vwqqizcmbgmgrywt4ikt35wedu)
+      '@edifice.io/utilities':
+        specifier: develop-b2school-actualites
+        version: 2.4.2-develop-b2school-actualites.20251126114120
       '@react-spring/web':
         specifier: ^9.7.5
         version: 9.7.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -396,11 +399,8 @@ packages:
     peerDependencies:
       react: '>=16.8.0'
 
-  '@edifice.io/bootstrap@2.3.0-develop-b2school.20250902101143':
-    resolution:
-      {
-        integrity: sha512-Iz7YZeF57GG0c+1hNfwVchlDhWFRdWSs8ZCM6jmwsDN2qc3nmUhsuvDQNTQ3YVWDJ5WGq3j7GCrzprDIUBBgXw==,
-      }
+  '@edifice.io/bootstrap@2.4.2-develop-b2school-actualites.20251126114120':
+    resolution: {integrity: sha512-yerhl34+nMwnW6ewwVl9xWQxetGMcPdbTJsDHGLSxGjwCPsvt8+tkne4NkUhnPicLEw7+gm6sItuFqAUuK2zaA==}
 
   '@edifice.io/bootstrap@2.3.1-develop-b2school-actualites.20250911174726':
     resolution:
@@ -408,11 +408,8 @@ packages:
         integrity: sha512-sh+s2UGWZXc72xrd+d2Iem7cusBx4E2tF7kQGua90SUDTOjd5qbxQ/QMII+IA2e8BWdAwBNbzFfCiHONw276UQ==,
       }
 
-  '@edifice.io/client@2.3.0-develop-b2school.20250902101143':
-    resolution:
-      {
-        integrity: sha512-dwjjEQSgWR6z2CwTJjcgQBYW5118kQXvP0wt3KbLZKuRU0m1IocJCJ/4rIglWx0vc7AAocZlycZvfOXzC1EdGQ==,
-      }
+  '@edifice.io/client@2.4.2-develop-b2school-actualites.20251126114120':
+    resolution: {integrity: sha512-eGK7AoJSk6qzEElFpyMoR/Ns5X8xM8wDv2TfxPPpPSjAQNt+gwFCPXjMpgQr8Do06zCJRDoaAwWPK99ta0jIkw==}
 
   '@edifice.io/client@2.3.1-develop-b2school-actualites.20250911174726':
     resolution:
@@ -420,11 +417,8 @@ packages:
         integrity: sha512-tMCScI8VTCqo+bMLhAvFYNJUn4w1I8u5c33CrGIQ56J53lMGbFDuqkaMd2qW6mWbM8BRUfj9iMifxikDSruv6A==,
       }
 
-  '@edifice.io/react@2.3.0-develop-b2school.20250902101143':
-    resolution:
-      {
-        integrity: sha512-yskwbduPR2+xNJ/lo8vfs4mL/MiHuwFL2vSeswl/Lkx/KXtIkZUHETkuHBoHs2PQDZUVpjK1qZb4C70lBiN7iA==,
-      }
+  '@edifice.io/react@2.4.2-develop-b2school-actualites.20251126114120':
+    resolution: {integrity: sha512-CvLt/w2DZM6SSvIyA26xKUeF/rBFAZYYcJ6EZ5Cr2XBSZr4nVqhWqrog7f5BhWa793d02s56qFLUBUFdYGNzYg==}
     peerDependencies:
       '@react-spring/web': ^9.7.5
       '@tanstack/react-query': 5.62.7
@@ -446,11 +440,8 @@ packages:
       react-hook-form: ^7.53.0
       react-i18next: ^14.1.0
 
-  '@edifice.io/tiptap-extensions@2.3.0-develop-b2school.20250902101143':
-    resolution:
-      {
-        integrity: sha512-B+waM/rtTtMOBQg4RufBN5DkVlDN/hXRSg+7oXQ5+zxiYax0lo79FEGodhRJsA+vJ7Mxo1/Dqn0SXgjbM/72vg==,
-      }
+  '@edifice.io/tiptap-extensions@2.4.2-develop-b2school-actualites.20251126114120':
+    resolution: {integrity: sha512-59ymQNfchwM/n6KxKb6FeDjjFjt2kXqEwaJas6sZ75b8zuV2rZdKzgbEqetxDhX1dCe/zN2NvqBY9NrAomG0xg==}
 
   '@edifice.io/tiptap-extensions@2.3.1-develop-b2school-actualites.20250911174726':
     resolution:
@@ -458,11 +449,8 @@ packages:
         integrity: sha512-U8UHoD26iBTez1oTccHcNvyxrhKJx83tRSe+rBxyeFKY8kuenE3MmLIr85bJUtbdI2KNCDhEozoGr5me/SK1/Q==,
       }
 
-  '@edifice.io/utilities@2.3.0-develop-b2school.20250902101143':
-    resolution:
-      {
-        integrity: sha512-Y85ErQOQqRZ9nhph6rJChKczU4IDgGEWwDXP2XDAB6gX14Mr1U0HHBltZHkwUZjp2rpn3CUloRfITJfKkIlmMw==,
-      }
+  '@edifice.io/utilities@2.4.2-develop-b2school-actualites.20251126114120':
+    resolution: {integrity: sha512-2AYD4BZCEL909BxOvvuEFJFeqNlfrbHnVDBSOQeIHbs9SYu0WPr+QMPY1siL+jRWa8voJUiv/cHp2JObGHJu6Q==}
 
   '@edifice.io/utilities@2.3.1-develop-b2school-actualites.20250911174726':
     resolution:
@@ -4834,27 +4822,40 @@ snapshots:
       react: 18.3.1
       tslib: 2.8.1
 
-  '@edifice.io/bootstrap@2.3.0-develop-b2school.20250902101143':
+  '@edifice.io/bootstrap@2.4.2-develop-b2school-actualites.20251126114120':
     dependencies:
       '@popperjs/core': 2.11.8
       bootstrap: 5.3.2(@popperjs/core@2.11.8)
 
   '@edifice.io/client@2.3.0-develop-b2school.20250902101143':
     dependencies:
-      '@edifice.io/utilities': 2.3.0-develop-b2school.20250902101143
-      axios: 1.11.0
-      core-js: 3.45.1
+      '@popperjs/core': 2.11.8
+      bootstrap: 5.3.2(@popperjs/core@2.11.8)
+
+  '@edifice.io/client@2.4.2-develop-b2school-actualites.20251126114120':
+    dependencies:
+      '@edifice.io/utilities': 2.4.2-develop-b2school-actualites.20251126114120
+      axios: 1.13.2
+      core-js: 3.47.0
     transitivePeerDependencies:
       - debug
 
-  '@edifice.io/react@2.3.0-develop-b2school.20250902101143(wrv2q7ldq4ov5m526lec6qugga)':
+  '@edifice.io/client@2.5.2-develop-b2school.20251124152203':
+    dependencies:
+      '@edifice.io/utilities': 2.5.2-develop-b2school.20251124152203
+      axios: 1.13.2
+      core-js: 3.47.0
+    transitivePeerDependencies:
+      - debug
+
+  '@edifice.io/react@2.4.2-develop-b2school-actualites.20251126114120(vwqqizcmbgmgrywt4ikt35wedu)':
     dependencies:
       '@dnd-kit/core': 6.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@dnd-kit/sortable': 8.0.0(@dnd-kit/core@6.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       '@dnd-kit/utilities': 3.2.2(react@18.3.1)
-      '@edifice.io/bootstrap': 2.3.0-develop-b2school.20250902101143
-      '@edifice.io/tiptap-extensions': 2.3.0-develop-b2school.20250902101143(@types/node@18.19.123)(rollup@4.47.1)(typescript@5.9.2)
-      '@edifice.io/utilities': 2.3.0-develop-b2school.20250902101143
+      '@edifice.io/bootstrap': 2.4.2-develop-b2school-actualites.20251126114120
+      '@edifice.io/tiptap-extensions': 2.4.2-develop-b2school-actualites.20251126114120(@types/node@18.19.130)(rollup@4.53.3)(typescript@5.9.3)
+      '@edifice.io/utilities': 2.4.2-develop-b2school-actualites.20251126114120
       '@floating-ui/react': 0.26.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@pixi/mixin-get-child-by-name': 7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2))
       '@pixi/react': 7.1.2(ifl5zclsjbh7e7q74mun2lqvuu)
@@ -4951,7 +4952,108 @@ snapshots:
 
   '@edifice.io/tiptap-extensions@2.3.0-develop-b2school.20250902101143(@types/node@18.19.123)(rollup@4.47.1)(typescript@5.9.2)':
     dependencies:
-      '@edifice.io/utilities': 2.3.0-develop-b2school.20250902101143
+      '@dnd-kit/core': 6.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@dnd-kit/sortable': 8.0.0(@dnd-kit/core@6.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
+      '@dnd-kit/utilities': 3.2.2(react@18.3.1)
+      '@edifice.io/bootstrap': 2.5.2-develop-b2school.20251124152203
+      '@edifice.io/tiptap-extensions': 2.5.2-develop-b2school.20251124152203(@types/node@18.19.130)(rollup@4.53.3)(typescript@5.9.3)
+      '@edifice.io/utilities': 2.5.2-develop-b2school.20251124152203
+      '@floating-ui/react': 0.26.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@pixi/mixin-get-child-by-name': 7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2))
+      '@pixi/react': 7.1.2(p7odtnnenfgvhs76mwyuql6w3u)
+      '@popperjs/core': 2.11.8
+      '@react-spring/web': 9.7.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@tanstack/react-query': 5.62.7(react@18.3.1)
+      '@tiptap/core': 2.11.0(@tiptap/pm@2.11.0)
+      '@tiptap/extension-blockquote': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-bullet-list': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-character-count': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))(@tiptap/pm@2.11.0)
+      '@tiptap/extension-code': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-code-block': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))(@tiptap/pm@2.11.0)
+      '@tiptap/extension-color': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))(@tiptap/extension-text-style@2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0)))
+      '@tiptap/extension-dropcursor': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))(@tiptap/pm@2.11.0)
+      '@tiptap/extension-focus': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))(@tiptap/pm@2.11.0)
+      '@tiptap/extension-font-family': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))(@tiptap/extension-text-style@2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0)))
+      '@tiptap/extension-gapcursor': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))(@tiptap/pm@2.11.0)
+      '@tiptap/extension-hard-break': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-heading': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-highlight': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-history': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))(@tiptap/pm@2.11.0)
+      '@tiptap/extension-horizontal-rule': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))(@tiptap/pm@2.11.0)
+      '@tiptap/extension-image': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-italic': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-link': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))(@tiptap/pm@2.11.0)
+      '@tiptap/extension-list-item': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-mathematics': 2.22.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))(@tiptap/pm@2.11.0)(katex@0.16.25)
+      '@tiptap/extension-ordered-list': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-placeholder': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))(@tiptap/pm@2.11.0)
+      '@tiptap/extension-strike': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-subscript': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-superscript': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-table': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))(@tiptap/pm@2.11.0)
+      '@tiptap/extension-table-cell': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-table-header': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-table-row': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-text-align': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-text-style': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-typography': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-underline': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/pm': 2.11.0
+      '@tiptap/react': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))(@tiptap/pm@2.11.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@tiptap/starter-kit': 2.11.0
+      '@uidotdev/usehooks': 2.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      clsx: 2.1.1
+      dayjs: 1.11.10
+      emoji-picker-react: 4.5.2(react@18.3.1)
+      html-react-parser: 4.2.1(react@18.3.1)
+      ohash: 1.1.3
+      pako: 2.1.0
+      pixi.js: 7.4.2
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-hook-form: 7.66.1(react@18.3.1)
+      react-hot-toast: 2.6.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-i18next: 14.1.0(i18next@23.8.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-intersection-observer: 9.5.3(react@18.3.1)
+      react-popper: 2.3.0(@popperjs/core@2.11.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-slugify: 3.0.3
+      swiper: 10.3.1
+      ua-parser-js: 1.0.41
+    transitivePeerDependencies:
+      - '@babel/runtime'
+      - '@pixi/app'
+      - '@pixi/constants'
+      - '@pixi/core'
+      - '@pixi/display'
+      - '@pixi/extensions'
+      - '@pixi/graphics'
+      - '@pixi/math'
+      - '@pixi/mesh'
+      - '@pixi/mesh-extras'
+      - '@pixi/particle-container'
+      - '@pixi/sprite'
+      - '@pixi/sprite-animated'
+      - '@pixi/sprite-tiling'
+      - '@pixi/text'
+      - '@pixi/text-bitmap'
+      - '@pixi/ticker'
+      - '@types/node'
+      - katex
+      - less
+      - lightningcss
+      - prop-types
+      - rollup
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+      - typescript
+
+  '@edifice.io/tiptap-extensions@2.4.2-develop-b2school-actualites.20251126114120(@types/node@18.19.130)(rollup@4.53.3)(typescript@5.9.3)':
+    dependencies:
+      '@edifice.io/utilities': 2.4.2-develop-b2school-actualites.20251126114120
       '@tiptap/core': 2.11.0(@tiptap/pm@2.11.0)
       '@tiptap/extension-blockquote': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
       '@tiptap/extension-bold': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
@@ -5001,7 +5103,59 @@ snapshots:
 
   '@emnapi/core@1.4.5':
     dependencies:
-      '@emnapi/wasi-threads': 1.0.4
+      '@edifice.io/utilities': 2.5.2-develop-b2school.20251124152203
+      '@tiptap/core': 2.11.0(@tiptap/pm@2.11.0)
+      '@tiptap/extension-blockquote': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-bold': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-bullet-list': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-code': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-code-block': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))(@tiptap/pm@2.11.0)
+      '@tiptap/extension-document': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-dropcursor': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))(@tiptap/pm@2.11.0)
+      '@tiptap/extension-gapcursor': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))(@tiptap/pm@2.11.0)
+      '@tiptap/extension-hard-break': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-heading': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-highlight': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-history': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))(@tiptap/pm@2.11.0)
+      '@tiptap/extension-horizontal-rule': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))(@tiptap/pm@2.11.0)
+      '@tiptap/extension-image': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-italic': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-link': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))(@tiptap/pm@2.11.0)
+      '@tiptap/extension-ordered-list': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-paragraph': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-strike': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-table-cell': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-text': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/extension-text-style': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
+      '@tiptap/html': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))(@tiptap/pm@2.11.0)
+      '@tiptap/pm': 2.11.0
+      '@tiptap/starter-kit': 2.11.0
+      prosemirror-model: 1.25.4
+      prosemirror-state: 1.4.4
+      prosemirror-transform: 1.10.5
+      prosemirror-view: 1.41.3
+      vite: 5.4.21(@types/node@18.19.130)
+      vite-plugin-dts: 4.5.4(@types/node@18.19.130)(rollup@4.53.3)(typescript@5.9.3)(vite@5.4.21(@types/node@18.19.130))
+    transitivePeerDependencies:
+      - '@types/node'
+      - less
+      - lightningcss
+      - rollup
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+      - typescript
+
+  '@edifice.io/utilities@2.4.2-develop-b2school-actualites.20251126114120': {}
+
+  '@edifice.io/utilities@2.5.2-develop-b2school.20251124152203': {}
+
+  '@emnapi/core@1.7.1':
+    dependencies:
+      '@emnapi/wasi-threads': 1.1.0
       tslib: 2.8.1
 
   '@emnapi/runtime@1.4.5':
