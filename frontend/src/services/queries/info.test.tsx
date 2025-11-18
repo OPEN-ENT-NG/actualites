@@ -106,15 +106,12 @@ describe('Info Queries', () => {
 
     const variables = { threadId: 1, infoId: 123 };
 
-    renderHook(() => useInfoShares(variables.threadId, variables.infoId).data, {
+    renderHook(() => useInfoShares(variables.infoId).data, {
       wrapper,
     });
 
     await waitFor(() => {
-      expect(serviceSpy).toHaveBeenCalledWith(
-        variables.threadId,
-        variables.infoId,
-      );
+      expect(serviceSpy).toHaveBeenCalledWith(variables.infoId);
     });
   });
 
