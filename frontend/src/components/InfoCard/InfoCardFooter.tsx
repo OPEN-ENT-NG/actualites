@@ -8,9 +8,11 @@ import { InfoCardProps } from './InfoCard';
 export const InfoCardFooter = ({
   info,
   collapse,
-  onMoreClick,
+  handleMoreClick,
+  handleCommentsClick,
 }: Pick<InfoCardProps, 'info'> & {
-  onMoreClick: () => void;
+  handleMoreClick: () => void;
+  handleCommentsClick: () => void;
   collapse: boolean;
 }) => {
   const { t } = useI18n();
@@ -21,9 +23,9 @@ export const InfoCardFooter = ({
           <ViewsCounter viewsCounter={0} />
           <CommentsCounter
             commentsCounter={info.numberOfComments}
-            aria-controls={`info-${info.id}-content`}
+            aria-controls={`info-${info.id}-comments`}
             aria-expanded={!collapse}
-            onClick={onMoreClick}
+            onClick={handleCommentsClick}
           />
         </SeparatedInfo>
 
@@ -34,7 +36,7 @@ export const InfoCardFooter = ({
           size="sm"
           rightIcon={collapse ? <IconRafterDown /> : <IconRafterUp />}
           className="btn-icon"
-          onClick={onMoreClick}
+          onClick={handleMoreClick}
           aria-controls={`info-${info.id}-content`}
           aria-expanded={!collapse}
         >

@@ -8,15 +8,24 @@ import { InfoCardPreviousContent } from './InfoCardPreviousContent';
 export const InfoCardContent = ({
   info,
   collapse = true,
-}: Pick<InfoCardProps, 'info'> & { collapse?: boolean }) => {
+  onCollapseApplied,
+}: Pick<InfoCardProps, 'info'> & {
+  collapse?: boolean;
+  onCollapseApplied?: () => void;
+}) => {
   const [showFullContent, setShowFullContent] = useState(!collapse);
 
-  const handleToggle = () => {
+  const handleTogglePreview = () => {
     setShowFullContent(!collapse);
   };
 
   return (
-    <Expandable collapse={collapse} hasPreview onToggle={handleToggle}>
+    <Expandable
+      collapse={collapse}
+      onCollapseApplied={onCollapseApplied}
+      hasPreview
+      onTogglePreview={handleTogglePreview}
+    >
       <div
         id={`info-${info.id}-content`}
         className="info-card-content px-md-24"
@@ -33,7 +42,11 @@ export const InfoCardContent = ({
           mode="read"
           variant="ghost"
         />
-        {showFullContent && <CommentList info={info} />}
+        {showFullContent && (
+          <div id={`info-${info.id}-comments`}>
+            <CommentList info={info} />
+          </div>
+        )}
       </div>
     </Expandable>
   );

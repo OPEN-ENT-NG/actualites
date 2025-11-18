@@ -7,14 +7,16 @@ export type ExpandableContent = ReactNode | (() => ReactNode);
 /**
  * Props for Expandable component that can be collapsed or expanded and may display a preview.
  * - `collapse` represents the desired collapsed state.
+ * - `onCollapseApplied` signals the end of the expand/collapse animation.
  * - `hasPreview` indicates whether a preview view is available which may alter rendering.
- * - `onToggle` should be provided to handle rendering previews or full content.
+ * - `onTogglePreview` should be provided to handle rendering previews or full content.
  * - `children` contains the content (preview or full) to render inside the expandable area.
  */
 export type ExpandableProps = {
   collapse: boolean;
-  hasPreview: boolean;
-  onToggle: () => void;
+  onCollapseApplied?: () => void;
+  hasPreview?: boolean;
+  onTogglePreview?: () => void;
   children: ReactNode;
 };
 

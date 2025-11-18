@@ -3,9 +3,13 @@ import { ExpandableProps } from '~/components/Expandable';
 
 export const useExpandable = ({
   collapse,
+  onCollapseApplied,
   hasPreview,
-  onToggle,
-}: Pick<ExpandableProps, 'collapse' | 'hasPreview' | 'onToggle'>) => {
+  onTogglePreview,
+}: Pick<
+  ExpandableProps,
+  'collapse' | 'onCollapseApplied' | 'hasPreview' | 'onTogglePreview'
+>) => {
   const [expanded, setExpanded] = useState(!collapse || hasPreview);
 
   // When CSS transition ends
@@ -14,11 +18,14 @@ export const useExpandable = ({
     setExpanded((previous) => {
       const newValue = !collapse || hasPreview;
       if (previous !== newValue) {
-        onToggle();
+        onTogglePreview?.();
+      }
+      if (newValue) {
+        onCollapseApplied?.();
       }
       return newValue;
     });
-  }, [collapse, hasPreview]);
+  }, [collapse]);
 
   // When `collapse` changes
   useEffect(() => {
