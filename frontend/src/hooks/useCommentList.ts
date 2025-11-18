@@ -1,4 +1,3 @@
-import { CommentOptions } from 'node_modules/@edifice.io/react/dist/modules/comments/types';
 import { useMemo } from 'react';
 import { Info } from '~/models/info';
 import {
@@ -8,14 +7,15 @@ import {
   useUpdateComment,
 } from '~/services/queries';
 
-// Add local interface definition
-declare interface CommentProps {
-  id: string;
-  comment: string;
-  authorId: string;
-  authorName: string;
-  createdAt: number;
-  updatedAt: number;
+// Local interface definition
+declare interface CommentOptions {
+  maxCommentLength: number;
+  maxReplyLength: number;
+  maxComments: number;
+  additionalComments: number;
+  maxReplies: number;
+  additionalReplies: number;
+  disableReply: boolean;
 }
 
 /**
