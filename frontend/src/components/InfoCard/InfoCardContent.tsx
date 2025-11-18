@@ -1,4 +1,5 @@
 import { Editor, EditorPreview } from '@edifice.io/react/editor';
+import clsx from 'clsx';
 import { useState } from 'react';
 import { CommentList } from '../comment-list/CommentList';
 import { Expandable } from '../Expandable';
@@ -37,11 +38,13 @@ export const InfoCardContent = ({
         {showFullContent && info.content && (
           <InfoCardPreviousContent info={info} />
         )}
-        <Editor
-          content={showFullContent ? info.content : ''}
-          mode="read"
-          variant="ghost"
-        />
+        <div className={clsx({ 'd-none': !showFullContent })}>
+          <Editor
+            content={showFullContent ? info.content : ''}
+            mode="read"
+            variant="ghost"
+          />
+        </div>
         {showFullContent && (
           <div id={`info-${info.id}-comments`}>
             <CommentList info={info} />

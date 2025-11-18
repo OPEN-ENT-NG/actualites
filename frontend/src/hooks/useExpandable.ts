@@ -14,23 +14,26 @@ export const useExpandable = ({
 
   // When CSS transition ends
   const onTransitionEnd = useCallback(() => {
-    // Expand content if needed.
-    setExpanded((previous) => {
-      const newValue = !collapse || hasPreview;
-      if (previous !== newValue) {
+    // Expand if needed.
+    setExpanded((isExpanded) => {
+      const shouldBeExpanded = !collapse || hasPreview;
+      // Check if expanding is needed to show the full content or the preview.
+      if (isExpanded !== shouldBeExpanded) {
+        // If yes, allow the Expandable component to toggle between preview or full content children before expanding
         onTogglePreview?.();
       }
-      if (newValue) {
+      if (shouldBeExpanded) {
+        // Inform the Expandable component that the collapse property change has been applied.
         onCollapseApplied?.();
       }
-      return newValue;
+      return shouldBeExpanded;
     });
   }, [collapse, onCollapseApplied, onTogglePreview]);
 
   // When `collapse` changes
   useEffect(() => {
-    setExpanded((itWasExpanded) => {
-      if (itWasExpanded) {
+    setExpanded((isExpanded) => {
+      if (isExpanded) {
         // Close previously expanded content, and finish rendering in `onTransitionEnd`
         return false;
       } else {
