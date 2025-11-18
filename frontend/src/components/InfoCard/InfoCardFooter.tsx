@@ -21,6 +21,8 @@ export const InfoCardFooter = ({
           <ViewsCounter viewsCounter={0} />
           <CommentsCounter
             commentsCounter={info.numberOfComments}
+            aria-controls={`info-${info.id}-content`}
+            aria-expanded={!collapse}
             onClick={onMoreClick}
           />
         </SeparatedInfo>
@@ -33,6 +35,8 @@ export const InfoCardFooter = ({
           rightIcon={collapse ? <IconRafterDown /> : <IconRafterUp />}
           className="btn-icon"
           onClick={onMoreClick}
+          aria-controls={`info-${info.id}-content`}
+          aria-expanded={!collapse}
         >
           {t(collapse ? 'actualites.read.more' : 'actualites.read.less')}
         </Button>

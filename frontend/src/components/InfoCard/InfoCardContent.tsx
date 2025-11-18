@@ -17,7 +17,10 @@ export const InfoCardContent = ({
 
   return (
     <Expandable collapse={collapse} hasPreview onToggle={handleToggle}>
-      <div className="info-card-content px-md-24">
+      <div
+        id={`info-${info.id}-content`}
+        className="info-card-content px-md-24"
+      >
         {!showFullContent && (
           <EditorPreview content={info.content} variant="ghost" />
         )}

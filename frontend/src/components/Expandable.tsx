@@ -5,7 +5,7 @@ import './Expandable.css';
 export type ExpandableContent = ReactNode | (() => ReactNode);
 
 /**
- * Props for an Expandable component that can be collapsed or expanded and may display a preview.
+ * Props for Expandable component that can be collapsed or expanded and may display a preview.
  * - `collapse` represents the desired collapsed state.
  * - `hasPreview` indicates whether a preview view is available which may alter rendering.
  * - `onToggle` should be provided to handle rendering previews or full content.
