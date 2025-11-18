@@ -53,7 +53,7 @@ describe('useInfoListEmptyScreen', () => {
     vi.clearAllMocks();
   });
 
-  it('should do nothing default when no rights and not ready', () => {
+  it('should return default when no rights and not ready', () => {
     mocks.useThreadInfoParams.mockReturnValue({ threadId: undefined });
     mocks.useThreads.mockReturnValue({ data: undefined, isSuccess: false });
     mocks.useThreadsUserRights.mockReturnValue({
@@ -71,7 +71,7 @@ describe('useInfoListEmptyScreen', () => {
     //filter on all threads (path: root/)
     {
       description:
-        'should create-thread when have no threads and can create thread',
+        'should return create-thread when have no threads and can create thread',
       currentThreadId: undefined,
       threads: [],
       canContributeOnOneThread: false,
@@ -80,7 +80,7 @@ describe('useInfoListEmptyScreen', () => {
     },
     {
       description:
-        'should create-info when have threads and can contribute on at least one thread',
+        'should return create-info when have threads and can contribute on at least one thread',
       currentThreadId: undefined,
       threads: mockThreads,
       canContributeOnOneThread: true,
@@ -94,7 +94,7 @@ describe('useInfoListEmptyScreen', () => {
     //filter on a specific thread (path: root/[threadId]/)
     {
       description:
-        'should create-info when have threads and can contribute on current thread',
+        'should return create-info when have threads and can contribute on current thread',
       currentThreadId: mockThreadAsOwner.id,
       threads: mockThreads,
       canContributeOnOneThread: true,
@@ -103,7 +103,7 @@ describe('useInfoListEmptyScreen', () => {
     },
     {
       description:
-        'should do nothing when have threads and cannot contribute on current thread',
+        'should return default when have threads and cannot contribute on current thread',
       currentThreadId: mockThreadAsCatherine.id,
       threads: mockThreads,
       canContributeOnOneThread: true,
