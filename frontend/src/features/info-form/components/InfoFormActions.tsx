@@ -61,6 +61,7 @@ export function InfoFormActions() {
       justify="end"
       align={md ? 'center' : 'end'}
       gap="12"
+      className="mb-48"
     >
       <Button
         color="primary"
