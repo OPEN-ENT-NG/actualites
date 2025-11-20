@@ -1,13 +1,16 @@
-import { Button, Flex, useInfiniteScroll } from '@edifice.io/react';
+import { Flex, useInfiniteScroll } from '@edifice.io/react';
 import { useInfoList } from '~/hooks/useInfoList';
+import { useInfoSearchParams } from '~/hooks/useInfoListParams';
 import { InfoCard, InfoCardSkeleton } from '..';
 import { InfoListEmpty } from './components/InfoListEmpty';
 import { useInfoListEmptyScreen } from './hooks/useInfoListEmptyScreen';
+import { InfoListSegmented } from './components/InfoListSegmented';
 
 export const InfoList = () => {
-  const { infos, hasNextPage, loadNextPage, isLoading, reload } = useInfoList();
+  const { infos, hasNextPage, loadNextPage, isLoading } = useInfoList();
   const { type: emptyScreenType, isReady: emptyScreenIsReady } =
     useInfoListEmptyScreen();
+  const { value, updateParams } = useInfoSearchParams();
 
   const loadNextRef = useInfiniteScroll({
     callback: loadNextPage,
@@ -21,8 +24,12 @@ export const InfoList = () => {
       gap="16"
     >
       <header>
-        <span>Mettre le Segmented Control ici =&gt; </span>
-        <Button onClick={reload}>Recharger</Button>
+        <InfoListSegmented
+          value={value}
+          onChange={(value) => {
+            updateParams({ value });
+          }}
+        />
       </header>
       {!isLoading && infos.length === 0 && emptyScreenIsReady && (
         <InfoListEmpty type={emptyScreenType} />

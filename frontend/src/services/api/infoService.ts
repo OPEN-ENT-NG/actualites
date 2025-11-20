@@ -3,6 +3,7 @@ import { baseUrl, baseUrlAPI } from '.';
 import {
   Info,
   InfoDetails,
+  InfoExtendedStatus,
   InfoId,
   InfoRevision,
   InfoStatus,
@@ -32,18 +33,26 @@ export const createInfoService = () => {
       page,
       pageSize,
       threadId,
+      status,
+      state,
     }: {
       page: number;
       pageSize: number;
       threadId?: ThreadId;
+      status?: InfoStatus;
+      state?: InfoExtendedStatus;
     }) {
       const queryParams: {
         page: number;
         pageSize: number;
         threadIds?: number;
+        status?: InfoStatus;
+        state?: InfoExtendedStatus;
       } = {
         page,
         pageSize,
+        status,
+        state,
       };
 
       if (threadId) {

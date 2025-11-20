@@ -5,7 +5,7 @@ import {
   useMutation,
   useQuery,
 } from '@tanstack/react-query';
-import { Info, InfoId, InfoStatus } from '~/models/info';
+import { Info, InfoExtendedStatus, InfoId, InfoStatus } from '~/models/info';
 import { ThreadId } from '~/models/thread';
 import { infoService } from '../api';
 import { threadQueryKeys } from './thread';
@@ -25,6 +25,18 @@ export const infoQueryKeys = {
   info: ({ infoId, ...options }: { infoId?: InfoId; threadId?: ThreadId }) => [
     ...infoQueryKeys.all(options),
     infoId,
+  ],
+
+  infos: ({
+    ...options
+  }: {
+    threadId?: ThreadId;
+    status?: InfoStatus;
+    state?: InfoExtendedStatus;
+  }) => [
+    ...infoQueryKeys.all({ threadId: options.threadId }),
+    options.status,
+    options.state,
   ],
 
   share: (options: { threadId: ThreadId; infoId: InfoId }) => [
@@ -64,9 +76,14 @@ export const infoQueryOptions = {
   /**
    * @returns Query options for fetching a page of infos, optionnally from a given thread.
    */
-  getInfos(options: { pageSize: number; threadId?: ThreadId }) {
+  getInfos(options: {
+    pageSize: number;
+    threadId?: ThreadId;
+    status?: InfoStatus;
+    state?: InfoExtendedStatus;
+  }) {
     return infiniteQueryOptions({
-      queryKey: infoQueryKeys.all(options),
+      queryKey: infoQueryKeys.infos(options),
       queryFn: ({ pageParam = 0 }) => {
         return infoService.getInfos({
           ...options,
@@ -123,8 +140,19 @@ export const infoQueryOptions = {
 export const useInfoById = (infoId?: InfoId) =>
   useQuery(infoQueryOptions.getInfoById(infoId));
 
-export const useInfos = (threadId?: ThreadId, pageSize = DEFAULT_PAGE_SIZE) =>
-  useInfiniteQuery(infoQueryOptions.getInfos({ pageSize, threadId }));
+export const useInfos = (
+  threadId?: ThreadId,
+  options?: {
+    pageSize?: number;
+    status?: InfoStatus;
+    state?: InfoExtendedStatus;
+  },
+) => {
+  const pageSize = options?.pageSize ?? DEFAULT_PAGE_SIZE;
+  return useInfiniteQuery(
+    infoQueryOptions.getInfos({ pageSize, threadId, ...options }),
+  );
+};
 
 export const useInfoShares = (threadId: ThreadId, infoId: InfoId) =>
   useQuery(infoQueryOptions.getShares(threadId, infoId));

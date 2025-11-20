@@ -20,6 +20,8 @@ export enum InfoExtendedStatus {
   INCOMING = 'INCOMING',
 }
 
+export type InfoSegmentedValue = InfoStatus | InfoExtendedStatus;
+
 export interface InfoBase {
   id: InfoId;
   content: string;
