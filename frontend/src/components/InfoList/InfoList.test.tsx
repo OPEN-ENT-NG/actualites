@@ -56,7 +56,7 @@ describe('InfoList Segmented Switch', () => {
     renderWithRouter('/', <InfoList />);
 
     const draftLabel = await screen.findByText(
-      'actualites.info-list.segmented.draft',
+      'actualites.info-list.segmented.draft' + ' ' + 0, // TODO: add mockInfosDraft.length quand l'api le retournera
     );
     await fireEvent.click(draftLabel);
 

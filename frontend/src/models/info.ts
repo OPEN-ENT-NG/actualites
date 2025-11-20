@@ -98,3 +98,19 @@ export interface OriginalInfo {
   }> | null;
   shared: [];
 }
+
+export interface ThreadInfoStats {
+  id: number;
+  status: {
+    [InfoStatus.DRAFT]: number;
+    [InfoStatus.TRASH]: number;
+    [InfoStatus.PENDING]: number;
+    [InfoStatus.PUBLISHED]: number;
+  };
+  expiredCount: number;
+  incomingCount: number;
+}
+
+export interface InfosStats {
+  threads: ThreadInfoStats[];
+}

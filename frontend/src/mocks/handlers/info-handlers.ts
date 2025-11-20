@@ -8,6 +8,7 @@ import {
   mockInfoShare,
   mockInfosIncoming,
   mockInfosPublished,
+  mockInfosStats,
   mockOriginalInfo,
 } from '../datas/infos';
 
@@ -30,6 +31,10 @@ export const infoHandlers = [
     }
     return HttpResponse.json(mockInfosPublished, { status: 200 });
     // return HttpResponse.json([], { status: 200 }); // empty array to test empty screen
+  }),
+
+  http.get(`${baseUrlAPI}/infos/stats`, () => {
+    return HttpResponse.json(mockInfosStats, { status: 200 });
   }),
 
   // Create a draft info
