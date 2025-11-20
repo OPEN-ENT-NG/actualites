@@ -2,7 +2,7 @@ import { useBreakpoint } from '@edifice.io/react';
 import { ThreadListDesktop, ThreadListMobile } from './components';
 
 export function ThreadList() {
-  const { md } = useBreakpoint();
+  const { lg } = useBreakpoint();
 
-  return <>{md ? <ThreadListDesktop /> : <ThreadListMobile />}</>;
+  return <>{lg ? <ThreadListDesktop /> : <ThreadListMobile />}</>;
 }

@@ -11,10 +11,10 @@ export const loader = (_queryClient: QueryClient) => async () => {
 export function Threads() {
   const [_searchParams] = useSearchParams();
 
-  const { md } = useBreakpoint();
+  const { lg } = useBreakpoint();
 
   return (
-    <Flex fill direction={md ? 'row' : 'column'} className="col-12">
+    <Flex fill direction={lg ? 'row' : 'column'} className="col-12">
       <ThreadList />
       <InfoList />
     </Flex>
