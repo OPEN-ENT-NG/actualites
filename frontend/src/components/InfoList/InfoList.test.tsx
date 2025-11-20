@@ -1,5 +1,6 @@
+import { mockInfosDraft, mockInfosPublished } from '~/mocks/datas/infos';
 import { renderWithRouter } from '~/mocks/renderWithRouter';
-import { screen } from '~/mocks/setup';
+import { fireEvent, screen } from '~/mocks/setup';
 import { InfoList } from './InfoList';
 
 vi.mock('./hooks/useInfoListEmptyScreen', () => ({
@@ -9,30 +10,39 @@ vi.mock('./hooks/useInfoListEmptyScreen', () => ({
   })),
 }));
 
-const mockIntersectionObserver = vi.fn().mockReturnValue({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-});
-
-describe('InfoList', () => {
-  beforeAll(() => {
-    window.IntersectionObserver = mockIntersectionObserver;
-  });
-
-  it('should render placeholder when loading', async () => {
+describe('InfoList rendering', () => {
+  it('should render skeletons when loading', async () => {
     renderWithRouter('/', <InfoList />);
 
-    const infos = await screen.findAllByRole('article');
-    expect(infos).toHaveLength(3);
+    const skeletons = await screen.findAllByTestId('info-card-skeleton');
+    expect(skeletons).toHaveLength(3);
+  });
+
+  it('should load published infos by default', async () => {
+    renderWithRouter('/', <InfoList />);
+
+    const infos = await screen.findAllByTestId('info-card');
+    expect(infos).toHaveLength(mockInfosPublished.length);
+  });
+
+  it('should load filtered draft infos', async () => {
+    renderWithRouter('/?status=draft', <InfoList />);
+
+    const infos = await screen.findAllByTestId('info-card');
+    expect(infos).toHaveLength(mockInfosDraft.length);
   });
 });
 
-// describe('Load filtered infos', () => {
-//   it('should load filtered infos', async () => {
-//     render(<InfoList />);
+describe('InfoList Segmented Switch', () => {
+  it('should load filtered by draft when clicked on draft segmented button', async () => {
+    renderWithRouter('/', <InfoList />);
 
-//     const infos = await screen.findAllByRole('article');
-//     expect(infos).toHaveLength(3);
-//   });
-// });
+    const draftLabel = await screen.findByText(
+      'actualites.info-list.segmented.draft',
+    );
+    await fireEvent.click(draftLabel);
+
+    const infos = await screen.findAllByTestId('info-card');
+    expect(infos).toHaveLength(mockInfosDraft.length);
+  });
+});

@@ -1,6 +1,6 @@
 import {
   mockInfoRevisions,
-  mockInfos,
+  mockInfosPublished,
   mockInfoShare,
   mockOriginalInfo,
 } from '~/mocks/datas/infos';
@@ -12,7 +12,7 @@ describe('Info GET Methods', () => {
     const response = await infoService.getInfos({ page: 0, pageSize: 20 });
 
     expect(response).toBeDefined();
-    expect(response).toStrictEqual(mockInfos);
+    expect(response).toStrictEqual(mockInfosPublished);
   });
 
   test('makes a GET request to get the shares of an info', async () => {

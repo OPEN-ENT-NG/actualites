@@ -2,15 +2,20 @@ import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { render } from './setup';
 
 export const renderWithRouter = (path = '/', element: JSX.Element) => {
+  // Extract pathname and search params separately
+  const url = new URL(path, 'http://localhost');
+  const pathname = url.pathname;
+  const search = url.search;
+
   const routes = [
     {
-      path,
+      path: pathname,
       element,
     },
   ];
 
   const router = createMemoryRouter(routes, {
-    initialEntries: [path],
+    initialEntries: [{ pathname, search }],
   });
 
   return {
