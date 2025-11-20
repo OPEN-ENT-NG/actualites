@@ -34,5 +34,12 @@ export const InfoListSegmented = ({
     },
   ];
 
-  return <Segmented options={options} value={value} onChange={onChange} />;
+  return (
+    <Segmented
+      options={options}
+      value={value}
+      onChange={onChange}
+      data-testid="info-list-segmented"
+    />
+  );
 };

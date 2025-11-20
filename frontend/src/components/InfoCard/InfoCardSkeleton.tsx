@@ -12,7 +12,12 @@ export const InfoCardSkeleton = React.forwardRef<
   HTMLElement,
   React.HTMLAttributes<HTMLElement>
 >((props, ref) => (
-  <article ref={ref} {...props} className="card bg-gray-200 mb-16 px-24 py-16">
+  <article
+    ref={ref}
+    {...props}
+    className="card bg-gray-200 mb-16 px-24 py-16"
+    data-testid="info-card-skeleton"
+  >
     <header
       className="d-grid mb-12"
       style={{ gridTemplateColumns: '1fr 50% 1fr', gap: '12px' }}

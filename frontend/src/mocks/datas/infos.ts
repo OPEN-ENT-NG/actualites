@@ -125,6 +125,17 @@ export const mockInfos: Info[] = [
   mockInfoExpired,
 ];
 
+export const mockInfosPublished: Info[] = [
+  mockInfoPublishedHeadline,
+  mockInfoPublished,
+];
+
+export const mockInfosExpired: Info[] = [mockInfoExpired];
+
+export const mockInfosIncoming: Info[] = [mockInfoIncoming];
+
+export const mockInfosDraft: Info[] = [mockInfoPublishedDraft];
+
 export const mockOriginalInfo = {
   _id: 575,
   title: 'coucou',
