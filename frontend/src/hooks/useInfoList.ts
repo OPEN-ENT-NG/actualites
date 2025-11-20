@@ -2,7 +2,7 @@ import { invalidateQueriesWithFirstPage } from '@edifice.io/react';
 import { queryClient } from '~/providers';
 import { InfoExtendedStatus, InfoStatus } from '~/models/info';
 import { infoQueryKeys, useInfos } from '~/services/queries/info';
-import { useInfoSearchParams } from './useInfoListParams';
+import { useInfoSearchParams } from './useInfoSearchParams';
 import { useThreadInfoParams } from './useThreadInfoParams';
 
 export function useInfoList() {

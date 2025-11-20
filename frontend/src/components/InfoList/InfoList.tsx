@@ -1,6 +1,6 @@
 import { Flex, useInfiniteScroll } from '@edifice.io/react';
 import { useInfoList } from '~/hooks/useInfoList';
-import { useInfoSearchParams } from '~/hooks/useInfoListParams';
+import { useInfoSearchParams } from '~/hooks/useInfoSearchParams';
 import { InfoCard, InfoCardSkeleton } from '..';
 import { InfoListEmpty } from './components/InfoListEmpty';
 import { useInfoListEmptyScreen } from './hooks/useInfoListEmptyScreen';

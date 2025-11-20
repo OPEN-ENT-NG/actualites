@@ -1,4 +1,5 @@
-import { render, screen } from '~/mocks/setup';
+import { renderWithRouter } from '~/mocks/renderWithRouter';
+import { screen } from '~/mocks/setup';
 import { InfoList } from './InfoList';
 
 vi.mock('./hooks/useInfoListEmptyScreen', () => ({
@@ -20,9 +21,18 @@ describe('InfoList', () => {
   });
 
   it('should render placeholder when loading', async () => {
-    render(<InfoList />);
+    renderWithRouter('/', <InfoList />);
 
     const infos = await screen.findAllByRole('article');
     expect(infos).toHaveLength(3);
   });
 });
+
+// describe('Load filtered infos', () => {
+//   it('should load filtered infos', async () => {
+//     render(<InfoList />);
+
+//     const infos = await screen.findAllByRole('article');
+//     expect(infos).toHaveLength(3);
+//   });
+// });
