@@ -29,7 +29,7 @@ export const InfoCard = ({ info }: InfoCardProps) => {
     new Date(info.expirationDate) < new Date();
   const [collapse, setCollapse] = useState(true);
   const className = clsx(
-    'px-24 py-16 info-card position-relative border-none overflow-visible',
+    'px-16 px-md-24 py-16 info-card position-relative border-none overflow-visible',
     {
       'info-card-incoming': isIncoming,
       'info-card-draft': info.status === InfoStatus.DRAFT,
