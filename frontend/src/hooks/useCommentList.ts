@@ -64,9 +64,10 @@ export function useCommentList(info: Info) {
   const callbacks = {
     post: async (comment: string) => {
       createCommentMutation.mutate({
-        info_id: info.id,
-        title: info.title,
-        comment,
+        payload: {
+          info_id: info.id,
+          comment,
+        },
       });
     },
     put: async ({
@@ -88,6 +89,7 @@ export function useCommentList(info: Info) {
       deleteCommentMutation.mutate({
         commentId: Number(commentId),
         infoId: info.id,
+        threadId: info.threadId,
       });
     },
   };

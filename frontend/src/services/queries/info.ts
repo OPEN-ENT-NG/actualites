@@ -27,10 +27,6 @@ export const infoQueryKeys = {
     infoId,
   ],
 
-  getInfos: ({ ...options }: { threadId?: ThreadId }) => [
-    ...infoQueryKeys.info(options),
-  ],
-
   share: (options: { threadId: ThreadId; infoId: InfoId }) => [
     ...infoQueryKeys.info(options),
     'share',
@@ -70,7 +66,7 @@ export const infoQueryOptions = {
    */
   getInfos(options: { pageSize: number; threadId?: ThreadId }) {
     return infiniteQueryOptions({
-      queryKey: infoQueryKeys.getInfos(options),
+      queryKey: infoQueryKeys.all(options),
       queryFn: ({ pageParam = 0 }) => {
         return infoService.getInfos({
           ...options,

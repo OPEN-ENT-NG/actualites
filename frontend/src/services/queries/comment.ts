@@ -1,9 +1,17 @@
 import { useEdificeClient } from '@edifice.io/react';
-import { queryOptions, useMutation, useQuery } from '@tanstack/react-query';
+import {
+  InfiniteData,
+  queryOptions,
+  useMutation,
+  useQuery,
+} from '@tanstack/react-query';
+import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
 import { Comment, CommentId } from '~/models/comments';
-import { InfoId } from '~/models/info';
+import { Info, InfoId } from '~/models/info';
+import { ThreadId } from '~/models/thread';
 import { queryClient } from '~/providers';
 import { commentService } from '../api';
+import { infoQueryKeys } from './info';
 
 /**
  * Comment Query Keys always follow this format :
@@ -42,16 +50,26 @@ export const useComments = (infoId: InfoId) =>
 export const useCreateComment = () => {
   // TODO Inject queryClient instead of importing it ?
   const { user } = useEdificeClient();
+  // For optimistic update to work, we need to search which info to update
+  // among all threads (or only 1 thread, depending on the route parameters),
+  // and change its comments counter.
+  const { threadId } = useThreadInfoParams();
 
   return useMutation({
-    mutationFn: (payload: {
-      title: string;
-      comment: string;
-      info_id: InfoId;
+    mutationFn: ({
+      payload,
+    }: {
+      payload: {
+        comment: string;
+        info_id: InfoId;
+      };
     }) => commentService.create(payload),
-    // When mutate is called:
-    onMutate: async ({ info_id, comment }) => {
+    onMutate: async ({ payload }) => {
+      const { info_id, comment } = payload;
       const queryKey = commentQueryKeys.all({ infoId: info_id });
+
+      const infosQueryKey = infoQueryKeys.all({ threadId });
+
       const now = new Date().toISOString();
 
       // Cancel any outgoing refetches
@@ -60,7 +78,7 @@ export const useCreateComment = () => {
       // Snapshot the previous value
       const previousComments = queryClient.getQueryData<Comment[]>(queryKey);
 
-      const newComment = {
+      const newComment: Comment = {
         info_id,
         comment,
         _id: 0,
@@ -73,20 +91,37 @@ export const useCreateComment = () => {
       queryClient.setQueryData<Comment[]>(queryKey, (old) =>
         [newComment].concat(old ?? []),
       );
+      // Optimistically update comments counter
+      const infiniteInfos =
+        queryClient.getQueryData<InfiniteData<Info[]>>(infosQueryKey);
+      const pages = infiniteInfos?.pages;
+      const pageParams = infiniteInfos?.pageParams;
+      const info = pages?.flat().find((info) => info.id === info_id);
+      if (pages && pageParams && info) {
+        info.numberOfComments =
+          typeof info.numberOfComments === 'number'
+            ? info.numberOfComments + 1
+            : 1;
+        queryClient.setQueryData<InfiniteData<Info[]>>(infosQueryKey, () => {
+          return { pages: [...pages], pageParams: pageParams };
+        });
+      }
       // Return a result with the snapshotted value
       return { previousComments, queryKey };
     },
     // If the mutation fails, use the result returned from onMutate to roll back.
-    onError: (_err, { info_id }, onMutateResult) => {
-      queryClient.setQueryData(
-        commentQueryKeys.all({ infoId: info_id }),
-        onMutateResult?.previousComments,
-      );
+    onError: (_err, _variables, onMutateResult) => {
+      if (onMutateResult) {
+        queryClient.setQueryData(
+          onMutateResult.queryKey,
+          onMutateResult.previousComments,
+        );
+      }
     },
     // Always refetch after error or success.
-    onSettled: (_data, _error, { info_id }) =>
+    onSettled: (_data, _error, { payload }) =>
       queryClient.invalidateQueries({
-        queryKey: commentQueryKeys.all({ infoId: info_id }),
+        queryKey: commentQueryKeys.all({ infoId: payload.info_id }),
       }),
   });
 };
@@ -103,15 +138,89 @@ export const useUpdateComment = () =>
         comment: string;
       };
     }) => commentService.update(commentId, payload),
+    onMutate: async ({ commentId, payload }) => {
+      const { info_id, comment } = payload;
+      const queryKey = commentQueryKeys.all({ infoId: info_id });
+
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey });
+
+      // Snapshot the previous value
+      const comments = queryClient.getQueryData<Comment[]>(queryKey);
+
+      // Optimistically update comment
+      const updatedComment = comments?.find(
+        (comment) => comment._id === commentId,
+      );
+      if (comments && updatedComment) {
+        updatedComment.comment = comment;
+        queryClient.setQueryData<Comment[]>(queryKey, () => [...comments]);
+      }
+      // Return a result with the snapshotted value
+      return { comments, queryKey };
+    },
+    // Always refetch after error or success.
+    onSettled: (_data, _error, { payload }) =>
+      queryClient.invalidateQueries({
+        queryKey: commentQueryKeys.all({ infoId: payload.info_id }),
+      }),
   });
 
-export const useDeleteComment = () =>
-  useMutation({
+export const useDeleteComment = () => {
+  // For optimistic update to work, we need to search which info to update
+  // among all threads (or only 1 thread, depending on the route parameters),
+  // and change its comments counter.
+  const { threadId } = useThreadInfoParams();
+
+  return useMutation({
     mutationFn: ({
       commentId,
       infoId,
     }: {
       commentId: CommentId;
       infoId: InfoId;
+      threadId: ThreadId;
     }) => commentService.delete(infoId, commentId),
+    onMutate: async ({ commentId, infoId }) => {
+      const queryKey = commentQueryKeys.all({ infoId });
+      const infosQueryKey = infoQueryKeys.all({ threadId });
+
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey });
+
+      // Snapshot the previous value
+      const comments = queryClient.getQueryData<Comment[]>(queryKey);
+
+      // Optimistically delete comment
+      if (comments) {
+        queryClient.setQueryData<Comment[]>(queryKey, () =>
+          comments.filter((comment) => comment._id !== commentId),
+        );
+      }
+
+      // Optimistically decrement comments counter
+      const infiniteInfos =
+        queryClient.getQueryData<InfiniteData<Info[]>>(infosQueryKey);
+      const pages = infiniteInfos?.pages;
+      const pageParams = infiniteInfos?.pageParams;
+      const info = pages?.flat().find((info) => info.id === infoId);
+      if (pages && pageParams && info) {
+        info.numberOfComments =
+          typeof info.numberOfComments === 'number'
+            ? Math.max(info.numberOfComments - 1, 0)
+            : 0;
+        queryClient.setQueryData<InfiniteData<Info[]>>(infosQueryKey, () => {
+          return { pages: [...pages], pageParams: pageParams };
+        });
+      }
+
+      // Return a result with the snapshotted value
+      return { comments, queryKey };
+    },
+    // Always refetch after error or success.
+    onSettled: (_data, _error, { infoId }) =>
+      queryClient.invalidateQueries({
+        queryKey: commentQueryKeys.all({ infoId }),
+      }),
   });
+};

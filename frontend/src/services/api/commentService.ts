@@ -20,7 +20,7 @@ export const createCommentService = () => {
      * @param payload
      * @returns ID of the newly created Info
      */
-    create(payload: { info_id: InfoId; title: string; comment: string }) {
+    create(payload: { info_id: InfoId; comment: string }) {
       return odeServices.http().post<{
         id: CommentId;
       }>(`${baseUrlAPI}/infos/${payload.info_id}/comments`, payload);
