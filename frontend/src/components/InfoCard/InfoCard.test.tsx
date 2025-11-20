@@ -1,4 +1,10 @@
-import { mockInfos } from '~/mocks/datas/infos';
+import {
+  mockInfoExpired,
+  mockInfoIncoming,
+  mockInfoPublished,
+  mockInfoPublishedDraft,
+  mockInfoPublishedHeadline,
+} from '~/mocks/datas/infos';
 import { render, screen } from '~/mocks/setup';
 import { InfoCard } from './InfoCard';
 
@@ -47,17 +53,19 @@ function getHeadlineImg(card: HTMLElement) {
 }
 
 describe('InfoCard', () => {
-  it('should render', () => {
+  it('should render headline info', () => {
     mocks.useBreakpoint.mockReturnValue({ md: false });
-    render(<InfoCard info={mockInfos[0]} />);
+    render(<InfoCard info={mockInfoPublished} />);
 
     const card = screen.getByRole('article');
-    expect(card.getElementsByTagName('h3')[0].textContent).toBe('Bientôt');
+    expect(card.getElementsByTagName('h3')[0].textContent).toBe(
+      'Voici une actualité publiée',
+    );
   });
 
   it('should healine message', () => {
     mocks.useBreakpoint.mockReturnValue({ md: false });
-    render(<InfoCard info={mockInfos[0]} />);
+    render(<InfoCard info={mockInfoPublishedHeadline} />);
 
     const card = screen.getByRole('article');
     expect(card.parentElement).toHaveClass('info-card-headline');
@@ -67,7 +75,7 @@ describe('InfoCard', () => {
 
   it('should draft message', () => {
     mocks.useBreakpoint.mockReturnValue({ md: false });
-    render(<InfoCard info={mockInfos[2]} />);
+    render(<InfoCard info={mockInfoPublishedDraft} />);
 
     const card = screen.getByRole('article');
     expect(card.parentElement).toHaveClass('info-card-draft');
@@ -82,7 +90,7 @@ describe('InfoCard', () => {
 
   it('should incoming message', () => {
     mocks.useBreakpoint.mockReturnValue({ md: false });
-    render(<InfoCard info={mockInfos[3]} />);
+    render(<InfoCard info={mockInfoIncoming} />);
 
     const card = screen.getByRole('article');
     expect(card.parentElement).toHaveClass('info-card-incoming');
@@ -99,7 +107,7 @@ describe('InfoCard', () => {
 
   it('should expired message', () => {
     mocks.useBreakpoint.mockReturnValue({ md: false });
-    render(<InfoCard info={mockInfos[4]} />);
+    render(<InfoCard info={mockInfoExpired} />);
 
     const card = screen.getByRole('article');
     expect(card.parentElement).toHaveClass('info-card-expired');
