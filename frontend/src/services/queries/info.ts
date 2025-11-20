@@ -5,6 +5,7 @@ import {
   useInfiniteQuery,
   useMutation,
   useQuery,
+  useQueryClient,
 } from '@tanstack/react-query';
 import { Info, InfoId, InfoStatus } from '~/models/info';
 import { ThreadId } from '~/models/thread';
@@ -162,10 +163,10 @@ export const useUpdateInfo = () =>
       infoId: InfoId;
       infoStatus: InfoStatus;
       payload: {
-        thread_id: ThreadId;
-        title: string;
-        content: string;
-        is_headline: boolean;
+        thread_id?: ThreadId;
+        title?: string;
+        content?: string;
+        is_headline?: boolean;
         publication_date?: string;
         expiration_date?: string;
       };
@@ -173,8 +174,9 @@ export const useUpdateInfo = () =>
     // TODO optimistic update
   });
 
-export const useSharesInfo = () =>
-  useMutation({
+export const useSharesInfo = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
     mutationFn: ({
       resourceId,
       rights,
@@ -182,8 +184,13 @@ export const useSharesInfo = () =>
       resourceId: InfoId;
       rights: ShareRight[];
     }) => infoService.putShares(resourceId, rights),
-    // TODO optimistic update
+    onSuccess: (_, { resourceId }) => {
+      queryClient.invalidateQueries({
+        queryKey: infoQueryKeys.share({ infoId: resourceId }),
+      });
+    },
   });
+};
 
 export const useSubmitInfo = () =>
   useMutation({

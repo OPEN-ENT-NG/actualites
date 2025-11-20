@@ -10,6 +10,7 @@ import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CreationStep, useInfoFormStore } from '~/store/infoFormStore';
 import { useInfoDetailsForm } from '../hooks/useInfoDetailsForm';
+import { useInfoSharesForm } from '../hooks/useInfoSharesForm';
 
 export function InfoFormActions() {
   const { t } = useI18n();
@@ -17,10 +18,19 @@ export function InfoFormActions() {
   const currentCreationStep = useInfoFormStore.use.currentCreationStep();
   const { detailsForm, detailsFormState, onSaveDetails, onNextStep } =
     useInfoDetailsForm();
+  const {
+    setInfoSharesFormDirty,
+    isInfoSharesFormDirty,
+    updateSharesInfo,
+    onPublish,
+  } = useInfoSharesForm();
   const navigate = useNavigate();
   const toast = useToast();
 
-  const isInfoDetailsStep = currentCreationStep === CreationStep.INFO_DETAILS;
+  const isInfoDetailsStep = useMemo(
+    () => currentCreationStep === CreationStep.INFO_DETAILS,
+    [currentCreationStep],
+  );
 
   const disableSaveDraft = useMemo(() => {
     if (isInfoDetailsStep) {
@@ -29,10 +39,16 @@ export function InfoFormActions() {
         detailsForm?.thread_id === undefined ||
         !detailsFormState?.isDirty
       );
+    } else {
+      return !isInfoSharesFormDirty;
     }
-    return true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentCreationStep, detailsForm, detailsFormState]);
+  }, [
+    currentCreationStep,
+    detailsForm,
+    detailsFormState,
+    isInfoSharesFormDirty,
+  ]);
 
   const handleCancelClick = () => {
     if (isInfoDetailsStep) {
@@ -43,17 +59,26 @@ export function InfoFormActions() {
   };
 
   const handleSaveDraftClick = () => {
-    onSaveDetails(() => {
-      toast.success(t('actualites.info.createForm.draftSaved'));
-      navigate('/');
-    });
+    if (isInfoDetailsStep) {
+      onSaveDetails(() => {
+        toast.success(t('actualites.info.createForm.draftSaved'));
+        navigate('/');
+      });
+    } else {
+      updateSharesInfo(() => {
+        toast.success(t('actualites.info.createForm.draftSaved'));
+        setInfoSharesFormDirty(false);
+        navigate('/');
+      });
+    }
   };
 
   const handleSubmitClick = () => {
-    if (currentCreationStep === CreationStep.INFO_DETAILS) {
+    if (isInfoDetailsStep) {
       onNextStep();
     } else {
-      onSaveDetails(() => {
+      onPublish(() => {
+        toast.success(t('actualites.info.createForm.infoPublished'));
         navigate('/');
       });
     }
@@ -97,7 +122,11 @@ export function InfoFormActions() {
           type="submit"
           rightIcon={<IconArrowRight />}
           onClick={handleSubmitClick}
-          disabled={!detailsFormState.isValid}
+          disabled={
+            isInfoDetailsStep
+              ? !detailsFormState?.isValid
+              : !isInfoSharesFormDirty
+          }
           data-testid="actualites.info.form.submitButton"
         >
           {t(
