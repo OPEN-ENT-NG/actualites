@@ -10,6 +10,7 @@ import {
   useDirectory,
 } from '@edifice.io/react';
 import { IconClock, IconClockAlert, IconSave } from '@edifice.io/react/icons';
+import clsx from 'clsx';
 import iconHeadline from '~/assets/icon-headline.svg';
 import { useI18n } from '~/hooks/useI18n';
 import { useThread } from '~/hooks/useThread';
@@ -31,12 +32,14 @@ export const InfoCardHeader = ({
   const { t } = useI18n();
   const avatarUrl = getAvatarURL(info.owner.id, 'user');
 
-  const { md } = useBreakpoint();
-  const styles = md
+  const { sm, md, lg } = useBreakpoint();
+  const styles = lg
     ? { gridTemplateColumns: '1fr auto 1fr', gap: '12px' }
     : { gridTemplateColumns: '1fr', gap: '12px' };
 
-  const classes = md ? 'text-center' : '';
+  const classes = clsx({
+    'text-center': md,
+  });
   const iconSize = md ? 'sm' : 'xs';
   const styleBadge = md
     ? { textAlign: 'right' as const, minWidth: '150px' }
@@ -48,9 +51,7 @@ export const InfoCardHeader = ({
     <header key={info.id} className="mb-12">
       <div className="d-grid" style={styles}>
         <InfoCardThreadHeader thread={thread} />
-        <h3 className={`text-truncate text-truncate-2 ${classes}`}>
-          {info?.title}
-        </h3>
+        <h3 className={classes}>{info?.title}</h3>
         <div style={styleBadge}>
           {info.status === 'DRAFT' && (
             <Badge className="bg-blue-200 text-blue">
@@ -88,26 +89,50 @@ export const InfoCardHeader = ({
             height={24}
           />
         )}
-        <Divider color="var(--edifice-info-card-divider-color)">
-          <Avatar
-            alt={info.owner.displayName}
-            src={avatarUrl}
-            size={iconSize}
-            variant="circle"
-            loading="lazy"
-          />
-          {md ? (
-            <SeparatedInfo className="fs-6 text-gray-700">
-              <div>{info.owner.displayName}</div>
-              <div>{formatDate(info.modified, 'long')}</div>
-            </SeparatedInfo>
-          ) : (
-            <Flex direction="column" className="fs-6 text-gray-700">
-              <div>{info.owner.displayName}</div>
-              <div>{formatDate(info.modified, 'long')}</div>
-            </Flex>
-          )}
-        </Divider>
+        {sm ? (
+          <Divider color="var(--edifice-info-card-divider-color)">
+            <Avatar
+              alt={info.owner.displayName}
+              src={avatarUrl}
+              size={iconSize}
+              variant="circle"
+              loading="lazy"
+            />
+            {md ? (
+              <SeparatedInfo className="fs-6 text-gray-700">
+                <div>{info.owner.displayName}</div>
+                <div>{formatDate(info.modified, 'long')}</div>
+              </SeparatedInfo>
+            ) : (
+              <Flex direction="column" className="fs-6 text-gray-700">
+                <div>{info.owner.displayName}</div>
+                <div>{formatDate(info.modified, 'long')}</div>
+              </Flex>
+            )}
+          </Divider>
+        ) : (
+          <Flex align="center" gap="8" justify="center" fill>
+            <Avatar
+              alt={info.owner.displayName}
+              src={avatarUrl}
+              size={iconSize}
+              variant="circle"
+              loading="lazy"
+            />
+            {md ? (
+              <SeparatedInfo className="fs-6 text-gray-700">
+                <div>{info.owner.displayName}</div>
+                <div>{formatDate(info.modified, 'long')}</div>
+              </SeparatedInfo>
+            ) : (
+              <Flex direction="column" className="fs-6 text-gray-700">
+                <div>{info.owner.displayName}</div>
+                <div>{formatDate(info.modified, 'long')}</div>
+              </Flex>
+            )}
+          </Flex>
+        )}
+
         {info.headline && !isExpired && (
           <Image
             src={iconHeadline}
