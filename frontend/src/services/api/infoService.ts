@@ -90,7 +90,7 @@ export const createInfoService = () => {
         thread_id?: ThreadId; // FIXME Is uncommenting this line useful, or dangerous ?
         title?: string;
         content?: string;
-        is_headline: boolean;
+        is_headline?: boolean;
         publication_date?: string;
         expiration_date?: string;
       },
