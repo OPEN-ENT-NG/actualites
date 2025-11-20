@@ -17,7 +17,7 @@ export function InfoListEmpty({ type }: { type: EmptyScreenType }) {
           imageSrc={illuEmptyCreate}
           imageAlt={t('actualites.info-list.empty.create-thread.title')}
           title={t('actualites.info-list.empty.create-thread.title')}
-          text={t('actualites.info-list.empty.create-thread.text')}
+          text={t('actualites.info-list.empty.create-thread.description')}
         />
       )}
       {type === 'create-info' && (
@@ -25,7 +25,7 @@ export function InfoListEmpty({ type }: { type: EmptyScreenType }) {
           imageSrc={illuEmptyCreate}
           imageAlt={t('actualites.info-list.empty.create-info.title')}
           title={t('actualites.info-list.empty.create-info.title')}
-          text={t('actualites.info-list.empty.create-info.text')}
+          text={t('actualites.info-list.empty.create-info.description')}
         />
       )}
       {type === 'default' && (
@@ -33,7 +33,7 @@ export function InfoListEmpty({ type }: { type: EmptyScreenType }) {
           imageSrc={illuEmpty}
           imageAlt={t('actualites.info-list.empty.default.title')}
           title={t('actualites.info-list.empty.default.title')}
-          text={t('actualites.info-list.empty.default.text')}
+          text={t('actualites.info-list.empty.default.description')}
         />
       )}
     </Flex>
