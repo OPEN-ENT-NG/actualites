@@ -7,6 +7,7 @@ import { InfoCard, InfoCardSkeleton } from '..';
 import { InfoListEmpty } from './components/InfoListEmpty';
 import { InfoListSegmented } from './components/InfoListSegmented';
 import { useInfoListEmptyScreen } from './hooks/useInfoListEmptyScreen';
+import { InfoListSegmented } from './components/InfoListSegmented';
 
 export const InfoList = () => {
   const { infos, hasNextPage, loadNextPage, isLoading } = useInfoList();
