@@ -1,5 +1,7 @@
-import { Info, InfoStatus } from '~/models/info';
+import { Info, InfoStatus, ThreadInfoStats } from '~/models/info';
 import { getFutureDate } from './helper';
+import { ThreadId } from '~/models/thread';
+import { mockThreads } from './threads';
 
 //---------------------------------------
 //---------------- INFOS ----------------
@@ -236,3 +238,21 @@ export const mockInfoRevisions = [
     username: 'Patrick',
   },
 ];
+
+export const mockThreadInfoStats = (threadId: ThreadId): ThreadInfoStats => {
+  return {
+    id: threadId,
+    status: {
+      [InfoStatus.DRAFT]: mockInfosDraft.length,
+      [InfoStatus.TRASH]: 0, // TODO: add mockInfosTrash
+      [InfoStatus.PENDING]: 0, // TODO: add mockInfosPending
+      [InfoStatus.PUBLISHED]: mockInfosPublished.length,
+    },
+    expiredCount: mockInfosExpired.length,
+    incomingCount: mockInfosIncoming.length,
+  };
+};
+
+export const mockInfosStats = {
+  threads: mockThreads.map((thread) => mockThreadInfoStats(thread.id)),
+};

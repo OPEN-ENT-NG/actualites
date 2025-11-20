@@ -45,6 +45,8 @@ export const infoQueryKeys = {
     'json',
   ],
 
+  stats: () => [...infoQueryKeys.all({}), 'stats'],
+
   revisions: (options: { infoId: InfoId }) => [
     ...infoQueryKeys.info(options),
     'revisions',
@@ -73,7 +75,14 @@ export const infoQueryOptions = {
       staleTime: Infinity, // will be unvalidated manually when needed only
     });
   },
+
   /**
+   * Get a page of infos, optionnally from a given thread.
+   * @param options - The options for fetching the infos.
+   * @param options.pageSize - The number of infos to fetch per page.
+   * @param options.threadId - The ID of the thread to fetch the infos from.
+   * @param options.status - The status of the infos to fetch.
+   * @param options.state - The state of the infos to fetch.
    * @returns Query options for fetching a page of infos, optionnally from a given thread.
    */
   getInfos(options: {
@@ -102,6 +111,17 @@ export const infoQueryOptions = {
         }
         return undefined;
       },
+    });
+  },
+
+  /**
+   * Get the stats of all infos.
+   * @returns The stats of all infos.
+   */
+  getStats() {
+    return queryOptions({
+      queryKey: infoQueryKeys.stats(),
+      queryFn: () => infoService.getStats(),
     });
   },
 
@@ -153,6 +173,8 @@ export const useInfos = (
     infoQueryOptions.getInfos({ pageSize, threadId, ...options }),
   );
 };
+
+export const useInfosStats = () => useQuery(infoQueryOptions.getStats());
 
 export const useInfoShares = (threadId: ThreadId, infoId: InfoId) =>
   useQuery(infoQueryOptions.getShares(threadId, infoId));

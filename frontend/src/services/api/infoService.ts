@@ -6,6 +6,7 @@ import {
   InfoExtendedStatus,
   InfoId,
   InfoRevision,
+  InfosStats,
   InfoStatus,
   OriginalInfo,
 } from '../../models/info';
@@ -23,6 +24,14 @@ export const createInfoService = () => {
       return odeServices
         .http()
         .get<InfoDetails>(`${baseUrlAPI}/infos/${infoId}`);
+    },
+
+    /**
+     * Get the stats of all infos.
+     * @returns The stats of all infos.
+     */
+    getStats() {
+      return odeServices.http().get<InfosStats>(`${baseUrlAPI}/infos/stats`);
     },
     /**
      * Get a page of Infos results.
