@@ -211,7 +211,7 @@ public class InfoServiceSqlImpl implements InfoService {
 			query = "SELECT i.id as _id, i.title, i.content, i.status, i.publication_date, i.expiration_date, i.is_headline, i.thread_id, i.created, i.modified" +
 				", i.owner, i.content_version, u.username, t.title AS thread_title, t.icon AS thread_icon" +
 				", (SELECT json_agg(cr.*) FROM (" +
-					"SELECT c.id as _id, c.comment, c.owner, c.created, c.modified, au.username" +
+					"SELECT c.id as _id, c.comment, c.owner, c.created, c.modified, au.username, au.deleted" +
 					" FROM "+NEWS_COMMENT_TABLE+" AS c" +
 					" LEFT JOIN "+NEWS_USER_TABLE+" AS au ON c.owner = au.id" +
 					" WHERE i.id = c.info_id" +
@@ -245,7 +245,7 @@ public class InfoServiceSqlImpl implements InfoService {
 			query = "SELECT i.id as _id, i.title, " + getContentFieldQuery(originalContent) + " as content, i.status, i.publication_date, i.expiration_date, i.is_headline, i.thread_id, i.created, i.modified" +
 				", i.owner, i.content_version, u.username, t.title AS thread_title, t.icon AS thread_icon" +
 				", (SELECT json_agg(cr.*) FROM (" +
-					"SELECT c.id as _id, c.comment, c.owner, c.created, c.modified, au.username" +
+					"SELECT c.id as _id, c.comment, c.owner, c.created, c.modified, au.username, au.deleted" +
 					" FROM "+NEWS_COMMENT_TABLE+" AS c" +
 					" LEFT JOIN "+NEWS_USER_TABLE+" AS au ON c.owner = au.id" +
 					" WHERE i.id = c.info_id" +
@@ -310,7 +310,7 @@ public class InfoServiceSqlImpl implements InfoService {
 			query = "SELECT i.id as _id, i.title, i.content, i.status, i.publication_date, i.expiration_date, i.is_headline, i.thread_id, i.created, i.modified" +
 				", i.owner, i.content_version, u.username, t.title AS thread_title, t.icon AS thread_icon" +
 				", (SELECT json_agg(cr.*) FROM (" +
-					"SELECT c.id as _id, c.comment, c.owner, c.created, c.modified, au.username" +
+					"SELECT c.id as _id, c.comment, c.owner, c.created, c.modified, au.username, au.deleted" +
 					" FROM "+NEWS_COMMENT_TABLE+" AS c" +
 					" LEFT JOIN "+NEWS_USER_TABLE+" AS au ON c.owner = au.id" +
 					" WHERE i.id = c.info_id" +
