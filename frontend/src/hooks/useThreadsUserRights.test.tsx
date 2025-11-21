@@ -4,32 +4,12 @@ import {
   mockThreadAsCatherineWithContributeRight,
   mockThreadAsOwner,
 } from '~/mocks/datas/threads';
-import { mockUserLogged } from '~/mocks/datas/users';
 import { wrapper } from '~/mocks/setup';
 import { queryClient } from '~/providers';
 import { threadService } from '~/services/api';
 import { useThreadsUserRights } from './useThreadsUserRights';
 
-const mocks = vi.hoisted(() => ({
-  useUser: vi.fn(),
-}));
-
-vi.mock('@edifice.io/react', async () => {
-  const actual =
-    await vi.importActual<typeof import('@edifice.io/react')>(
-      '@edifice.io/react',
-    );
-  return {
-    ...actual,
-    useUser: mocks.useUser,
-  };
-});
-
 describe('useThreadsUserRights', () => {
-  beforeEach(() => {
-    mocks.useUser.mockReturnValue({ user: mockUserLogged });
-  });
-
   afterEach(() => {
     vi.clearAllMocks();
     queryClient.clear();

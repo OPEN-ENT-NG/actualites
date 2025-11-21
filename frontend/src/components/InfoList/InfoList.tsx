@@ -1,16 +1,22 @@
 import { Flex, useInfiniteScroll } from '@edifice.io/react';
 import { useInfoList } from '~/hooks/useInfoList';
 import { useInfoSearchParams } from '~/hooks/useInfoSearchParams';
+import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
+import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
 import { InfoCard, InfoCardSkeleton } from '..';
 import { InfoListEmpty } from './components/InfoListEmpty';
-import { useInfoListEmptyScreen } from './hooks/useInfoListEmptyScreen';
 import { InfoListSegmented } from './components/InfoListSegmented';
+import { useInfoListEmptyScreen } from './hooks/useInfoListEmptyScreen';
 
 export const InfoList = () => {
   const { infos, hasNextPage, loadNextPage, isLoading } = useInfoList();
   const { type: emptyScreenType, isReady: emptyScreenIsReady } =
     useInfoListEmptyScreen();
   const { value, updateParams } = useInfoSearchParams();
+  const { threadId } = useThreadInfoParams();
+  const { hasContributeRightOnThread } = useThreadsUserRights();
+
+  const isSegmentedVisible = hasContributeRightOnThread?.(threadId);
 
   const loadNextRef = useInfiniteScroll({
     callback: loadNextPage,
@@ -23,14 +29,16 @@ export const InfoList = () => {
       className="p-md-24 mt-16 mt-md-0 overflow-hidden me-n16 me-md-0 pe-16"
       gap="16"
     >
-      <header>
-        <InfoListSegmented
-          value={value}
-          onChange={(value) => {
-            updateParams({ value });
-          }}
-        />
-      </header>
+      {isSegmentedVisible && (
+        <header>
+          <InfoListSegmented
+            value={value}
+            onChange={(value) => {
+              updateParams({ value });
+            }}
+          />
+        </header>
+      )}
       {!isLoading && infos.length === 0 && emptyScreenIsReady && (
         <InfoListEmpty type={emptyScreenType} />
       )}
