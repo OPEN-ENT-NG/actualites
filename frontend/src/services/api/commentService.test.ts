@@ -14,7 +14,6 @@ describe('Comment Mutation Methods', () => {
   test('makes a PUT request to create a new Comment', async () => {
     const response = await commentService.create({
       comment: ':shoutout:',
-      title: 'Un nouveau fil',
       info_id: 123,
     });
 
