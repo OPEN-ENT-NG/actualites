@@ -78,22 +78,3 @@
   box-shadow: -3px 0px 3px 0px #00000033;
   border-bottom: solid 1px var(--edifice-info-card-border-color);
 }
-
-.info-card-content {
-  opacity: 0;
-  height: 0;
-  overflow: hidden;
-  transition:
-    opacity var(--edifice-info-animation-duration) ease-in-out,
-    height var(--edifice-info-animation-duration) ease-in-out;
-}
-
-.content-hidden {
-  opacity: 0;
-  height: 0;
-}
-
-.content-visible {
-  opacity: 1;
-  transition-delay: var(--edifice-info-animation-duration);
-}
