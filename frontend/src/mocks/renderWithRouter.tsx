@@ -1,7 +1,15 @@
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { render } from './setup';
 
-export const renderWithRouter = (path = '/', element: JSX.Element) => {
+type RenderWithRouterOptions = {
+  routePath?: string;
+};
+
+export const renderWithRouter = (
+  path = '/',
+  element: JSX.Element,
+  options?: RenderWithRouterOptions,
+) => {
   // Extract pathname and search params separately
   const url = new URL(path, 'http://localhost');
   const pathname = url.pathname;
@@ -9,7 +17,7 @@ export const renderWithRouter = (path = '/', element: JSX.Element) => {
 
   const routes = [
     {
-      path: pathname,
+      path: options?.routePath ?? pathname,
       element,
     },
   ];

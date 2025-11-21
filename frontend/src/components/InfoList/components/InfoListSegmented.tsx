@@ -1,10 +1,6 @@
 import { Segmented } from 'antd';
 import { useI18n } from '~/hooks/useI18n';
-import {
-  InfoExtendedStatus,
-  InfoSegmentedValue,
-  InfoStatus,
-} from '~/models/info';
+import { InfoSegmentedValue, InfoStatus } from '~/models/info';
 
 export const InfoListSegmented = ({
   value = InfoStatus.PUBLISHED,
@@ -24,14 +20,15 @@ export const InfoListSegmented = ({
       label: t('actualites.info-list.segmented.draft'),
       value: InfoStatus.DRAFT,
     },
-    {
-      label: t('actualites.info-list.segmented.expired'),
-      value: InfoExtendedStatus.EXPIRED,
-    },
-    {
-      label: t('actualites.info-list.segmented.incoming'),
-      value: InfoExtendedStatus.INCOMING,
-    },
+    // TODO: Uncomment when US is ready
+    // {
+    //   label: t('actualites.info-list.segmented.expired'),
+    //   value: InfoExtendedStatus.EXPIRED,
+    // },
+    // {
+    //   label: t('actualites.info-list.segmented.incoming'),
+    //   value: InfoExtendedStatus.INCOMING,
+    // },
   ];
 
   return (

@@ -4,12 +4,51 @@
 
 import '@testing-library/jest-dom';
 import { RenderOptions, render } from '@testing-library/react';
-import { ReactElement } from 'react';
+import { ReactElement, ReactNode, createElement } from 'react';
 import { afterAll, afterEach, beforeAll } from 'vitest';
 import '../i18n';
 import { Providers } from '../providers';
 import { MockedProviders } from './mockedProvider';
 import { server } from './server';
+import { mockUserLogged } from './datas/users';
+
+// Mock useUser
+const mocks = vi.hoisted(() => ({
+  useUser: vi.fn(() => ({ user: mockUserLogged })),
+}));
+
+vi.mock('@edifice.io/react', async () => {
+  const actual =
+    await vi.importActual<typeof import('@edifice.io/react')>(
+      '@edifice.io/react',
+    );
+  return {
+    ...actual,
+    useUser: mocks.useUser,
+  };
+});
+
+//Mocked the @edifice.io/react/editor module so Editor render simple divs in tests;
+// this avoids tiptap’s error when rendering the editor in tests more than once. This is a workaround.
+type EditorMockProps = {
+  content?: ReactNode;
+};
+
+const createMockEditorComponent =
+  (displayName: string) =>
+  ({ content }: EditorMockProps) =>
+    createElement('div', { 'data-testid': `mock-${displayName}` }, content);
+
+vi.mock('@edifice.io/react/editor', async () => {
+  const actual = await vi.importActual<
+    typeof import('@edifice.io/react/editor')
+  >('@edifice.io/react/editor');
+  return {
+    ...actual,
+    Editor: createMockEditorComponent('editor'),
+    EditorPreview: createMockEditorComponent('editor-preview'),
+  };
+});
 
 // Enable API mocking before tests.
 beforeAll(() =>

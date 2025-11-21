@@ -1,5 +1,4 @@
 import { renderHook } from '@testing-library/react';
-import { mockUserLogged } from '~/mocks/datas/users';
 import { wrapper } from '~/mocks/setup';
 import { useInfoListEmptyScreen } from './useInfoListEmptyScreen';
 import {
@@ -10,23 +9,11 @@ import {
 } from '~/mocks/datas/threads';
 
 const mocks = vi.hoisted(() => ({
-  useUser: vi.fn(),
   useThreads: vi.fn(),
   useThreadsUserRights: vi.fn(),
   useUserRights: vi.fn(),
   useThreadInfoParams: vi.fn(),
 }));
-
-vi.mock('@edifice.io/react', async () => {
-  const actual =
-    await vi.importActual<typeof import('@edifice.io/react')>(
-      '@edifice.io/react',
-    );
-  return {
-    ...actual,
-    useUser: mocks.useUser,
-  };
-});
 
 vi.mock('~/services/queries', () => ({
   useThreads: mocks.useThreads,
@@ -45,10 +32,6 @@ vi.mock('~/hooks/useUserRights', () => ({
 }));
 
 describe('useInfoListEmptyScreen', () => {
-  beforeEach(() => {
-    mocks.useUser.mockReturnValue({ user: mockUserLogged });
-  });
-
   afterEach(() => {
     vi.clearAllMocks();
   });
