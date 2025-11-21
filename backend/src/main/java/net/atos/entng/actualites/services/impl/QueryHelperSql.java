@@ -292,7 +292,7 @@ public class QueryHelperSql {
 
     public void fetchComments(final Long infoId, final Handler<Either<String, JsonArray>> handler) {
         final StringBuilder subquery = new StringBuilder();
-        subquery.append("SELECT comment.id as _id, comment.comment, comment.owner, comment.created, comment.modified, users.username, comment.info_id ");
+        subquery.append("SELECT comment.id as _id, comment.comment, comment.owner, comment.created, comment.modified, users.username, users.deleted, comment.info_id ");
         subquery.append("FROM actualites.comment INNER JOIN actualites.users ON comment.owner = users.id ");
         subquery.append("WHERE comment.info_id = ? ORDER BY comment.created ASC");
         final JsonArray values = new JsonArray().add(infoId);
@@ -351,7 +351,7 @@ public class QueryHelperSql {
                 "info.owner, users.username, thread.title AS thread_title, thread.icon AS thread_icon, ( " +
                 "SELECT json_agg(cr.*) " +
                 "FROM ( " +
-                "SELECT comment.id as _id, comment.comment, comment.owner, comment.created, comment.modified, users.username " +
+                "SELECT comment.id as _id, comment.comment, comment.owner, comment.created, comment.modified, users.username, users.deleted " +
                 "FROM actualites.comment INNER JOIN actualites.users ON comment.owner = users.id " +
                 "WHERE info.id = comment.info_id ORDER BY comment.modified ASC) cr) " +
                 "AS comments, json_agg(row_to_json(row(info_shares.member_id, info_shares.action)::actualites.share_tuple)) as shared, " +
