@@ -1,73 +1,56 @@
 import { Editor, EditorPreview } from '@edifice.io/react/editor';
 import clsx from 'clsx';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
+import { CommentList } from '../comment-list/CommentList';
+import { Expandable } from '../Expandable';
 import { InfoCardProps } from './InfoCard';
 import { InfoCardPreviousContent } from './InfoCardPreviousContent';
 
 export const InfoCardContent = ({
   info,
   collapse = true,
-}: Pick<InfoCardProps, 'info'> & { collapse?: boolean }) => {
-  const fullContentRef = useRef<HTMLDivElement>(null);
-  const collapseContentRef = useRef<HTMLDivElement>(null);
-  const [fullHeight, setFullHeight] = useState<number>(0);
-  const [collapseHeight, setCollapseHeight] = useState<number>(0);
+  onCollapseApplied,
+}: Pick<InfoCardProps, 'info'> & {
+  collapse?: boolean;
+  onCollapseApplied?: () => void;
+}) => {
+  const [showFullContent, setShowFullContent] = useState(!collapse);
 
-  useEffect(() => {
-    // Calculate heights full and collapsed for animation purposes
-    if (
-      fullContentRef.current &&
-      fullContentRef.current.scrollHeight > fullHeight
-    ) {
-      setFullHeight(fullContentRef.current.scrollHeight);
-    }
-    if (
-      collapseContentRef.current &&
-      collapseContentRef.current.scrollHeight > collapseHeight
-    ) {
-      setCollapseHeight(collapseContentRef.current.scrollHeight);
-    }
-  }, [
-    info.content,
-    fullHeight,
-    collapseHeight,
-    fullContentRef.current?.scrollHeight,
-    collapseContentRef.current?.scrollHeight,
-  ]);
-
-  const classNameContentCollapsed = clsx(
-    'info-card-content px-md-24',
-    !collapse ? 'content-hidden' : 'content-visible',
-  );
-  const classNameContentFull = clsx(
-    'info-card-content px-md-24',
-    collapse ? 'content-hidden' : 'content-visible',
-  );
+  const handleTogglePreview = () => {
+    setShowFullContent(!collapse);
+  };
 
   return (
-    <div>
-      {/* Collapsed Content */}
+    <Expandable
+      collapse={collapse}
+      onCollapseApplied={onCollapseApplied}
+      hasPreview
+      onTogglePreview={handleTogglePreview}
+    >
       <div
-        className={classNameContentCollapsed}
-        ref={collapseContentRef}
-        style={{
-          height: collapse ? collapseHeight : 0,
-        }}
+        id={`info-${info.id}-content`}
+        className="info-card-content px-md-24"
       >
-        <EditorPreview content={info.content} variant="ghost" />
-      </div>
+        {!showFullContent && (
+          <EditorPreview content={info.content} variant="ghost" />
+        )}
 
-      {/* Full Content */}
-      <div
-        className={classNameContentFull}
-        ref={fullContentRef}
-        style={{
-          height: collapse ? 0 : fullHeight,
-        }}
-      >
-        {!collapse && info.content && <InfoCardPreviousContent info={info} />}
-        <Editor content={info.content} mode="read" variant="ghost" />
+        {showFullContent && info.content && (
+          <InfoCardPreviousContent info={info} />
+        )}
+        <div className={clsx({ 'd-none': !showFullContent })}>
+          <Editor
+            content={showFullContent ? info.content : ''}
+            mode="read"
+            variant="ghost"
+          />
+        </div>
+        {showFullContent && (
+          <div id={`info-${info.id}-comments`}>
+            <CommentList info={info} />
+          </div>
+        )}
       </div>
-    </div>
+    </Expandable>
   );
 };

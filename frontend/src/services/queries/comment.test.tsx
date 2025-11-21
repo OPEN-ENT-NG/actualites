@@ -36,7 +36,7 @@ describe('Comment Queries', () => {
     };
 
     act(() => {
-      result.current.mutate(variables);
+      result.current.mutate({ payload: variables });
     });
 
     await waitFor(() => {
@@ -78,7 +78,7 @@ describe('Comment Queries', () => {
 
     const serviceSpy = vi.spyOn(commentService, 'delete');
 
-    const variables = { commentId: 321, infoId: 123 };
+    const variables = { commentId: 321, infoId: 123, threadId: 456 };
 
     act(() => {
       result.current.mutate(variables);
