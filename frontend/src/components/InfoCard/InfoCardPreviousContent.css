@@ -1,0 +1,4 @@
+/* Override defective Alert component */
+.info-card-previouscontent-alert .alert-content {
+  width: 100%;
+}

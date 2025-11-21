@@ -1,0 +1,65 @@
+//---------------------------------------
+//---------------- USERS ----------------
+//---------------------------------------
+export const mockUserLoggedId = 'a1b2c3d4';
+export const mockUserLogged = {
+  id: mockUserLoggedId,
+  login: 'stephane.loison',
+  displayName: 'Stephane',
+  type: ['Personnel'],
+  visibleInfos: [],
+  schools: [
+    {
+      exports: null,
+      classes: [],
+      name: 'Lycée Paul Bert',
+      id: 'd4c3b2a1',
+      UAI: null,
+    },
+  ],
+  relatedName: null,
+  relatedId: null,
+  relatedType: null,
+  userId: mockUserLoggedId,
+  motto: 'Always Learning',
+  photo: `/userbook/avatar/${mockUserLoggedId}`,
+  mood: 'happy',
+  health: 'good',
+  address: '123 Fake Street',
+  email: 'fake.user@example.com',
+  tel: '1234567890',
+  mobile: '0987654321',
+  birthdate: '1990-01-01',
+  hobbies: ['reading', 'coding'],
+};
+
+export const mockUserCatherine = {
+  id: '8f437f63-1115-44c3-a3a3-33531ae80d90a1b2c3d4',
+  login: 'catherine.user',
+  displayName: 'Catherine',
+  type: ['Personnel'],
+  visibleInfos: [],
+  schools: [
+    {
+      exports: null,
+      classes: [],
+      name: 'Fake School',
+      id: 'd4c3b2a1',
+      UAI: null,
+    },
+  ],
+  relatedName: null,
+  relatedId: null,
+  relatedType: null,
+  userId: 'a1b2c3d4',
+  motto: 'Always Learning',
+  photo: '/userbook/avatar/a1b2c3d4',
+  mood: 'happy',
+  health: 'good',
+  address: '123 Fake Street',
+  email: 'fake.user@example.com',
+  tel: '1234567890',
+  mobile: '0987654321',
+  birthdate: '1990-01-01',
+  hobbies: ['reading', 'coding'],
+};

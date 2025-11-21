@@ -1,22 +1,19 @@
+.DS_Store
 .idea
-actualites.iml
-src/main/resources/view
-src/main/resources/public/dist
-src/main/resources/public/temp
-src/main/resources/public/js
-src/main/resources/public/view
-rev-manifest.json
-build/
-node_modules
-.gradle/
-src/main/resources/public/template/entcore/
-package-lock.json
-.classpath
-.project
-.settings/
-bin/
-gradle/
-gradlew*
-.env
-target
-dependency-reduced-pom.xml
+.vscode
+.gradle
+.pnpm-store
+test.sh
+
+# Ignore some files in React-based frontends
+.pnpm-store
+frontend/.env*
+
+# Ignore resources files in "backend/public" folders
+backend/**/resources/public/*.*
+# Ignore HTML files in "backend/view" folders
+backend/**/resources/view/*.html
+
+# Ignore generated files
+frontend/public/mockServiceWorker.js
+backend/src/main/resources/mockServiceWorker.js

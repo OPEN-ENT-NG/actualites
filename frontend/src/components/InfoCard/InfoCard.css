@@ -1,0 +1,80 @@
+.info-card {
+  --edifice-info-card-state-color: var(--edifice-blue-300);
+  --edifice-info-card-border-color: var(--edifice-white);
+  --edifice-info-card-divider-color: var(--edifice-info-card-state-color);
+  --edifice-info-card-before-background: var(--edifice-info-card-state-color);
+  --edifice-info-card-background: var(--edifice-white);
+  --edifice-info-animation-duration: 0.3s;
+
+  position: relative;
+  margin-left: 1.6rem;
+  box-shadow: 0px 0px 6px 0px #00000033;
+  border-top-left-radius: var(--edifice-border-radius-2xl);
+  border-top-right-radius: var(--edifice-border-radius-2xl);
+  border-bottom-right-radius: var(--edifice-border-radius-2xl);
+  border-bottom-left-radius: 0;
+  border-color: var(--edifice-info-card-border-color);
+}
+
+.info-card:focus-within {
+  border-color: var(--edifice-info-card-border-color) !important;
+}
+
+.info-card:hover {
+  border-color: var(--edifice-info-card-border-color) !important;
+}
+
+.info-card.info-card-incoming {
+  --edifice-info-card-state-color: var(--edifice-purple-300);
+  --edifice-info-card-divider-color: var(--edifice-purple);
+}
+
+.info-card.info-card-headline::before {
+  left: -1.6rem;
+}
+.info-card.info-card-headline {
+  --edifice-info-card-state-color: var(--edifice-yellow-300);
+  --edifice-info-card-divider-color: var(--edifice-yellow);
+  --edifice-info-card-border-color: var(--edifice-info-card-state-color);
+}
+
+.info-card.info-card-expired {
+  --edifice-info-card-state-color: var(--edifice-red-300);
+  --edifice-info-card-divider-color: var(--edifice-danger);
+  --edifice-info-card-border-color: var(--edifice-white);
+}
+
+.info-card::before {
+  content: '';
+  position: absolute;
+  height: calc(100% - 80px);
+  left: -1.7rem;
+  bottom: -1px;
+  width: 1.6rem;
+  z-index: 1;
+  background-color: var(--edifice-info-card-before-background);
+  border-top-left-radius: 4.8rem;
+  border-bottom-left-radius: 2.4rem;
+  border-bottom-right-radius: 2.4rem;
+  box-shadow: inset -4px -3px 6px 0px #00000033;
+  transition: height var(--edifice-info-animation-duration) ease-in-out;
+}
+
+.info-card.info-card-full-content::before {
+  transition-delay: var(--edifice-info-animation-duration);
+  height: 50px;
+}
+
+.info-card::after {
+  content: '';
+  position: absolute;
+  left: -0.8rem;
+  bottom: -1px;
+  width: 0.9rem;
+  height: 24px;
+  z-index: 0;
+  background-color: var(--edifice-info-card-background);
+  border-top-left-radius: 2.4rem;
+  box-shadow: -3px 0px 3px 0px #00000033;
+  border-bottom: solid 1px var(--edifice-info-card-border-color);
+}
