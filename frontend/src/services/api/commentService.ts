@@ -20,10 +20,10 @@ export const createCommentService = () => {
      * @param payload
      * @returns ID of the newly created Info
      */
-    create(payload: { info_id: InfoId; title: string; comment: string }) {
-      return odeServices.http().put<{
+    create(payload: { info_id: InfoId; comment: string }) {
+      return odeServices.http().post<{
         id: CommentId;
-      }>(`${baseUrlAPI}/infos/${payload.info_id}/comment`, payload);
+      }>(`${baseUrlAPI}/infos/${payload.info_id}/comments`, payload);
     },
 
     /**
@@ -49,7 +49,7 @@ export const createCommentService = () => {
     delete(infoId: InfoId, commentId: CommentId) {
       return odeServices.http().delete<{
         rows: number;
-      }>(`${baseUrlAPI}/infos/${infoId}/comment/${commentId}`);
+      }>(`${baseUrlAPI}/infos/${infoId}/comments/${commentId}`);
     },
   };
 };
