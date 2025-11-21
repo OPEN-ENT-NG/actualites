@@ -1,6 +1,6 @@
 import { Alert, Card } from '@edifice.io/react';
 import clsx from 'clsx';
-import { useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useI18n } from '~/hooks/useI18n';
 import { Info, InfoExtendedStatus, InfoStatus } from '~/models/info';
 import './InfoCard.css';
@@ -17,7 +17,6 @@ export type InfoCardProps = {
 
 export const InfoCard = ({ info }: InfoCardProps) => {
   const { t } = useI18n();
-  const cardRef = useRef<HTMLDivElement>(null);
 
   const isIncoming =
     info.status === InfoStatus.PUBLISHED &&
@@ -27,7 +26,10 @@ export const InfoCard = ({ info }: InfoCardProps) => {
     info.status === InfoStatus.PUBLISHED &&
     !!info.expirationDate &&
     new Date(info.expirationDate) < new Date();
+
   const [collapse, setCollapse] = useState(true);
+  const [scrollTo, setScrollTo] = useState<string>();
+
   const className = clsx(
     'px-16 px-md-24 py-16 info-card position-relative border-none overflow-visible',
     {
@@ -51,23 +53,45 @@ export const InfoCard = ({ info }: InfoCardProps) => {
 
   const handleMoreClick = () => {
     setCollapse((collapse) => {
-      if (!collapse && cardRef.current) {
+      if (!collapse) {
         // Scroll to top of the card when collapsing
-        cardRef.current.scrollIntoView({ behavior: 'smooth' });
+        setScrollTo(`info-${info.id}`);
       }
       return !collapse;
     });
   };
 
+  const handleCommentsClick = () => {
+    setCollapse((collapse) => {
+      if (!collapse) {
+        // Scroll to top of the card when collapsing
+        setScrollTo(`info-${info.id}`);
+      } else {
+        // Scroll to top comment when expanding
+        setScrollTo(`info-${info.id}-comments`);
+      }
+      return !collapse;
+    });
+  };
+
+  const handleCollapseApplied = useCallback(() => {
+    if (scrollTo) {
+      const ref = document.getElementById(scrollTo);
+      if (ref) {
+        ref.scrollIntoView();
+      }
+      setScrollTo(undefined);
+    }
+  }, [scrollTo]);
+
   return (
     <Card
-      ref={cardRef}
       className={className}
       isClickable={false}
       isSelectable={false}
       key={info.id}
     >
-      <article id={String(info.id)} className="overflow-hidden">
+      <article id={`info-${info.id}`} className="overflow-hidden">
         <InfoCardHeader info={info} extendedStatus={extendedStatus} />
 
         {isExpired && (
@@ -79,12 +103,17 @@ export const InfoCard = ({ info }: InfoCardProps) => {
           </Alert>
         )}
 
-        <InfoCardContent info={info} collapse={collapse} />
+        <InfoCardContent
+          info={info}
+          collapse={collapse}
+          onCollapseApplied={handleCollapseApplied}
+        />
 
         <InfoCardFooter
           info={info}
           collapse={collapse}
-          onMoreClick={handleMoreClick}
+          handleMoreClick={handleMoreClick}
+          handleCommentsClick={handleCommentsClick}
         />
       </article>
     </Card>
