@@ -12,8 +12,8 @@ export const commentHandlers = [
     return HttpResponse.json(mockComments, { status: 200 });
   }),
   /// Create a comment
-  http.put<{ threadId: string }>(
-    `${baseUrlAPI}/infos/:infoId/comment`,
+  http.post<{ threadId: string }>(
+    `${baseUrlAPI}/infos/:infoId/comments`,
     async ({ request }) => {
       const payload = await request.json();
       if (!payload) {
@@ -46,7 +46,7 @@ export const commentHandlers = [
   ),
   // Delete a comment
   http.delete<{ infoId: string; commentId: string }>(
-    `${baseUrlAPI}/infos/:infoId/comment/:commentId`,
+    `${baseUrlAPI}/infos/:infoId/comments/:commentId`,
     async () =>
       HttpResponse.json(
         {
