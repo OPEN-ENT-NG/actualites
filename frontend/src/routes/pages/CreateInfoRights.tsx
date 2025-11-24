@@ -1,11 +1,11 @@
 import { ShareRight, ShareRightActionDisplayName } from '@edifice.io/client';
 import {
   Button,
+  ButtonSkeleton,
   Flex,
   ShareOptions,
   ShareResources,
   ShareResourcesRef,
-  TextSkeleton,
   useBreakpoint,
 } from '@edifice.io/react';
 import {
@@ -139,12 +139,17 @@ export function CreateInfoRights() {
     shareInfoRef.current?.handleShare();
   };
 
-  if (!info) {
+  if (info) {
     return (
       <>
         <InfoFormHeaderSkeleton />
-        <TextSkeleton className="col-12" />
-        <InfoFormActionsSkeleton />
+        <Flex direction="column" gap="8">
+          <h1 className="placeholder col-6" />
+          <ButtonSkeleton className="col-6" />
+          <div className="placeholder col-12" style={{ height: '200px' }} />
+          <ButtonSkeleton className="col-4" />
+          <InfoFormActionsSkeleton />
+        </Flex>
       </>
     );
   }
