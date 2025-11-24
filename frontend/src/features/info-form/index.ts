@@ -6,7 +6,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
 export * from './components/InfoDetailsForm';
-export * from './components/InfoFormActions';
+export * from './components/InfoDetailsFormActions';
 export * from './components/InfoFormActionsSkeleton';
 export * from './components/InfoFormHeader';
 export * from './components/InfoFormHeaderSkeleton';
