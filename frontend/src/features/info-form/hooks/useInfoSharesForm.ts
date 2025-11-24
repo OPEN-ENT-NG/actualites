@@ -1,32 +1,31 @@
+import { useToast } from '@edifice.io/react';
+import { useNavigate } from 'react-router-dom';
+import { useI18n } from '~/hooks/useI18n';
 import { InfoId, InfoStatus } from '~/models/info';
 import { useUpdateInfo } from '~/services/queries';
 
-export function useInfoSharesForm({
-  infoId,
-  handleInfoSharesSave,
-}: {
-  infoId: InfoId;
-  handleInfoSharesSave?: () => void;
-}) {
-  const { mutate: useUpdateInfoMutate } = useUpdateInfo();
+export function useInfoSharesForm({ infoId }: { infoId: InfoId }) {
+  const { t } = useI18n();
+  const toast = useToast();
+  const { mutate: updateInfoMutate } = useUpdateInfo();
+  const navigate = useNavigate();
 
-  const handlePublish = (isDirty: boolean) => {
+  const handlePublish = () => {
     if (!infoId) {
       throw new Error('infoId is undefined');
     }
 
-    if (isDirty) {
-      handleInfoSharesSave?.();
-    }
-
-    useUpdateInfoMutate(
+    updateInfoMutate(
       {
         infoId: infoId,
         infoStatus: InfoStatus.PUBLISHED,
         payload: {},
       },
       {
-        onSuccess: () => {},
+        onSuccess: () => {
+          toast.success(t('actualites.info.createForm.publishedSuccess'));
+          navigate('/');
+        },
       },
     );
   };
