@@ -108,7 +108,7 @@ export function CreateInfoRights() {
         getShareMapping: `${baseUrlAPI}/rights/sharing`,
       },
     };
-  }, [infoShares]);
+  }, [infoShares, infoId]);
 
   const handleShareInfoChange = (_: ShareRight[], isDirty: boolean) => {
     setIsDirty(isDirty);
