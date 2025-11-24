@@ -64,10 +64,10 @@ export function CreateInfoRights() {
   const shareInfoRef = useRef<ShareResourcesRef>(null);
   const [isPublishing, setIsPublishing] = useState(false);
   const { handlePublish } = useInfoSharesForm({ infoId });
+  const setCurrentCreationStep = useInfoFormStore.use.setCurrentCreationStep();
 
   const [isDirty, setIsDirty] = useState(false);
-
-  const setCurrentCreationStep = useInfoFormStore.use.setCurrentCreationStep();
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     setCurrentCreationStep(CreationStep.INFO_RIGHTS);
@@ -120,6 +120,7 @@ export function CreateInfoRights() {
       handlePublish();
     } else {
       navigate('/');
+      setIsSaving(false);
     }
   }, [isPublishing, handlePublish, navigate]);
 
@@ -140,6 +141,7 @@ export function CreateInfoRights() {
 
   const handleInfoSharesSave = () => {
     shareInfoRef.current?.handleShare();
+    setIsSaving(true);
   };
 
   if (!info) {
@@ -179,6 +181,7 @@ export function CreateInfoRights() {
           onClick={handleCancelClick}
           data-testid="actualites.info.form.cancelButton"
           leftIcon={<IconArrowLeft />}
+          disabled={isSaving}
         >
           {t('actualites.info.createForm.previousStep')}
         </Button>
@@ -189,7 +192,8 @@ export function CreateInfoRights() {
             type="submit"
             leftIcon={<IconSave />}
             onClick={handleInfoSharesSave}
-            disabled={!isDirty}
+            disabled={!isDirty || isSaving || isPublishing}
+            isLoading={isSaving}
             data-testid="actualites.info.form.saveDraftButton"
           >
             {t('actualites.info.createForm.saveDraft')}
@@ -200,6 +204,8 @@ export function CreateInfoRights() {
             rightIcon={<IconArrowRight />}
             onClick={handlePublishClick}
             data-testid="actualites.info.form.submitButton"
+            disabled={isSaving || isPublishing}
+            isLoading={isPublishing}
           >
             {t('actualites.info.createForm.publish')}
           </Button>
