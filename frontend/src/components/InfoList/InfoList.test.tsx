@@ -1,8 +1,13 @@
-import { mockInfosDraft, mockInfosPublished } from '~/mocks/datas/infos';
-import { mockThreads } from '~/mocks/datas/threads';
+import {
+  mockInfosDraft,
+  mockInfosPublished,
+  mockInfosStats,
+} from '~/mocks/datas/infos';
+import { mockThreadAsOwner, mockThreads } from '~/mocks/datas/threads';
 import { renderWithRouter } from '~/mocks/renderWithRouter';
 import { fireEvent, screen } from '~/mocks/setup';
 import { InfoList } from './InfoList';
+import { InfoStatus } from '~/models/info';
 
 describe('InfoList rendering', () => {
   it('should render skeletons when loading', async () => {
@@ -23,6 +28,38 @@ describe('InfoList rendering', () => {
 
     const infos = await screen.findAllByTestId('info-card');
     expect(infos).toHaveLength(mockInfosDraft.length);
+  });
+});
+
+describe('InfoList Segmented counts', () => {
+  it('should display the total count of published infos of all threads', async () => {
+    renderWithRouter('/', <InfoList />);
+    const publishedCount = await screen.findByText(
+      'actualites.info-list.segmented.published' + ' 6',
+    );
+    expect(publishedCount).toBeInTheDocument();
+  });
+
+  it('should display the total count of published and draft infos of a thread', async () => {
+    renderWithRouter(`/threads/${mockThreadAsOwner.id}`, <InfoList />, {
+      routePath: '/threads/:threadIdAsString',
+    });
+    const threadInfosStats = mockInfosStats.threads.find(
+      (thread) => thread.id === mockThreadAsOwner.id,
+    );
+    const expectedPublishedCount =
+      threadInfosStats?.status[InfoStatus.PUBLISHED] ?? 0; // 2
+
+    const publishedCount = await screen.findByText(
+      'actualites.info-list.segmented.published' + ' ' + expectedPublishedCount,
+    );
+    expect(publishedCount).toBeInTheDocument();
+
+    const expectedDraftCount = threadInfosStats?.status[InfoStatus.DRAFT] ?? 0; // 1
+    const draftCount = await screen.findByText(
+      'actualites.info-list.segmented.draft' + ' ' + expectedDraftCount,
+    );
+    expect(draftCount).toBeInTheDocument();
   });
 });
 
@@ -56,7 +93,7 @@ describe('InfoList Segmented Switch', () => {
     renderWithRouter('/', <InfoList />);
 
     const draftLabel = await screen.findByText(
-      'actualites.info-list.segmented.draft' + ' ' + 0, // TODO: add mockInfosDraft.length quand l'api le retournera
+      'actualites.info-list.segmented.draft' + ' 3',
     );
     await fireEvent.click(draftLabel);
 
