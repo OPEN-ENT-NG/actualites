@@ -71,8 +71,7 @@ export function CreateInfoRights() {
 
   useEffect(() => {
     setCurrentCreationStep(CreationStep.INFO_RIGHTS);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [setCurrentCreationStep]);
 
   useEffect(() => {
     if (info) {
@@ -91,6 +90,7 @@ export function CreateInfoRights() {
         return;
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [info, infoId]);
 
   // Share Modal State
@@ -199,7 +199,6 @@ export function CreateInfoRights() {
             type="submit"
             rightIcon={<IconArrowRight />}
             onClick={handlePublishClick}
-            disabled={!isDirty}
             data-testid="actualites.info.form.submitButton"
           >
             {t('actualites.info.createForm.publish')}
