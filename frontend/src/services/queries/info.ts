@@ -64,7 +64,7 @@ export const infoQueryOptions = {
       queryKey: infoQueryKeys.info({ infoId }),
       queryFn: () => infoService.getInfo({ infoId: infoId! }),
       enabled: !!infoId,
-      staleTime: Infinity, // will be unvalidated manually when needed only
+      staleTime: Infinity, // will be unvalidated manually when needed only,
     });
   },
   /**
