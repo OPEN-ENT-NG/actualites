@@ -15,7 +15,7 @@ export function InfoDetailsFormActions() {
 
   const currentCreationStep = useInfoFormStore.use.currentCreationStep();
 
-  const { detailsForm, detailsFormState, onSaveDetails, onNextStep } =
+  const { detailsForm, detailsFormState, onSaveDetails, onNextStep, isSaving } =
     useInfoDetailsForm();
 
   const disableSaveDraft = useMemo(() => {
@@ -55,6 +55,7 @@ export function InfoDetailsFormActions() {
         variant="ghost"
         onClick={handleCancelClick}
         data-testid="actualites.info.form.cancelButton"
+        disabled={isSaving}
       >
         {t('actualites.info.createForm.cancel')}
       </Button>
@@ -65,8 +66,9 @@ export function InfoDetailsFormActions() {
           type="submit"
           leftIcon={<IconSave />}
           onClick={handleSaveDraftClick}
-          disabled={disableSaveDraft}
+          disabled={disableSaveDraft || isSaving}
           data-testid="actualites.info.form.saveDraftButton"
+          isLoading={isSaving}
         >
           {t('actualites.info.createForm.saveDraft')}
         </Button>
@@ -75,7 +77,7 @@ export function InfoDetailsFormActions() {
           type="submit"
           rightIcon={<IconArrowRight />}
           onClick={handleSubmitClick}
-          disabled={!detailsFormState?.isValid}
+          disabled={!detailsFormState?.isValid || isSaving}
           data-testid="actualites.info.form.submitButton"
         >
           {t('actualites.info.createForm.nextStep')}
