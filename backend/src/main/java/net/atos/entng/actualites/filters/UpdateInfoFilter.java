@@ -101,10 +101,11 @@ public class UpdateInfoFilter implements ResourcesProvider {
                     .append("   OR ts.member_id IN ").append(Sql.listPrepared(groupsAndUserIds.toArray()))
                     .append("   AND ts.action = '" + RIGHT_PUBLISH + "' \n")
                     .append(" ) \n")
-                    .append(" AND (i.status > 1) \n")
+                    .append(" AND (i.status > 1 or i.owner = ?) \n")
                     .append(")\n");
             values.add(user.getUserId());
             groupsAndUserIds.forEach(values::add);
+            values.add(user.getUserId());
         } else if(targetStatus == 2) { //unpublish an info or submit a pending info or update a pending info
             /**
              * Either owner of the info or in shared groups publisher on a published info
