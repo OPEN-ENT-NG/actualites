@@ -100,7 +100,7 @@ export interface OriginalInfo {
 }
 
 export interface ThreadInfoStats {
-  id: number;
+  id: ThreadId | undefined;
   status: {
     [InfoStatus.DRAFT]: number;
     [InfoStatus.TRASH]: number;
