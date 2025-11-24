@@ -925,7 +925,7 @@ export function testInfoUpdatePublisher(data: InitData) {
 
     shareThreadsOrFail(thread.id, shares);
 
-    // Create an info with PUBLISHED status
+    // Create an info with DRAFT status
     console.log("Creating an info with DRAFT status");
     const infoData: Info = {
       title: `Draft info ${seed}`,
@@ -1206,5 +1206,54 @@ export function testInfoUpdateOwnerTransition(data: InitData) {
     const uResp = updateInfo(createResp.id, uInfo);
 
     check(uResp,{ "Update of draft info to published as contributor should not be successful" : (r) => r.status === 401 });
+  });
+
+
+  describe('[Info] Test updating from DRAFT to PUBLISHED as OWNER with µPUBLISH right should be OK', () => {
+    <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
+    const headUsers = getUsersOfSchool(data.head);
+    const headTeacher = getRandomUserWithProfile(headUsers, 'Teacher');
+    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher');
+
+    console.log("Authenticate head teacher " + headTeacher.login);
+    authenticateWeb(headTeacher.login);
+
+    // Create a thread first
+    console.log("Creating a thread");
+    const seed = Math.random().toString(36).substring(7);
+    const threadTitle = `Thread for draft info ${seed}`;
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    console.log(`Thread of id ${thread.id} created`);
+
+    const shares = addUserSharesInfos({ users: {}, groups: {}, sharedBookmarks: {} }, headTeacher2.id,
+      [...threadContributorRights, ...threadPublisherRights]);
+
+    shareThreadsOrFail(thread.id, shares);
+
+    console.log("Authenticate head teacher " + headTeacher2.login);
+    authenticateWeb(headTeacher2.login);
+
+    // Create an info with DRAFT status
+    console.log("Creating an info with DRAFT status");
+    const infoData: Info = {
+      title: `Draft info ${seed}`,
+      content: `This is a draft content ${seed}`,
+      status: 1, // DRAFT
+      thread_id: parseInt(thread.id as string),
+    };
+
+    const createResp: Identifier = createInfoOrFail(infoData);
+    console.log(`Info of id ${createResp.id} created`);
+
+    const uInfo: Info = {
+      title: `Published update info ${seed}`,
+      content: `This is a update PUBLISHED content ${seed}`,
+      status: 3,
+      thread_id: parseInt(thread.id as string)
+    }
+
+    const uResp = updateInfo(createResp.id, uInfo);
+
+    check(uResp, { "Update of draft info to published as publisher owner should be successful": (r) => r.status < 300 });
   });
 };
