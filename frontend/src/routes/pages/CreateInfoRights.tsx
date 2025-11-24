@@ -14,7 +14,7 @@ import {
   IconSave,
 } from '@edifice.io/react/icons';
 import { QueryClient } from '@tanstack/react-query';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   LoaderFunctionArgs,
   useLoaderData,
@@ -25,7 +25,6 @@ import { InfoFormHeader } from '~/features/info-form/components/InfoFormHeader';
 import { useInfoSharesForm } from '~/features/info-form/hooks/useInfoSharesForm';
 import { isInfoDetailsValid } from '~/features/info-form/utils/utils';
 import { useI18n } from '~/hooks/useI18n';
-import { InfoStatus } from '~/models/info';
 import { baseUrlAPI } from '~/services';
 import {
   infoQueryOptions,
@@ -62,11 +61,11 @@ export function CreateInfoRights() {
 
   const { infoId } = useLoaderData() as CreateInfoRightsProps;
   const { data: info } = useInfoById(infoId);
-  const { handlePublish } = useInfoSharesForm({ infoId });
   const shareInfoRef = useRef<ShareResourcesRef>(null);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const { handlePublish } = useInfoSharesForm({ infoId });
 
   const [isDirty, setIsDirty] = useState(false);
-  const [isDetailValid, setIsDetailValid] = useState(false);
 
   const setCurrentCreationStep = useInfoFormStore.use.setCurrentCreationStep();
 
@@ -91,8 +90,6 @@ export function CreateInfoRights() {
         navigate('..', { relative: 'path' });
         return;
       }
-
-      setIsDetailValid(detailValid);
     }
   }, [info, infoId]);
 
@@ -117,20 +114,30 @@ export function CreateInfoRights() {
     setIsDirty(isDirty);
   };
 
-  const handleShareInfoSubmitSuccess = () => {
+  const handleShareInfoSubmitSuccess = useCallback(() => {
     setIsDirty(false);
-    navigate('/');
-  };
+    if (isPublishing) {
+      handlePublish();
+    } else {
+      navigate('/');
+    }
+  }, [isPublishing]);
 
   const handleCancelClick = () => {
     navigate('..', { relative: 'path' });
   };
 
+  const handlePublishClick = () => {
+    setIsPublishing(true);
+    if (isDirty) {
+      shareInfoRef.current?.handleShare(false);
+    }
+    handlePublish();
+  };
+
   const handleInfoSharesSave = () => {
     shareInfoRef.current?.handleShare();
   };
-
-  const canPublish = info?.status !== InfoStatus.PUBLISHED && isDetailValid;
 
   if (!info) {
     return (
@@ -183,8 +190,8 @@ export function CreateInfoRights() {
             color="primary"
             type="submit"
             rightIcon={<IconArrowRight />}
-            onClick={() => handlePublish(isDirty)}
-            disabled={!canPublish}
+            onClick={handlePublishClick}
+            disabled={!isDirty}
             data-testid="actualites.info.form.submitButton"
           >
             {t('actualites.info.createForm.publish')}
