@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { InfoId, InfoStatus } from '~/models/info';
 import { useCreateDraftInfo, useUpdateInfo } from '~/services/queries';
@@ -13,32 +14,37 @@ export function useInfoDetailsForm() {
   const navigate = useNavigate();
   const { mutate: createDraftInfo } = useCreateDraftInfo();
   const { mutate: updateDraftInfo } = useUpdateInfo();
+  const [isSaving, setIsSaving] = useState(false);
 
   const createOrUpdateInfo = (
     infoFormValues: InfoDetailsFormParams,
     onSuccess?: ({ id }: { id: InfoId }) => void,
   ) => {
+    if (!infoFormValues.thread_id) {
+      console.error('Thread ID is undefined');
+      return;
+    }
+    setIsSaving(true);
     if (infoFormValues.infoId) {
-      if (infoFormValues.thread_id && infoFormValues.infoStatus) {
-        return updateDraftInfo(
-          {
-            infoId: infoFormValues.infoId,
-            infoStatus: infoFormValues.infoStatus,
-            payload: {
-              thread_id: Number(infoFormValues.thread_id),
-              content: infoFormValues.content,
-              title: infoFormValues.title,
-              is_headline: infoFormValues.headline,
-            },
+      return updateDraftInfo(
+        {
+          infoId: infoFormValues.infoId,
+          infoStatus: InfoStatus.DRAFT,
+          payload: {
+            thread_id: Number(infoFormValues.thread_id),
+            content: infoFormValues.content,
+            title: infoFormValues.title,
+            is_headline: infoFormValues.headline,
           },
-          {
-            onSuccess: ({ id }: { id: InfoId }) => {
-              resetDetailsForm?.();
-              onSuccess?.({ id });
-            },
+        },
+        {
+          onSuccess: ({ id }: { id: InfoId }) => {
+            setIsSaving(false);
+            resetDetailsForm?.();
+            onSuccess?.({ id });
           },
-        );
-      }
+        },
+      );
     } else {
       return createDraftInfo(
         {
@@ -56,6 +62,7 @@ export function useInfoDetailsForm() {
             };
             setDetailsForm(infoUpdated);
             resetDetailsForm?.(infoUpdated);
+            setIsSaving(false);
             onSuccess?.({ id });
           },
         },
@@ -92,5 +99,6 @@ export function useInfoDetailsForm() {
     setResetDetailsForm,
     onSaveDetails,
     onNextStep,
+    isSaving,
   };
 }
