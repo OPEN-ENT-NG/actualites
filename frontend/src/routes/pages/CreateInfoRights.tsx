@@ -121,7 +121,7 @@ export function CreateInfoRights() {
     } else {
       navigate('/');
     }
-  }, [isPublishing]);
+  }, [isPublishing, handlePublish, navigate]);
 
   const handleCancelClick = () => {
     navigate('..', { relative: 'path' });
