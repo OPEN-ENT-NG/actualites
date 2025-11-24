@@ -20,6 +20,7 @@ import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
 import { Thread } from '~/models/thread';
 import { InfoDetailsFormParams } from '~/store/infoFormStore';
 import { useInfoDetailsForm } from '../hooks/useInfoDetailsForm';
+import { isContentValid } from '../utils/utils';
 import './InfoDetailsForm.css';
 
 export function InfoDetailsForm({
@@ -64,7 +65,7 @@ export function InfoDetailsForm({
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [infoDetails]);
 
   useEffect(() => {
     setResetDetailsForm((values) => {
@@ -200,7 +201,7 @@ export function InfoDetailsForm({
         <Controller
           name="content"
           control={control}
-          rules={{ required: true }}
+          rules={{ required: true, validate: (value) => isContentValid(value) }}
           render={() => (
             <Flex wrap="nowrap" className="info-details-form_content">
               <Editor

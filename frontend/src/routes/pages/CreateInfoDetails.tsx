@@ -2,7 +2,7 @@ import { QueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 import { LoaderFunctionArgs } from 'react-router-dom';
 import { InfoDetailsForm } from '~/features/info-form/components/InfoDetailsForm';
-import { InfoFormActions } from '~/features/info-form/components/InfoFormActions';
+import { InfoDetailsFormActions } from '~/features/info-form/components/InfoDetailsFormActions';
 import { InfoFormActionsSkeleton } from '~/features/info-form/components/InfoFormActionsSkeleton';
 import { InfoFormHeader } from '~/features/info-form/components/InfoFormHeader';
 import { InfoFormHeaderSkeleton } from '~/features/info-form/components/InfoFormHeaderSkeleton';
@@ -36,7 +36,8 @@ export function CreateInfoDetails() {
 
   useEffect(() => {
     setCurrentCreationStep(CreationStep.INFO_DETAILS);
-  }, [setCurrentCreationStep]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const infoDetails: InfoDetailsFormParams | undefined = useMemo(() => {
     if (infoId && info) {
@@ -54,11 +55,11 @@ export function CreateInfoDetails() {
 
   return (
     <>
-      {threads ? (
+      {threads && (!infoId || (infoId && infoDetails)) ? (
         <>
           <InfoFormHeader />
           <InfoDetailsForm infoDetails={infoDetails} />
-          <InfoFormActions />
+          <InfoDetailsFormActions />
         </>
       ) : (
         <>
