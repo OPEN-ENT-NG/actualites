@@ -130,16 +130,19 @@ export function CreateInfoRights() {
   const handlePublishClick = () => {
     setIsPublishing(true);
     if (isDirty) {
+      // Save shares, then publish in onSuccess callback
       shareInfoRef.current?.handleShare(false);
+    } else {
+      // No changes to save, publish immediately
+      handlePublish();
     }
-    handlePublish();
   };
 
   const handleInfoSharesSave = () => {
     shareInfoRef.current?.handleShare();
   };
 
-  if (info) {
+  if (!info) {
     return (
       <>
         <InfoFormHeaderSkeleton />
