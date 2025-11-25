@@ -815,7 +815,7 @@ public class InfoServiceSqlImpl implements InfoService {
 	}
 
 	@Override
-	public Future<JsonObject> getStats(UserInfos user) {
+	public Future<JsonObject> getStats(UserInfos user, Boolean viewHidden) {
 		final Promise<JsonObject> promise = Promise.promise();
 		if (user == null) {
 			promise.fail("User's infos not provided");
@@ -824,6 +824,13 @@ public class InfoServiceSqlImpl implements InfoService {
 			groupsAndUserIds.add(user.getUserId());
 			if (user.getGroupsIds() != null) {
 				groupsAndUserIds.addAll(user.getGroupsIds());
+			}
+
+			// Filter for multi-ADML users to hide automatically shared threads
+			boolean filterMultiAdmlActivated = user.isADML() && user.getStructures().size() > 1;
+			String filterAdml = "";
+			if (filterMultiAdmlActivated && !viewHidden) {
+				filterAdml = " AND tsh.adml_group = false ";
 			}
 
 			final String ids = Sql.listPrepared(groupsAndUserIds.toArray());
@@ -861,7 +868,7 @@ public class InfoServiceSqlImpl implements InfoService {
 					"	 	 SELECT tsh.resource_id AS id" +
 					"    	 FROM " + NEWS_THREAD_SHARE_TABLE + " AS tsh " +
 					"    	 WHERE tsh.member_id IN (SELECT id FROM user_groups)" +
-					"              AND tsh.action = 'net-atos-entng-actualites-controllers-InfoController|publish' " +
+					"              AND tsh.action = 'net-atos-entng-actualites-controllers-InfoController|publish' " + filterAdml +
 					"    	 GROUP BY tsh.resource_id " +
 					"	 ) " +
 					"SELECT t.id, " +
