@@ -111,8 +111,9 @@ public class CommentController extends ControllerHelper {
 		});
 	}
 
+	@Deprecated
 	@Put("/info/:"+Actualites.INFO_RESOURCE_ID+"/comment/:"+COMMENT_ID_PARAMETER)
-	@ApiDoc("Comment : modify a comment of an Info by info and comment id")
+	@ApiDoc("Comment : modify a comment of an Info by info and comment id. DEPRECATED - Used by mobile app only.")
 	@ResourceFilter(UpdateCommentFilter.class)
 	@SecuredAction(value = "info.comment", type = ActionType.RESOURCE)
 	public void updateComment(final HttpServerRequest request) {
@@ -137,8 +138,9 @@ public class CommentController extends ControllerHelper {
 				});
 			}
 
+	@Deprecated
 	@Delete("/info/:"+Actualites.INFO_RESOURCE_ID+"/comment/:"+COMMENT_ID_PARAMETER)
-	@ApiDoc("Comment : delete a comment by comment id ")
+	@ApiDoc("Comment : delete a comment by comment id. DEPRECATED - Used by mobile app only.")
 	@ResourceFilter(CommentFilter.class)
 	@SecuredAction(value = "info.comment", type = ActionType.RESOURCE)
 	public void deleteComment(final HttpServerRequest request) {

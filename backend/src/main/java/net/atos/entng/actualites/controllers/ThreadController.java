@@ -97,10 +97,12 @@ public class ThreadController extends ControllerHelper {
 		return json -> Optional.of(json.getString("owner"));
 	}
 
+	@Deprecated
 	@Get("/threads")
-	@ApiDoc("Get Thread by id.")
+	@ApiDoc("Get Thread by id. DEPRECATED - Use /api/v1/threads instead.")
 	@SecuredAction("actualites.threads.list")
 	public void listThreads(final HttpServerRequest request) {
+		log.warn("[DEPRECATED] GET /threads called - Use /api/v1/threads instead");
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
 			public void handle(final UserInfos user) {
@@ -109,12 +111,14 @@ public class ThreadController extends ControllerHelper {
 		});
 	}
 
+	@Deprecated
 	@Post("/threads/admc")
 	@ApiDoc("Launch a maintenance task."+
-		"Task \"autoAttachToStructures\": attaches threads without a structure to their owner's structure, when a single one exists.")
+		"Task \"autoAttachToStructures\": attaches threads without a structure to their owner's structure, when a single one exists. DEPRECATED - This endpoint is no longer used and will be removed in a future version.")
 	@SecuredAction(value = "", type = ActionType.RESOURCE)
 	@ResourceFilter(SuperAdminFilter.class)
 	public void admcTask(final HttpServerRequest request) {
+		log.warn("[DEPRECATED] POST /threads/admc called - This endpoint should no longer be used");
 		RequestUtils.bodyToJson(request, pathPrefix + ADMC_TASK, (JsonObject resource) -> {
 			switch(resource.getString("task")) {
 				case TASK_ATTACH: {
@@ -132,10 +136,12 @@ public class ThreadController extends ControllerHelper {
         });
 	}
 
+	@Deprecated
 	@Post("/thread")
-	@ApiDoc("Create a new Thread.")
+	@ApiDoc("Create a new Thread. DEPRECATED - Use /api/v1/threads instead.")
 	@SecuredAction("actualites.create")
 	public void createThread(final HttpServerRequest request) {
+		log.warn("[DEPRECATED] POST /thread called - Use /api/v1/threads instead");
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
 			public void handle(final UserInfos user) {
@@ -162,11 +168,13 @@ public class ThreadController extends ControllerHelper {
 		});
 	}
 
+	@Deprecated
 	@Get("/thread/:" + Actualites.THREAD_RESOURCE_ID)
-	@ApiDoc("Get Thread by id.")
+	@ApiDoc("Get Thread by id. DEPRECATED - Use /api/v1/threads/:id instead.")
 	@ResourceFilter(ThreadFilter.class)
 	@SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE)
 	public void getThread(final HttpServerRequest request) {
+		log.warn("[DEPRECATED] GET /thread/:id called - Use /api/v1/threads/:id instead");
 		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
 		UserUtils.getUserInfos(eb, request, user ->
 				threadService.retrieve(threadId, user, securedActions)
@@ -177,11 +185,13 @@ public class ThreadController extends ControllerHelper {
 						}));
 	}
 
+	@Deprecated
 	@Put("/thread/:" + Actualites.THREAD_RESOURCE_ID)
-	@ApiDoc("Update thread by id.")
+	@ApiDoc("Update thread by id. DEPRECATED - Use /api/v1/threads/:id instead.")
 	@ResourceFilter(ThreadFilter.class)
 	@SecuredAction(value = "thread.manager", type = ActionType.RESOURCE)
 	public void updateThread(final HttpServerRequest request) {
+		log.warn("[DEPRECATED] PUT /thread/:id called - Use /api/v1/threads/:id instead");
 		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
@@ -196,11 +206,13 @@ public class ThreadController extends ControllerHelper {
 		});
 	}
 
+	@Deprecated
 	@Delete("/thread/:"+Actualites.THREAD_RESOURCE_ID)
-	@ApiDoc("Delete thread by id.")
+	@ApiDoc("Delete thread by id. DEPRECATED - Use /api/v1/threads/:id instead.")
 	@ResourceFilter(ThreadFilter.class)
 	@SecuredAction(value = "thread.manager", type = ActionType.RESOURCE)
 	public void deleteThread(final HttpServerRequest request) {
+		log.warn("[DEPRECATED] DELETE /thread/:id called - Use /api/v1/threads/:id instead");
 		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
@@ -211,11 +223,13 @@ public class ThreadController extends ControllerHelper {
 	}
 
 
+	@Deprecated
 	@Get("/thread/share/json/:"+THREAD_ID_PARAMETER)
-	@ApiDoc("Share thread by id.")
+	@ApiDoc("Share thread by id. DEPRECATED - This endpoint is no longer used and will be removed in a future version.")
 	@ResourceFilter(ThreadFilter.class)
 	@SecuredAction(value = "thread.manager", type = ActionType.RESOURCE)
 	public void shareThread(final HttpServerRequest request) {
+		log.warn("[DEPRECATED] GET /thread/share/json/:id called - This endpoint should no longer be used");
 		final String id = request.params().get(THREAD_ID_PARAMETER);
 		if (id == null || id.trim().isEmpty()) {
 			badRequest(request);
@@ -269,11 +283,13 @@ public class ThreadController extends ControllerHelper {
 		});
 	}
 
+	@Deprecated
 	@Put("/thread/share/json/:"+THREAD_ID_PARAMETER)
-	@ApiDoc("Share thread by id.")
+	@ApiDoc("Share thread by id. DEPRECATED - This endpoint is no longer used and will be removed in a future version.")
 	@ResourceFilter(ThreadFilter.class)
 	@SecuredAction(value = "thread.manager", type = ActionType.RESOURCE)
 	public void shareThreadSubmit(final HttpServerRequest request) {
+		log.warn("[DEPRECATED] PUT /thread/share/json/:id called - This endpoint should no longer be used");
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
 			public void handle(final UserInfos user) {
@@ -296,19 +312,23 @@ public class ThreadController extends ControllerHelper {
 		});
 	}
 
+	@Deprecated
 	@Put("/thread/share/remove/:"+THREAD_ID_PARAMETER)
-	@ApiDoc("Remove Share by id.")
+	@ApiDoc("Remove Share by id. DEPRECATED - This endpoint is no longer used and will be removed in a future version.")
 	@ResourceFilter(ThreadFilter.class)
 	@SecuredAction(value = "thread.manager", type = ActionType.RESOURCE)
 	public void shareThreadRemove(final HttpServerRequest request) {
+		log.warn("[DEPRECATED] PUT /thread/share/remove/:id called - This endpoint should no longer be used");
 		removeShare(request, false);
 	}
 
+	@Deprecated
 	@Put("/thread/share/resource/:id")
-	@ApiDoc("Share thread by id.")
+	@ApiDoc("Share thread by id. DEPRECATED - This endpoint is no longer used and will be removed in a future version.")
 	@ResourceFilter(ThreadFilter.class)
 	@SecuredAction(value = "thread.manager", type = ActionType.RESOURCE)
 	public void shareResource(final HttpServerRequest request) {
+		log.warn("[DEPRECATED] PUT /thread/share/resource/:id called - This endpoint should no longer be used");
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
 			public void handle(final UserInfos user) {
@@ -332,21 +352,25 @@ public class ThreadController extends ControllerHelper {
 		});
 	}
 
+	@Deprecated
 	@Get("/print/actualites")
-	@ApiDoc("Print thread by id")
+	@ApiDoc("Print thread by id. DEPRECATED - This endpoint is no longer used and will be removed in a future version.")
 	@SecuredAction(value = "", type = ActionType.AUTHENTICATED)
 	public void print(HttpServerRequest request) {
+		log.warn("[DEPRECATED] GET /print/actualites called - This endpoint should no longer be used");
 		// TODO remplacer par renderView(request, new JsonObject(), "index.html", null); ?
 		renderView(request, new JsonObject().put("printThreadId", request.params().get("actualites")), "print.html", null);
 	}
 
+	@Deprecated
 	@Get("/threads/list")
 	@ApiDoc("Get threads visible from the current user." +
 			"This includes" +
 			" - Threads created by the user" +
 			" - Threads shared to the user or one of its groups" +
 			" - Threads containing news that are shared to the user or one of its groups" +
-			"The ensemble of threads returned by this method contain every visible news to the user.")
+			"The ensemble of threads returned by this method contain every visible news to the user." +
+			"DEPRECATED - Used by mobile app only.")
 	@SecuredAction("actualites.threads.listthreads")
 	public void listThreadsV2(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
