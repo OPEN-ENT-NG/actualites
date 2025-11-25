@@ -207,7 +207,7 @@ public class InfoServiceSqlImpl implements InfoService {
 	public void retrieve(String id, Boolean filterAdmlGroup, Handler<Either<String, JsonObject>> handler) {
 			String query;
 			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
-			String admlFilter = filterAdmlGroup ? " AND ts.adml_group = false " : "";
+			String admlFilter = filterAdmlGroup ? " AND (ts.adml_group = false OR ts.adml_group IS NULL) " : "";
 			query = "SELECT i.id as _id, i.title, i.content, i.status, i.publication_date, i.expiration_date, i.is_headline, i.thread_id, i.created, i.modified" +
 				", i.owner, i.content_version, u.username, t.title AS thread_title, t.icon AS thread_icon" +
 				", (SELECT json_agg(cr.*) FROM (" +

@@ -1,1 +1,0 @@
-ROOT_URL=http://172.17.0.1:8090 DATA_ROOT_PATH=/home/k6/data ADMC_LOGIN=tom.mate ADMC_PASSWORD=password DEFAULT_PASSWORD=password k6 --compatibility-mode=base run ./backend/src/test/js/it/scenarios/actualites/info-widget.ts
