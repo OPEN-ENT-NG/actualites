@@ -52,6 +52,7 @@ export function useInfoDetailsForm() {
           content:
             infoFormValues.content !== '' ? infoFormValues.content : '<p></p>',
           thread_id: infoFormValues.thread_id,
+          is_headline: infoFormValues.headline,
         },
         {
           onSuccess: ({ id }: { id: InfoId }) => {

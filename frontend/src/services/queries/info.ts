@@ -147,6 +147,7 @@ export const useCreateDraftInfo = () =>
       title?: string;
       content?: string;
       thread_id?: number;
+      is_headline?: boolean;
     }) => infoService.createDraft(payload),
     // TODO optimistic update
     // onSuccess: async (, { title, content, threadId }) => {
