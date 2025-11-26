@@ -1,9 +1,11 @@
+import { ShareRight } from '@edifice.io/client';
 import {
   infiniteQueryOptions,
   queryOptions,
   useInfiniteQuery,
   useMutation,
   useQuery,
+  useQueryClient,
 } from '@tanstack/react-query';
 import { Info, InfoId, InfoStatus } from '~/models/info';
 import { ThreadId } from '~/models/thread';
@@ -27,7 +29,11 @@ export const infoQueryKeys = {
     infoId,
   ],
 
-  share: (options: { threadId: ThreadId; infoId: InfoId }) => [
+  getInfos: ({ ...options }: { threadId?: ThreadId }) => [
+    ...infoQueryKeys.info(options),
+  ],
+
+  share: (options: { infoId: InfoId }) => [
     ...infoQueryKeys.info(options),
     'share',
     'json',
@@ -58,7 +64,7 @@ export const infoQueryOptions = {
       queryKey: infoQueryKeys.info({ infoId }),
       queryFn: () => infoService.getInfo({ infoId: infoId! }),
       enabled: !!infoId,
-      staleTime: Infinity, // will be unvalidated manually when needed only
+      staleTime: Infinity, // will be unvalidated manually when needed only,
     });
   },
   /**
@@ -95,10 +101,10 @@ export const infoQueryOptions = {
    * @param infoId - The ID of the info.
    * @returns Query options for fetching the share rights.
    */
-  getShares(threadId: ThreadId, infoId: InfoId) {
+  getShares(infoId: InfoId) {
     return queryOptions({
-      queryKey: infoQueryKeys.share({ threadId, infoId }),
-      queryFn: () => infoService.getShares(threadId, infoId),
+      queryKey: infoQueryKeys.share({ infoId }),
+      queryFn: () => infoService.getShares(infoId),
     });
   },
 
@@ -126,8 +132,8 @@ export const useInfoById = (infoId?: InfoId) =>
 export const useInfos = (threadId?: ThreadId, pageSize = DEFAULT_PAGE_SIZE) =>
   useInfiniteQuery(infoQueryOptions.getInfos({ pageSize, threadId }));
 
-export const useInfoShares = (threadId: ThreadId, infoId: InfoId) =>
-  useQuery(infoQueryOptions.getShares(threadId, infoId));
+export const useInfoShares = (infoId: InfoId) =>
+  useQuery(infoQueryOptions.getShares(infoId));
 
 export const useInfoRevisions = (infoId: InfoId) =>
   useQuery(infoQueryOptions.getRevisions(infoId));
@@ -157,16 +163,34 @@ export const useUpdateInfo = () =>
       infoId: InfoId;
       infoStatus: InfoStatus;
       payload: {
-        thread_id: ThreadId;
-        title: string;
-        content: string;
-        is_headline: boolean;
+        thread_id?: ThreadId;
+        title?: string;
+        content?: string;
+        is_headline?: boolean;
         publication_date?: string;
         expiration_date?: string;
       };
     }) => infoService.update(infoId, infoStatus, payload),
     // TODO optimistic update
   });
+
+export const useSharesInfo = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      resourceId,
+      rights,
+    }: {
+      resourceId: InfoId;
+      rights: ShareRight[];
+    }) => infoService.putShares(resourceId, rights),
+    onSuccess: (_, { resourceId }) => {
+      queryClient.invalidateQueries({
+        queryKey: infoQueryKeys.share({ infoId: resourceId }),
+      });
+    },
+  });
+};
 
 export const useSubmitInfo = () =>
   useMutation({

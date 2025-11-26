@@ -4,38 +4,31 @@ import { Button, Flex, useBreakpoint, useToast } from '@edifice.io/react';
 import { IconArrowRight, IconSave } from '@edifice.io/react/icons';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CreationStep, useInfoFormStore } from '~/store/infoFormStore';
+import { useInfoFormStore } from '~/store/infoFormStore';
 import { useInfoDetailsForm } from '../hooks/useInfoDetailsForm';
 
-export function InfoFormActions() {
+export function InfoDetailsFormActions() {
   const { t } = useI18n();
   const { md } = useBreakpoint();
-  const currentCreationStep = useInfoFormStore.use.currentCreationStep();
-  const { detailsForm, detailsFormState, onSaveDetails, onNextStep } =
-    useInfoDetailsForm();
   const navigate = useNavigate();
   const toast = useToast();
 
-  const isInfoDetailsStep = currentCreationStep === CreationStep.INFO_DETAILS;
+  const currentCreationStep = useInfoFormStore.use.currentCreationStep();
+
+  const { detailsForm, detailsFormState, onSaveDetails, onNextStep, isSaving } =
+    useInfoDetailsForm();
 
   const disableSaveDraft = useMemo(() => {
-    if (isInfoDetailsStep) {
-      return (
-        !detailsForm ||
-        detailsForm?.thread_id === undefined ||
-        !detailsFormState?.isDirty
-      );
-    }
-    return true;
+    return (
+      !detailsForm ||
+      detailsForm?.thread_id === undefined ||
+      !detailsFormState?.isDirty
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentCreationStep, detailsForm, detailsFormState]);
 
   const handleCancelClick = () => {
-    if (isInfoDetailsStep) {
-      window.history.back();
-    } else {
-      navigate('..', { relative: 'path' });
-    }
+    window.history.back();
   };
 
   const handleSaveDraftClick = () => {
@@ -46,13 +39,7 @@ export function InfoFormActions() {
   };
 
   const handleSubmitClick = () => {
-    if (currentCreationStep === CreationStep.INFO_DETAILS) {
-      onNextStep();
-    } else {
-      onSaveDetails(() => {
-        navigate('/');
-      });
-    }
+    onNextStep();
   };
 
   return (
@@ -68,12 +55,9 @@ export function InfoFormActions() {
         variant="ghost"
         onClick={handleCancelClick}
         data-testid="actualites.info.form.cancelButton"
+        disabled={isSaving}
       >
-        {t(
-          isInfoDetailsStep
-            ? 'actualites.info.createForm.cancel'
-            : 'actualites.info.createForm.previousStep',
-        )}
+        {t('actualites.info.createForm.cancel')}
       </Button>
       <Flex gap="12">
         <Button
@@ -82,8 +66,9 @@ export function InfoFormActions() {
           type="submit"
           leftIcon={<IconSave />}
           onClick={handleSaveDraftClick}
-          disabled={disableSaveDraft}
+          disabled={disableSaveDraft || isSaving}
           data-testid="actualites.info.form.saveDraftButton"
+          isLoading={isSaving}
         >
           {t('actualites.info.createForm.saveDraft')}
         </Button>
@@ -92,14 +77,10 @@ export function InfoFormActions() {
           type="submit"
           rightIcon={<IconArrowRight />}
           onClick={handleSubmitClick}
-          disabled={!detailsFormState.isValid}
+          disabled={!detailsFormState?.isValid || isSaving}
           data-testid="actualites.info.form.submitButton"
         >
-          {t(
-            isInfoDetailsStep
-              ? 'actualites.info.createForm.nextStep'
-              : 'actualites.info.createForm.publish',
-          )}
+          {t('actualites.info.createForm.nextStep')}
         </Button>
       </Flex>
     </Flex>
