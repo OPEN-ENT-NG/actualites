@@ -110,13 +110,12 @@ export function CreateInfoRights() {
     };
   }, [infoShares, infoId]);
 
-  const handleShareInfoChange = (
-    _: ShareRight[],
-    isDirty: boolean,
-    isSavingBookmark: boolean,
-  ) => {
+  const handleShareInfoSaving = (isSaving: boolean) => {
+    setIsSaving(isSaving);
+  };
+
+  const handleShareInfoChange = (_: ShareRight[], isDirty: boolean) => {
     setIsDirty(isDirty);
-    setIsSaving(isSavingBookmark);
   };
 
   const handleShareInfoSubmitSuccess = useCallback(() => {
@@ -171,6 +170,7 @@ export function CreateInfoRights() {
         ref={shareInfoRef}
         onSuccess={handleShareInfoSubmitSuccess}
         onChange={handleShareInfoChange}
+        onSaving={handleShareInfoSaving}
         shareOptions={shareOptions}
       />
       <Flex
