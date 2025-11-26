@@ -64,6 +64,7 @@ export const createInfoService = () => {
       title?: string;
       content?: string;
       thread_id?: ThreadId;
+      is_headline?: boolean;
     }) {
       return odeServices.http().post<{
         id: InfoId;
@@ -72,6 +73,7 @@ export const createInfoService = () => {
         content: payload.content,
         status: 1, // DRAFT
         thread_id: Number(payload.thread_id),
+        is_headline: payload.is_headline,
       });
     },
 
