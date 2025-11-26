@@ -110,8 +110,13 @@ export function CreateInfoRights() {
     };
   }, [infoShares, infoId]);
 
-  const handleShareInfoChange = (_: ShareRight[], isDirty: boolean) => {
+  const handleShareInfoChange = (
+    _: ShareRight[],
+    isDirty: boolean,
+    isSavingBookmark: boolean,
+  ) => {
     setIsDirty(isDirty);
+    setIsSaving(isSavingBookmark);
   };
 
   const handleShareInfoSubmitSuccess = useCallback(() => {
