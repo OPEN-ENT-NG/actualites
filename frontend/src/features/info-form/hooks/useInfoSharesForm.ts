@@ -1,14 +1,20 @@
-import { useToast } from '@edifice.io/react';
+import { invalidateQueriesWithFirstPage, useToast } from '@edifice.io/react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useI18n } from '~/hooks/useI18n';
 import { InfoId, InfoStatus } from '~/models/info';
-import { useUpdateInfo } from '~/services/queries';
+import {
+  DEFAULT_PAGE_SIZE,
+  infoQueryOptions,
+  useUpdateInfo,
+} from '~/services/queries';
 
 export function useInfoSharesForm({ infoId }: { infoId: InfoId }) {
   const { t } = useI18n();
   const toast = useToast();
   const { mutate: updateInfoMutate } = useUpdateInfo();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const handlePublish = () => {
     if (!infoId) {
@@ -23,6 +29,11 @@ export function useInfoSharesForm({ infoId }: { infoId: InfoId }) {
       },
       {
         onSuccess: () => {
+          invalidateQueriesWithFirstPage(queryClient, {
+            queryKey: infoQueryOptions.getInfos({
+              pageSize: DEFAULT_PAGE_SIZE,
+            }),
+          });
           toast.success(t('actualites.info.createForm.publishedSuccess'));
           navigate('/');
         },
