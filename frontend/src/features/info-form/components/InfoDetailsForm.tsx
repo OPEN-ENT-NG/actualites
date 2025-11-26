@@ -171,14 +171,24 @@ export function InfoDetailsForm({
           status={errors.title ? 'invalid' : undefined}
         >
           <Label>{t('actualites.info.createForm.titleLabel')}</Label>
-          <Input
-            type="text"
-            size="md"
-            placeholder={t('actualites.info.createForm.titlePlaceholder')}
-            showCounter
-            maxLength={60}
-            data-testid="actualites.info.title.input"
-            {...register('title', { required: true })}
+          <Controller
+            name="title"
+            control={control}
+            rules={{
+              required: true,
+              validate: (value) => value.trim().length > 0,
+            }}
+            render={() => (
+              <Input
+                type="text"
+                size="md"
+                placeholder={t('actualites.info.createForm.titlePlaceholder')}
+                showCounter
+                maxLength={60}
+                data-testid="actualites.info.title.input"
+                {...register('title', { required: true })}
+              />
+            )}
           />
         </FormControl>
       </Flex>
