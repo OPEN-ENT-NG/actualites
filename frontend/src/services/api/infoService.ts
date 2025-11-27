@@ -3,8 +3,10 @@ import { baseUrl, baseUrlAPI } from '.';
 import {
   Info,
   InfoDetails,
+  InfoExtendedStatus,
   InfoId,
   InfoRevision,
+  InfosStats,
   InfoStatus,
   OriginalInfo,
 } from '../../models/info';
@@ -23,6 +25,14 @@ export const createInfoService = () => {
         .http()
         .get<InfoDetails>(`${baseUrlAPI}/infos/${infoId}`);
     },
+
+    /**
+     * Get the stats of all infos.
+     * @returns The stats of all infos.
+     */
+    getStats() {
+      return odeServices.http().get<InfosStats>(`${baseUrlAPI}/infos/stats`);
+    },
     /**
      * Get a page of Infos results.
      * @param param0 - The page number, page size, and optional thread ID to filter Infos.
@@ -32,18 +42,26 @@ export const createInfoService = () => {
       page,
       pageSize,
       threadId,
+      status,
+      state,
     }: {
       page: number;
       pageSize: number;
       threadId?: ThreadId;
+      status?: InfoStatus;
+      state?: InfoExtendedStatus;
     }) {
       const queryParams: {
         page: number;
         pageSize: number;
         threadIds?: number;
+        status?: InfoStatus;
+        state?: InfoExtendedStatus;
       } = {
         page,
         pageSize,
+        status,
+        state,
       };
 
       if (threadId) {

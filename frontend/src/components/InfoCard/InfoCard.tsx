@@ -91,7 +91,11 @@ export const InfoCard = ({ info }: InfoCardProps) => {
       isSelectable={false}
       key={info.id}
     >
-      <article id={`info-${info.id}`} className="overflow-hidden">
+      <article
+        id={`info-${info.id}`}
+        className="overflow-hidden"
+        data-testid="info-card"
+      >
         <InfoCardHeader info={info} extendedStatus={extendedStatus} />
 
         {isExpired && (
