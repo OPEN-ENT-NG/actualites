@@ -20,6 +20,8 @@ export enum InfoExtendedStatus {
   INCOMING = 'INCOMING',
 }
 
+export type InfoSegmentedValue = InfoStatus | InfoExtendedStatus;
+
 export interface InfoBase {
   id: InfoId;
   content: string;
@@ -95,4 +97,20 @@ export interface OriginalInfo {
     username: string;
   }> | null;
   shared: [];
+}
+
+export interface ThreadInfoStats {
+  id: ThreadId | undefined;
+  status: {
+    [InfoStatus.DRAFT]: number;
+    [InfoStatus.TRASH]: number;
+    [InfoStatus.PENDING]: number;
+    [InfoStatus.PUBLISHED]: number;
+  };
+  expiredCount: number;
+  incomingCount: number;
+}
+
+export interface InfosStats {
+  threads: ThreadInfoStats[];
 }
