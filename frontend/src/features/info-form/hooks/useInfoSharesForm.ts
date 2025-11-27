@@ -3,11 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useI18n } from '~/hooks/useI18n';
 import { InfoId, InfoStatus } from '~/models/info';
-import {
-  DEFAULT_PAGE_SIZE,
-  infoQueryOptions,
-  useUpdateInfo,
-} from '~/services/queries';
+import { infoQueryKeys, useUpdateInfo } from '~/services/queries';
 
 export function useInfoSharesForm({ infoId }: { infoId: InfoId }) {
   const { t } = useI18n();
@@ -30,9 +26,7 @@ export function useInfoSharesForm({ infoId }: { infoId: InfoId }) {
       {
         onSuccess: () => {
           invalidateQueriesWithFirstPage(queryClient, {
-            queryKey: infoQueryOptions.getInfos({
-              pageSize: DEFAULT_PAGE_SIZE,
-            }),
+            queryKey: infoQueryKeys.all({}),
           });
           toast.success(t('actualites.info.createForm.publishedSuccess'));
           navigate('/');
