@@ -64,9 +64,14 @@ public class InfoTransformerServiceImpl implements InfoService {
                 return;
             }
             JsonObject actualInfo = h.right().getValue();
+            data.put("content_version", 1);
+            if (!data.containsKey("title")) {
+                data.put("title", actualInfo.getString("title"));
+            }
             //update content only if we update the content or the content is in old version with no update
             if ( (!data.containsKey("content") || data.getString("content") == null )
                     && "1".equals(actualInfo.getString("content_version"))) {
+                data.put("content", actualInfo.getString("content"));
                 this.infoService.update(id, data, user, eventStatus, handler);
                 return;
             }
@@ -77,12 +82,10 @@ public class InfoTransformerServiceImpl implements InfoService {
             //transform only if we have something to transform
             if (StringUtils.isEmpty(data.getString("content"))) {
                 this.infoService.update(id, data, user, eventStatus, handler);
-                data.put("content_version", 1);
                 return;
             }
             applyTransformation(user, data, handler, (response) -> {
                 data.put("content", response.getCleanHtml());
-                data.put("content_version", 1);
                 this.infoService.update(id, data, user, eventStatus, handler);
             });
         });
