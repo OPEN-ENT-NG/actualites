@@ -1,9 +1,14 @@
 import { http, HttpResponse } from 'msw';
 import { baseUrl, baseUrlAPI } from '~/services';
+import { InfoExtendedStatus, InfoStatus } from '../../models/info';
 import {
   mockInfoRevisions,
-  mockInfos,
+  mockInfosDraft,
+  mockInfosExpired,
   mockInfoShare,
+  mockInfosIncoming,
+  mockInfosPublished,
+  mockInfosStats,
   mockOriginalInfo,
 } from '../datas/infos';
 
@@ -13,10 +18,25 @@ import {
  */
 export const infoHandlers = [
   // Get all infos
-  http.get(`${baseUrlAPI}/infos`, () => {
-    return HttpResponse.json(mockInfos, { status: 200 });
+  http.get(`${baseUrlAPI}/infos`, ({ request }) => {
+    const url = new URL(request.url);
+    if (url.searchParams.get('state') === InfoExtendedStatus.EXPIRED) {
+      return HttpResponse.json(mockInfosExpired, { status: 200 });
+    }
+    if (url.searchParams.get('state') === InfoExtendedStatus.INCOMING) {
+      return HttpResponse.json(mockInfosIncoming, { status: 200 });
+    }
+    if (url.searchParams.get('status') === InfoStatus.DRAFT) {
+      return HttpResponse.json(mockInfosDraft, { status: 200 });
+    }
+    return HttpResponse.json(mockInfosPublished, { status: 200 });
     // return HttpResponse.json([], { status: 200 }); // empty array to test empty screen
   }),
+
+  http.get(`${baseUrlAPI}/infos/stats`, () => {
+    return HttpResponse.json(mockInfosStats, { status: 200 });
+  }),
+
   // Create a draft info
   http.post<{ threadId: string }>(
     `${baseUrlAPI}/infos`,
