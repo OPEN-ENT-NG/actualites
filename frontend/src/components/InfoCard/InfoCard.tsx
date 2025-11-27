@@ -92,7 +92,7 @@ export const InfoCard = ({ info }: InfoCardProps) => {
       key={info.id}
     >
       <article
-        id={String(info.id)}
+        id={`info-${info.id}`}
         className="overflow-hidden"
         data-testid="info-card"
       >

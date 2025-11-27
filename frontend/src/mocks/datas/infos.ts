@@ -23,7 +23,7 @@ export const mockInfoPublishedHeadline: Info = {
   publicationDate: '2025-08-07T00:00:00.000',
   expirationDate: null,
   numberOfComments: 0,
-  title: 'Voici une actualité mise en avant', // Ne pas modifier, à utiliser pour les tests
+  title: 'Voici une actualité mise en avant',
   headline: true,
   sharedRights: [],
 };
@@ -46,7 +46,7 @@ export const mockInfoPublished: Info = {
   publicationDate: '2025-08-07T00:00:00.000',
   expirationDate: null,
   numberOfComments: 0,
-  title: 'Voici une actualité publiée', // Ne pas modifier, sert pour les tests
+  title: 'Voici une actualité publiée',
   headline: false,
   sharedRights: [],
 };

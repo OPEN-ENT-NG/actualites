@@ -46,7 +46,7 @@ describe('InfoCard', () => {
     );
   });
 
-  it('should healine message', () => {
+  it('should display headline message', () => {
     mocks.useBreakpoint.mockReturnValue({ md: false });
     render(<InfoCard info={mockInfoPublishedHeadline} />);
 
@@ -56,7 +56,7 @@ describe('InfoCard', () => {
     expect(imgHeadline).toHaveLength(2);
   });
 
-  it('should draft message', () => {
+  it('should display draft message', () => {
     mocks.useBreakpoint.mockReturnValue({ md: false });
     render(<InfoCard info={mockInfoPublishedDraft} />);
 
@@ -71,7 +71,7 @@ describe('InfoCard', () => {
     expect(imgHeadline).toHaveLength(0);
   });
 
-  it('should incoming message', () => {
+  it('should display incoming message', () => {
     mocks.useBreakpoint.mockReturnValue({ md: false });
     render(<InfoCard info={mockInfoIncoming} />);
 
@@ -88,7 +88,7 @@ describe('InfoCard', () => {
     expect(imgHeadline).toHaveLength(0);
   });
 
-  it('should expired message', () => {
+  it('should display expired message', () => {
     mocks.useBreakpoint.mockReturnValue({ md: false });
     render(<InfoCard info={mockInfoExpired} />);
 

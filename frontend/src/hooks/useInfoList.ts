@@ -8,7 +8,6 @@ import { useThreadInfoParams } from './useThreadInfoParams';
 export function useInfoList() {
   const { threadId } = useThreadInfoParams();
   const { value } = useInfoSearchParams();
-
   // Convert value to status and state for the API
   const status = Object.values(InfoStatus).includes(value as InfoStatus)
     ? (value as InfoStatus)
