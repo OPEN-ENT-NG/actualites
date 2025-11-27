@@ -7,6 +7,8 @@ import { InfoCard, InfoCardSkeleton } from '..';
 import { InfoListEmpty } from './components/InfoListEmpty';
 import { InfoListSegmented } from './components/InfoListSegmented';
 import { useInfoListEmptyScreen } from './hooks/useInfoListEmptyScreen';
+import { useInfosStats } from '~/services/queries/info';
+import { InfoListSegmentedSkeleton } from './components/InfoListSegmentedSkeleton';
 
 export const InfoList = () => {
   const { infos, hasNextPage, loadNextPage, isLoading } = useInfoList();
@@ -15,8 +17,10 @@ export const InfoList = () => {
   const { value, updateParams } = useInfoSearchParams();
   const { threadId } = useThreadInfoParams();
   const { hasContributeRightOnThread } = useThreadsUserRights();
-
   const isSegmentedVisible = hasContributeRightOnThread?.(threadId);
+  const { isLoading: isInfosStatsLoading } = useInfosStats({
+    enabled: !!isSegmentedVisible,
+  });
 
   const loadNextRef = useInfiniteScroll({
     callback: loadNextPage,
@@ -31,12 +35,16 @@ export const InfoList = () => {
     >
       {isSegmentedVisible && (
         <header className="align-self-center">
-          <InfoListSegmented
-            value={value}
-            onChange={(value) => {
-              updateParams({ value });
-            }}
-          />
+          {isInfosStatsLoading ? (
+            <InfoListSegmentedSkeleton />
+          ) : (
+            <InfoListSegmented
+              value={value}
+              onChange={(value) => {
+                updateParams({ value });
+              }}
+            />
+          )}
         </header>
       )}
       {!isLoading && infos.length === 0 && emptyScreenIsReady && (

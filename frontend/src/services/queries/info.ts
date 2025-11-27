@@ -120,10 +120,11 @@ export const infoQueryOptions = {
    * Get the stats of all infos.
    * @returns The stats of all infos.
    */
-  getStats() {
+  getStats(enabled?: boolean) {
     return queryOptions({
       queryKey: infoQueryKeys.stats(),
       queryFn: () => infoService.getStats(),
+      enabled: enabled ?? true,
     });
   },
 
@@ -178,7 +179,8 @@ export const useInfos = (
 
 export const useInfoShares = (infoId: InfoId) =>
   useQuery(infoQueryOptions.getShares(infoId));
-export const useInfosStats = () => useQuery(infoQueryOptions.getStats());
+export const useInfosStats = (options?: { enabled?: boolean }) =>
+  useQuery(infoQueryOptions.getStats(options?.enabled));
 
 export const useInfoRevisions = (infoId: InfoId) =>
   useQuery(infoQueryOptions.getRevisions(infoId));
