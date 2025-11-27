@@ -135,11 +135,9 @@ export function CreateInfoRights() {
   const handlePublishClick = () => {
     isPublishing.current = true;
     if (isDirty) {
-      console.log('Info rights are dirty');
       // Save shares, then publish in onSuccess callback
       shareInfoRef.current?.handleShare(false);
     } else {
-      console.log('Info rights are not dirty');
       // No changes to save, publish immediately
       handlePublish();
     }
