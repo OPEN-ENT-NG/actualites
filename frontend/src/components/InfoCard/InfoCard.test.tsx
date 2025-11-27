@@ -1,23 +1,12 @@
-import { mockInfos } from '~/mocks/datas/infos';
+import {
+  mockInfoExpired,
+  mockInfoIncoming,
+  mockInfoPublished,
+  mockInfoPublishedDraft,
+  mockInfoPublishedHeadline,
+} from '~/mocks/datas/infos';
 import { render, screen } from '~/mocks/setup';
 import { InfoCard } from './InfoCard';
-
-/**
- * Mock window.matchMedia used in useBreakpoint hook
- */
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: vi.fn().mockImplementation((query) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  })),
-});
 
 const mocks = vi.hoisted(() => ({
   useBreakpoint: vi.fn(),
@@ -47,17 +36,19 @@ function getHeadlineImg(card: HTMLElement) {
 }
 
 describe('InfoCard', () => {
-  it('should render', () => {
+  it('should render headline info', () => {
     mocks.useBreakpoint.mockReturnValue({ md: false });
-    render(<InfoCard info={mockInfos[0]} />);
+    render(<InfoCard info={mockInfoPublished} />);
 
     const card = screen.getByRole('article');
-    expect(card.getElementsByTagName('h3')[0].textContent).toBe('Bientôt');
+    expect(card.getElementsByTagName('h3')[0].textContent).toBe(
+      'Voici une actualité publiée',
+    );
   });
 
-  it('should healine message', () => {
+  it('should display headline message', () => {
     mocks.useBreakpoint.mockReturnValue({ md: false });
-    render(<InfoCard info={mockInfos[0]} />);
+    render(<InfoCard info={mockInfoPublishedHeadline} />);
 
     const card = screen.getByRole('article');
     expect(card.parentElement).toHaveClass('info-card-headline');
@@ -65,9 +56,9 @@ describe('InfoCard', () => {
     expect(imgHeadline).toHaveLength(2);
   });
 
-  it('should draft message', () => {
+  it('should display draft message', () => {
     mocks.useBreakpoint.mockReturnValue({ md: false });
-    render(<InfoCard info={mockInfos[2]} />);
+    render(<InfoCard info={mockInfoPublishedDraft} />);
 
     const card = screen.getByRole('article');
     expect(card.parentElement).toHaveClass('info-card-draft');
@@ -80,9 +71,9 @@ describe('InfoCard', () => {
     expect(imgHeadline).toHaveLength(0);
   });
 
-  it('should incoming message', () => {
+  it('should display incoming message', () => {
     mocks.useBreakpoint.mockReturnValue({ md: false });
-    render(<InfoCard info={mockInfos[3]} />);
+    render(<InfoCard info={mockInfoIncoming} />);
 
     const card = screen.getByRole('article');
     expect(card.parentElement).toHaveClass('info-card-incoming');
@@ -97,9 +88,9 @@ describe('InfoCard', () => {
     expect(imgHeadline).toHaveLength(0);
   });
 
-  it('should expired message', () => {
+  it('should display expired message', () => {
     mocks.useBreakpoint.mockReturnValue({ md: false });
-    render(<InfoCard info={mockInfos[4]} />);
+    render(<InfoCard info={mockInfoExpired} />);
 
     const card = screen.getByRole('article');
     expect(card.parentElement).toHaveClass('info-card-expired');

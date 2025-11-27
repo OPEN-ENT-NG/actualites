@@ -22,6 +22,7 @@ export const createThreadService = () => {
     getThreads() {
       return odeServices.http().get<Thread[]>(`${baseUrlAPI}/threads`);
     },
+
     /**
      * Create a new thread.
      * @param payload - The data for the new thread.
