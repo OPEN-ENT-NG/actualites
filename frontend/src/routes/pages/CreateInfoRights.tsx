@@ -14,7 +14,7 @@ import {
   IconSave,
 } from '@edifice.io/react/icons';
 import { QueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   LoaderFunctionArgs,
   useLoaderData,
@@ -62,7 +62,7 @@ export function CreateInfoRights() {
   const { infoId } = useLoaderData() as CreateInfoRightsProps;
   const { data: info } = useInfoById(infoId);
   const shareInfoRef = useRef<ShareResourcesRef>(null);
-  const [isPublishing, setIsPublishing] = useState(false);
+  const isPublishing = useRef(false);
   const { handlePublish } = useInfoSharesForm({ infoId });
   const setCurrentCreationStep = useInfoFormStore.use.setCurrentCreationStep();
 
@@ -118,26 +118,28 @@ export function CreateInfoRights() {
     setIsDirty(isDirty);
   };
 
-  const handleShareInfoSubmitSuccess = useCallback(() => {
+  const handleShareInfoSubmitSuccess = () => {
     setIsDirty(false);
-    if (isPublishing) {
+    if (isPublishing.current) {
       handlePublish();
     } else {
       navigate('/');
       setIsSaving(false);
     }
-  }, [isPublishing, handlePublish, navigate]);
+  };
 
   const handleCancelClick = () => {
     navigate('..', { relative: 'path' });
   };
 
   const handlePublishClick = () => {
-    setIsPublishing(true);
+    isPublishing.current = true;
     if (isDirty) {
+      console.log('Info rights are dirty');
       // Save shares, then publish in onSuccess callback
       shareInfoRef.current?.handleShare(false);
     } else {
+      console.log('Info rights are not dirty');
       // No changes to save, publish immediately
       handlePublish();
     }
@@ -197,7 +199,7 @@ export function CreateInfoRights() {
             type="submit"
             leftIcon={<IconSave />}
             onClick={handleInfoSharesSave}
-            disabled={!isDirty || isSaving || isPublishing}
+            disabled={!isDirty || isSaving || isPublishing.current}
             isLoading={isSaving}
             data-testid="actualites.info.form.saveDraftButton"
           >
@@ -209,8 +211,8 @@ export function CreateInfoRights() {
             rightIcon={<IconArrowRight />}
             onClick={handlePublishClick}
             data-testid="actualites.info.form.submitButton"
-            disabled={isSaving || isPublishing}
-            isLoading={isPublishing}
+            disabled={isSaving || isPublishing.current}
+            isLoading={isPublishing.current}
           >
             {t('actualites.info.createForm.publish')}
           </Button>
