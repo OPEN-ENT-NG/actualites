@@ -41,7 +41,7 @@ export const infoQueryKeys = {
     options.state,
   ],
 
-  share: (options: { threadId: ThreadId; infoId: InfoId }) => [
+  share: (options: { threadId?: ThreadId; infoId: InfoId }) => [
     ...infoQueryKeys.info(options),
     'share',
     'json',
