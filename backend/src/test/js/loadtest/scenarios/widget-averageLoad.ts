@@ -17,17 +17,11 @@ export const options = {
       exec: 'averageWidget',
       startVUs: 0,
       stages: [
-        { duration: '30s', target: constantVu }, // ramp-up
+        { duration: '30s', target: constantVu }, // montée progressive
+        { duration: duration, target: constantVu }, // plateau stable
+        { duration: '5s', target: 0 }, // descente propre (facultatif)
       ],
-      gracefulRampDown: '0s',
-    },
-    constant_load_widget: {
-      executor: 'constant-vus',
-      exec: 'averageWidget',
-      vus: constantVu,// charge constante
-      duration: duration,
-      startTime: '31s', // démarre après la fin du ramp-up
-      gracefulStop: '3s', //evite les erreurs sur la fin laisse les scénarios se terminer
+      gracefulRampDown: '1s',
     }
   },
 };
