@@ -7,7 +7,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { Info, InfoId, InfoStatus } from '~/models/info';
+import { Info, InfoExtendedStatus, InfoId, InfoStatus } from '~/models/info';
 import { ThreadId } from '~/models/thread';
 import { infoService } from '../api';
 import { threadQueryKeys } from './thread';
@@ -29,15 +29,25 @@ export const infoQueryKeys = {
     infoId,
   ],
 
-  getInfos: ({ ...options }: { threadId?: ThreadId }) => [
-    ...infoQueryKeys.info(options),
+  infos: ({
+    ...options
+  }: {
+    threadId?: ThreadId;
+    status?: InfoStatus;
+    state?: InfoExtendedStatus;
+  }) => [
+    ...infoQueryKeys.all({ threadId: options.threadId }),
+    options.status,
+    options.state,
   ],
 
-  share: (options: { infoId: InfoId }) => [
+  share: (options: { threadId: ThreadId; infoId: InfoId }) => [
     ...infoQueryKeys.info(options),
     'share',
     'json',
   ],
+
+  stats: () => [...infoQueryKeys.all({}), 'stats'],
 
   revisions: (options: { infoId: InfoId }) => [
     ...infoQueryKeys.info(options),
@@ -67,12 +77,24 @@ export const infoQueryOptions = {
       staleTime: Infinity, // will be unvalidated manually when needed only,
     });
   },
+
   /**
+   * Get a page of infos, optionnally from a given thread.
+   * @param options - The options for fetching the infos.
+   * @param options.pageSize - The number of infos to fetch per page.
+   * @param options.threadId - The ID of the thread to fetch the infos from.
+   * @param options.status - The status of the infos to fetch.
+   * @param options.state - The state of the infos to fetch.
    * @returns Query options for fetching a page of infos, optionnally from a given thread.
    */
-  getInfos(options: { pageSize: number; threadId?: ThreadId }) {
+  getInfos(options: {
+    pageSize: number;
+    threadId?: ThreadId;
+    status?: InfoStatus;
+    state?: InfoExtendedStatus;
+  }) {
     return infiniteQueryOptions({
-      queryKey: infoQueryKeys.all(options),
+      queryKey: infoQueryKeys.infos(options),
       queryFn: ({ pageParam = 0 }) => {
         return infoService.getInfos({
           ...options,
@@ -91,6 +113,18 @@ export const infoQueryOptions = {
         }
         return undefined;
       },
+    });
+  },
+
+  /**
+   * Get the stats of all infos.
+   * @returns The stats of all infos.
+   */
+  getStats(enabled?: boolean) {
+    return queryOptions({
+      queryKey: infoQueryKeys.stats(),
+      queryFn: () => infoService.getStats(),
+      enabled: enabled ?? true,
     });
   },
 
@@ -129,11 +163,24 @@ export const infoQueryOptions = {
 export const useInfoById = (infoId?: InfoId) =>
   useQuery(infoQueryOptions.getInfoById(infoId));
 
-export const useInfos = (threadId?: ThreadId, pageSize = DEFAULT_PAGE_SIZE) =>
-  useInfiniteQuery(infoQueryOptions.getInfos({ pageSize, threadId }));
+export const useInfos = (
+  threadId?: ThreadId,
+  options?: {
+    pageSize?: number;
+    status?: InfoStatus;
+    state?: InfoExtendedStatus;
+  },
+) => {
+  const pageSize = options?.pageSize ?? DEFAULT_PAGE_SIZE;
+  return useInfiniteQuery(
+    infoQueryOptions.getInfos({ pageSize, threadId, ...options }),
+  );
+};
 
 export const useInfoShares = (infoId: InfoId) =>
   useQuery(infoQueryOptions.getShares(infoId));
+export const useInfosStats = (options?: { enabled?: boolean }) =>
+  useQuery(infoQueryOptions.getStats(options?.enabled));
 
 export const useInfoRevisions = (infoId: InfoId) =>
   useQuery(infoQueryOptions.getRevisions(infoId));
