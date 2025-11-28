@@ -363,7 +363,7 @@ public class InfosControllerV1 extends ControllerHelper {
 												info.getString("content")));
 
 										DateFormat dfm = new SimpleDateFormat("yyyy-MM-dd");
-										String date = info.getString("publicationDate");
+										String date = info.getString("publication_date");
 										if(date != null && !date.trim().isEmpty()){
 											try {
 												Date publicationDate = dfm.parse(date);
@@ -491,8 +491,8 @@ public class InfosControllerV1 extends ControllerHelper {
 						if (!resource.containsKey("expiration_date")) {
 							resource.putNull("expiration_date");
 						}
-						if (!resource.containsKey("publicationDate")) {
-							resource.putNull("publicationDate");
+						if (!resource.containsKey("publication_date")) {
+							resource.putNull("publication_date");
 						}
 					}
 					infoService.update(infoId, resource, user, event.name(), request, h -> {
