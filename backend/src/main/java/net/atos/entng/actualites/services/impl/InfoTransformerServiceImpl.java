@@ -9,18 +9,15 @@ import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.security.SecuredAction;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.services.InfoService;
-import net.atos.entng.actualites.to.News;
-import net.atos.entng.actualites.to.NewsComplete;
-import net.atos.entng.actualites.to.NewsLight;
-import net.atos.entng.actualites.to.NewsState;
-import net.atos.entng.actualites.to.NewsStatus;
-
+import net.atos.entng.actualites.to.*;
 import org.apache.commons.lang3.StringUtils;
+import org.entcore.common.editor.IContentTransformerEventRecorder;
 import org.entcore.common.user.UserInfos;
 
 import java.util.ArrayList;
@@ -34,30 +31,39 @@ public class InfoTransformerServiceImpl implements InfoService {
     private static final Logger log = LoggerFactory.getLogger(InfoTransformerServiceImpl.class);
     private final InfoService infoService;
     private final IContentTransformerClient contentTransformerClient;
+    private final IContentTransformerEventRecorder transformerEventRecorder;
 
     public InfoTransformerServiceImpl(IContentTransformerClient transformerClient,
+                                      IContentTransformerEventRecorder transformerEventRecorder,
                                       InfoService infoService) {
         this.infoService = infoService;
         this.contentTransformerClient = transformerClient;
+        this.transformerEventRecorder = transformerEventRecorder;
 
     }
 
     @Override
-    public void create(JsonObject data, UserInfos user, String eventStatus, Handler<Either<String, JsonObject>> handler) {
+    public void create(JsonObject data, UserInfos user, String eventStatus, HttpServerRequest serverRequest, Handler<Either<String, JsonObject>> handler) {
         log.info(String.format("[%s] Transform content of info for user %s ", getClass().getSimpleName(), user.getUserId()));
 
         if( StringUtils.isEmpty(data.getString("content"))) {
-            infoService.create(data, user, eventStatus, handler);
+            infoService.create(data, user, eventStatus, serverRequest, handler);
             return;
         }
         applyTransformation(user, data, handler, (response) -> {
                     data.put("content", response.getCleanHtml());
-                    this.infoService.create(data, user, eventStatus, handler);
+                    this.infoService.create(data, user, eventStatus, serverRequest, h -> {
+                        if (h.isRight()) {
+                           JsonObject created = h.right().getValue();
+                           transformerEventRecorder.recordTransformation(created.getString("id"), "info", response, serverRequest);
+                        }
+                        handler.handle(h);
+                    });
                 });
     }
 
     @Override
-    public void update(String id, JsonObject data, UserInfos user, String eventStatus, Handler<Either<String, JsonObject>> handler) {
+    public void update(String id, JsonObject data, UserInfos user, String eventStatus, HttpServerRequest request, Handler<Either<String, JsonObject>> handler) {
         infoService.retrieve(id, false, h -> {
             if (h.isLeft()) {
                 handler.handle(new Either.Left<>("This info doesn't exists"));
@@ -72,7 +78,7 @@ public class InfoTransformerServiceImpl implements InfoService {
             if ( (!data.containsKey("content") || data.getString("content") == null )
                     && "1".equals(actualInfo.getString("content_version"))) {
                 data.put("content", actualInfo.getString("content"));
-                this.infoService.update(id, data, user, eventStatus, handler);
+                this.infoService.update(id, data, user, eventStatus, request, handler);
                 return;
             }
             //keep content if we receive a null or no content
@@ -81,12 +87,13 @@ public class InfoTransformerServiceImpl implements InfoService {
             }
             //transform only if we have something to transform
             if (StringUtils.isEmpty(data.getString("content"))) {
-                this.infoService.update(id, data, user, eventStatus, handler);
+                this.infoService.update(id, data, user, eventStatus, request, handler);
                 return;
             }
             applyTransformation(user, data, handler, (response) -> {
                 data.put("content", response.getCleanHtml());
-                this.infoService.update(id, data, user, eventStatus, handler);
+                this.infoService.update(id, data, user, eventStatus, request, handler);
+                transformerEventRecorder.recordTransformation(id, "info", response, request);
             });
         });
     }

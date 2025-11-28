@@ -26,6 +26,7 @@ import fr.wseduc.webutils.security.SecuredAction;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
+import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 import io.vertx.core.json.JsonArray;
@@ -90,7 +91,7 @@ public class InfoServiceSqlImpl implements InfoService {
 
 
 	@Override
-	public void create(final JsonObject data, final UserInfos user, final String eventStatus, final Handler<Either<String, JsonObject>> handler) {
+	public void create(final JsonObject data, final UserInfos user, final String eventStatus, HttpServerRequest request, final Handler<Either<String, JsonObject>> handler) {
 		String queryNewInfoId = "SELECT nextval('actualites.info_id_seq') as id";
 		Sql.getInstance().raw(queryNewInfoId, SqlResult.validUniqueResultHandler(new Handler<Either<String, JsonObject>>() {
 			@Override
@@ -138,7 +139,7 @@ public class InfoServiceSqlImpl implements InfoService {
 	}
 
 	@Override
-	public void update(String id, JsonObject data, UserInfos user, String eventStatus, Handler<Either<String, JsonObject>> handler) {
+	public void update(String id, JsonObject data, UserInfos user, String eventStatus, HttpServerRequest request, Handler<Either<String, JsonObject>> handler) {
 		SqlStatementsBuilder s = new SqlStatementsBuilder();
 
 		String userQuery = "SELECT "+ NEWS_SCHEMA + ".merge_users(?,?)";
