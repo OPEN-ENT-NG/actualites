@@ -4,7 +4,7 @@ import { s9Widget } from "../target-tests/widget.ts";
 const schoolName = __ENV.DATA_SCHOOL_NAME || `Load tests average load`;
 const constantVu = __ENV.CONSTANT_VU || 150;
 const duration = __ENV.DURATION || '1m';
-const env = __ENV.ENVIRONMENT || 'Local';
+const env = __ENV.ENVIRONMENT || 'local';
 
 export const options = {
   setupTimeout: "1h",
@@ -28,7 +28,7 @@ export const options = {
 
 
 export function setup() {
-  if(env === 'Local') {
+  if(env === 'local') {
     return initLocal(schoolName);
   } else {
     return initFromCsv();

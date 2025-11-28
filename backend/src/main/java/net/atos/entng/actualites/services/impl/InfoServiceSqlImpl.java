@@ -204,7 +204,7 @@ public class InfoServiceSqlImpl implements InfoService {
 	}
 
 	@Override
-	public void retrieve(String id, Boolean filterAdmlGroup, Handler<Either<String, JsonObject>> handler) {
+	public void retrieve(String id, boolean filterAdmlGroup, Handler<Either<String, JsonObject>> handler) {
 			String query;
 			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
 			String admlFilter = filterAdmlGroup ? " AND (ts.adml_group = false OR ts.adml_group IS NULL) " : "";

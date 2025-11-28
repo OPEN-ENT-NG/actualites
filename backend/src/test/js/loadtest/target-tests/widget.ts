@@ -12,6 +12,7 @@ import exec from 'k6/execution';
 import { apiErrors, apiSuccesses, apiTrend } from "../scenarios/_metrics-utils.ts";
 
 const rootUrl = __ENV.ROOT_URL;
+const baseDelay = (__ENV.DELAY_BETWEEN_PAGE_IN_MS ? Number(__ENV.DELAY_BETWEEN_PAGE_IN_MS) : 1000) ;
 
 export function s9Widget(data: InitData) {
 
@@ -30,10 +31,8 @@ export function s9Widget(data: InitData) {
     if(res.status < 300 && res.status >= 200) {
       apiSuccesses.add(1);
     } else {
-      console.log("Response", res);
-      console.log("User ", user);
       apiErrors.add(1);
     }
-    sleep(0.5);
+    sleep(baseDelay / 1000);
   });
 }

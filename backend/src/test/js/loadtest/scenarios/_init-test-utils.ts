@@ -32,6 +32,10 @@ import { ShareTargetType } from "../../utils/_shares_utils.ts";
 import csv  from 'k6/experimental/csv';
 import { open } from 'k6/experimental/fs';
 
+const nbInfosPublish = (__ENV.LOCAL_NB_INFOS_PUBLISH ? Number(__ENV.LOCAL_NB_INFOS_PUBLISH) :  300);
+const nbInfosPending = (__ENV.LOCAL_NB_INFOS_PENDING ? Number(__ENV.LOCAL_NB_INFOS_PENDING) :  30);
+const nbInfosDraft = (__ENV.LOCAL_NB_INFOS_DRAFT ? Number(__ENV.LOCAL_NB_INFOS_DRAFT) :  20);
+
 type InfoUser = {
   login: string;
   session: Session;
@@ -154,7 +158,7 @@ export function initLocal(schoolName: string): InitData {
     console.log("Creating infos with PUBLISHED status");
 
 
-    for (let i = 0; i < 300; i++) {
+    for (let i = 0; i < nbInfosPublish; i++) {
       //last published info
       createPublishedInfoOrFail({
         title: `Incoming info ${seed}`,
@@ -168,7 +172,7 @@ export function initLocal(schoolName: string): InitData {
 
     console.log("Creating infos with DRAFT status");
 
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < nbInfosDraft; i++) {
       //draft should not be visible
       createInfoOrFail({
         title: `Incoming info ${seed}`,
@@ -182,7 +186,7 @@ export function initLocal(schoolName: string): InitData {
 
     console.log("Creating infos with PENDING status");
 
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < nbInfosPending; i++) {
       //pending should not be visible
       createInfoOrFail({
         title: `Incoming info ${seed}`,
