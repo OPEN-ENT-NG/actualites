@@ -20,8 +20,9 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
       {
         path: 'create/info',
         async lazy() {
-          const { loader, CreateInfo: Component } =
-            await import('~/routes/pages/CreateInfo');
+          const { loader, CreateInfo: Component } = await import(
+            '~/routes/pages/CreateInfo'
+          );
           return {
             loader: loader(queryClient),
             Component,
@@ -32,8 +33,9 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
             path: '',
             index: true,
             async lazy() {
-              const { loader, CreateInfoDetails: Component } =
-                await import('~/routes/pages/CreateInfoDetails');
+              const { loader, CreateInfoDetails: Component } = await import(
+                '~/routes/pages/CreateInfoDetails'
+              );
               return {
                 loader: loader(queryClient),
                 Component,
@@ -43,8 +45,9 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
           {
             path: ':infoIdAsString/rights',
             async lazy() {
-              const { loader, CreateInfoRights: Component } =
-                await import('~/routes/pages/CreateInfoRights');
+              const { loader, CreateInfoRights: Component } = await import(
+                '~/routes/pages/CreateInfoRights'
+              );
               return {
                 loader: loader(queryClient),
                 Component,
@@ -54,8 +57,9 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
           {
             path: ':infoIdAsString',
             async lazy() {
-              const { loader, CreateInfoDetails: Component } =
-                await import('~/routes/pages/CreateInfoDetails');
+              const { loader, CreateInfoDetails: Component } = await import(
+                '~/routes/pages/CreateInfoDetails'
+              );
               return {
                 loader: loader(queryClient),
                 Component,
@@ -67,8 +71,9 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
       {
         path: '',
         async lazy() {
-          const { loader, Threads: Component } =
-            await import('~/routes/pages/Threads');
+          const { loader, Threads: Component } = await import(
+            '~/routes/pages/Threads'
+          );
           return {
             loader: loader(queryClient),
             Component,
@@ -85,8 +90,9 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
                     path: '',
                     index: true,
                     async lazy() {
-                      const { loader, Threads: Component } =
-                        await import('~/routes/pages/Threads');
+                      const { loader, Threads: Component } = await import(
+                        '~/routes/pages/Threads'
+                      );
                       return {
                         loader: loader(queryClient),
                         Component,
@@ -96,8 +102,9 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
                   {
                     path: 'infos/:infoIdAsString/edit',
                     async lazy() {
-                      const { loader, Threads: Component } =
-                        await import('~/routes/pages/Threads');
+                      const { loader, Threads: Component } = await import(
+                        '~/routes/pages/Threads'
+                      );
                       return {
                         loader: loader(queryClient),
                         Component,
