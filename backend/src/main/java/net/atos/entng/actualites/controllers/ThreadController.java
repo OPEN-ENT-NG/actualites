@@ -32,10 +32,8 @@ import fr.wseduc.webutils.http.Renders;
 import io.vertx.core.Promise;
 import net.atos.entng.actualites.Actualites;
 import net.atos.entng.actualites.filters.ThreadFilter;
-import net.atos.entng.actualites.services.GroupService;
 import net.atos.entng.actualites.services.ThreadMigrationService;
 import net.atos.entng.actualites.services.ThreadService;
-import net.atos.entng.actualites.services.impl.ThreadMigrationServiceImpl;
 import net.atos.entng.actualites.services.impl.ThreadServiceSqlImpl;
 
 import org.entcore.common.controller.ControllerHelper;
@@ -222,7 +220,6 @@ public class ThreadController extends ControllerHelper {
 		});
 	}
 
-
 	@Deprecated
 	@Get("/thread/share/json/:"+THREAD_ID_PARAMETER)
 	@ApiDoc("Share thread by id. DEPRECATED - This endpoint is no longer used and will be removed in a future version.")
@@ -282,46 +279,6 @@ public class ThreadController extends ControllerHelper {
 			}
 		});
 	}
-
-	@Deprecated
-	@Put("/thread/share/json/:"+THREAD_ID_PARAMETER)
-	@ApiDoc("Share thread by id. DEPRECATED - This endpoint is no longer used and will be removed in a future version.")
-	@ResourceFilter(ThreadFilter.class)
-	@SecuredAction(value = "thread.manager", type = ActionType.RESOURCE)
-	public void shareThreadSubmit(final HttpServerRequest request) {
-		log.warn("[DEPRECATED] PUT /thread/share/json/:id called - This endpoint should no longer be used");
-		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
-			@Override
-			public void handle(final UserInfos user) {
-				if (user != null) {
-					final String threadId = request.params().get(THREAD_ID_PARAMETER);
-					if(threadId == null || threadId.trim().isEmpty()) {
-			            badRequest(request);
-			            return;
-			        }
-					JsonObject params = new JsonObject()
-						.put("profilUri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
-						.put("username", user.getUsername())
-						.put("resourceUri", pathPrefix + "#/default");
-
-					shareJsonSubmit(request, "news.thread-shared", false, params, "title");
-				} else {
-					unauthorized(request);
-				}
-			}
-		});
-	}
-
-	@Deprecated
-	@Put("/thread/share/remove/:"+THREAD_ID_PARAMETER)
-	@ApiDoc("Remove Share by id. DEPRECATED - This endpoint is no longer used and will be removed in a future version.")
-	@ResourceFilter(ThreadFilter.class)
-	@SecuredAction(value = "thread.manager", type = ActionType.RESOURCE)
-	public void shareThreadRemove(final HttpServerRequest request) {
-		log.warn("[DEPRECATED] PUT /thread/share/remove/:id called - This endpoint should no longer be used");
-		removeShare(request, false);
-	}
-
 	@Deprecated
 	@Put("/thread/share/resource/:id")
 	@ApiDoc("Share thread by id. DEPRECATED - This endpoint is no longer used and will be removed in a future version.")

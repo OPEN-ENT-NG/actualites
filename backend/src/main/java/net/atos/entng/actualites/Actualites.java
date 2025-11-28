@@ -19,6 +19,7 @@
 
 package net.atos.entng.actualites;
 
+import fr.wseduc.mongodb.MongoDb;
 import fr.wseduc.transformer.ContentTransformerFactoryProvider;
 import fr.wseduc.transformer.IContentTransformerClient;
 import io.vertx.core.Future;
@@ -26,6 +27,7 @@ import io.vertx.core.Promise;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import net.atos.entng.actualites.constants.Field;
 import net.atos.entng.actualites.controllers.CommentController;
 import net.atos.entng.actualites.controllers.DisplayController;
 import net.atos.entng.actualites.controllers.InfoController;
@@ -39,11 +41,15 @@ import org.entcore.common.editor.ContentTransformerConfig;
 import org.entcore.common.editor.ContentTransformerEventRecorder;
 import org.entcore.common.editor.ContentTransformerEventRecorderFactory;
 import org.entcore.common.editor.IContentTransformerEventRecorder;
+import org.entcore.common.events.EventHelper;
+import org.entcore.common.events.EventStore;
+import org.entcore.common.events.EventStoreFactory;
 import org.entcore.common.http.BaseServer;
 import org.entcore.common.http.filter.ShareAndOwner;
 import org.entcore.common.service.impl.SqlCrudService;
 import org.entcore.common.service.impl.SqlSearchService;
 import org.entcore.common.share.ShareRoles;
+import org.entcore.common.share.ShareService;
 import org.entcore.common.share.impl.SqlShareService;
 import org.entcore.common.sql.SqlConf;
 import org.entcore.common.sql.SqlConfs;
@@ -116,10 +122,17 @@ public class Actualites extends BaseServer {
 		ThreadController threadController = new ThreadController(eb, threadMigrationService);
 		SqlCrudService threadSqlCrudService = new SqlCrudService(getSchema(), THREAD_TABLE, THREAD_SHARE_TABLE, new JsonArray().add("*"), new JsonArray().add("*"), true);
 		threadController.setCrudService(threadSqlCrudService);
-		threadController.setShareService(new SqlShareService(getSchema(),THREAD_SHARE_TABLE, eb, securedActions, null));
+		ShareService threadShareService = new SqlShareService(getSchema(),THREAD_SHARE_TABLE, eb, securedActions, null);
+		threadController.setShareService(threadShareService);
 		addController(threadController);
 
-		ThreadControllerV1 threadControllerV1 = new ThreadControllerV1(threadController);
+		ThreadControllerV1 threadControllerV1 = new ThreadControllerV1();
+		threadControllerV1.setThreadService(new ThreadServiceSqlImpl().setEventBus(eb));
+		threadControllerV1.setThreadMigrationService(threadMigrationService);
+		final EventStore eventStoreThread = EventStoreFactory.getFactory().getEventStore(Actualites.class.getSimpleName());
+		threadControllerV1.setEventHelper(new EventHelper(eventStoreThread));
+		threadControllerV1.setCrudService(threadSqlCrudService);
+		threadControllerV1.setShareService(threadShareService);
 		addController(threadControllerV1);
 
 		// info table
@@ -144,8 +157,9 @@ public class Actualites extends BaseServer {
 		infoController.setShareService(new SqlShareService(getSchema(),INFO_SHARE_TABLE, eb, securedActions, null));
 		addController(infoController);
 
-		InfosControllerV1 infosControllerV1 = new InfosControllerV1(infoController, notificationTimelineService, rights);
+		InfosControllerV1 infosControllerV1 = new InfosControllerV1(notificationTimelineService, rights);
 		infosControllerV1.setInfoService(infoService);
+		infosControllerV1.setTimelineMongo(new TimelineMongoImpl(Field.TIMELINE_COLLECTION, MongoDb.getInstance()));
 		infosControllerV1.setCrudService(infoSqlCrudService);
 		infosControllerV1.setShareService(new SqlShareService(getSchema(),INFO_SHARE_TABLE, eb, securedActions, null));
 		addController(infosControllerV1);
@@ -162,7 +176,8 @@ public class Actualites extends BaseServer {
 		commentController.setCrudService(commentSqlCrudService);
 		addController(commentController);
 
-		CommentControllerV1 commentControllerV1 = new CommentControllerV1(commentController, infoController);
+		CommentControllerV1 commentControllerV1 = new CommentControllerV1();
+		commentControllerV1.setInfoService(infoService);
 		addController(commentControllerV1);
 	}
 

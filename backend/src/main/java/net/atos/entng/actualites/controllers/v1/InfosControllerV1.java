@@ -4,15 +4,15 @@ import fr.wseduc.rs.*;
 import fr.wseduc.security.ActionType;
 import fr.wseduc.security.SecuredAction;
 import fr.wseduc.webutils.Either;
+import fr.wseduc.webutils.I18n;
 import fr.wseduc.webutils.request.RequestUtils;
 import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.Actualites;
-import net.atos.entng.actualites.controllers.InfoController;
 import net.atos.entng.actualites.filters.CreateInfoFilter;
 import net.atos.entng.actualites.filters.InfoFilter;
 import net.atos.entng.actualites.filters.UpdateInfoFilter;
@@ -27,47 +27,79 @@ import org.entcore.common.events.EventHelper;
 import org.entcore.common.events.EventStore;
 import org.entcore.common.events.EventStoreFactory;
 import org.entcore.common.http.filter.ResourceFilter;
-import org.entcore.common.share.ShareRoles;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.user.UserUtils;
-import org.vertx.java.core.http.RouteMatcher;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+
+import io.vertx.core.Promise;
+import net.atos.entng.actualites.services.TimelineMongo;
+import org.entcore.common.notification.NotificationUtils;
 
 import static net.atos.entng.actualites.Actualites.INFO_RESOURCE_ID;
-import static net.atos.entng.actualites.controllers.InfoController.*;
-import static org.entcore.common.http.response.DefaultResponseHandler.notEmptyResponseHandler;
+import static org.entcore.common.http.response.DefaultResponseHandler.*;
+import static org.entcore.common.user.UserUtils.getUserInfos;
 
 public class InfosControllerV1 extends ControllerHelper {
 
 	public static final int DEFAULT_PAGE_SIZE = 20;
 	public static final int MAX_PAGE_SIZE = 100;
 
+	private static final String INFO_ID_PARAMETER = "id";
+    public static final String RESULT_SIZE_PARAMETER = "resultSize";
+
+    public static final String SCHEMA_INFO_CREATE = "createInfo";
+    public static final String SCHEMA_INFO_UPDATE = "updateInfo";
+
+    public static final String RESOURCE_NAME = "info";
+    private static final String EVENT_TYPE = "NEWS";
+    public static final String NEWS_SUBMIT_EVENT_TYPE = EVENT_TYPE + "_SUBMIT";
+    public static final String NEWS_UNSUBMIT_EVENT_TYPE = EVENT_TYPE + "_UNSUBMIT";
+    public static final String NEWS_PUBLISH_EVENT_TYPE = EVENT_TYPE + "_PUBLISH";
+    public static final String NEWS_UNPUBLISH_EVENT_TYPE = EVENT_TYPE + "_UNPUBLISH";
+    public static final String NEWS_UPDATE_EVENT_TYPE = EVENT_TYPE + "_UPDATE";
+
 	protected InfoService infoService;
+	protected TimelineMongo timelineMongo;
 
 	private JsonObject rights;
 	private final NotificationTimelineService notificationTimelineService;
-	private final InfoController infoController;
 	private final EventHelper eventHelper;
 	private static final String ROOT_RIGHT = "net.atos.entng.actualites.controllers.InfoController";
 	private static final Logger LOGGER = LoggerFactory.getLogger(InfosControllerV1.class);
 
 
-    public InfosControllerV1(InfoController infoController,
-							 NotificationTimelineService notificationTimelineService,
-							 JsonObject	rights) {
-		this.infoController = infoController;
+    public InfosControllerV1(NotificationTimelineService notificationTimelineService, JsonObject rights) {
         this.notificationTimelineService = notificationTimelineService;
         final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(Actualites.class.getSimpleName());
 		eventHelper = new EventHelper(eventStore);
 		this.rights = rights;
     }
 
+	@Override
+    protected boolean shouldNormalizedRights() {
+        return true;
+    }
+
+    @Override
+    protected Function<JsonObject, Optional<String>> jsonToOwnerId() {
+        return json -> Optional.of(json.getString("owner"));
+    }
+
 	public void setInfoService(InfoService infoService) {
         this.infoService = infoService;
     }
+
+	public void setTimelineMongo(TimelineMongo timelineMongo) {
+		this.timelineMongo = timelineMongo;
+	}
 
 	@Get("/api/v1/infos")
 	@SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")
@@ -145,7 +177,7 @@ public class InfosControllerV1 extends ControllerHelper {
 		});
 	}
 
-	@Get("/api/v1/infos/preview/last/:" + InfoController.RESULT_SIZE_PARAMETER)
+	@Get("/api/v1/infos/preview/last/:" + RESULT_SIZE_PARAMETER)
 	@ApiDoc("List last infos, accept query param resultSize.")
 	@SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")
 	public void getLastInfos(HttpServerRequest request) {
@@ -177,7 +209,26 @@ public class InfosControllerV1 extends ControllerHelper {
 	@ResourceFilter(InfoFilter.class)
 	@SecuredAction(value = "info.read", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|getInfo")
 	public void getInfos(HttpServerRequest request) {
-		infoController.getSingleInfo(request);
+		getSingleInfo(request);
+	}
+
+	private void getSingleInfo(final HttpServerRequest request) {
+		// TODO IMPROVE : Security on Infos visibles by statuses / dates is not enforced
+		UserUtils.getUserInfos(eb, request, user -> {
+			if (user != null) {
+				// 1. Parse args
+				final int infoId = Integer.parseInt(request.params().get(Actualites.INFO_RESOURCE_ID));
+				boolean originalContent = Boolean.parseBoolean(request.getParam("originalContent", "false"));
+
+				// 2. Call service
+				infoService.getFromId(securedActions, user, infoId, originalContent)
+						.onSuccess(news -> render(request, news))
+						.onFailure(ex -> renderError(request));
+
+			} else {
+				unauthorized(request);
+			}
+		});
 	}
 
 	@Delete("/api/v1/infos/:" + INFO_RESOURCE_ID)
@@ -185,7 +236,32 @@ public class InfosControllerV1 extends ControllerHelper {
 	@ResourceFilter(InfoFilter.class)
 	@SecuredAction(value = "thread.manager", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|delete")
 	public void removeInfo(HttpServerRequest request) {
-		infoController.delete(request);
+		deleteInfo(request);
+	}
+
+	private void deleteInfo(final HttpServerRequest request) {
+		final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
+		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
+		UserUtils.getAuthenticatedUserInfos(eb, request)
+			.compose(user -> {
+				Promise<Void> promise = Promise.promise();
+				crudService.delete(infoId, user, event -> {
+					if (event.isLeft()) {
+					   promise.fail(event.left().getValue());
+					}
+					promise.complete();
+				});
+				return promise.future();
+			})
+			.compose(result -> timelineMongo.getNotification(threadId, infoId))
+			.compose(timelineMongo::deleteNotification)
+			.onSuccess(success -> ok(request))
+			.onFailure(failure -> {
+				String message = String.format("[ACTUALITES@%s::deleteInfo] Failed to delete info : %s",
+						this.getClass().getSimpleName(), failure.getMessage());
+				LOGGER.error(message);
+				badRequest(request);
+			});
 	}
 
 	@Get("/api/v1/infos/:id/shares")
@@ -193,7 +269,61 @@ public class InfosControllerV1 extends ControllerHelper {
 	@ResourceFilter(InfoFilter.class)
 	@SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|shareInfo")
 	public void getShareInfo(HttpServerRequest request) {
-		infoController.shareInfo(request);
+		shareInfo(request);
+	}
+
+	private void shareInfo(final HttpServerRequest request) {
+		final String id = request.params().get(INFO_ID_PARAMETER);
+		if (id == null || id.trim().isEmpty()) {
+			badRequest(request);
+			return;
+		}
+		getUserInfos(eb, request, new Handler<UserInfos>() {
+			@Override
+			public void handle(final UserInfos user) {
+				if (user != null) {
+					shareService.shareInfos(user.getUserId(), id, I18n.acceptLanguage(request), request.params().get("search"), new Handler<Either<String, JsonObject>>() {
+						@Override
+						public void handle(Either<String, JsonObject> event) {
+							final Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
+							if(event.isRight()){
+								JsonObject result = event.right().getValue();
+								if(result.containsKey("actions")){
+									JsonArray actions = result.getJsonArray("actions");
+									JsonArray newActions = new JsonArray();
+									for(Object action : actions){
+										if(((JsonObject) action).containsKey("displayName")){
+											String displayName = ((JsonObject) action).getString("displayName");
+											if(displayName.contains(".")){
+												String resource = displayName.split("\\.")[0];
+												if(resource.equals(RESOURCE_NAME)){
+													newActions.add(action);
+												}
+											}
+										}
+									}
+									result.put("actions", newActions);
+								}
+								infoService.getOwnerInfo(id, h -> {
+									if(h.isRight()) {
+										result.put("owner", h.right().getValue().getString("owner"));
+										addNormalizedRights(result);
+										handler.handle(new Either.Right<String, JsonObject>(result));
+									} else {
+										handler.handle(new Either.Left<String, JsonObject>("Error finding owner of the resource."));
+									}
+								});
+							} else {
+								handler.handle(new Either.Left<String, JsonObject>("Error finding shared resource."));
+							}
+						}
+					});
+
+				} else {
+					unauthorized(request);
+				}
+			}
+		});
 	}
 
 	@Put("/api/v1/infos/:id/shares")
@@ -201,7 +331,63 @@ public class InfosControllerV1 extends ControllerHelper {
 	@ResourceFilter(InfoFilter.class)
 	@SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|shareInfo")
 	public void updateShareInfo(HttpServerRequest request) {
-		infoController.shareResourceInfo(request);
+		shareResourceInfo(request);
+	}
+
+	private void shareResourceInfo(final HttpServerRequest request) {
+		final String infoId = request.params().get(INFO_ID_PARAMETER);
+		if(StringUtils.isEmpty(infoId)) {
+			badRequest(request);
+			return;
+		}
+		request.pause();
+		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+			@Override
+			public void handle(final UserInfos user) {
+				if (user != null) {
+					infoService.retrieve(infoId, user, false, new Handler<Either<String, JsonObject>>() {
+						@Override
+						public void handle(Either<String, JsonObject> event) {
+							request.resume();
+							if(event.right() != null){
+								JsonObject info = event.right().getValue();
+								if(info != null && info.containsKey("status")){
+									if(info.getInteger("status") > 2){
+										JsonObject params = new JsonObject()
+												.put("profilUri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
+												.put("username", user.getUsername())
+												.put("resourceUri", pathPrefix + "#/view/thread/" + info.getString("thread_id") + "/info/" + infoId)
+												.put("disableAntiFlood", true)
+												.put("pushNotif", new JsonObject().put("title", "push.notif.actu.info.published").put("body", user.getUsername()+ " : "+ info.getString("title")));
+										params.put("preview", NotificationUtils.htmlContentToPreview(
+												info.getString("content")));
+
+										DateFormat dfm = new SimpleDateFormat("yyyy-MM-dd");
+										String date = info.getString("publication_date");
+										if(date != null && !date.trim().isEmpty()){
+											try {
+												Date publication_date = dfm.parse(date);
+												Date timeNow=new Date(System.currentTimeMillis());
+												if(publication_date.after(timeNow)){
+													params.put("timeline-publish-date", publication_date.getTime());
+												}
+											} catch (ParseException e) {
+												LOGGER.error("An error occured when sharing an info : " + e.getMessage());
+											}
+										}
+										shareResource(request, "news.info-shared", false, params, "title");
+									} else {
+										shareResource(request, null, false, null, null);
+									}
+								}
+							}
+						}
+					});
+				} else {
+					unauthorized(request);
+				}
+			}
+		});
 	}
 
 	@Get("/api/v1/infos/:" + INFO_RESOURCE_ID + "/timeline")
@@ -209,7 +395,21 @@ public class InfosControllerV1 extends ControllerHelper {
 	@ResourceFilter(InfoFilter.class)
 	@SecuredAction(value = "thread.publish", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|getInfoTimeline")
 	public void getInfoTimeline(HttpServerRequest request) {
-		infoController.getInfoTimeline(request);
+		getInfoTimelineData(request);
+	}
+
+	private void getInfoTimelineData(final HttpServerRequest request) {
+		final String id = request.params().get(Actualites.INFO_RESOURCE_ID);
+		if (id == null || id.trim().isEmpty()) {
+			badRequest(request);
+			return;
+		}
+		try {
+			infoService.getRevisions(Long.parseLong(id), arrayResponseHandler(request));
+		} catch (NumberFormatException e) {
+			LOGGER.error("Error : id info must be a long object");
+			badRequest(request);
+		}
 	}
 
 	@Post("/api/v1/infos")
