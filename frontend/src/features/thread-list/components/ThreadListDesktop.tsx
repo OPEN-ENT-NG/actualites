@@ -2,12 +2,14 @@ import { ButtonSkeleton, Flex, Menu } from '@edifice.io/react';
 import { IconBulletList } from '@edifice.io/react/icons';
 import { useNavigate } from 'react-router-dom';
 import { useI18n } from '~/hooks/useI18n';
+import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
 import { useThreads } from '~/services/queries';
 import './ThreadListDesktop.css';
 import { ThreadListDesktopThread } from './ThreadListDesktopThread';
 
 export const ThreadListDesktop = () => {
   const { t } = useI18n();
+  const { threadId } = useThreadInfoParams();
   const { data: threads, isLoading, isFetched } = useThreads();
   const navigate = useNavigate();
 
@@ -28,6 +30,7 @@ export const ThreadListDesktop = () => {
           <Menu.Item key="all-threads">
             <Menu.Button
               onClick={handleAllThreadsClick}
+              selected={!threadId}
               className="thread-list-menu-btn"
               size="lg"
               leftIcon={<IconBulletList width={24} height={24} />}
