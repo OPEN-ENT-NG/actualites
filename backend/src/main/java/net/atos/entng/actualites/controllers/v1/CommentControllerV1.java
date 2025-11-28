@@ -34,6 +34,10 @@ public class CommentControllerV1 extends ControllerHelper {
 	private static final String EVENT_TYPE = "NEWS";
 	private static final String NEWS_COMMENT_EVENT_TYPE = EVENT_TYPE + "_COMMENT";
 	private static final int OVERVIEW_LENGTH = 50;
+	private static final String FIELD_INFO_ID = "info_id";
+	private static final String FIELD_COMMENT = "comment";
+	private static final String FIELD_TITLE = "title";
+	private static final String FIELD_OWNER = "owner";
 
 	protected InfoService infoService;
     public static final String ROOT_RIGHT = "net.atos.entng.actualites.controllers.CommentController";
@@ -45,7 +49,7 @@ public class CommentControllerV1 extends ControllerHelper {
 
 	@Override
 	protected Function<JsonObject, Optional<String>> jsonToOwnerId() {
-		return json -> Optional.of(json.getString("owner"));
+		return json -> Optional.of(json.getString(FIELD_OWNER));
 	}
 
 	public void setInfoService(InfoService infoService) {
@@ -84,11 +88,11 @@ public class CommentControllerV1 extends ControllerHelper {
 		final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
 		UserUtils.getUserInfos(eb, request, user -> {
 			RequestUtils.bodyToJson(request, pathPrefix + SCHEMA_COMMENT_CREATE, resource -> {
-				final int infoIdFromBody = resource.getInteger("info_id", -1);
+				final int infoIdFromBody = resource.getInteger(FIELD_INFO_ID, -1);
 				if(infoIdFromBody == Integer.parseInt(infoId)) {
-					final String commentText = resource.getString("comment");
-					final String title = resource.getString("title");
-					resource.remove("title");
+					final String commentText = resource.getString(FIELD_COMMENT);
+					final String title = resource.getString(FIELD_TITLE);
+					resource.remove(FIELD_TITLE);
 					Handler<Either<String, JsonObject>> handler = event -> {
 						if (event.isRight()) {
 							JsonObject comment = event.right().getValue();
@@ -126,7 +130,7 @@ public class CommentControllerV1 extends ControllerHelper {
 						@Override
 						public void handle(JsonObject resource) {
 							final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
-							final int infoIdFromBody = resource.getInteger("info_id", -1);
+							final int infoIdFromBody = resource.getInteger(FIELD_INFO_ID, -1);
 							if(infoIdFromBody == Integer.parseInt(infoId)) {
 								crudService.update(commentId, resource, user, notEmptyResponseHandler(request));
 							} else {
@@ -163,7 +167,7 @@ public class CommentControllerV1 extends ControllerHelper {
 				if (event.isRight()) {
 					// get all ids
 					JsonObject info = event.right().getValue();
-					String infoOwner = info.getString("owner");
+					String infoOwner = info.getString(FIELD_OWNER);
 					if (infoOwner != null) {
 						sendNotify(request, Collections.singletonList(infoOwner), user, infoId, commentId, title, commentText, "news.news-comment");
 					}
