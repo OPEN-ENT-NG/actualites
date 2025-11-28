@@ -363,13 +363,13 @@ public class InfosControllerV1 extends ControllerHelper {
 												info.getString("content")));
 
 										DateFormat dfm = new SimpleDateFormat("yyyy-MM-dd");
-										String date = info.getString("publication_date");
+										String date = info.getString("publicationDate");
 										if(date != null && !date.trim().isEmpty()){
 											try {
-												Date publication_date = dfm.parse(date);
+												Date publicationDate = dfm.parse(date);
 												Date timeNow=new Date(System.currentTimeMillis());
-												if(publication_date.after(timeNow)){
-													params.put("timeline-publish-date", publication_date.getTime());
+												if(publicationDate.after(timeNow)){
+													params.put("timeline-publish-date", publicationDate.getTime());
 												}
 											} catch (ParseException e) {
 												LOGGER.error("An error occured when sharing an info : " + e.getMessage());
@@ -491,8 +491,8 @@ public class InfosControllerV1 extends ControllerHelper {
 						if (!resource.containsKey("expiration_date")) {
 							resource.putNull("expiration_date");
 						}
-						if (!resource.containsKey("publication_date")) {
-							resource.putNull("publication_date");
+						if (!resource.containsKey("publicationDate")) {
+							resource.putNull("publicationDate");
 						}
 					}
 					infoService.update(infoId, resource, user, event.name(), request, h -> {

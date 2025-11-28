@@ -82,39 +82,30 @@ public class CommentControllerV1 extends ControllerHelper {
 
 	private void createCommentInternal(final HttpServerRequest request) {
 		final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
-		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
-			@Override
-			public void handle(final UserInfos user) {
-				RequestUtils.bodyToJson(request, pathPrefix + SCHEMA_COMMENT_CREATE, new Handler<JsonObject>() {
-					@Override
-					public void handle(JsonObject resource) {
-						final int infoIdFromBody = resource.getInteger("info_id", -1);
-						if(infoIdFromBody == Integer.parseInt(infoId)) {
-							final String commentText = resource.getString("comment");
-							final String title = resource.getString("title");
-							resource.remove("title");
-							Handler<Either<String, JsonObject>> handler = new Handler<Either<String, JsonObject>>() {
-								@Override
-								public void handle(Either<String, JsonObject> event) {
-									if (event.isRight()) {
-										JsonObject comment = event.right().getValue();
-										String commentId = comment.getLong("id").toString();
-										notifyTimeline(request, user, infoId, commentId, title, commentText, NEWS_COMMENT_EVENT_TYPE);
-										renderJson(request, event.right().getValue(), 200);
-									} else {
-										JsonObject error = new JsonObject().put("error", event.left().getValue());
-										renderJson(request, error, 400);
-									}
-								}
-							};
-							crudService.create(resource, user, handler);
+		UserUtils.getUserInfos(eb, request, user -> {
+			RequestUtils.bodyToJson(request, pathPrefix + SCHEMA_COMMENT_CREATE, resource -> {
+				final int infoIdFromBody = resource.getInteger("info_id", -1);
+				if(infoIdFromBody == Integer.parseInt(infoId)) {
+					final String commentText = resource.getString("comment");
+					final String title = resource.getString("title");
+					resource.remove("title");
+					Handler<Either<String, JsonObject>> handler = event -> {
+						if (event.isRight()) {
+							JsonObject comment = event.right().getValue();
+							String commentId = comment.getLong("id").toString();
+							notifyTimeline(request, user, infoId, commentId, title, commentText, NEWS_COMMENT_EVENT_TYPE);
+							renderJson(request, event.right().getValue(), 200);
 						} else {
-							log.warn(String.format("User %s tried to post a comment for info %s by using a different id %s", user.getLogin(), infoIdFromBody, infoId));
-							forbidden(request);
+							JsonObject error = new JsonObject().put("error", event.left().getValue());
+							renderJson(request, error, 400);
 						}
-					}
-				});
-			}
+					};
+					crudService.create(resource, user, handler);
+				} else {
+					log.warn(String.format("User %s tried to post a comment for info %s by using a different id %s", user.getLogin(), infoIdFromBody, infoId));
+					forbidden(request);
+				}
+			});
 		});
 	}
 
@@ -183,7 +174,7 @@ public class CommentControllerV1 extends ControllerHelper {
 
 	private void sendNotify(final HttpServerRequest request, final List<String> ids, final UserInfos user, final String infoId, final String commentId, final String title, String commentText, final String notificationName){
 		if (infoId != null && !infoId.isEmpty() && commentId != null && !commentId.isEmpty() && user != null && !commentText.isEmpty()) {
-			String overview = commentText.replaceAll("<br>", "");
+			String overview = commentText.replace("<br>", "");
 			if(overview.length() > OVERVIEW_LENGTH){
 				overview = overview.substring(0, OVERVIEW_LENGTH);
 			}

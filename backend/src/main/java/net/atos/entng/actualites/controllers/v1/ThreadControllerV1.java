@@ -123,9 +123,9 @@ public class ThreadControllerV1 extends ControllerHelper {
                     // WB-1402 auto-attach the thread to this user's structure, iif only one exists.
                     final List<String> structures = user.getStructures();
                     if(structures!=null && structures.size() == 1) {
-                        String structure_id = structures.get(0);
-                        if(structure_id!=null && structure_id.length()>0) {
-                            resource.put("structure_id", structure_id);
+                        String structureId = structures.get(0);
+                        if(structureId!=null && structureId.length()>0) {
+                            resource.put("structureId", structureId);
                         }
                     }
                     final Handler<Either<String,JsonObject>> handler = notEmptyResponseHandler(request);
@@ -287,19 +287,15 @@ public class ThreadControllerV1 extends ControllerHelper {
 
 	private void admcTask(final HttpServerRequest request) {
 		RequestUtils.bodyToJson(request, pathPrefix + ADMC_TASK, (JsonObject resource) -> {
-			switch(resource.getString("task")) {
-				case TASK_ATTACH: {
-					this.threadService.attachThreadsWithNullStructureToDefault()
+			if (TASK_ATTACH.equals(resource.getString("task"))) {
+				this.threadService.attachThreadsWithNullStructureToDefault()
 					.onSuccess(Void -> ok(request))
 					.onFailure(throwable -> {
 						renderError(request, null, 500, throwable.getMessage());
 					});
-					return;
-				}
-
-				default: break;
+			} else {
+				badRequest(request);
 			}
-			badRequest(request);
         });
 	}
 }
