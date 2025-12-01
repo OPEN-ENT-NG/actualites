@@ -102,7 +102,7 @@ export function CreateInfoRights() {
       resourceId: String(infoId),
       resourceRights: infoShares?.rights || [],
       filteredActions: ['read', 'comment'] as ShareRightActionDisplayName[],
-      urls: {
+      shareUrls: {
         getResourceRights: `${baseUrlAPI}/infos/${String(infoId)}/shares`,
         saveResourceRights: `${baseUrlAPI}/infos/${String(infoId)}/shares`,
         getShareMapping: `${baseUrlAPI}/rights/sharing`,
@@ -110,8 +110,8 @@ export function CreateInfoRights() {
     };
   }, [infoShares, infoId]);
 
-  const handleShareInfoSaving = (isSaving: boolean) => {
-    setIsSaving(isSaving);
+  const handleShareInfoSubmit = () => {
+    setIsSaving(true);
   };
 
   const handleShareInfoChange = (_: ShareRight[], isDirty: boolean) => {
@@ -170,7 +170,7 @@ export function CreateInfoRights() {
         ref={shareInfoRef}
         onSuccess={handleShareInfoSubmitSuccess}
         onChange={handleShareInfoChange}
-        onSaving={handleShareInfoSaving}
+        onSubmit={handleShareInfoSubmit}
         shareOptions={shareOptions}
       />
       <Flex
