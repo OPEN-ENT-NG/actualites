@@ -1,4 +1,4 @@
-import { getHeaders } from "../../../node_modules/edifice-k6-commons/dist/index.js";
+import { getHeaders } from "../node_modules/edifice-k6-commons/dist/index.js";
 import { check } from "k6";
 import http, { RefinedResponse } from "k6/http";
 import { ShareTargetType } from "./_shares_utils.ts";
@@ -48,6 +48,7 @@ export const threadManagerRights: string[] = [ "net-atos-entng-actualites-contro
   "net-atos-entng-actualites-controllers-ThreadController|shareThreadRemove",
   "net-atos-entng-actualites-controllers-ThreadController|updateThread"];
 
+export const threadAllRights =  [...threadContributorRights, ...threadPublisherRights, ...threadManagerRights];
 
 export function createThreadOrFail(title: String) : Identifier {
   let res = createThread(title);

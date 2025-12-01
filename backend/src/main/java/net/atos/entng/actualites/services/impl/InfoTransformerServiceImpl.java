@@ -112,7 +112,7 @@ public class InfoTransformerServiceImpl implements InfoService {
     }
 
     @Override
-    public void retrieve(String id, Boolean filterAdmlGroup,
+    public void retrieve(String id, boolean filterAdmlGroup,
                          Handler<Either<String, JsonObject>> handler) {
         infoService.retrieve(id, filterAdmlGroup, handler);
     }

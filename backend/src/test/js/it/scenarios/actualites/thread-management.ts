@@ -27,10 +27,10 @@ import {
   threadContributorRights,
   threadExists,
   updateThread,
-} from "./_thread-utils.ts";
+} from "../../../utils/_thread-utils.ts";
 import { check } from "k6";
 import { RefinedResponse } from "k6/http";
-import {ShareTargetType} from "./_shares_utils.ts";
+import {ShareTargetType} from "../../../utils/_shares_utils.ts";
 
 const maxDuration = __ENV.MAX_DURATION || "5m";
 const schoolName = __ENV.DATA_SCHOOL_NAME || "Thread management";

@@ -17,3 +17,6 @@ backend/**/resources/view/*.html
 # Ignore generated files
 frontend/public/mockServiceWorker.js
 backend/src/main/resources/mockServiceWorker.js
+
+# Ignore test files
+loadTestLocal.sh
