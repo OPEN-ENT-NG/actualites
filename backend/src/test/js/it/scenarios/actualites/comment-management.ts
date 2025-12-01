@@ -18,14 +18,14 @@ import {
 } from '../../../node_modules/edifice-k6-commons/dist/index.js';
 import {
   shareInfosOrFail,
-} from "./_shares_utils.ts";
+} from "../../../utils/_shares_utils.ts";
 import {
   createThreadOrFail,
   Identifier as ThreadIdentifier,
-} from "./_thread-utils.ts";
+} from "../../../utils/_thread-utils.ts";
 import {
   createPublishedInfoOrFail,
-} from "./_info-utils.ts";
+} from "../../../utils/_info-utils.ts";
 import {
   createCommentOrFail,
   createCommentV1,
@@ -34,7 +34,7 @@ import {
   deleteComment,
   deleteCommentV1,
   getCommentsOrFail,
-} from "./_comment-utils.ts";
+} from "../../../utils/_comment-utils.ts";
 import { check } from "k6";
 
 const maxDuration = __ENV.MAX_DURATION || "5m";

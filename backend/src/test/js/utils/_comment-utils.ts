@@ -1,4 +1,4 @@
-import { getHeaders } from "../../../node_modules/edifice-k6-commons/dist/index.js";
+import { getHeaders } from "../node_modules/edifice-k6-commons/dist/index.js";
 import { check } from "k6";
 import http, { RefinedResponse } from "k6/http";
 
