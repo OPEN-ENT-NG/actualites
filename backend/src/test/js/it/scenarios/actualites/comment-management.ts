@@ -126,7 +126,8 @@ export function testCommentManagement(data: InitData) {
 
     // Verify the comment was updated
     const comments = getCommentsOrFail(info.id);
-    const updatedComment = comments.find((c) => c.id === comment.id);
+    const updatedComment = comments.find((c) => c._id === comment.id);
+
     check(updatedComment, {
       "Comment text was updated": (c) => c?.comment === `Updated comment ${seed}`,
     });
@@ -181,7 +182,7 @@ export function testCommentManagement(data: InitData) {
     // Verify the comment was NOT updated
     authenticateWeb(teacher1.login);
     const comments = getCommentsOrFail(info.id);
-    const originalComment = comments.find((c) => c.id === comment.id);
+    const originalComment = comments.find((c) => c._id === comment.id);
     check(originalComment, {
       "Comment text was not modified": (c) => c?.comment === `Comment by teacher1 ${seed}`,
     });
@@ -238,7 +239,7 @@ export function testCommentManagement(data: InitData) {
 
     // Verify the comment was NOT updated
     const comments = getCommentsOrFail(info.id);
-    const originalComment = comments.find((c) => c.id === comment.id);
+    const originalComment = comments.find((c) => c._id === comment.id);
     check(originalComment, {
       "Comment text was not modified by manager": (c) => c?.comment === `Comment by parent ${seed}`,
     });
@@ -279,7 +280,7 @@ export function testCommentManagement(data: InitData) {
 
     // Verify the comment was updated
     const comments = getCommentsOrFail(info.id);
-    const updatedComment = comments.find((c) => c.id === comment.id);
+    const updatedComment = comments.find((c) => c._id === comment.id);
     check(updatedComment, {
       "V1 API: Comment text was updated": (c) => c?.comment === `V1 updated comment ${seed}`,
     });
@@ -322,7 +323,7 @@ export function testCommentManagement(data: InitData) {
     // Verify the comment was deleted
     const comments = getCommentsOrFail(info.id);
     check(comments, {
-      "Comment was deleted": (c) => !c.find((comment) => comment.id === comment.id),
+      "Comment was deleted": (c) => !c.find((comment) => comment._id === comment.id),
     });
   });
 
@@ -378,7 +379,7 @@ export function testCommentManagement(data: InitData) {
     // Verify the comment was deleted
     const comments = getCommentsOrFail(info.id);
     check(comments, {
-      "Comment was deleted by manager": (c) => !c.find((c) => c.id === comment.id),
+      "Comment was deleted by manager": (c) => !c.find((c) => c._id === comment.id),
     });
   });
 
@@ -431,7 +432,7 @@ export function testCommentManagement(data: InitData) {
     // Verify the comment was NOT deleted
     authenticateWeb(teacher1.login);
     const comments = getCommentsOrFail(info.id);
-    const stillExistingComment = comments.find((c) => c.id === comment.id);
+    const stillExistingComment = comments.find((c) => c._id === comment.id);
     check(stillExistingComment, {
       "Comment still exists": (c) => c !== undefined,
       "Comment text unchanged": (c) => c?.comment === `Comment by teacher1 ${seed}`,
@@ -474,7 +475,7 @@ export function testCommentManagement(data: InitData) {
     // Verify the comment was deleted
     const comments = getCommentsOrFail(info.id);
     check(comments, {
-      "V1 API: Comment was deleted": (c) => !c.find((c) => c.id === comment.id),
+      "V1 API: Comment was deleted": (c) => !c.find((c) => c._id === comment.id),
     });
   });
 }
