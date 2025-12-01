@@ -68,6 +68,7 @@ export function useInfoDetailsForm() {
             };
             setDetailsForm(infoUpdated);
             resetDetailsForm?.(infoUpdated);
+            toast.success(t('actualites.info.createForm.draftSaved'));
             setIsSaving(false);
             onSuccess?.({ id });
           },
