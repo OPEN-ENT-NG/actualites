@@ -15,11 +15,11 @@ import {
 import {
   createThreadOrFail,
   Identifier as ThreadIdentifier,
-} from "./_thread-utils.ts";
+} from "../../../utils/_thread-utils.ts";
 import {
   createInfoOrFail,
   createPublishedInfoOrFail,
-} from "./_info-utils.ts";
+} from "../../../utils/_info-utils.ts";
 import { check } from "k6";
 import http, { RefinedResponse } from "k6/http";
 import { getHeaders } from "../../../node_modules/edifice-k6-commons/dist/index.js";

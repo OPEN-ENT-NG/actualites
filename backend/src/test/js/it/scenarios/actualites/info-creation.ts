@@ -19,7 +19,7 @@ import {
 import {
   createThreadOrFail,
   Identifier as ThreadIdentifier,
-} from "./_thread-utils.ts";
+} from "../../../utils/_thread-utils.ts";
 import {
   createInfo,
   createInfoOrFail,
@@ -27,7 +27,7 @@ import {
   getInfoById,
   Info,
   InfoResponse,
-} from "./_info-utils.ts";
+} from "../../../utils/_info-utils.ts";
 import { check } from "k6";
 import { RefinedResponse } from "k6/http";
 

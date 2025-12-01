@@ -71,7 +71,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 		if (id != null) {
 			String filterAdml = "";
 			if(filterAdmlGroup) {
-				filterAdml = " AND ts.adml_group = false ";
+				filterAdml = " AND (ts.adml_group IS NULL OR ts.adml_group = false) ";
 			}
 			query = "SELECT t.id as _id, t.title, t.icon, t.mode, t.created, t.modified, t.owner, u.username" +
 				", json_agg(row_to_json(row(ts.member_id, ts.action)::actualites.share_tuple)) as shared" +
