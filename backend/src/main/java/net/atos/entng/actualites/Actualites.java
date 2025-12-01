@@ -36,6 +36,9 @@ import net.atos.entng.actualites.controllers.v1.ThreadControllerV1;
 import net.atos.entng.actualites.services.*;
 import net.atos.entng.actualites.services.impl.*;
 import org.entcore.common.editor.ContentTransformerConfig;
+import org.entcore.common.editor.ContentTransformerEventRecorder;
+import org.entcore.common.editor.ContentTransformerEventRecorderFactory;
+import org.entcore.common.editor.IContentTransformerEventRecorder;
 import org.entcore.common.http.BaseServer;
 import org.entcore.common.http.filter.ShareAndOwner;
 import org.entcore.common.service.impl.SqlCrudService;
@@ -102,6 +105,7 @@ public class Actualites extends BaseServer {
 		ContentTransformerFactoryProvider.init(vertx);
 		final JsonObject contentTransformerConfig = ContentTransformerConfig.getContentTransformerConfig(vertx).orElse(null);
 		final IContentTransformerClient contentTransformerClient = ContentTransformerFactoryProvider.getFactory("actualites", contentTransformerConfig).create();
+		final IContentTransformerEventRecorder contentEventRecorder = new ContentTransformerEventRecorderFactory("actualites", contentTransformerConfig).create();
 
 		addController(new DisplayController());
 
@@ -134,7 +138,7 @@ public class Actualites extends BaseServer {
 
 
 		//info service transformer
-		InfoService infoService = new InfoTransformerServiceImpl(contentTransformerClient, new InfoServiceSqlImpl());
+		InfoService infoService = new InfoTransformerServiceImpl(contentTransformerClient, contentEventRecorder, new InfoServiceSqlImpl());
 
 		//notification timeline
 		NotificationTimelineService notificationTimelineService = new NotificationTimelineServiceImpl(infoService,  new ThreadServiceSqlImpl().setEventBus(eb), vertx, eb, config);
