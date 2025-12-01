@@ -22,6 +22,7 @@ package net.atos.entng.actualites.services;
 import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.security.SecuredAction;
 import io.vertx.core.Future;
+import io.vertx.core.http.HttpServerRequest;
 import net.atos.entng.actualites.to.News;
 import net.atos.entng.actualites.to.NewsComplete;
 import net.atos.entng.actualites.to.NewsLight;
@@ -45,7 +46,7 @@ public interface InfoService {
 	 * @param eventStatus revision event name
 	 * @param handler result handler
 	 */
-	public void create(JsonObject data, UserInfos user, String eventStatus, final Handler<Either<String, JsonObject>> handler);
+	public void create(JsonObject data, UserInfos user, String eventStatus, HttpServerRequest request, final Handler<Either<String, JsonObject>> handler);
 
 	/**
 	 * Update info in database and create a new revision.
@@ -55,7 +56,7 @@ public interface InfoService {
 	 * @param eventStatus revision event name
 	 * @param handler result handler
 	 */
-	public void update(String id, JsonObject data, UserInfos user, String eventStatus, Handler<Either<String, JsonObject>> handler);
+	public void update(String id, JsonObject data, UserInfos user, String eventStatus, HttpServerRequest request, Handler<Either<String, JsonObject>> handler);
 
 	/**
 	 * Update a news content with a transformed content. The content version will be set to 1. This

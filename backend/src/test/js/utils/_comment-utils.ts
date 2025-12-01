@@ -10,7 +10,7 @@ export type Comment = {
 }
 
 export type CommentResponse = {
-  id: number;
+  _id: number;
   comment: string;
   owner: {
     userId: string;

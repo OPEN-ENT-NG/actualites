@@ -250,7 +250,7 @@ public class InfoController extends ControllerHelper {
 					public void handle(JsonObject resource) {
 						resource.put("status", status_list.get(1));
                         final Handler<Either<String, JsonObject>> handler = eventHelper.onCreateResource(request, RESOURCE_NAME, notEmptyResponseHandler(request));
-                        infoService.create(resource, user, Events.DRAFT.toString(),handler);
+                        infoService.create(resource, user, Events.DRAFT.toString(),request, handler);
 					}
 				});
 			}
@@ -271,7 +271,7 @@ public class InfoController extends ControllerHelper {
                         resource.put("status", status_list.get(2));
                         final String threadId = resource.getLong("thread_id").toString();
                         final String title = resource.getString("title");
-                        infoService.create(resource, user, Events.CREATE_AND_PENDING.toString(),
+                        infoService.create(resource, user, Events.CREATE_AND_PENDING.toString(), request,
                                 new Handler<Either<String, JsonObject>>() {
                                     @Override
                                     public void handle(Either<String, JsonObject> event) {
@@ -307,7 +307,7 @@ public class InfoController extends ControllerHelper {
 					public void handle(JsonObject resource) {
 						resource.put("status", status_list.get(3));
 						final Handler<Either<String, JsonObject>> handler = eventHelper.onCreateResource(request, RESOURCE_NAME, notEmptyResponseHandler(request));
-                        infoService.create(resource, user, Events.CREATE_AND_PUBLISH.toString(), handler);
+                        infoService.create(resource, user, Events.CREATE_AND_PUBLISH.toString(), request, handler);
 					}
 				});
 			}
@@ -334,7 +334,7 @@ public class InfoController extends ControllerHelper {
                             resource.putNull("publication_date");
                         }
                         notifyOwner(request, user, resource, infoId, NEWS_UPDATE_EVENT_TYPE);
-                        infoService.update(infoId, resource, user, Events.UPDATE.toString(), notEmptyResponseHandler(request));
+                        infoService.update(infoId, resource, user, Events.UPDATE.toString(), request, notEmptyResponseHandler(request));
                     }
                 });
             }
@@ -361,7 +361,7 @@ public class InfoController extends ControllerHelper {
                             resource.putNull("publication_date");
                         }
                         notifyOwner(request, user, resource, infoId, NEWS_UPDATE_EVENT_TYPE);
-                        infoService.update(infoId, resource, user, Events.PENDING.toString(), notEmptyResponseHandler(request));
+                        infoService.update(infoId, resource, user, Events.PENDING.toString(), request, notEmptyResponseHandler(request));
                     }
                 });
             }
@@ -388,7 +388,7 @@ public class InfoController extends ControllerHelper {
                             resource.putNull("publication_date");
                         }
                         notifyOwner(request, user, resource, infoId, NEWS_UPDATE_EVENT_TYPE);
-                        infoService.update(infoId, resource, user, Events.UPDATE.toString(),
+                        infoService.update(infoId, resource, user, Events.UPDATE.toString(), request,
                                 notEmptyResponseHandler(request));
                     }
                 });
@@ -446,7 +446,7 @@ public class InfoController extends ControllerHelper {
             };
             JsonObject resource = new JsonObject();
             resource.put("status", status_list.get(2));
-            infoService.update(infoId, resource, user, Events.SUBMIT.toString(),handler);
+            infoService.update(infoId, resource, user, Events.SUBMIT.toString(), request, handler);
         }));
 	}
 
@@ -475,7 +475,7 @@ public class InfoController extends ControllerHelper {
 						};
 						JsonObject resource = new JsonObject();
 						resource.put("status", status_list.get(1));
-                        infoService.update(infoId, resource, user, Events.UNPUBLISH.toString(), handler);
+                        infoService.update(infoId, resource, user, Events.UNPUBLISH.toString(), request, handler);
 					}
 				});
 			}
@@ -510,7 +510,7 @@ public class InfoController extends ControllerHelper {
                         };
 						JsonObject resource = new JsonObject();
 						resource.put("status", status_list.get(3));
-                        infoService.update(infoId, resource, user, Events.PUBLISH.toString(), handler);
+                        infoService.update(infoId, resource, user, Events.PUBLISH.toString(), request, handler);
 					}
 				});
 			}
@@ -548,7 +548,7 @@ public class InfoController extends ControllerHelper {
 						};
 						JsonObject resource = new JsonObject();
 						resource.put("status", status_list.get(2));
-                        infoService.update(infoId, resource, user, Events.UNPUBLISH.toString(), notEmptyResponseHandler(request));
+                        infoService.update(infoId, resource, user, Events.UNPUBLISH.toString(), request, notEmptyResponseHandler(request));
 			}
 		});
 	}
