@@ -246,7 +246,7 @@ public class InfosControllerV1 extends ControllerHelper {
 						}
 					};
 				}
-				infoService.create(resource, user, events.name(), handler);
+				infoService.create(resource, user, events.name(), request, handler);
 			});
 		});
 	}
@@ -262,7 +262,7 @@ public class InfosControllerV1 extends ControllerHelper {
 				LOGGER.info(String.format("User %s create a published info", user.getUserId()));
 				resource.put("status", 3); //PUBLISH
 				final Handler<Either<String, JsonObject>> handler = eventHelper.onCreateResource(request, RESOURCE_NAME, notEmptyResponseHandler(request));
-				infoService.create(resource, user, Events.CREATE_AND_PUBLISH.toString(), handler);
+				infoService.create(resource, user, Events.CREATE_AND_PUBLISH.toString(), request, handler);
 			});
 		});
 	}
@@ -295,7 +295,7 @@ public class InfosControllerV1 extends ControllerHelper {
 							resource.putNull("publication_date");
 						}
 					}
-					infoService.update(infoId, resource, user, event.name(), h -> {
+					infoService.update(infoId, resource, user, event.name(), request, h -> {
 						notEmptyResponseHandler(request).handle(h);
 						String notificationFromTransition = getNotificationFromTransition(targetStatus, actualStatus);
 						if (notificationFromTransition != null) {
