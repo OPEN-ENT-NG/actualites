@@ -36,7 +36,7 @@ const nbInfosPublish = (__ENV.LOCAL_NB_INFOS_PUBLISH ? Number(__ENV.LOCAL_NB_INF
 const nbInfosPending = (__ENV.LOCAL_NB_INFOS_PENDING ? Number(__ENV.LOCAL_NB_INFOS_PENDING) :  30);
 const nbInfosDraft = (__ENV.LOCAL_NB_INFOS_DRAFT ? Number(__ENV.LOCAL_NB_INFOS_DRAFT) :  20);
 
-type InfoUser = {
+export type InfoUser = {
   login: string;
   session: Session;
   profile: 'Default' | 'ADML' | 'MULTIADML' | string;
@@ -104,8 +104,6 @@ export function initLocal(schoolName: string): InitData {
 
     addAdminFunction(teacher.id, [head.id]);
     authenticateWeb(teacher.login);
-
-    console.log(teacher.login);
 
     const seed = Math.random().toString(36).substring(7);
     const thread: ThreadIdentifier = createThreadOrFail(`Thread 1 ${seed}`);
