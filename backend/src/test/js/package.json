@@ -34,9 +34,9 @@
     "pre-commit": "pnpm run format"
   },
   "devDependencies": {
-    "@types/k6": "^0.49.3",
+    "@types/k6": "^1.4.0",
     "@types/node": "^20.11.21",
-    "edifice-k6-commons": "^2.1.8",
+    "edifice-k6-commons": "^2.1.9",
     "husky": "^9.0.11",
     "prettier": "^3.2.5",
     "semantic-release": "^23.0.2",

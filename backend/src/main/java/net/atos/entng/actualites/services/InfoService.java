@@ -64,7 +64,7 @@ public interface InfoService {
 	 */
 	void transformerUpdateQuietly(News newsComplete);
 
-	public void retrieve(String id, Boolean filterAdmlGroup, Handler<Either<String, JsonObject>> handler);
+	public void retrieve(String id, boolean filterAdmlGroup, Handler<Either<String, JsonObject>> handler);
 	
 	public void retrieve(String id, UserInfos user, boolean originalContent, Handler<Either<String, JsonObject>> handler);
 
