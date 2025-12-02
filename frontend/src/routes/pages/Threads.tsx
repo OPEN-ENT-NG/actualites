@@ -1,4 +1,4 @@
-import { Flex, useBreakpoint } from '@edifice.io/react';
+import { Grid } from '@edifice.io/react';
 import { QueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { InfoList } from '~/components';
@@ -11,12 +11,12 @@ export const loader = (_queryClient: QueryClient) => async () => {
 export function Threads() {
   const [_searchParams] = useSearchParams();
 
-  const { lg } = useBreakpoint();
-
   return (
-    <Flex fill direction={lg ? 'row' : 'column'} className="col-12">
+    <Grid>
       <ThreadList />
-      <InfoList />
-    </Flex>
+      <Grid.Col sm="12" lg="6" xl="9">
+        <InfoList />
+      </Grid.Col>
+    </Grid>
   );
 }
