@@ -36,7 +36,9 @@ export const ThreadListMobile = () => {
     <div className="position-relative mx-n16 p-16 border-bottom bg-gray-200">
       <Dropdown block>
         <Dropdown.Trigger
-          label={threadSelected?.title || t('actualites.threadList.allThreads')}
+          label={
+            threadSelected?.title || t('actualites.thread-list.all-threads')
+          }
           icon={
             threadSelected ? (
               <ThreadIcon thread={threadSelected} />
@@ -51,7 +53,7 @@ export const ThreadListMobile = () => {
             key={'all-threads'}
             icon={<IconBulletList width={24} height={24} className="m-4" />}
           >
-            {t('actualites.threadList.allThreads')}
+            {t('actualites.thread-list.all-threads')}
           </Dropdown.Item>
           {threads.map((thread) => (
             <Dropdown.Item
