@@ -34,7 +34,7 @@ export function AdminThreads() {
         onClick={handleGoBackClick}
         leftIcon={<IconArrowLeft />}
       >
-        {t('actualites.admin-threads.go-back')}
+        {t('actualites.adminThreads.goBack')}
       </Button>
       <AdminThreadList />
     </Flex>

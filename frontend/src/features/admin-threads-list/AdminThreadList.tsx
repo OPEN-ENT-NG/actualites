@@ -13,9 +13,9 @@ export function AdminThreadList() {
     return (
       <EmptyScreen
         imageSrc={illuEmptyAdminThreads}
-        imageAlt={t('actualites.admin-threads.empty.title')}
-        title={t('actualites.admin-threads.empty.title')}
-        text={t('actualites.admin-threads.empty.description')}
+        imageAlt={t('actualites.adminThreads.empty.title')}
+        title={t('actualites.adminThreads.empty.title')}
+        text={t('actualites.adminThreads.empty.description')}
       />
     );
   }

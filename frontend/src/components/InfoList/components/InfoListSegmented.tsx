@@ -1,6 +1,6 @@
 import { Segmented } from 'antd';
-import { useI18n } from '~/hooks/useI18n';
 import { useInfoStats } from '~/components/InfoList/hooks/useInfoStats';
+import { useI18n } from '~/hooks/useI18n';
 import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
 import { InfoSegmentedValue, InfoStatus } from '~/models/info';
 import { useInfosStats } from '~/services/queries/info';
@@ -20,24 +20,24 @@ export const InfoListSegmented = ({
 
   const options = [
     {
-      label: `${t('actualites.info-list.segmented.published')} ${threadInfosStats.status[InfoStatus.PUBLISHED]}`,
+      label: `${t('actualites.infoList.segmented.published')} ${threadInfosStats.status[InfoStatus.PUBLISHED]}`,
       value: InfoStatus.PUBLISHED,
     },
     {
-      label: `${t('actualites.info-list.segmented.draft')} ${threadInfosStats.status[InfoStatus.DRAFT]}`,
+      label: `${t('actualites.infoList.segmented.draft')} ${threadInfosStats.status[InfoStatus.DRAFT]}`,
       value: InfoStatus.DRAFT,
     },
     // TODO: add expired and incoming stats
     // {
     //   label:
-    //     t('actualites.info-list.segmented.expired') +
+    //     t('actualites.infoList.segmented.expired') +
     //     ' ' +
     //     (threadInfosStats?.expiredCount ?? 0),
     //   value: InfoExtendedStatus.EXPIRED,
     // },
     // {
     //   label:
-    //     t('actualites.info-list.segmented.incoming') +
+    //     t('actualites.infoList.segmented.incoming') +
     //     ' ' +
     //     (threadInfosStats?.incomingCount ?? 0),
     //   value: InfoExtendedStatus.INCOMING,
