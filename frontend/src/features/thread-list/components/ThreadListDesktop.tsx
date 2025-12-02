@@ -17,6 +17,10 @@ export const ThreadListDesktop = () => {
     navigate('/');
   };
 
+  const handleManageThreadsClick = () => {
+    navigate('/admin/threads');
+  };
+
   return (
     <Flex direction="column" fill gap="8" className="overflow-auto py-16 pe-16">
       {!isFetched ? (
@@ -32,7 +36,7 @@ export const ThreadListDesktop = () => {
                 size="lg"
                 leftIcon={<IconBulletList width={24} height={24} />}
               >
-                {t('actualites.threadList.allThreads')}
+                {t('actualites.thread-list.all-threads')}
               </Menu.Button>
             </Menu.Item>
             {threads?.map((thread) => (
@@ -43,8 +47,9 @@ export const ThreadListDesktop = () => {
             color="secondary"
             leftIcon={<IconSettings />}
             variant="outline"
+            onClick={handleManageThreadsClick}
           >
-            {t('actualites.threadList.manageThreads')}
+            {t('actualites.thread-list.manage-threads')}
           </Button>
         </>
       )}
