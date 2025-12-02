@@ -96,20 +96,28 @@ export const useCreateComment = () => {
         [newComment].concat(old ?? []),
       );
       // Optimistically update comments counter
-      const infiniteInfos =
-        queryClient.getQueryData<InfiniteData<Info[]>>(infosQueryKey);
-      const pages = infiniteInfos?.pages;
-      const pageParams = infiniteInfos?.pageParams;
-      const info = pages?.flat().find((info) => info.id === info_id);
-      if (pages && pageParams && info) {
-        info.numberOfComments =
-          typeof info.numberOfComments === 'number'
-            ? info.numberOfComments + 1
-            : 1;
-        queryClient.setQueryData<InfiniteData<Info[]>>(infosQueryKey, () => {
-          return { pages: [...pages], pageParams: pageParams };
+      queryClient
+        .getQueriesData<InfiniteData<Info[]>>({ queryKey: infosQueryKey })
+        .forEach((infiniteInfosData) => {
+          const [infiniteInfosKey, infiniteInfos] = infiniteInfosData;
+          const pages = infiniteInfos?.pages;
+          const pageParams = infiniteInfos?.pageParams;
+          const info = pages?.flat().find((info) => info.id === info_id);
+          if (pages && pageParams && info) {
+            info.numberOfComments =
+              typeof info.numberOfComments === 'number'
+                ? info.numberOfComments + 1
+                : 1;
+            queryClient.setQueryData<InfiniteData<Info[]>>(
+              infiniteInfosKey,
+              () => ({
+                pages: [...pages],
+                pageParams,
+                numberOfComments: info.numberOfComments, // Setting this value forces reacting to the counter change.
+              }),
+            );
+          }
         });
-      }
       // Return a result with the snapshotted value
       return { previousComments, queryKey };
     },
@@ -215,20 +223,28 @@ export const useDeleteComment = () => {
       }
 
       // Optimistically decrement comments counter
-      const infiniteInfos =
-        queryClient.getQueryData<InfiniteData<Info[]>>(infosQueryKey);
-      const pages = infiniteInfos?.pages;
-      const pageParams = infiniteInfos?.pageParams;
-      const info = pages?.flat().find((info) => info.id === infoId);
-      if (pages && pageParams && info) {
-        info.numberOfComments =
-          typeof info.numberOfComments === 'number'
-            ? Math.max(info.numberOfComments - 1, 0)
-            : 0;
-        queryClient.setQueryData<InfiniteData<Info[]>>(infosQueryKey, () => {
-          return { pages: [...pages], pageParams: pageParams };
+      queryClient
+        .getQueriesData<InfiniteData<Info[]>>({ queryKey: infosQueryKey })
+        .forEach((infiniteInfosData) => {
+          const [infiniteInfosKey, infiniteInfos] = infiniteInfosData;
+          const pages = infiniteInfos?.pages;
+          const pageParams = infiniteInfos?.pageParams;
+          const info = pages?.flat().find((info) => info.id === infoId);
+          if (pages && pageParams && info) {
+            info.numberOfComments =
+              typeof info.numberOfComments === 'number'
+                ? Math.max(info.numberOfComments - 1, 0)
+                : 0;
+            queryClient.setQueryData<InfiniteData<Info[]>>(
+              infiniteInfosKey,
+              () => ({
+                pages: [...pages],
+                pageParams,
+                numberOfComments: info.numberOfComments, // Setting this value forces reacting to the counter change.
+              }),
+            );
+          }
         });
-      }
 
       // Return a result with the snapshotted value
       return { comments, queryKey };
