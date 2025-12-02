@@ -234,7 +234,7 @@ export const useDeleteComment = () => {
       return { comments, queryKey };
     },
     onSuccess: () => toast.success(t('actualites.comment.deleted')),
-    onError: () => toast.success(t('actualites.comment.error')),
+    onError: () => toast.error(t('actualites.comment.error')),
     // Always refetch after error or success.
     onSettled: (_data, _error, { infoId }) =>
       queryClient.invalidateQueries({
