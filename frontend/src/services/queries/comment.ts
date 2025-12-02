@@ -171,7 +171,7 @@ export const useUpdateComment = () => {
       return { comments, queryKey };
     },
     onSuccess: () => toast.success(t('actualites.comment.updated')),
-    onError: () => toast.success(t('actualites.comment.error')),
+    onError: () => toast.error(t('actualites.comment.error')),
     // Always refetch after error or success.
     onSettled: (_data, _error, { payload }) =>
       queryClient.invalidateQueries({
