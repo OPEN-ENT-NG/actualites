@@ -41,6 +41,9 @@
   "actualites.info.createForm.saveDraft": "Brouillon",
   "actualites.info.createForm.draftSaved": "L'actualité a été enregistrée en brouillon",
   "actualites.info.createForm.publishedSuccess": "L'actualité a été publiée avec succès",
-  "actualites.threadList.allThreads": "Tous les fils d’actus",
-  "actualites.threadList.manageThreads": "Gérer les fils"
+  "actualites.thread-list.all-threads": "Tous les fils d’actus",
+  "actualites.thread-list.manage-threads": "Gérer les fils",
+  "actualites.admin-threads.go-back": "Retour aux actualités",
+  "actualites.admin-threads.empty.title": "Créez votre premier fil !",
+  "actualites.admin-threads.empty.description": "Une fois votre fil créé, vous pourrez y ajouter des actualités. Si besoin, donnez à d'autres utilisateurs le droit de gestion ou de contribution au fil."
 }
