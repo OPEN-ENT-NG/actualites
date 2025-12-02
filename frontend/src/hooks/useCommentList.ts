@@ -6,6 +6,7 @@ import {
   useDeleteComment,
   useUpdateComment,
 } from '~/services/queries';
+import { useInfoUserRights } from './useInfoUserRights';
 
 // Local interface definition
 declare interface CommentOptions {
@@ -39,8 +40,7 @@ declare interface CommentOptions {
  * - comments: Array of comments
  */
 export function useCommentList(info: Info) {
-  const type: 'read' | 'edit' = 'edit'; // TODO: adapt value depending on user's right.
-
+  const { canComment } = useInfoUserRights(info);
   const { data } = useComments(info.id);
   const comments = useMemo(
     () =>
@@ -60,6 +60,8 @@ export function useCommentList(info: Info) {
   const createCommentMutation = useCreateComment();
   const updateCommentMutation = useUpdateComment();
   const deleteCommentMutation = useDeleteComment();
+
+  const type: 'read' | 'edit' = canComment ? 'edit' : 'read';
 
   const callbacks = {
     post: async (comment: string) => {

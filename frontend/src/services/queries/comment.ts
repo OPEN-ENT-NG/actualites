@@ -1,10 +1,11 @@
-import { useEdificeClient } from '@edifice.io/react';
+import { useEdificeClient, useToast } from '@edifice.io/react';
 import {
   InfiniteData,
   queryOptions,
   useMutation,
   useQuery,
 } from '@tanstack/react-query';
+import { useI18n } from '~/hooks/useI18n';
 import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
 import { Comment, CommentId } from '~/models/comments';
 import { Info, InfoId } from '~/models/info';
@@ -50,6 +51,9 @@ export const useComments = (infoId: InfoId) =>
 export const useCreateComment = () => {
   // TODO Inject queryClient instead of importing it ?
   const { user } = useEdificeClient();
+  const { t } = useI18n();
+  const toast = useToast();
+
   // For optimistic update to work, we need to search which info to update
   // among all threads (or only 1 thread, depending on the route parameters),
   // and change its comments counter.
@@ -109,8 +113,12 @@ export const useCreateComment = () => {
       // Return a result with the snapshotted value
       return { previousComments, queryKey };
     },
+    onSuccess: () => {
+      toast.success(t('actualites.comment.created'));
+    },
     // If the mutation fails, use the result returned from onMutate to roll back.
     onError: (_err, _variables, onMutateResult) => {
+      toast.success(t('actualites.comment.error'));
       if (onMutateResult) {
         queryClient.setQueryData(
           onMutateResult.queryKey,
@@ -126,8 +134,11 @@ export const useCreateComment = () => {
   });
 };
 
-export const useUpdateComment = () =>
-  useMutation({
+export const useUpdateComment = () => {
+  const { t } = useI18n();
+  const toast = useToast();
+
+  return useMutation({
     mutationFn: ({
       commentId,
       payload,
@@ -159,18 +170,23 @@ export const useUpdateComment = () =>
       // Return a result with the snapshotted value
       return { comments, queryKey };
     },
+    onSuccess: () => toast.success(t('actualites.comment.updated')),
+    onError: () => toast.success(t('actualites.comment.error')),
     // Always refetch after error or success.
     onSettled: (_data, _error, { payload }) =>
       queryClient.invalidateQueries({
         queryKey: commentQueryKeys.all({ infoId: payload.info_id }),
       }),
   });
+};
 
 export const useDeleteComment = () => {
   // For optimistic update to work, we need to search which info to update
   // among all threads (or only 1 thread, depending on the route parameters),
   // and change its comments counter.
   const { threadId } = useThreadInfoParams();
+  const { t } = useI18n();
+  const toast = useToast();
 
   return useMutation({
     mutationFn: ({
@@ -217,6 +233,8 @@ export const useDeleteComment = () => {
       // Return a result with the snapshotted value
       return { comments, queryKey };
     },
+    onSuccess: () => toast.success(t('actualites.comment.deleted')),
+    onError: () => toast.success(t('actualites.comment.error')),
     // Always refetch after error or success.
     onSettled: (_data, _error, { infoId }) =>
       queryClient.invalidateQueries({
