@@ -36,7 +36,7 @@ export const ThreadListDesktop = () => {
                 size="lg"
                 leftIcon={<IconBulletList width={24} height={24} />}
               >
-                {t('actualites.thread-list.all-threads')}
+                {t('actualites.threadList.allThreads')}
               </Menu.Button>
             </Menu.Item>
             {threads?.map((thread) => (
@@ -49,7 +49,7 @@ export const ThreadListDesktop = () => {
             variant="outline"
             onClick={handleManageThreadsClick}
           >
-            {t('actualites.thread-list.manage-threads')}
+            {t('actualites.threadList.manageThreads')}
           </Button>
         </>
       )}

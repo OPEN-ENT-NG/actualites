@@ -15,25 +15,25 @@ export function InfoListEmpty({ type }: { type: EmptyScreenType }) {
       {type === 'create-thread' && (
         <EmptyScreen
           imageSrc={illuEmptyCreate}
-          imageAlt={t('actualites.info-list.empty.create-thread.title')}
-          title={t('actualites.info-list.empty.create-thread.title')}
-          text={t('actualites.info-list.empty.create-thread.description')}
+          imageAlt={t('actualites.infoList.empty.createThread.title')}
+          title={t('actualites.infoList.empty.createThread.title')}
+          text={t('actualites.infoList.empty.createThread.description')}
         />
       )}
       {type === 'create-info' && (
         <EmptyScreen
           imageSrc={illuEmptyCreate}
-          imageAlt={t('actualites.info-list.empty.create-info.title')}
-          title={t('actualites.info-list.empty.create-info.title')}
-          text={t('actualites.info-list.empty.create-info.description')}
+          imageAlt={t('actualites.infoList.empty.createInfo.title')}
+          title={t('actualites.infoList.empty.createInfo.title')}
+          text={t('actualites.infoList.empty.createInfo.description')}
         />
       )}
       {type === 'default' && (
         <EmptyScreen
           imageSrc={illuEmpty}
-          imageAlt={t('actualites.info-list.empty.default.title')}
-          title={t('actualites.info-list.empty.default.title')}
-          text={t('actualites.info-list.empty.default.description')}
+          imageAlt={t('actualites.infoList.empty.default.title')}
+          title={t('actualites.infoList.empty.default.title')}
+          text={t('actualites.infoList.empty.default.description')}
         />
       )}
     </Flex>
