@@ -118,7 +118,7 @@ export const useCreateComment = () => {
     },
     // If the mutation fails, use the result returned from onMutate to roll back.
     onError: (_err, _variables, onMutateResult) => {
-      toast.success(t('actualites.comment.error'));
+      toast.error(t('actualites.comment.error'));
       if (onMutateResult) {
         queryClient.setQueryData(
           onMutateResult.queryKey,
