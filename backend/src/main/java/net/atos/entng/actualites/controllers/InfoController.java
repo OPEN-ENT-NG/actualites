@@ -53,7 +53,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import static org.entcore.common.http.response.DefaultResponseHandler.*;
@@ -107,11 +106,13 @@ public class InfoController extends ControllerHelper {
         return json -> Optional.of(json.getString("owner"));
     }
 
+    @Deprecated
     @Get("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/:"+Actualites.INFO_RESOURCE_ID)
     @ApiDoc("Retrieve : retrieve an Info in thread by thread and by id")
     @ResourceFilter(InfoFilter.class)
     @SecuredAction(value = "info.read", type = ActionType.RESOURCE)
     public void getInfo(final HttpServerRequest request) {
+        log.warn("[DEPRECATED] GET /thread/:threadId/info/:infoId called - This endpoint should no longer be used");
         // TODO IMPROVE @SecuredAction : Security on Info as a resource
         final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
         boolean originalContent = Boolean.parseBoolean(request.getParam("originalContent", "false"));
@@ -124,10 +125,12 @@ public class InfoController extends ControllerHelper {
         });
     }
 
+    @Deprecated
     @Get("/infos")
-    @ApiDoc("Get infos.")
+    @ApiDoc("Get infos. DEPRECATED - Use /api/v1/infos instead.")
     @SecuredAction("actualites.infos.list")
     public void listInfos(final HttpServerRequest request) {
+        log.warn("[DEPRECATED] GET /infos called - Use /api/v1/infos instead");
         // TODO IMPROVE : Security on Infos visibles by statuses / dates is not enforced
         UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
             @Override
@@ -142,8 +145,9 @@ public class InfoController extends ControllerHelper {
         });
     }
 
+    @Deprecated
     @Get("/infos/:"+Actualites.INFO_RESOURCE_ID+"/comments")
-    @ApiDoc("Get infos comments.")
+    @ApiDoc("Get infos comments. DEPRECATED - Used by mobile app only.")
     @ResourceFilter(InfoFilter.class)
     @SecuredAction(value = "info.read", type = ActionType.RESOURCE)
     public void getInfoComments(final HttpServerRequest request) {
@@ -158,11 +162,13 @@ public class InfoController extends ControllerHelper {
         infoService.listComments(id, arrayResponseHandler(request));
     }
 
+    @Deprecated
     @Get("/infos/:"+Actualites.INFO_RESOURCE_ID+"/shared")
-    @ApiDoc("Get infos shared.")
+    @ApiDoc("Get infos shared. DEPRECATED - This endpoint is no longer used and will be removed in a future version.")
     @ResourceFilter(InfoFilter.class)
     @SecuredAction(value = "info.read", type = ActionType.RESOURCE)
     public void getInfoShared(final HttpServerRequest request) {
+        log.warn("[DEPRECATED] GET /infos/:infoId/shared called - This endpoint should no longer be used");
         final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
         Long id;
         try {
@@ -174,11 +180,13 @@ public class InfoController extends ControllerHelper {
         infoService.listShared(id, arrayResponseHandler(request));
     }
 
+    @Deprecated
     @Get("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/infos")
-    @ApiDoc("Get infos in thread by thread id.")
+    @ApiDoc("Get infos in thread by thread id. DEPRECATED - Use /api/v1/infos instead.")
     @ResourceFilter(ThreadFilter.class)
     @SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE)
     public void listInfosByThreadId(final HttpServerRequest request) {
+        log.warn("[DEPRECATED] GET /thread/:threadId/infos called - Use /api/v1/infos instead");
         // TODO IMPROVE : Security on Infos visibles by statuses / dates is not enforced
         final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
         UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
@@ -189,10 +197,12 @@ public class InfoController extends ControllerHelper {
         });
     }
 
+    @Deprecated
     @Get("/linker/infos")
-    @ApiDoc("List infos without their content. Used by linker")
+    @ApiDoc("List infos without their content. Used by linker. DEPRECATED - Used by linker only.")
     @SecuredAction("actualites.infos.list")
     public void listInfosForLinker(final HttpServerRequest request) {
+        log.warn("[DEPRECATED] GET /linker/infos called - This endpoint should no longer be used");
         // TODO IMPROVE : Security on Infos visibles by statuses / dates is not enforced
         UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
             @Override
@@ -207,10 +217,12 @@ public class InfoController extends ControllerHelper {
         });
     }
 
+    @Deprecated
     @Get("/infos/last/:"+RESULT_SIZE_PARAMETER)
-    @ApiDoc("Get infos in thread by status and by thread id.")
+    @ApiDoc("Get infos in thread by status and by thread id. DEPRECATED - Used by widget only.")
     @SecuredAction("actualites.infos.list")
     public void listLastPublishedInfos(final HttpServerRequest request) {
+        log.warn("[DEPRECATED] GET /infos/last/:resultSize called - This endpoint should no longer be used");
         UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
             @Override
             public void handle(UserInfos user) {
@@ -237,11 +249,13 @@ public class InfoController extends ControllerHelper {
         });
     }
 
+	@Deprecated
 	@Post("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info")
-	@ApiDoc("Add a new Info with draft status")
+	@ApiDoc("Add a new Info with draft status. DEPRECATED - Use /api/v1/infos instead.")
 	@ResourceFilter(ThreadFilter.class)
 	@SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE)
 	public void createDraft(final HttpServerRequest request) {
+		log.warn("[DEPRECATED] POST /thread/:threadId/info called - Use /api/v1/infos instead");
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
 			public void handle(final UserInfos user) {
@@ -257,11 +271,13 @@ public class InfoController extends ControllerHelper {
 		});
 	}
 
+    @Deprecated
     @Post("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/pending")
-    @ApiDoc("Add a new Info with pending status")
+    @ApiDoc("Add a new Info with pending status. DEPRECATED - Use /api/v1/infos instead.")
     @ResourceFilter(ThreadFilter.class)
     @SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE)
     public void createPending(final HttpServerRequest request) {
+        log.warn("[DEPRECATED] POST /thread/:threadId/info/pending called - Use /api/v1/infos instead");
         UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
             @Override
             public void handle(final UserInfos user) {
@@ -294,11 +310,13 @@ public class InfoController extends ControllerHelper {
         });
     }
 
+	@Deprecated
 	@Post("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/published")
-	@ApiDoc("Add a new Info published status")
+	@ApiDoc("Add a new Info published status. DEPRECATED - Use /api/v1/infos instead.")
 	@ResourceFilter(ThreadFilter.class)
 	@SecuredAction(value = "thread.publish", type = ActionType.RESOURCE)
 	public void createPublished(final HttpServerRequest request) {
+		log.warn("[DEPRECATED] POST /thread/:threadId/info/published called - Use /api/v1/infos instead");
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
 			public void handle(final UserInfos user) {
@@ -314,11 +332,13 @@ public class InfoController extends ControllerHelper {
 		});
 	}
 
+    @Deprecated
     @Put("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/:"+Actualites.INFO_RESOURCE_ID+"/draft")
-    @ApiDoc("Update : update an Info in Draft state in thread by thread and by id")
+    @ApiDoc("Update : update an Info in Draft state in thread by thread and by id. DEPRECATED - Use /api/v1/infos/:infoId instead.")
     @ResourceFilter(InfoFilter.class)
     @SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE)
     public void updateDraft(final HttpServerRequest request) {
+        log.warn("[DEPRECATED] PUT /thread/:threadId/info/:infoId/draft called - Use /api/v1/infos/:infoId instead");
         final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
         UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
             @Override
@@ -341,11 +361,13 @@ public class InfoController extends ControllerHelper {
         });
     }
 
+    @Deprecated
     @Put("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/:"+Actualites.INFO_RESOURCE_ID+"/pending")
-    @ApiDoc("Update : update an Info in Draft state in thread by thread and by id")
+    @ApiDoc("Update : update an Info in Draft state in thread by thread and by id. DEPRECATED - Use /api/v1/infos/:infoId instead.")
     @ResourceFilter(InfoFilter.class)
     @SecuredAction(value = "thread.publish", type = ActionType.RESOURCE)
     public void updatePending(final HttpServerRequest request) {
+        log.warn("[DEPRECATED] PUT /thread/:threadId/info/:infoId/pending called - Use /api/v1/infos/:infoId instead");
         final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
         UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
             @Override
@@ -368,11 +390,13 @@ public class InfoController extends ControllerHelper {
         });
     }
 
+    @Deprecated
     @Put("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/:"+Actualites.INFO_RESOURCE_ID+"/published")
-    @ApiDoc("Update : update an Info in Draft state in thread by thread and by id")
+    @ApiDoc("Update : update an Info in Draft state in thread by thread and by id. DEPRECATED - Use /api/v1/infos/:infoId instead.")
     @ResourceFilter(InfoFilter.class)
     @SecuredAction(value = "thread.publish", type = ActionType.RESOURCE)
     public void updatePublished(final HttpServerRequest request) {
+        log.warn("[DEPRECATED] PUT /thread/:threadId/info/:infoId/published called - Use /api/v1/infos/:infoId instead");
         final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
         UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
             @Override
@@ -396,9 +420,10 @@ public class InfoController extends ControllerHelper {
         });
     }
 
+    @Deprecated
     @Override
     @Delete("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/:"+Actualites.INFO_RESOURCE_ID)
-    @ApiDoc("Delete : Real delete an Info in thread by thread and by id")
+    @ApiDoc("Delete : Real delete an Info in thread by thread and by id. DEPRECATED - Used by mobile and web app.")
     @ResourceFilter(InfoFilter.class)
     @SecuredAction(value = "thread.manager", type = ActionType.RESOURCE)
     public void delete(final HttpServerRequest request) {
@@ -426,11 +451,13 @@ public class InfoController extends ControllerHelper {
             });
     }
 
+    @Deprecated
 	@Put("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/:"+Actualites.INFO_RESOURCE_ID+"/submit")
 	@ApiDoc("Submit : Change an Info to Pending state in thread by thread and by id")
 	@ResourceFilter(InfoFilter.class)
 	@SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE)
 	public void submit(final HttpServerRequest request) {
+		log.warn("[DEPRECATED] PUT /thread/:threadId/info/:infoId/submit called - This endpoint should no longer be used");
 		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
 		final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
 		UserUtils.getUserInfos(eb, request, user -> RequestUtils.bodyToJson(request, body -> {
@@ -450,11 +477,13 @@ public class InfoController extends ControllerHelper {
         }));
 	}
 
+    @Deprecated
 	@Put("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/:"+Actualites.INFO_RESOURCE_ID+"/unsubmit")
 	@ApiDoc("Cancel Submit : Change an Info to Draft state in thread by thread and by id")
 	@ResourceFilter(InfoFilter.class)
 	@SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE)
 	public void unsubmit(final HttpServerRequest request) {
+		log.warn("[DEPRECATED] PUT /thread/:threadId/info/:infoId/unsubmit called - This endpoint should no longer be used");
 		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
 		final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
@@ -482,11 +511,13 @@ public class InfoController extends ControllerHelper {
 		});
 	}
 
+    @Deprecated
 	@Put("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/:"+Actualites.INFO_RESOURCE_ID+"/publish")
 	@ApiDoc("Publish : Change an Info to Published state in thread by thread and by id")
 	@ResourceFilter(InfoFilter.class)
 	@SecuredAction(value = "thread.publish", type = ActionType.RESOURCE)
 	public void publish(final HttpServerRequest request) {
+		log.warn("[DEPRECATED] PUT /thread/:threadId/info/:infoId/publish called - This endpoint should no longer be used");
 		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
 		final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
@@ -517,11 +548,13 @@ public class InfoController extends ControllerHelper {
 		});
 	}
 
+	@Deprecated
 	@Put("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/:"+Actualites.INFO_RESOURCE_ID+"/unpublish")
-	@ApiDoc("Unpublish : Change an Info to Draft state in thread by thread and by id")
+	@ApiDoc("Unpublish : Change an Info to Draft state in thread by thread and by id. DEPRECATED - Use /api/v1/infos/:infoId instead.")
 	@ResourceFilter(InfoFilter.class)
 	@SecuredAction(value = "thread.publish", type = ActionType.RESOURCE)
 	public void unpublish(final HttpServerRequest request) {
+		log.warn("[DEPRECATED] PUT /thread/:threadId/info/:infoId/unpublish called - Use /api/v1/infos/:infoId instead");
 		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
 		final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
@@ -549,18 +582,19 @@ public class InfoController extends ControllerHelper {
 						JsonObject resource = new JsonObject();
 						resource.put("status", status_list.get(2));
                         infoService.update(infoId, resource, user, Events.UNPUBLISH.toString(), request, notEmptyResponseHandler(request));
-			}
-		});
+			        }
+                });
+	        }
+        });
 	}
-});
 
-	}
-
+    @Deprecated
     @Get("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/share/json/:"+INFO_ID_PARAMETER)
     @ApiDoc("Get shared info by id.")
     @ResourceFilter(InfoFilter.class)
     @SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE)
     public void shareInfo(final HttpServerRequest request) {
+        log.warn("[DEPRECATED] GET /thread/:threadId/info/share/json/:id called - This endpoint should no longer be used");
         final String id = request.params().get(INFO_ID_PARAMETER);
         if (id == null || id.trim().isEmpty()) {
             badRequest(request);
@@ -614,74 +648,6 @@ public class InfoController extends ControllerHelper {
         });
     }
 
-    @Put("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/share/json/:"+INFO_ID_PARAMETER)
-    @ApiDoc("Share info by id.")
-    @ResourceFilter(InfoFilter.class)
-    @SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE)
-    public void shareInfoSubmit(final HttpServerRequest request) {
-        final String infoId = request.params().get(INFO_ID_PARAMETER);
-        if(StringUtils.isEmpty(infoId)) {
-            badRequest(request);
-            return;
-        }
-        request.pause();
-        UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
-            @Override
-            public void handle(final UserInfos user) {
-                if (user != null) {
-                    infoService.retrieve(infoId, user, false, new Handler<Either<String, JsonObject>>() {
-                        @Override
-                        public void handle(Either<String, JsonObject> event) {
-                            request.resume();
-                            if(event.right() != null){
-                                JsonObject info = event.right().getValue();
-                                if(info != null && info.containsKey("status")){
-                                    if(info.getInteger("status") > 2){
-                                        JsonObject params = new JsonObject()
-                                                .put("profilUri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
-                                                .put("username", user.getUsername())
-                                                .put("resourceUri", pathPrefix + "#/view/thread/" + info.getString("thread_id") + "/info/" + infoId)
-                                                .put("disableAntiFlood", true)
-                                                .put("pushNotif", new JsonObject().put("title", "push.notif.actu.info.published").put("body", user.getUsername()+ " : "+ info.getString("title")));
-										params.put("preview", NotificationUtils.htmlContentToPreview(
-												info.getString("content")));
-
-                                        DateFormat dfm = new SimpleDateFormat("yyyy-MM-dd");
-                                        String date = info.getString("publication_date");
-                                        if(date != null && !date.trim().isEmpty()){
-                                            try {
-                                                Date publication_date = dfm.parse(date);
-                                                Date timeNow=new Date(System.currentTimeMillis());
-                                                if(publication_date.after(timeNow)){
-                                                    params.put("timeline-publish-date", publication_date.getTime());
-                                                }
-                                            } catch (ParseException e) {
-                                                log.error("An error occured when sharing an info : " + e.getMessage());
-                                            }
-                                        }
-                                        shareJsonSubmit(request, "news.info-shared", false, params, "title");
-                                    } else {
-                                        shareJsonSubmit(request, null, false, null, null);
-                                    }
-                                }
-                            }
-                        }
-                    });
-                } else {
-                    unauthorized(request);
-                }
-            }
-        });
-    }
-
-    @Put("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/share/remove/:"+INFO_ID_PARAMETER)
-    @ApiDoc("Remove Share by id.")
-    @ResourceFilter(InfoFilter.class)
-    @SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE)
-    public void shareInfoRemove(final HttpServerRequest request) {
-        removeShare(request, false);
-    }
-
     private void notifyOwner(final HttpServerRequest request, final UserInfos user, final JsonObject resource, final String infoId, final String eventType) {
         infoService.getOwnerInfo(infoId, new Handler<Either<String, JsonObject>>() {
             @Override
@@ -702,11 +668,13 @@ public class InfoController extends ControllerHelper {
 //            notifyTimeline(request, user, resource.getString("thread_id"), infoId, resource.getString("title"), NEWS_UPDATE_EVENT_TYPE);
     }
 
+    @Deprecated
     @Get("/info/:"+ Actualites.INFO_RESOURCE_ID +"/timeline")
     @ApiDoc("Get info timeline by id")
     @ResourceFilter(InfoFilter.class)
     @SecuredAction(value = "thread.publish", type = ActionType.RESOURCE)
     public void getInfoTimeline (final HttpServerRequest request) {
+        log.warn("[DEPRECATED] GET /info/:id/timeline called - This endpoint should no longer be used");
         final String id = request.params().get(Actualites.INFO_RESOURCE_ID);
         if (id == null || id.trim().isEmpty()) {
             badRequest(request);
@@ -720,11 +688,13 @@ public class InfoController extends ControllerHelper {
         }
     }
 
+	@Deprecated
 	@Put("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/share/resource/:"+INFO_ID_PARAMETER)
-	@ApiDoc("Share info by id.")
+	@ApiDoc("Share info by id. DEPRECATED - This endpoint is no longer used and will be removed in a future version.")
 	@ResourceFilter(InfoFilter.class)
 	@SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE)
 	public void shareResourceInfo(final HttpServerRequest request) {
+		log.warn("[DEPRECATED] PUT /thread/:threadId/info/share/resource/:infoId called - This endpoint should no longer be used");
 		final String infoId = request.params().get(INFO_ID_PARAMETER);
 		if(StringUtils.isEmpty(infoId)) {
 			badRequest(request);
@@ -780,10 +750,12 @@ public class InfoController extends ControllerHelper {
 		});
 	}
 
+    @Deprecated
     @Get("/config/share")
-    @ApiDoc("Get the sharing configuration (for example: default actions to check in share panel.")
+    @ApiDoc("Get the sharing configuration (for example: default actions to check in share panel. DEPRECATED - This endpoint is no longer used and will be removed in a future version.")
     @SecuredAction(value = "", type = ActionType.AUTHENTICATED)
     public void getConfigShare(final HttpServerRequest request) {
+        log.warn("[DEPRECATED] GET /config/share called - This endpoint should no longer be used");
         JsonObject shareConfig = ConfigService.getInstance().getShareConfig();
         if (shareConfig != null) {
             renderJson(request, ConfigService.getInstance().getShareConfig(), 200);
@@ -795,8 +767,9 @@ public class InfoController extends ControllerHelper {
     private static final int LIST_MAX_PAGE_SIZE = 50;
     private static final int LIST_DEFAULT_PAGE_SIZE = 20;
 
+    @Deprecated
     @Get("/list")
-    @ApiDoc("List infos with pagination. Accept custom page size. Params threadId can be used to restrict the list to this thread.")
+    @ApiDoc("List infos with pagination. Accept custom page size. Params threadId can be used to restrict the list to this thread. DEPRECATED - Used by mobile app only.")
     @SecuredAction("actualites.infos.list.page")
     public void listInfosPagined(final HttpServerRequest request) {
         // TODO IMPROVE : Security on Infos visibles by statuses / dates is not enforced
@@ -839,8 +812,9 @@ public class InfoController extends ControllerHelper {
         });
     }
 
+    @Deprecated
     @Get("/info/:"+Actualites.INFO_RESOURCE_ID)
-    @ApiDoc("Get info from its id.")
+    @ApiDoc("Get info from its id. DEPRECATED - Used by mobile app only.")
     @ResourceFilter(InfoFilter.class)
     @SecuredAction(value = "info.read", type = ActionType.RESOURCE)
     public void getSingleInfo(final HttpServerRequest request) {
