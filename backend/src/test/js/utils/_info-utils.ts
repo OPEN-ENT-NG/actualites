@@ -40,6 +40,22 @@ export type Identifier = {
   id: number;
 }
 
+export const commentInfoRights = [
+  "net-atos-entng-actualites-controllers-CommentController|deleteComment",
+  "net-atos-entng-actualites-controllers-CommentController|updateComment",
+  "net-atos-entng-actualites-controllers-CommentController|comment"
+];
+
+export const infoRead = [
+  "net-atos-entng-actualites-controllers-InfoController|getSingleInfo",
+  "net-atos-entng-actualites-controllers-InfoController|getInfo",
+  "net-atos-entng-actualites-controllers-InfoController|getInfoComments",
+  "net-atos-entng-actualites-controllers-InfoController|getInfoShared"
+];
+
+export const infoFullRights = [...commentInfoRights, ...infoRead];
+
+
 /**
  * Create an info with draft or pending status
  * @param info The info object to create
