@@ -71,11 +71,7 @@ public class ThreadControllerV1 extends ControllerHelper {
     @Get("/api/v1/threads")
     @ApiDoc("Get all threads ")
     @SecuredAction(value = "actualites.threads.list", right = ROOT_RIGHT + "|listThreads")
-    public void getThreads(HttpServerRequest request) {
-        listThreadsV2(request);
-    }
-
-	private void listThreadsV2(final HttpServerRequest request) {
+    public void getThreads(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
 				Boolean viewHidden = Boolean.parseBoolean(request.getParam("viewHidden", "false"));
@@ -92,11 +88,7 @@ public class ThreadControllerV1 extends ControllerHelper {
     @ApiDoc("Get a thread by Id")
     @ResourceFilter(ThreadFilter.class)
     @SecuredAction(value = "thread.contrib", right = ROOT_RIGHT + "|getThread", type = ActionType.RESOURCE)
-    public void getThreadById(HttpServerRequest request) {
-        getThread(request);
-    }
-
-	private void getThread(final HttpServerRequest request) {
+    public void getThreadById(final HttpServerRequest request) {
 		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
 		UserUtils.getUserInfos(eb, request, user ->
 				threadService.retrieve(threadId, user, securedActions)
@@ -111,11 +103,7 @@ public class ThreadControllerV1 extends ControllerHelper {
     @ApiDoc("Create a new thread")
     @ResourceFilter(ThreadFilter.class)
     @SecuredAction(value = "actualites.create", right = ROOT_RIGHT + "|createThread")
-    public void createThread(HttpServerRequest request) {
-        createThreadInternal(request);
-    }
-
-	private void createThreadInternal(final HttpServerRequest request) {
+    public void createThread(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
 			public void handle(final UserInfos user) {
@@ -146,11 +134,7 @@ public class ThreadControllerV1 extends ControllerHelper {
     @ApiDoc("Update thread by id")
     @ResourceFilter(ThreadFilter.class)
     @SecuredAction(value = "thread.manager", right = ROOT_RIGHT + "|updateThread", type = ActionType.RESOURCE)
-    public void updateThread(HttpServerRequest request) {
-        updateThreadInternal(request);
-    }
-
-	private void updateThreadInternal(final HttpServerRequest request) {
+    public void updateThread(final HttpServerRequest request) {
 		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
@@ -169,11 +153,7 @@ public class ThreadControllerV1 extends ControllerHelper {
     @ApiDoc("Delete thread by id")
     @ResourceFilter(ThreadFilter.class)
     @SecuredAction(value = "thread.manager", right = ROOT_RIGHT + "|deleteThread", type = ActionType.RESOURCE)
-    public void deleteThread(HttpServerRequest request) {
-        deleteThreadInternal(request);
-    }
-
-	private void deleteThreadInternal(final HttpServerRequest request) {
+    public void deleteThread(final HttpServerRequest request) {
 		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
@@ -187,11 +167,7 @@ public class ThreadControllerV1 extends ControllerHelper {
     @ApiDoc("Get thread's shares")
     @ResourceFilter(ThreadFilter.class)
     @SecuredAction(value = "thread.manager", right = ROOT_RIGHT + "|shareThread", type = ActionType.RESOURCE)
-    public void getThreadShares(HttpServerRequest request) {
-        shareThread(request);
-    }
-
-	private void shareThread(final HttpServerRequest request) {
+    public void getThreadShares(final HttpServerRequest request) {
 		final String id = request.params().get(THREAD_ID_PARAMETER);
 		if (id == null || id.trim().isEmpty()) {
 			badRequest(request);
@@ -249,11 +225,7 @@ public class ThreadControllerV1 extends ControllerHelper {
     @ApiDoc("Update thread's shares")
     @ResourceFilter(ThreadFilter.class)
     @SecuredAction(value = "thread.manager", right = ROOT_RIGHT + "|shareResource", type = ActionType.RESOURCE)
-    public void updateThreadShares(HttpServerRequest request) {
-        shareResourceThread(request);
-    }
-
-	private void shareResourceThread(final HttpServerRequest request) {
+    public void updateThreadShares(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
 			public void handle(final UserInfos user) {
@@ -281,11 +253,7 @@ public class ThreadControllerV1 extends ControllerHelper {
     @ApiDoc("Launch a maintenance task")
     @ResourceFilter(SuperAdminFilter.class)
     @SecuredAction(value = "", right = ROOT_RIGHT + "|admcTask", type = ActionType.RESOURCE)
-    public void linkThread(HttpServerRequest request) {
-        admcTask(request);
-    }
-
-	private void admcTask(final HttpServerRequest request) {
+    public void linkThread(final HttpServerRequest request) {
 		RequestUtils.bodyToJson(request, pathPrefix + ADMC_TASK, (JsonObject resource) -> {
 			if (TASK_ATTACH.equals(resource.getString("task"))) {
 				this.threadService.attachThreadsWithNullStructureToDefault()

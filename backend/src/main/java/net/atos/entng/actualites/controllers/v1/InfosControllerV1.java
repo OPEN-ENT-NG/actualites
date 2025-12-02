@@ -208,11 +208,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	@ApiDoc("Retrieve : retrieve an Info in thread by thread and by id")
 	@ResourceFilter(InfoFilter.class)
 	@SecuredAction(value = "info.read", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|getInfo")
-	public void getInfos(HttpServerRequest request) {
-		getSingleInfo(request);
-	}
-
-	private void getSingleInfo(final HttpServerRequest request) {
+	public void getInfos(final HttpServerRequest request) {
 		// TODO IMPROVE : Security on Infos visibles by statuses / dates is not enforced
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
@@ -235,11 +231,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	@ApiDoc("Delete : Real delete an Info in thread by thread and by id")
 	@ResourceFilter(InfoFilter.class)
 	@SecuredAction(value = "thread.manager", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|delete")
-	public void removeInfo(HttpServerRequest request) {
-		deleteInfo(request);
-	}
-
-	private void deleteInfo(final HttpServerRequest request) {
+	public void removeInfo(final HttpServerRequest request) {
 		final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
 		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
 		UserUtils.getAuthenticatedUserInfos(eb, request)
@@ -268,11 +260,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	@ApiDoc("Get share info")
 	@ResourceFilter(InfoFilter.class)
 	@SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|shareInfo")
-	public void getShareInfo(HttpServerRequest request) {
-		shareInfo(request);
-	}
-
-	private void shareInfo(final HttpServerRequest request) {
+	public void getShareInfo(final HttpServerRequest request) {
 		final String id = request.params().get(INFO_ID_PARAMETER);
 		if (id == null || id.trim().isEmpty()) {
 			badRequest(request);
@@ -330,11 +318,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	@ApiDoc("Update share info")
 	@ResourceFilter(InfoFilter.class)
 	@SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|shareInfo")
-	public void updateShareInfo(HttpServerRequest request) {
-		shareResourceInfo(request);
-	}
-
-	private void shareResourceInfo(final HttpServerRequest request) {
+	public void updateShareInfo(final HttpServerRequest request) {
 		final String infoId = request.params().get(INFO_ID_PARAMETER);
 		if(StringUtils.isEmpty(infoId)) {
 			badRequest(request);
@@ -394,11 +378,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	@ApiDoc("Get timeline info")
 	@ResourceFilter(InfoFilter.class)
 	@SecuredAction(value = "thread.publish", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|getInfoTimeline")
-	public void getInfoTimeline(HttpServerRequest request) {
-		getInfoTimelineData(request);
-	}
-
-	private void getInfoTimelineData(final HttpServerRequest request) {
+	public void getInfoTimeline(final HttpServerRequest request) {
 		final String id = request.params().get(Actualites.INFO_RESOURCE_ID);
 		if (id == null || id.trim().isEmpty()) {
 			badRequest(request);

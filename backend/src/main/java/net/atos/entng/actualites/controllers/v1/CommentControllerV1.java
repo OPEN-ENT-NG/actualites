@@ -60,11 +60,7 @@ public class CommentControllerV1 extends ControllerHelper {
     @ApiDoc("Comment : Get info's comments")
     @ResourceFilter(InfoFilter.class)
     @SecuredAction(value = "info.read", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|getInfoComments")
-    public void getInfoComments(HttpServerRequest request) {
-        listInfoComments(request);
-    }
-
-	private void listInfoComments(final HttpServerRequest request) {
+    public void getInfoComments(final HttpServerRequest request) {
 		final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
 		Long id;
 		try {
@@ -80,11 +76,7 @@ public class CommentControllerV1 extends ControllerHelper {
     @ApiDoc("Comment : Add a comment to an Info by info id")
     @ResourceFilter(InfoFilter.class)
     @SecuredAction(value = "info.comment", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|comment")
-    public void createComment(HttpServerRequest request) {
-        createCommentInternal(request);
-    }
-
-	private void createCommentInternal(final HttpServerRequest request) {
+    public void createComment(final HttpServerRequest request) {
 		final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
 		UserUtils.getUserInfos(eb, request, user -> {
 			RequestUtils.bodyToJson(request, pathPrefix + SCHEMA_COMMENT_CREATE, resource -> {
@@ -117,41 +109,33 @@ public class CommentControllerV1 extends ControllerHelper {
     @ApiDoc("Comment : modify a comment of an Info by info and comment id")
     @ResourceFilter(UpdateCommentFilter.class)
     @SecuredAction(value = "info.comment", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|updateComment")
-    public void updateComment(HttpServerRequest request) {
-        updateCommentInternal(request);
-    }
-
-	private void updateCommentInternal(final HttpServerRequest request) {
+    public void updateComment(final HttpServerRequest request) {
 		final String commentId = request.params().get(COMMENT_ID_PARAMETER);
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
 			public void handle(final UserInfos user) {
-						RequestUtils.bodyToJson(request, pathPrefix + SCHEMA_COMMENT_UPDATE, new Handler<JsonObject>() {
-						@Override
-						public void handle(JsonObject resource) {
-							final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
-							final int infoIdFromBody = resource.getInteger(FIELD_INFO_ID, -1);
-							if(infoIdFromBody == Integer.parseInt(infoId)) {
-								crudService.update(commentId, resource, user, notEmptyResponseHandler(request));
-							} else {
-								log.warn(String.format("User %s tried to post a comment for info %s by using a different id %s", user.getLogin(), infoIdFromBody, infoId));
-								forbidden(request);
-							}
+				RequestUtils.bodyToJson(request, pathPrefix + SCHEMA_COMMENT_UPDATE, new Handler<JsonObject>() {
+					@Override
+					public void handle(JsonObject resource) {
+						final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
+						final int infoIdFromBody = resource.getInteger(FIELD_INFO_ID, -1);
+						if(infoIdFromBody == Integer.parseInt(infoId)) {
+							crudService.update(commentId, resource, user, notEmptyResponseHandler(request));
+						} else {
+							log.warn(String.format("User %s tried to post a comment for info %s by using a different id %s", user.getLogin(), infoIdFromBody, infoId));
+							forbidden(request);
 						}
-					});
-				}
-			});
-		}
+					}
+				});
+			}
+		});
+	}
 
     @Delete("/api/v1/infos/:" + Actualites.INFO_RESOURCE_ID + "/comments/:id")
     @ApiDoc("Comment : delete a comment by comment id ")
     @ResourceFilter(CommentFilter.class)
     @SecuredAction(value = "info.comment", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|deleteComment")
-    public void deleteComment(HttpServerRequest request) {
-        deleteCommentInternal(request);
-    }
-
-	private void deleteCommentInternal(final HttpServerRequest request) {
+    public void deleteComment(final HttpServerRequest request) {
 		final String commentId = request.params().get(COMMENT_ID_PARAMETER);
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
