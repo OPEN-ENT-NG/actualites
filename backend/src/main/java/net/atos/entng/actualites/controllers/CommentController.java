@@ -69,6 +69,7 @@ public class CommentController extends ControllerHelper {
 		this.threadService = new ThreadServiceSqlImpl();
 	}
 
+	@Deprecated
 	@Put("/info/:"+Actualites.INFO_RESOURCE_ID+"/comment")
 	@ApiDoc("Comment : Add a comment to an Info by info id")
 	@ResourceFilter(InfoFilter.class)
@@ -111,8 +112,9 @@ public class CommentController extends ControllerHelper {
 		});
 	}
 
+	@Deprecated
 	@Put("/info/:"+Actualites.INFO_RESOURCE_ID+"/comment/:"+COMMENT_ID_PARAMETER)
-	@ApiDoc("Comment : modify a comment of an Info by info and comment id")
+	@ApiDoc("Comment : modify a comment of an Info by info and comment id. DEPRECATED - Used by mobile app only.")
 	@ResourceFilter(UpdateCommentFilter.class)
 	@SecuredAction(value = "info.comment", type = ActionType.RESOURCE)
 	public void updateComment(final HttpServerRequest request) {
@@ -137,8 +139,9 @@ public class CommentController extends ControllerHelper {
 				});
 			}
 
+	@Deprecated
 	@Delete("/info/:"+Actualites.INFO_RESOURCE_ID+"/comment/:"+COMMENT_ID_PARAMETER)
-	@ApiDoc("Comment : delete a comment by comment id ")
+	@ApiDoc("Comment : delete a comment by comment id. DEPRECATED - Used by mobile app only.")
 	@ResourceFilter(CommentFilter.class)
 	@SecuredAction(value = "info.comment", type = ActionType.RESOURCE)
 	public void deleteComment(final HttpServerRequest request) {
@@ -151,6 +154,7 @@ public class CommentController extends ControllerHelper {
 		});
 	}
 
+	@Deprecated
 	private void notifyTimeline(final HttpServerRequest request, final UserInfos user, final String infoId, final String commentId, final String title, final String commentText, final String eventType){
 		if (eventType.equals(NEWS_COMMENT_EVENT_TYPE)) {
 			infoService.retrieve(infoId, true, event -> {
@@ -166,6 +170,7 @@ public class CommentController extends ControllerHelper {
 		}
 	}
 
+	@Deprecated
 	private void sendNotify(final HttpServerRequest request, final List<String> ids, final UserInfos user, final String infoId, final String commentId, final String title, String commentText, final String notificationName){
 		if (infoId != null && !infoId.isEmpty() && commentId != null && !commentId.isEmpty() && user != null && !commentText.isEmpty()) {
 			String overview = commentText.replaceAll("<br>", "");
