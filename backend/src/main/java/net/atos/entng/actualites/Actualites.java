@@ -38,7 +38,6 @@ import net.atos.entng.actualites.controllers.v1.ThreadControllerV1;
 import net.atos.entng.actualites.services.*;
 import net.atos.entng.actualites.services.impl.*;
 import org.entcore.common.editor.ContentTransformerConfig;
-import org.entcore.common.editor.ContentTransformerEventRecorder;
 import org.entcore.common.editor.ContentTransformerEventRecorderFactory;
 import org.entcore.common.editor.IContentTransformerEventRecorder;
 import org.entcore.common.events.EventHelper;

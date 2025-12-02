@@ -581,7 +581,7 @@ public class InfoController extends ControllerHelper {
 						};
 						JsonObject resource = new JsonObject();
 						resource.put("status", status_list.get(2));
-                        infoService.update(infoId, resource, user, Events.UNPUBLISH.toString(), notEmptyResponseHandler(request));
+                        infoService.update(infoId, resource, user, Events.UNPUBLISH.toString(), request, notEmptyResponseHandler(request));
 			        }
                 });
 	        }
