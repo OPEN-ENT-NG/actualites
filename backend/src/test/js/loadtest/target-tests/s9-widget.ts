@@ -9,30 +9,30 @@ import { InitData } from "./_init-test-utils.ts";
 import {sleep} from "k6";
 import http from "k6/http";
 import exec from 'k6/execution';
-import { apiErrors, apiSuccesses, apiTrend } from "../scenarios/_metrics-utils.ts";
+import { pushResponseMetrics } from "../scenarios/_metrics-utils.ts";
+import { Counter } from "k6/metrics";
 
 const rootUrl = __ENV.ROOT_URL;
 const baseDelay = (__ENV.DELAY_BETWEEN_PAGE_IN_MS ? Number(__ENV.DELAY_BETWEEN_PAGE_IN_MS) : 1000) ;
 
+const totalUser = new Counter("total_users_s9");
+
 export function s9Widget(data: InitData) {
 
-  describe('[Info-Widget] Test standard scenario widget access', () => {
+  describe('[s9-Widget] scenario s9 widget access', () => {
 
     const randomIndex = exec.scenario.iterationInInstance % data.allSessions.length;
 
     const user = data.allSessions[randomIndex];
     const session = Session.from(user.session);
     switchSession(session);
+    totalUser.add(1);
 
     const url = `${rootUrl}/actualites/api/v1/infos/preview/last/4`;
-    const res = http.get(url, { headers: getHeaders() });
+    const res = http.get(url,
+      { headers: getHeaders(), tags:{ type: 'widget_access'} });
 
-    apiTrend.add(res.timings.duration, {profile: user.profile});
-    if(res.status < 300 && res.status >= 200) {
-      apiSuccesses.add(1);
-    } else {
-      apiErrors.add(1);
-    }
+    pushResponseMetrics(res, user);
     sleep(baseDelay / 1000);
   });
 }
