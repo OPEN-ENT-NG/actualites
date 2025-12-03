@@ -17,6 +17,10 @@ export const ThreadListDesktop = () => {
     navigate('/');
   };
 
+  const handleManageThreadsClick = () => {
+    navigate('/admin/threads');
+  };
+
   return (
     <Flex direction="column" fill gap="8" className="overflow-auto py-16 pe-16">
       {!isFetched ? (
@@ -43,6 +47,7 @@ export const ThreadListDesktop = () => {
             color="secondary"
             leftIcon={<IconSettings />}
             variant="outline"
+            onClick={handleManageThreadsClick}
           >
             {t('actualites.threadList.manageThreads')}
           </Button>

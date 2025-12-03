@@ -6,8 +6,8 @@ import {
 import { mockThreadAsOwner, mockThreads } from '~/mocks/datas/threads';
 import { renderWithRouter } from '~/mocks/renderWithRouter';
 import { fireEvent, screen } from '~/mocks/setup';
-import { InfoList } from './InfoList';
 import { InfoStatus } from '~/models/info';
+import { InfoList } from './InfoList';
 
 describe('InfoList rendering', () => {
   it('should render skeletons when loading', async () => {
@@ -35,7 +35,7 @@ describe('InfoList Segmented counts', () => {
   it('should display the total count of published infos of all threads', async () => {
     renderWithRouter('/', <InfoList />);
     const publishedCount = await screen.findByText(
-      `actualites.info-list.segmented.published 6`,
+      `actualites.infoList.segmented.published 6`,
     );
     expect(publishedCount).toBeInTheDocument();
   });
@@ -51,13 +51,13 @@ describe('InfoList Segmented counts', () => {
       threadInfosStats?.status[InfoStatus.PUBLISHED] ?? 0; // 2
 
     const publishedCount = await screen.findByText(
-      `actualites.info-list.segmented.published ${expectedPublishedCount}`,
+      `actualites.infoList.segmented.published ${expectedPublishedCount}`,
     );
     expect(publishedCount).toBeInTheDocument();
 
     const expectedDraftCount = threadInfosStats?.status[InfoStatus.DRAFT] ?? 0; // 1
     const draftCount = await screen.findByText(
-      `actualites.info-list.segmented.draft ${expectedDraftCount}`,
+      `actualites.infoList.segmented.draft ${expectedDraftCount}`,
     );
     expect(draftCount).toBeInTheDocument();
   });
@@ -93,7 +93,7 @@ describe('InfoList Segmented Switch', () => {
     renderWithRouter('/', <InfoList />);
 
     const draftLabel = await screen.findByText(
-      `actualites.info-list.segmented.draft 3`,
+      `actualites.infoList.segmented.draft 3`,
     );
     await fireEvent.click(draftLabel);
 

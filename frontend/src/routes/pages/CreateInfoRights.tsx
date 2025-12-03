@@ -48,9 +48,9 @@ export const loader =
       throw new Error('Invalid infoId');
     }
 
-    const queryMessage = infoQueryOptions.getInfoById(Number(infoId));
+    const queryInfo = infoQueryOptions.getInfoById(Number(infoId));
 
-    queryClient.ensureQueryData(queryMessage);
+    queryClient.ensureQueryData(queryInfo);
     return { infoId };
   };
 
