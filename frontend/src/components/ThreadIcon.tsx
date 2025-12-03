@@ -44,7 +44,7 @@ export const ThreadIcon = ({
           justify="center"
           className="bg-orange-200 rounded thread-icon"
         >
-          <AppIcon app={appCode} variant="square" />
+          <AppIcon app={appCode} variant="square" size={iconSize} />
         </Flex>
       )}
     </>
