@@ -20,7 +20,6 @@ export const createThreadService = () => {
      * @returns an array of Thread objects
      */
     async getThreads() {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
       return odeServices.http().get<Thread[]>(`${baseUrlAPI}/threads`);
     },
 
