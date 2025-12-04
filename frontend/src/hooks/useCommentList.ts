@@ -1,3 +1,4 @@
+import { RightRole } from '@edifice.io/client';
 import { useMemo } from 'react';
 import { Info } from '~/models/info';
 import {
@@ -7,6 +8,7 @@ import {
   useUpdateComment,
 } from '~/services/queries';
 import { useInfoUserRights } from './useInfoUserRights';
+import { useThreadUserRights } from './useThreadUserRights';
 
 // Local interface definition
 declare interface CommentOptions {
@@ -40,7 +42,8 @@ declare interface CommentOptions {
  * - comments: Array of comments
  */
 export function useCommentList(info: Info) {
-  const { canComment } = useInfoUserRights(info);
+  const { canContribute, canManage } = useThreadUserRights(info.threadId);
+  const { isCreator, canComment } = useInfoUserRights(info);
   const { data } = useComments(info.id);
   const comments = useMemo(
     () =>
@@ -96,6 +99,13 @@ export function useCommentList(info: Info) {
     },
   };
 
+  const rights: Record<RightRole, boolean> = {
+    read: true,
+    contrib: canContribute,
+    manager: canManage,
+    creator: isCreator,
+  };
+
   const options = {
     additionalComments: 10,
     maxComments: 2,
@@ -105,6 +115,7 @@ export function useCommentList(info: Info) {
   return {
     type,
     callbacks,
+    rights,
     options,
     comments,
   };
