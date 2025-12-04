@@ -184,6 +184,7 @@ public class Actualites extends BaseServer {
 
 		CommentControllerV1 commentControllerV1 = new CommentControllerV1();
 		commentControllerV1.setInfoService(infoService);
+		commentControllerV1.setCrudService(commentSqlCrudService);
 		addController(commentControllerV1);
 		return Future.succeededFuture();
 	}
