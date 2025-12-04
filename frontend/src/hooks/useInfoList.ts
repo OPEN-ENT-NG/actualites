@@ -1,7 +1,6 @@
-import { invalidateQueriesWithFirstPage } from '@edifice.io/react';
-import { queryClient } from '~/providers';
+import { useMemo } from 'react';
 import { InfoExtendedStatus, InfoStatus } from '~/models/info';
-import { infoQueryKeys, useInfos } from '~/services/queries/info';
+import { useInfos } from '~/services/queries/info';
 import { useInfoSearchParams } from './useInfoSearchParams';
 import { useThreadInfoParams } from './useThreadInfoParams';
 
@@ -20,15 +19,16 @@ export function useInfoList() {
 
   const infosQuery = useInfos(threadId, { status, state });
 
+  // Required for optimistic-update to work
+  const infos = useMemo(
+    () => infosQuery.data?.pages.flat() || [],
+    [infosQuery.data],
+  );
+
   return {
-    infos: infosQuery.data?.pages.flatMap((page) => page) || [],
+    infos,
     hasNextPage: infosQuery.hasNextPage,
     loadNextPage: () => infosQuery.fetchNextPage(),
     isLoading: infosQuery.isLoading,
-    reload: () => {
-      invalidateQueriesWithFirstPage(queryClient, {
-        queryKey: infoQueryKeys.infos({ threadId, status, state }),
-      });
-    },
   };
 }
