@@ -54,10 +54,10 @@ export const loader = async () => {
 
         if (isPathWithInfo) {
           // Redirect to the new format
-          redirectPath = `/${isPathWithInfo?.params.threadId}/infos/${isPathWithInfo?.params.infoId}`;
+          redirectPath = `/threads/${isPathWithInfo.params.threadId}#info-${isPathWithInfo.params.infoId}`;
         } else if (isPathWithThread) {
           // Redirect to the new format
-          redirectPath = `/${isPathWithThread?.params.id}`;
+          redirectPath = `/threads/${isPathWithThread?.params.id}`;
         }
       }
     }

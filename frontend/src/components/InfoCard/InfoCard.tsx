@@ -1,7 +1,8 @@
 import { Alert, Card } from '@edifice.io/react';
 import clsx from 'clsx';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useI18n } from '~/hooks/useI18n';
+import { useScrollToElement } from '~/hooks/useScrollToElement';
 import { Info, InfoExtendedStatus, InfoStatus } from '~/models/info';
 import './InfoCard.css';
 import { InfoCardContent } from './InfoCardContent';
@@ -17,6 +18,7 @@ export type InfoCardProps = {
 
 export const InfoCard = ({ info }: InfoCardProps) => {
   const { t } = useI18n();
+  const { scrollIntoView, hash } = useScrollToElement();
 
   const isIncoming =
     info.status === InfoStatus.PUBLISHED &&
@@ -29,6 +31,8 @@ export const InfoCard = ({ info }: InfoCardProps) => {
 
   const [collapse, setCollapse] = useState(true);
   const [scrollTo, setScrollTo] = useState<string>();
+
+  const id = `info-${info.id}`;
 
   const className = clsx(
     'px-16 px-md-24 py-16 info-card position-relative border-none overflow-visible',
@@ -55,7 +59,7 @@ export const InfoCard = ({ info }: InfoCardProps) => {
     setCollapse((collapse) => {
       if (!collapse) {
         // Scroll to top of the card when collapsing
-        setScrollTo(`info-${info.id}`);
+        setScrollTo(id);
       }
       return !collapse;
     });
@@ -65,10 +69,10 @@ export const InfoCard = ({ info }: InfoCardProps) => {
     setCollapse((collapse) => {
       if (!collapse) {
         // Scroll to top of the card when collapsing
-        setScrollTo(`info-${info.id}`);
+        setScrollTo(id);
       } else {
         // Scroll to top comment when expanding
-        setScrollTo(`info-${info.id}-comments`);
+        setScrollTo(id + '-comments');
       }
       return !collapse;
     });
@@ -76,13 +80,14 @@ export const InfoCard = ({ info }: InfoCardProps) => {
 
   const handleCollapseApplied = useCallback(() => {
     if (scrollTo) {
-      const ref = document.getElementById(scrollTo);
-      if (ref) {
-        ref.scrollIntoView();
-      }
+      scrollIntoView(scrollTo);
       setScrollTo(undefined);
     }
   }, [scrollTo]);
+
+  useEffect(() => {
+    id === hash && scrollIntoView(hash);
+  }, []);
 
   return (
     <Card
@@ -91,11 +96,7 @@ export const InfoCard = ({ info }: InfoCardProps) => {
       isSelectable={false}
       key={info.id}
     >
-      <article
-        id={`info-${info.id}`}
-        className="overflow-hidden"
-        data-testid="info-card"
-      >
+      <article id={id} className="overflow-hidden" data-testid="info-card">
         <InfoCardHeader info={info} extendedStatus={extendedStatus} />
 
         {isExpired && (
