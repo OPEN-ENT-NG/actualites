@@ -40,7 +40,7 @@ export function AdminThread({
       <Flex direction="column" gap="4" fill>
         <strong>{thread.title}</strong>
         <SeparatedInfo className="truncate">
-          {thread.structure_id && <span>{thread.structure_id}</span>}
+          {thread.structureId && <span>{thread.structureId}</span>}
           <span>
             {t('actualites.adminThreads.threadInfoCount', {
               count: threadInfosStats?.incomingCount || 0,

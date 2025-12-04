@@ -31,7 +31,7 @@ export interface Thread {
   /** Modification date, formatted as 'YYYY-MM-DDTHH:mm:ss' */
   modified: string;
   /** ID of the structure this thread is attached to. */
-  structure_id: string | null;
+  structureId: string | null;
   /** ID of the user who created this thread. */
   owner: string;
   /** Name of the user who created this thread. */
@@ -45,4 +45,11 @@ export interface Thread {
         ]
     */
   sharedRights?: Array<string>;
+}
+
+export interface ThreadPayload {
+  mode: ThreadMode;
+  title: string;
+  icon?: string;
+  structureId?: string;
 }

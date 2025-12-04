@@ -9,7 +9,7 @@ import './AdminThreadList.css';
 import { AdminThread } from './components/AdminThread';
 
 export function AdminThreadList() {
-  const { threadsWithContributeRight } = useThreadsUserRights();
+  const { threadsWithManageRight } = useThreadsUserRights();
   const { t } = useI18n();
   const { data: infosStats } = useInfosStats();
 
@@ -21,18 +21,18 @@ export function AdminThreadList() {
 
   const filteredList = useMemo(() => {
     if (search === '') {
-      return threadsWithContributeRight;
+      return threadsWithManageRight;
     }
-    return threadsWithContributeRight?.filter((thread) =>
+    return threadsWithManageRight?.filter((thread) =>
       thread.title.toLocaleLowerCase().includes(search.toLocaleLowerCase()),
     );
-  }, [threadsWithContributeRight, search]);
+  }, [threadsWithManageRight, search]);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
 
-  if (!threadsWithContributeRight || threadsWithContributeRight.length === 0) {
+  if (!threadsWithManageRight || threadsWithManageRight.length === 0) {
     return (
       <EmptyScreen
         imageSrc={illuEmptyAdminThreads}
