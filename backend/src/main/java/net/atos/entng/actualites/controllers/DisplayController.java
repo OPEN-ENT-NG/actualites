@@ -49,9 +49,24 @@ public class DisplayController extends BaseController {
 	}
 
 	/**
-	 * Main HTML rendering endpoint.
-	 * Secured by a dedicated access right named `actualites.view`
-	 * 
+	 * Main HTML rendering endpoint for /actualites (without trailing slash).
+	 * This separate method is required because the regex in the main view() method
+	 * cannot match an empty string in our custom routing system.
+	 * Secured by an access right named `actualites.view`
+	 */
+	@Get("")
+	@SecuredAction("actualites.view")
+	public void viewRoot(final HttpServerRequest request) {
+		renderView(request, new JsonObject(), "index.html", null);
+
+		// Create event "access to application Actualites" and store it in MongoDB, for module "statistics"
+		eventStore.createAndStoreEvent(ActualitesEvent.ACCESS.name(), request);
+	}
+
+	/**
+	 * Main HTML rendering endpoint for sub-routes.
+	 * Secured by an access right named `actualites.view`
+	 *
 	 * Example of valid URLs that should render the frontend HTML :
 	 *
 	 *  /actualites/                                 (redirect to /threads)
