@@ -48,7 +48,7 @@ export function AdminThread({
           </span>
         </SeparatedInfo>
       </Flex>
-      <Flex gap="4" className="col-3" align="center" justify="end">
+      <Flex gap="4" align="center" justify="end">
         {lg ? (
           <>
             <Button
