@@ -48,7 +48,27 @@ public class DisplayController extends BaseController {
 		eventStore = EventStoreFactory.getFactory().getEventStore(Actualites.class.getSimpleName());
 	}
 
-	@Get("")
+	/**
+	 * Main HTML rendering endpoint.
+	 * Secured by a dedicated access right named `actualites.view`
+	 * 
+	 * Example of valid URLs that should render the frontend HTML :
+	 *
+	 *  /actualites/                                 (redirect to /threads)
+	 *  /actualites/threads                          (list all news with status filter)
+	 *  /actualites/threads/:threadId                (view thread with status filter)
+	 *  /actualites/infos/:infoId                    (view info with status filter and comments)
+	 *  /actualites/infos/:infoId/edit               (edit info without threadId)
+	 *  /actualites/create/info                      (create new info)
+	 *  /actualites/create/info/:infoId              (edit info details during creation)
+	 *  /actualites/create/info/:infoId/rights       (manage info rights)
+	 *  /actualites/print/:infoId                    (print info)
+	 *  /actualites/admin/threads                    (manage threads)
+	 *
+	 * Note: Query parameters (?status=...) and hash fragments (#infos-..., #comments-...)
+	 * are handled by the frontend router and not part of this regex.
+	 */
+	@Get(value = "(?:/?(?:threads(?:/[^/\\\\s]+)?|infos/[^/\\\\s]+(?:/edit)?|create/info(?:/[^/\\\\s]+(?:/rights)?)?|print/[^/\\\\s]+|admin/threads/?)?)?", regex = true)
 	@SecuredAction("actualites.view")
 	public void view(final HttpServerRequest request) {
 		renderView(request, new JsonObject(), "index.html", null);
