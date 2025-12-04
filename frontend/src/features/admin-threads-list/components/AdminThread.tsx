@@ -87,7 +87,7 @@ export function AdminThread({
                 <IconButton
                   {...triggerProps}
                   type="button"
-                  aria-label="label"
+                  aria-label={t('actualites.adminThreads.threadActions')}
                   color="tertiary"
                   variant="ghost"
                   icon={<IconBulletList />}
