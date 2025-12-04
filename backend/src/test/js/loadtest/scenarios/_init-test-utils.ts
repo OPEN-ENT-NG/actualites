@@ -18,7 +18,8 @@ import {
   RoleOfStructure,
   addAdminFunction,
   getRolesOfStructure,
-  addCommRuleToGroup
+  addCommRuleToGroup,
+  switchSession
 } from '../../node_modules/edifice-k6-commons/dist/index.js';
 import {
   createThreadOrFail,
@@ -31,10 +32,13 @@ import {
 import { ShareTargetType } from "../../utils/_shares_utils.ts";
 import csv  from 'k6/experimental/csv';
 import { open } from 'k6/experimental/fs';
+import {pendingVus} from "./t1-averageLoad.ts";
 
 const nbInfosPublish = (__ENV.LOCAL_NB_INFOS_PUBLISH ? Number(__ENV.LOCAL_NB_INFOS_PUBLISH) :  300);
 const nbInfosPending = (__ENV.LOCAL_NB_INFOS_PENDING ? Number(__ENV.LOCAL_NB_INFOS_PENDING) :  30);
 const nbInfosDraft = (__ENV.LOCAL_NB_INFOS_DRAFT ? Number(__ENV.LOCAL_NB_INFOS_DRAFT) :  20);
+
+const duration = __ENV.DURATION || '1m';
 
 export type InfoUser = {
   login: string;
@@ -42,6 +46,7 @@ export type InfoUser = {
   profile: 'Default' | 'ADML' | 'MULTIADML' | string;
   threadId: string;
   role: 'READER' | 'CONTRIBUTOR' | 'PUBLISHER' | string;
+  isValidator: boolean
 }
 
 interface SessionMap {
@@ -125,7 +130,8 @@ export function initLocal(schoolName: string): InitData {
         profile: userInfo.id !== head.id ? "Default" : "MULTIADML",
         session :  <Session>authenticateWeb(userInfo.login, __ENV.ADMC_PASSWORD),
         role: "PUBLISHER",
-        threadId: thread.id
+        threadId: thread.id,
+        isValidator: false
       }
       initData.sessions[userInfo.type].push(user);
       initData.allSessions.push(user)
@@ -141,7 +147,8 @@ export function initLocal(schoolName: string): InitData {
         profile: "Default",
         session :  <Session>authenticateWeb(userInfo.login, __ENV.ADMC_PASSWORD),
         role: "READER",
-        threadId: thread.id
+        threadId: thread.id,
+        isValidator: false
       };
       initData.sessions[userInfo.type].push(user);
       initData.allSessions.push(user);
@@ -208,7 +215,7 @@ export function initLocal(schoolName: string): InitData {
       } as any);
     }
   });
-
+  initValidator(initData);
   return initData;
 }
 
@@ -239,7 +246,8 @@ export function initFromCsv(): InitData {
         profile: userInfo[3],
         session :  session,
         role: userInfo[4],
-        threadId: userInfo[5]
+        threadId: userInfo[5],
+        isValidator: false
       }
       initData.sessions['Teacher'].push(user);
       initData.allSessions.push(user)
@@ -260,7 +268,8 @@ export function initFromCsv(): InitData {
         profile: userInfo[3],
         session :  session,
         role: userInfo[4],
-        threadId: userInfo[5]
+        threadId: userInfo[5],
+        isValidator: false
       }
       initData.sessions['Personnel'].push(user);
       initData.allSessions.push(user)
@@ -281,7 +290,8 @@ export function initFromCsv(): InitData {
         profile: userInfo[3],
         session :  session,
         role: userInfo[4],
-        threadId: userInfo[5]
+        threadId: userInfo[5],
+        isValidator: false
       }
       initData.sessions['Student'].push(user);
       initData.allSessions.push(user)
@@ -302,12 +312,55 @@ export function initFromCsv(): InitData {
         profile: userInfo[3],
         session :  session,
         role: userInfo[4],
-        threadId: userInfo[5]
+        threadId: userInfo[5],
+        isValidator: false
       }
       initData.sessions['Relative'].push(user);
       initData.allSessions.push(user)
     }
   });
-
+  initValidator(initData);
   return initData;
+}
+
+function initValidator(data: InitData) {
+  const users = data.sessions['Teacher']
+      .filter((user: InfoUser) => user.role === 'PUBLISHER');
+  const user = users[0];
+  user.isValidator = true;
+  switchSession(user.session);
+
+  //create * 2 pending info and assume a 1 min duration for the scenario to limit throughput
+
+  const totalVu = Math.floor((parseDuration(duration) / 1000) * pendingVus / 20);
+
+  for (let i = 0; i < totalVu; i++) {
+    //pending should not be visible
+    createInfoOrFail({
+      title: `Incoming info`,
+      content: `Incoming content`,
+      thread_id: parseInt(user.threadId as string),
+      status: 2,
+      publication_date: "2020-01-01",
+    } as any);
+  }
+}
+
+function parseDuration(input: string): number {
+  const match = input.match(/^(\d+)(ms|s|m|h)$/);
+
+  if (!match) {
+    throw new Error("Format invalide");
+  }
+
+  const value = Number(match[1]);
+  const unit = match[2];
+
+  switch (unit) {
+    case "ms": return value;
+    case "s":  return value * 1000;
+    case "m":  return value * 60 * 1000;
+    case "h":  return value * 60 * 60 * 1000;
+  }
+  return 0;
 }
