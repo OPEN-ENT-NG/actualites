@@ -19,7 +19,7 @@ export const createThreadService = () => {
      * Get all threads.
      * @returns an array of Thread objects
      */
-    async getThreads() {
+    getThreads() {
       return odeServices.http().get<Thread[]>(`${baseUrlAPI}/threads`);
     },
 
