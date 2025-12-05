@@ -18,8 +18,7 @@ public interface ThreadMigrationService {
     /**
      * Add adml group to thread's share
      * @param threadId the thread id
-     * @param promise
      */
-    void addAdmlShare(String threadId, Promise<Void> promise);
+    void addAdmlShare(String threadId);
 
 }

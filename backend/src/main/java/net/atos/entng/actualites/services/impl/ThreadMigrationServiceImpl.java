@@ -87,7 +87,7 @@ public class ThreadMigrationServiceImpl implements ThreadMigrationService {
     }
 
     @Override
-    public void addAdmlShare(String threadId, Promise<Void> promise) {
+    public void addAdmlShare(String threadId) {
         Sql.getInstance().prepared("SELECT structure_id FROM actualites.thread WHERE id = ? ",
                 new JsonArray().add(threadId), h -> {
             Either<String, JsonArray> resp = SqlResult.validResult(h);
@@ -110,7 +110,7 @@ public class ThreadMigrationServiceImpl implements ThreadMigrationService {
                         Map<Integer, String> threadToStructureId = new HashMap<>();
                         structToAdminGroup.put(thread.getString("structure_id"), g);
                         threadToStructureId.put(Integer.parseInt(threadId),  thread.getString("structure_id"));
-                        updateThreadAndAddShared(structToAdminGroup, threadToStructureId, promise);
+                        updateThreadAndAddShared(structToAdminGroup, threadToStructureId, Promise.promise());
                     })
                     .onFailure( ex ->  log.error("Unable to find ADML group", ex));
         });
