@@ -45,13 +45,11 @@ export const InfoListSegmented = ({
   ];
 
   return (
-    <div>
-      <SegmentedControl
-        options={options}
-        value={value}
-        onChange={(value) => onChange(value as InfoSegmentedValue)}
-        data-testid="info-list-segmented"
-      />
-    </div>
+    <SegmentedControl
+      options={options}
+      value={value}
+      onChange={(value) => onChange(value as InfoSegmentedValue)}
+      data-testid="info-list-segmented"
+    />
   );
 };
