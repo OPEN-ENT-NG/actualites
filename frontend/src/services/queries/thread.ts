@@ -1,5 +1,5 @@
 import { queryOptions, useMutation, useQuery } from '@tanstack/react-query';
-import { ThreadId, ThreadMode } from '~/models/thread';
+import { ThreadId, ThreadMode, ThreadPayload } from '~/models/thread';
 import { threadService } from '../api';
 
 export const threadQueryKeys = {
@@ -46,8 +46,7 @@ export const useThreadShares = (threadId: ThreadId) =>
 
 export const useCreateThread = () =>
   useMutation({
-    mutationFn: (payload: { mode: ThreadMode; title: string }) =>
-      threadService.create(payload),
+    mutationFn: (payload: ThreadPayload) => threadService.create(payload),
     // TODO optimistic update
     // onSuccess: async (, { mode, title }) => {
     // },
