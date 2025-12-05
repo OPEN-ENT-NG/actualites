@@ -1,16 +1,16 @@
 import {
   Button,
+  Divider,
   Dropdown,
   Flex,
   IconButton,
   IconButtonProps,
-  SeparatedInfo,
   useBreakpoint,
 } from '@edifice.io/react';
 import {
-  IconBulletList,
   IconDelete,
   IconEdit,
+  IconOptions,
   IconTool,
 } from '@edifice.io/react/icons';
 import { RefAttributes } from 'react';
@@ -27,7 +27,7 @@ export function AdminThread({
   threadInfosStats?: ThreadInfoStats;
 }) {
   const { t } = useI18n();
-  const { lg } = useBreakpoint();
+  const { lg, xl } = useBreakpoint();
 
   return (
     <Flex
@@ -37,16 +37,34 @@ export function AdminThread({
       fill
     >
       <ThreadIcon thread={thread} iconSize="80" />
-      <Flex direction="column" gap="4" fill>
+      <Flex direction="column" gap="4" fill className="overflow-hidden">
         <strong>{thread.title}</strong>
-        <SeparatedInfo className="truncate">
-          {thread.structureId && <span>{thread.structureId}</span>}
-          <span>
-            {t('actualites.adminThreads.threadInfoCount', {
-              count: threadInfosStats?.incomingCount || 0,
-            })}
-          </span>
-        </SeparatedInfo>
+        {xl ? (
+          <Flex align="center" wrap="nowrap" className="text-gray-700 ">
+            {thread.structureId && (
+              <>
+                <div className="text-truncate">{thread.structureId}</div>
+                <Divider vertical color="var(--edifice-gray-700)" />
+              </>
+            )}
+            <div className="text-nowrap">
+              {t('actualites.adminThreads.threadInfoCount', {
+                count: threadInfosStats?.incomingCount || 0,
+              })}
+            </div>
+          </Flex>
+        ) : (
+          <Flex direction="column" gap="2" className="text-gray-700">
+            {thread.structureId && (
+              <div className="text-truncate">{thread.structureId}</div>
+            )}
+            <div className="text-truncate">
+              {t('actualites.adminThreads.threadInfoCount', {
+                count: threadInfosStats?.incomingCount || 0,
+              })}
+            </div>
+          </Flex>
+        )}
       </Flex>
       <Flex gap="4" align="center" justify="end">
         {lg ? (
@@ -56,6 +74,7 @@ export function AdminThread({
               variant="ghost"
               color="tertiary"
               leftIcon={<IconTool />}
+              className="text-nowrap"
             >
               {t('actualites.adminThreads.shareRightsButton')}
             </Button>
@@ -90,7 +109,7 @@ export function AdminThread({
                   aria-label={t('actualites.adminThreads.threadActions')}
                   color="tertiary"
                   variant="ghost"
-                  icon={<IconBulletList />}
+                  icon={<IconOptions />}
                 />
                 <Dropdown.Menu>
                   <Dropdown.Item icon={<IconTool />}>

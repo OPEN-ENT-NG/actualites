@@ -25,7 +25,7 @@ export const ThreadIcon = ({
             width: parseInt(iconSize + ''),
             height: parseInt(iconSize + ''),
           }}
-          className="overflow-hidden rounded"
+          className="overflow-hidden rounded flex-shrink-0"
         >
           <Image
             src={thread.icon}
