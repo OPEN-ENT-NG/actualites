@@ -7,7 +7,7 @@ export const InfoListSegmentedSkeleton = () => {
       className="bg-gray-200 p-4 rounded"
       style={{ width: '300px' }}
     >
-      <ButtonSkeleton className=" d-lg-block col-4" size="sm" />
+      <ButtonSkeleton className="d-lg-block col-4" size="sm" />
     </Flex>
   );
 };
