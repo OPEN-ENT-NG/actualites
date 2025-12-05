@@ -6,6 +6,17 @@ export function useScrollToElement() {
     hashId.current = location.hash.slice(1);
   }
 
+  function removeHash() {
+    if (hashId.current) {
+      history.pushState(
+        '',
+        document.title,
+        window.location.pathname + window.location.search,
+      );
+      hashId.current = '';
+    }
+  }
+
   function scrollIntoView(elementId: string) {
     const element = document.getElementById(elementId);
 
@@ -20,6 +31,7 @@ export function useScrollToElement() {
 
   return {
     hash: hashId.current,
+    removeHash,
     scrollIntoView,
   };
 }
