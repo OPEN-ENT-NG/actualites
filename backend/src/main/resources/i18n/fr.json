@@ -49,5 +49,7 @@
   "actualites.comment.created": "Le commentaire a bien été ajouté",
   "actualites.comment.updated": "Commentaire modifié avec succès.",
   "actualites.comment.deleted": "Commentaire supprimé avec succès.",
-  "actualites.comment.error": "Votre commentaire n'a pas pu être publié"
+  "actualites.comment.error": "Votre commentaire n'a pas pu être publié",
+  "actualites.info.unavailable.title": "Actualité indisponible",
+  "actualites.info.unavailable.body": "Cette actualité a expiré ou a été supprimée par son auteur. Il est aussi possible que vous n'ayez plus le droit d'y accéder."
 }
