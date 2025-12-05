@@ -155,10 +155,8 @@ public class ThreadController extends ControllerHelper {
                     final Handler<Either<String,JsonObject>> handler = notEmptyResponseHandler(request);
                     crudService.create(resource, user, h -> {
                         if(h.isRight()) {
-                            Promise<Void> promise = Promise.promise();
-                            threadMigrationService.addAdmlShare(h.right().getValue().getString("id"), promise);
-                            promise.future().onSuccess( migr ->
-                                eventHelper.onCreateResource(request, RESOURCE_NAME, handler).handle(h));
+                            threadMigrationService.addAdmlShare(h.right().getValue().getString("id"));
+							eventHelper.onCreateResource(request, RESOURCE_NAME, handler).handle(h);
                         }
                     });
                 });
