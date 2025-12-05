@@ -1,4 +1,4 @@
-import { Segmented } from 'antd';
+import { SegmentedControl } from '@edifice.io/react';
 import { useInfoStats } from '~/components/InfoList/hooks/useInfoStats';
 import { useI18n } from '~/hooks/useI18n';
 import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
@@ -45,11 +45,13 @@ export const InfoListSegmented = ({
   ];
 
   return (
-    <Segmented
-      options={options}
-      value={value}
-      onChange={onChange}
-      data-testid="info-list-segmented"
-    />
+    <div>
+      <SegmentedControl
+        options={options}
+        value={value}
+        onChange={(value) => onChange(value as InfoSegmentedValue)}
+        data-testid="info-list-segmented"
+      />
+    </div>
   );
 };
