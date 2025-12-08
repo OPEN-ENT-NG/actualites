@@ -106,15 +106,14 @@ public class ThreadControllerV1 extends ControllerHelper {
     public void createThread(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request,user -> RequestUtils.bodyToJson(request, pathPrefix + SCHEMA_THREAD_CREATE,
 				resource -> {
-					// WB-1402 auto-attach the thread to this user's structure, iif only one exists.
-					final List<String> structures = user.getStructures();
-					if(structures!=null && structures.size() == 1) {
-						String structureId = structures.get(0);
-						if(structureId!=null && structureId.length()>0) {
-							resource.put("structureId", structureId);
-						}
-					}
 					final Handler<Either<String,JsonObject>> handler = notEmptyResponseHandler(request);
+                    String structureId = resource.getJsonObject("structure").getString("id");
+                    if (!user.getStructures().contains(structureId)) {
+                        Renders.renderJson(request, new JsonObject().put("error", "User must be attach to the structure") , 400);
+                        return;
+                    }
+                    resource.remove("structure");
+                    resource.put("structure_id",  structureId);
 					crudService.create(resource, user, h -> {
 						if(h.isRight()) {
 							threadMigrationService.addAdmlShare(h.right().getValue().getString("id"));
@@ -131,7 +130,22 @@ public class ThreadControllerV1 extends ControllerHelper {
     public void updateThread(final HttpServerRequest request) {
 		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
 		UserUtils.getUserInfos(eb, request, user -> RequestUtils.bodyToJson(request, pathPrefix + SCHEMA_THREAD_UPDATE,
-				resource -> crudService.update(threadId, resource, user, notEmptyResponseHandler(request))));
+				resource -> {
+                    threadService.getStructureId(threadId)
+                            .onSuccess( prevStructureId -> {
+                                if (resource.getJsonObject("structure") != null && resource.getJsonObject("structure").getString("id") != null) {
+                                    String structureId = resource.getJsonObject("structure").getString("id");
+                                    if (!user.getStructures().contains(structureId) && !structureId.equals(prevStructureId)) {
+                                        Renders.renderJson(request, new JsonObject().put("error", "User must be attach to the structure") , 400);
+                                        return;
+                                    }
+                                    resource.remove("structure");
+                                    resource.put("structure_id", structureId);
+                                }
+                                crudService.update(threadId, resource, user, notEmptyResponseHandler(request));
+                            })
+                            .onFailure(ex -> renderError(request));
+                }));
 	}
 
     @Delete("/api/v1/threads/:" + THREAD_RESOURCE_ID)

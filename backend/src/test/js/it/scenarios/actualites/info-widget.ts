@@ -71,7 +71,7 @@ export function setup() {
 
     const seed = Math.random().toString(36).substring(7);
 
-    const thread: ThreadIdentifier = createThreadOrFail(`Thread 1 ${seed}`);
+    const thread: ThreadIdentifier = createThreadOrFail(`Thread 1 ${seed}`, head.id);
     const now = new Date();
     const futureExpirationDate = new Date(now.getTime() + 3600*24*1000);
 

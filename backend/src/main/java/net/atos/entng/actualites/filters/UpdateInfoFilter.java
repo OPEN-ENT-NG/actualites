@@ -91,7 +91,7 @@ public class UpdateInfoFilter implements ResourcesProvider {
             admlStructuresIds.forEach(values::add);
         }
 
-        if(targetStatus == 3) {
+        if(targetStatus == 3) { //publish actu
             /**
              * Either owner of the thread or in shared groups publish on a draft owned info or a pending info
              */
@@ -106,6 +106,7 @@ public class UpdateInfoFilter implements ResourcesProvider {
             values.add(user.getUserId());
             groupsAndUserIds.forEach(values::add);
             values.add(user.getUserId());
+
         } else if(targetStatus == 2) { //unpublish an info or submit a pending info or update a pending info
             /**
              * Either owner of the info or in shared groups publisher on a published info
@@ -113,7 +114,7 @@ public class UpdateInfoFilter implements ResourcesProvider {
              */
             query.append(" (\n")
                     .append(" ( \n")
-                    .append("   i.owner = ? AND i.status != 3 \n")
+                    .append("   i.owner = ? \n")
                     .append("  ) OR ( \n")
                     .append("      ( \n")
                     .append("        t.owner = ? \n")

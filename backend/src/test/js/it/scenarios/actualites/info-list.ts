@@ -108,7 +108,7 @@ export function testInfoList(data: InitData) {
 
     // Create first thread
     console.log("Creating thread 1");
-    const thread: ThreadIdentifier = createThreadOrFail(`Thread 1 ${seed}`);
+    const thread: ThreadIdentifier = createThreadOrFail(`Thread 1 ${seed}`, data.head.id);
     console.log(`Thread 1 id: ${thread.id}`);
 
     // Create 25 EXPIRED published infos for pagination testing
@@ -169,7 +169,7 @@ export function testInfoList(data: InitData) {
 
     // Create second thread
     console.log("Creating thread 2");
-    const thread2: ThreadIdentifier = createThreadOrFail(`Thread 2 ${seed}`);
+    const thread2: ThreadIdentifier = createThreadOrFail(`Thread 2 ${seed}`, data.head.id);
     console.log(`Thread 2 id: ${thread2.id}`);
 
     // Create published info in thread 2
