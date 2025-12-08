@@ -11,7 +11,9 @@ import {
 import {
   matchPath,
   Outlet,
+  replace,
   useLoaderData,
+  useLocation,
   useNavigate,
 } from 'react-router-dom';
 
@@ -30,11 +32,11 @@ export const loader = async () => {
   const actionUserRights = await queryClient.ensureQueryData(
     actionsQueryOptions(existingActions),
   );
-
   const hashLocation = location.hash.substring(1);
   // Check if the URL is an old format (angular root with hash) and redirect to the new format
   let redirectPath;
   if (hashLocation) {
+    let shouldReinterpretRoute = false;
     const hasDefaultFilter = matchPath('/default?filter=:filter', hashLocation);
 
     if (hasDefaultFilter) {
@@ -54,10 +56,12 @@ export const loader = async () => {
 
         if (isPathWithInfo) {
           // Redirect to the new format
-          redirectPath = `/${isPathWithInfo?.params.threadId}/infos/${isPathWithInfo?.params.infoId}`;
+          redirectPath = `/threads/${isPathWithInfo.params.threadId}#info-${isPathWithInfo.params.infoId}`;
+          shouldReinterpretRoute = true; // Replace in history AND let the router reinterpret query params
         } else if (isPathWithThread) {
           // Redirect to the new format
-          redirectPath = `/${isPathWithThread?.params.id}`;
+          redirectPath = `/threads/${isPathWithThread.params.id}`;
+          shouldReinterpretRoute = true; // Replace in history AND let the router reinterpret query params
         }
       }
     }
@@ -66,6 +70,7 @@ export const loader = async () => {
       const newUrl =
         window.location.origin + basename.replace(/\/$/g, '') + redirectPath;
       window.history.replaceState(null, '', newUrl);
+      if (shouldReinterpretRoute) return replace(newUrl);
     }
   }
 
@@ -82,13 +87,14 @@ export const Root = () => {
 
   const { currentApp, init } = useEdificeClient();
   const navigate = useNavigate();
+  const location = useLocation();
   const { canContributeOnOneThread } = useThreadsUserRights();
   const displayApp = {
     displayName: 'news',
     icon: 'actualites-large',
   };
 
-  const pathname = window.location.pathname;
+  const pathname = location.pathname;
   const isCreateRoute = pathname.includes('/create/info');
 
   const handleClickNewInfo = () => {
