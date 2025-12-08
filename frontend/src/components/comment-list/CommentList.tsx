@@ -10,7 +10,7 @@ export type CommentListProps = {
 };
 
 export const CommentList = ({ info }: CommentListProps) => {
-  const { comments, type, callbacks, options } = useCommentList(info);
+  const { comments, type, callbacks, options, rights } = useCommentList(info);
 
   return (
     comments && (
@@ -19,6 +19,7 @@ export const CommentList = ({ info }: CommentListProps) => {
         callbacks={callbacks}
         comments={comments}
         options={options}
+        rights={rights}
       />
     )
   );
