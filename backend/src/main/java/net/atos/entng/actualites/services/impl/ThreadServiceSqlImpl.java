@@ -19,6 +19,7 @@
 
 package net.atos.entng.actualites.services.impl;
 
+import com.google.common.collect.Lists;
 import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.security.SecuredAction;
 import io.vertx.core.Future;
@@ -33,6 +34,7 @@ import net.atos.entng.actualites.services.ThreadService;
 import net.atos.entng.actualites.services.impl.mapper.NewsThreadMapper;
 import net.atos.entng.actualites.to.NewsStatus;
 import net.atos.entng.actualites.to.NewsThread;
+import net.atos.entng.actualites.to.Structure;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
 import org.entcore.common.sql.SqlStatementsBuilder;
@@ -133,7 +135,16 @@ public class ThreadServiceSqlImpl implements ThreadService {
 				} else {
 					try {
 						NewsThread newsThread = NewsThreadMapper.map(result.right().getValue(), user, securedActions);
-						promise.complete(newsThread);
+						if(newsThread.getStructureId() == null) {
+							promise.complete(newsThread);
+							return;
+						}
+						getStructureFromIds(Lists.newArrayList(newsThread.getStructureId()))
+								.onSuccess(h -> {
+									newsThread.setStructure(h.get(0));
+									promise.complete(newsThread);
+								})
+								.onFailure(promise::fail);
 					} catch (Exception e) {
 						log.error("Failed to parse JsonObject", e);
 						promise.fail(e.getMessage());
@@ -321,7 +332,14 @@ public class ThreadServiceSqlImpl implements ThreadService {
 																		.map(JsonObject.class::cast)
 																		.map( row -> NewsThreadMapper.map(row, user, securedActions))
 																		.collect(toList());
-						promise.complete(pojo);
+						getStructureFromIds(pojo.stream().map(NewsThread::getStructureId).collect(toList()))
+								.onSuccess( h -> {
+									pojo.forEach(thread -> h.stream().filter(s -> s.getId().equals(thread.getStructureId()))
+                                            .findFirst()
+                                            .ifPresent(thread::setStructure));
+									promise.complete(pojo);
+								})
+								.onFailure(promise::fail);
 					} catch (Exception e) {
 						log.error("Failed to parse JsonObject", e);
 						promise.fail(e);
@@ -337,9 +355,9 @@ public class ThreadServiceSqlImpl implements ThreadService {
 		// 1. Get IDs of owner of threads without a structure.
 		return getIdsOfOwnersForNullStructure()
 		// 2. Get structure infos of threads owners.
-		.compose(ids -> getDefaultStructureOfUsers(ids))
+		.compose(this::getDefaultStructureOfUsers)
 		// 3. Assign a default structure to eligible threads.
-		.compose(map -> assignDefaultOwnerStructure(map));
+		.compose(this::assignDefaultOwnerStructure);
 	}
 
 	@Override
@@ -426,6 +444,31 @@ public class ThreadServiceSqlImpl implements ThreadService {
 		}
 		return promise.future();
     }
+
+	private Future<List<Structure>> getStructureFromIds(List<String> ids) {
+		Promise<List<Structure>> promise = Promise.promise();
+		if(ids==null || ids.isEmpty()) {
+			promise.complete(Collections.emptyList());
+		} else {
+			JsonObject action = new JsonObject()
+					.put("action", "list-structures")
+					.put("structureIds", new JsonArray(ids));
+			eb.request("directory", action, handlerToAsyncHandler(event -> {
+				JsonArray res = event.body().getJsonArray("result", new JsonArray());
+				if ("ok".equals(event.body().getString("status")) && res != null) {
+					List<Structure> structures = new ArrayList<>();
+					for (Object oRow : res.getList()) {
+						JsonObject row =  (JsonObject) oRow;
+						structures.add(new Structure(row.getString("id"), row.getString("name")));
+					}
+					promise.complete(structures);
+				} else {
+					promise.fail(event.body().getString("message"));
+				}
+			}));
+		}
+		return promise.future();
+	}
 
 	/** Set the structure ID of threads with their owner's default one. */
 	private Future<Void> assignDefaultOwnerStructure(final Map<String, String> defaultOwnerStructures) {
