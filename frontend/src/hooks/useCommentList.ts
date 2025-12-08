@@ -1,4 +1,5 @@
 import { RightRole } from '@edifice.io/client';
+import { CommentProps } from 'node_modules/@edifice.io/react/dist/modules/comments/types';
 import { useMemo } from 'react';
 import { Info } from '~/models/info';
 import {
@@ -48,14 +49,20 @@ export function useCommentList(info: Info) {
   const comments = useMemo(
     () =>
       (
-        data?.map((comment) => ({
-          id: '' + comment._id,
-          comment: comment.comment,
-          authorId: comment.owner,
-          authorName: comment.username,
-          createdAt: Date.parse(comment.created),
-          updatedAt: Date.parse(comment.modified),
-        })) ?? []
+        data?.map((comment) => {
+          let adaptedComment: CommentProps = {
+            id: '' + comment._id,
+            comment: comment.comment,
+            authorId: comment.owner,
+            authorName: comment.username,
+            createdAt: Date.parse(comment.created),
+          };
+          // Set update date only when it is different from the creation date.
+          if (comment.created !== comment.modified) {
+            adaptedComment.updatedAt = Date.parse(comment.modified);
+          }
+          return adaptedComment;
+        }) ?? []
       ).sort((a, b) => a.createdAt - b.createdAt),
     [data],
   );
@@ -107,6 +114,7 @@ export function useCommentList(info: Info) {
   };
 
   const options = {
+    maxCommentLength: 800,
     additionalComments: 10,
     maxComments: 2,
     disableReply: true,
