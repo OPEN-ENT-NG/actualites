@@ -2,31 +2,25 @@ import { Alert, Card } from '@edifice.io/react';
 import clsx from 'clsx';
 import { useCallback, useState } from 'react';
 import { useI18n } from '~/hooks/useI18n';
-import { Info, InfoExtendedStatus, InfoStatus } from '~/models/info';
+import { useInfoStatus } from '~/hooks/useInfoStatus';
+import { useScrollToElement } from '~/hooks/useScrollToElement';
+import { Info, InfoStatus } from '~/models/info';
 import './InfoCard.css';
 import { InfoCardContent } from './InfoCardContent';
 import { InfoCardFooter } from './InfoCardFooter';
 import { InfoCardHeader } from './InfoCardHeader';
 
 export type InfoCardProps = {
-  /**
-   * Information to display in the card
-   */
+  /** Information to display in the card */
   info: Info;
+  /** ID of the HTML element */
+  id?: string;
 };
 
-export const InfoCard = ({ info }: InfoCardProps) => {
+export const InfoCard = ({ info, id }: InfoCardProps) => {
   const { t } = useI18n();
-
-  const isIncoming =
-    info.status === InfoStatus.PUBLISHED &&
-    !!info.publicationDate &&
-    new Date(info.publicationDate) > new Date();
-  const isExpired =
-    info.status === InfoStatus.PUBLISHED &&
-    !!info.expirationDate &&
-    new Date(info.expirationDate) < new Date();
-
+  const { isIncoming, isExpired, extendedStatus } = useInfoStatus(info);
+  const { scrollIntoView } = useScrollToElement();
   const [collapse, setCollapse] = useState(true);
   const [scrollTo, setScrollTo] = useState<string>();
 
@@ -42,20 +36,11 @@ export const InfoCard = ({ info }: InfoCardProps) => {
     },
   );
 
-  let extendedStatus: InfoExtendedStatus | undefined;
-  if (isIncoming) {
-    extendedStatus = InfoExtendedStatus.INCOMING;
-  } else if (isExpired) {
-    extendedStatus = InfoExtendedStatus.EXPIRED;
-  } else {
-    extendedStatus = undefined;
-  }
-
   const handleMoreClick = () => {
     setCollapse((collapse) => {
       if (!collapse) {
         // Scroll to top of the card when collapsing
-        setScrollTo(`info-${info.id}`);
+        id && setScrollTo(id);
       }
       return !collapse;
     });
@@ -65,10 +50,10 @@ export const InfoCard = ({ info }: InfoCardProps) => {
     setCollapse((collapse) => {
       if (!collapse) {
         // Scroll to top of the card when collapsing
-        setScrollTo(`info-${info.id}`);
+        id && setScrollTo(id);
       } else {
         // Scroll to top comment when expanding
-        setScrollTo(`info-${info.id}-comments`);
+        id && setScrollTo(id + '-comments');
       }
       return !collapse;
     });
@@ -76,26 +61,14 @@ export const InfoCard = ({ info }: InfoCardProps) => {
 
   const handleCollapseApplied = useCallback(() => {
     if (scrollTo) {
-      const ref = document.getElementById(scrollTo);
-      if (ref) {
-        ref.scrollIntoView();
-      }
+      scrollIntoView(scrollTo);
       setScrollTo(undefined);
     }
   }, [scrollTo]);
 
   return (
-    <Card
-      className={className}
-      isClickable={false}
-      isSelectable={false}
-      key={info.id}
-    >
-      <article
-        id={`info-${info.id}`}
-        className="overflow-hidden"
-        data-testid="info-card"
-      >
+    <Card className={className} isClickable={false} isSelectable={false}>
+      <article id={id} className="overflow-hidden" data-testid="info-card">
         <InfoCardHeader info={info} extendedStatus={extendedStatus} />
 
         {isExpired && (
