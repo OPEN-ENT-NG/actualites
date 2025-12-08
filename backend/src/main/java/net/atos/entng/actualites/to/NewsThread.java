@@ -7,10 +7,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class NewsThread {
 
-    private final String title;
-
     private final int id;
-
+    private final String title;
     private final String icon;
 
     // Caution: String is used to store ISO date because we won't manipulate data in most cases
@@ -20,10 +18,9 @@ public class NewsThread {
     private final String modified;
 
     private final String structure_id;
-
     private final ResourceOwner owner;
-
     private final Rights sharedRights;
+    private Structure structure;
 
     public NewsThread(int id, String title, String icon, String created, String modified, String structure_id, ResourceOwner owner, Rights sharedRights) {
         this.id = id;
@@ -74,4 +71,11 @@ public class NewsThread {
         return sharedRights.getShareDisplayNames();
     }
 
+    public Structure getStructure() {
+        return structure;
+    }
+
+    public void setStructure(Structure structure) {
+        this.structure = structure;
+    }
 }
