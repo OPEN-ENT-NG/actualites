@@ -109,7 +109,7 @@ public class ThreadControllerV1 extends ControllerHelper {
 					final Handler<Either<String,JsonObject>> handler = notEmptyResponseHandler(request);
                     String structureId = resource.getJsonObject("structure").getString("id");
                     if (!user.getStructures().contains(structureId)) {
-                        Renders.renderJson(request, new JsonObject().put("error", "User must be attach to the structure") , 400);
+                        Renders.renderJson(request, new JsonObject().put("error", "User must be attached to the structure") , 400);
                         return;
                     }
                     resource.remove("structure");
