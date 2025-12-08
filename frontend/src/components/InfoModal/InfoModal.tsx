@@ -20,13 +20,10 @@ export const InfoModal = ({ infoId }: InfoModalProps) => {
   const { removeHash } = useScrollToElement();
   const [opened, setOpened] = useState(true);
 
-  if (isPending || !threadId) return <InfoCardSkeleton />;
-
   const handleModalClose = () => {
     removeHash();
     setOpened(false);
   };
-
   return (
     <Modal
       id="info-modal"
@@ -34,19 +31,25 @@ export const InfoModal = ({ infoId }: InfoModalProps) => {
       onModalClose={handleModalClose}
       size="lg"
     >
-      <Modal.Header onModalClose={handleModalClose}>
-        {isError ? t('actualites.info.unavailable.title') : null}
-      </Modal.Header>
-
-      {isError ? (
-        <Modal.Body>{t('actualites.info.unavailable.body')}</Modal.Body>
+      {isPending || !threadId ? (
+        <InfoCardSkeleton />
       ) : (
-        <InfoModalBody info={{ threadId, ...data }} />
-      )}
+        <>
+          <Modal.Header onModalClose={handleModalClose}>
+            {isError ? t('actualites.info.unavailable.title') : null}
+          </Modal.Header>
 
-      <Modal.Footer>
-        <Button onClick={handleModalClose}>{common_t('close')}</Button>
-      </Modal.Footer>
+          {isError ? (
+            <Modal.Body>{t('actualites.info.unavailable.body')}</Modal.Body>
+          ) : (
+            <InfoModalBody info={{ threadId, ...data }} />
+          )}
+
+          <Modal.Footer>
+            <Button onClick={handleModalClose}>{common_t('close')}</Button>
+          </Modal.Footer>
+        </>
+      )}
     </Modal>
   );
 };

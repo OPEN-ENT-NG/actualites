@@ -1,5 +1,6 @@
 import { Flex, useInfiniteScroll } from '@edifice.io/react';
-import { useEffect, useMemo, useRef } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useInfoList } from '~/hooks/useInfoList';
 import { useInfoSearchParams } from '~/hooks/useInfoSearchParams';
 import { useScrollToElement } from '~/hooks/useScrollToElement';
@@ -30,28 +31,26 @@ export const InfoList = () => {
     callback: loadNextPage,
   });
 
-  const scrollToElementId = useRef<string>();
-
   // Check for info ID in URL fragment
   const { hash, scrollIntoView } = useScrollToElement();
-  const optionalInfoModal = useMemo(() => {
-    // If an hash exists, wait for first page of infos to be loaded.
-    if (hash.startsWith('info-') && infos.length > 0) {
-      // If info is found in the list...
-      if (infos.findIndex((info) => `info-${info.id}` === hash) >= 0) {
-        // ...memoize to scroll to its corresponding HTML element as a side-effect.
-        scrollToElementId.current = hash;
-      }
-      // Then open a modal to display it.
-      const infoId: InfoId = Number(hash.slice(5));
-      return <InfoModal infoId={infoId} />;
-    }
-    return null;
-  }, [infos.length]);
+
+  // ID of the info to display in a modal (and to scroll to in the list, if possible).
+  const [infoModal, setInfoModal] = useState<ReactElement>();
 
   useEffect(() => {
-    scrollToElementId.current && scrollIntoView(scrollToElementId.current);
-  }, [scrollToElementId.current]);
+    if (hash.startsWith('info-')) {
+      const infoId: InfoId = Number(hash.slice(5));
+      if (infos.findIndex((info) => info.id === infoId) >= 0) {
+        scrollIntoView(hash);
+      }
+      setInfoModal(
+        createPortal(
+          <InfoModal infoId={infoId} />,
+          document.getElementById('portal') as HTMLElement,
+        ),
+      );
+    }
+  }, [hash, infos.length]);
 
   return (
     <>
@@ -91,7 +90,7 @@ export const InfoList = () => {
           hasNextPage && <InfoCardSkeleton ref={loadNextRef} />
         )}
       </Flex>
-      {optionalInfoModal}
+      {infoModal}
     </>
   );
 };

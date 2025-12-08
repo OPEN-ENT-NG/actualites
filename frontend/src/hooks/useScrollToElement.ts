@@ -1,20 +1,12 @@
-import { useRef } from 'react';
-
 export function useScrollToElement() {
-  const hashId = useRef('');
-  if (window.location.hash) {
-    hashId.current = location.hash.slice(1);
-  }
+  const hash = window.location.hash ? window.location.hash.slice(1) : '';
 
   function removeHash() {
-    if (hashId.current) {
-      history.pushState(
-        '',
-        document.title,
-        window.location.pathname + window.location.search,
-      );
-      hashId.current = '';
-    }
+    history.pushState(
+      '',
+      document.title,
+      window.location.pathname + window.location.search,
+    );
   }
 
   function scrollIntoView(elementId: string) {
@@ -30,7 +22,7 @@ export function useScrollToElement() {
   }
 
   return {
-    hash: hashId.current,
+    hash,
     removeHash,
     scrollIntoView,
   };
