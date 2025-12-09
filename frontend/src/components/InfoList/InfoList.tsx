@@ -31,22 +31,18 @@ export const InfoList = () => {
   });
 
   // Check for info ID in URL fragment
-  let { hash, scrollIntoView } = useScrollToElement();
+  let { hash, infoId, scrollIntoView } = useScrollToElement();
 
   // ID of the info to display in a modal (and to scroll to in the list, if possible).
-  const [infoModalId, setInfoModalId] = useState<InfoId | null>(null);
+  const [infoModalId, setInfoModalId] = useState<InfoId | undefined>(undefined);
 
   useEffect(() => {
-    if (hash.startsWith('info-')) {
-      hash = hash.endsWith('-comments') ? hash.slice(0, hash.length - 9) : hash;
-      const infoId: InfoId = Number(hash.slice(5));
+    if (infoId) {
       if (infos.findIndex((info) => info.id === infoId) >= 0) {
         scrollIntoView(hash);
       }
-      setInfoModalId(infoId);
-    } else {
-      setInfoModalId(null);
     }
+    setInfoModalId(infoId);
   }, [hash, infos.length]);
 
   return (
