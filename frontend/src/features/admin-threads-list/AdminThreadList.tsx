@@ -3,6 +3,7 @@ import illuEmptyAdminThreads from '@images/emptyscreen/illu-actualites.svg';
 import { useI18n } from '~/hooks/useI18n';
 import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
 
+import { StringUtils } from '@edifice.io/client';
 import { ChangeEvent, useMemo, useState } from 'react';
 import { useInfosStats } from '~/services/queries';
 import './AdminThreadList.css';
@@ -23,8 +24,16 @@ export function AdminThreadList() {
     if (search === '') {
       return threadsWithManageRight;
     }
-    return threadsWithManageRight?.filter((thread) =>
-      thread.title.toLocaleLowerCase().includes(search.toLocaleLowerCase()),
+
+    const normalizeString = (str: string) =>
+      StringUtils.removeAccents(str.toLocaleLowerCase());
+
+    return threadsWithManageRight?.filter(
+      (thread) =>
+        normalizeString(thread.title).includes(normalizeString(search)) ||
+        normalizeString(thread.structure?.name || '').includes(
+          normalizeString(search),
+        ),
     );
   }, [threadsWithManageRight, search]);
 

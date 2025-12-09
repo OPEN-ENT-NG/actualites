@@ -38,13 +38,13 @@ export function AdminThread({
     >
       <ThreadIcon thread={thread} iconSize="80" />
       <Flex direction="column" gap="4" fill className="overflow-hidden">
-        <strong>{thread.title}</strong>
+        <strong className="text-truncate">{thread.title}</strong>
         {xl ? (
           <Flex align="center" wrap="nowrap" className="text-gray-700 ">
-            {thread.structureId && (
+            {thread.structure?.name && (
               <>
-                <div className="text-truncate">{thread.structureId}</div>
-                <Divider vertical color="var(--edifice-gray-700)" />
+                <div className="text-truncate">{thread.structure.name}</div>
+                <Divider vertical className="border-gray-700" />
               </>
             )}
             <div className="text-nowrap">
@@ -55,8 +55,8 @@ export function AdminThread({
           </Flex>
         ) : (
           <Flex direction="column" gap="2" className="text-gray-700">
-            {thread.structureId && (
-              <div className="text-truncate">{thread.structureId}</div>
+            {thread.structure?.name && (
+              <div className="text-truncate">{thread.structure.name}</div>
             )}
             <div className="text-truncate">
               {t('actualites.adminThreads.threadInfoCount', {

@@ -30,6 +30,13 @@ export interface Thread {
   created: string;
   /** Modification date, formatted as 'YYYY-MM-DDTHH:mm:ss' */
   modified: string;
+  /**
+   * Structure object this thread is attached to.
+   */
+  structure: {
+    id: string;
+    name: string;
+  } | null;
   /** ID of the structure this thread is attached to. */
   structureId: string | null;
   /** ID of the user who created this thread. */

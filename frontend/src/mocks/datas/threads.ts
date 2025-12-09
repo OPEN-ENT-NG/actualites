@@ -12,11 +12,15 @@ import { mockUserCatherine, mockUserLogged } from './users';
 
 export const mockThreadAsOwner = {
   id: 1,
-  title: 'Menus de Stephane !',
+  title: 'Menus de Stéphane !',
   icon: null,
   mode: 0 as ThreadMode,
   created: '2025-08-07T16:33:54.698',
   modified: '2025-08-07T16:33:54.698',
+  structure: {
+    id: 'de8743c1-97f0-408c-b5ec-ec735ad65fd8',
+    name: 'Lycée Diderot',
+  },
   structureId: 'de8743c1-97f0-408c-b5ec-ec735ad65fd8',
   owner: mockUserLogged.id,
   username: mockUserLogged.displayName,
@@ -30,6 +34,10 @@ export const mockThreadAsCatherine = {
   mode: 0 as ThreadMode,
   created: '2025-08-07T16:33:54.698',
   modified: '2025-08-07T16:33:54.698',
+  structure: {
+    id: 'de8743c1-97f0-408c-b5ec-ec735ad65fd8',
+    name: 'Lycée Diderot',
+  },
   structureId: 'de8743c1-97f0-408c-b5ec-ec735ad65fd8',
   owner: mockUserCatherine.id,
   username: mockUserCatherine.displayName,
@@ -43,6 +51,10 @@ export const mockThreadAsCatherineWithContributeRight = {
   mode: 0 as ThreadMode,
   created: '2025-08-07T16:33:54.698',
   modified: '2025-08-07T16:33:54.698',
+  structure: {
+    id: 'de8743c1-97f0-408c-b5ec-ec735ad65fd8',
+    name: 'Lycée Diderot',
+  },
   structureId: 'de8743c1-97f0-408c-b5ec-ec735ad65fd8',
   owner: mockUserCatherine.id,
   username: mockUserCatherine.displayName,
