@@ -20,10 +20,12 @@ import {
 import { IWebApp } from '@edifice.io/client';
 import { IconPlus } from '@edifice.io/react/icons';
 import { useState } from 'react';
+import { InfoModal } from '~/components/InfoModal/InfoModal';
 import { PortalModal } from '~/components/PortalModal';
 import { existingActions } from '~/config';
 import { AdminNewThreadButton } from '~/features';
 import { useI18n } from '~/hooks/useI18n';
+import { useScrollToElement } from '~/hooks/useScrollToElement';
 import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
 import { InfoId } from '~/models/info';
 import { queryClient } from '~/providers';
@@ -67,13 +69,14 @@ export const loader = async () => {
         if (isPathWithComment || isPathWithInfo || isPathWithThread) {
           shouldReinterpretRoute = true; // Replace in history AND let the router reinterpret query params
           if (isPathWithComment) {
-            const { infoId } = isPathWithComment.params;
+            // Redirect to the new format
+            const { infoId, commentId } = isPathWithComment.params;
             // The threadId is not known, so load the info details at first.
             try {
               const details = await queryClient.ensureQueryData(
                 infoQueryOptions.getInfoById(Number(infoId)),
               );
-              redirectPath = `/threads/${details.thread.id}#info-${infoId}-comments`;
+              redirectPath = `/threads/${details.thread.id}/infos/${infoId}#comment-${commentId}`;
             } catch (e) {
               // Info is no more available.
               redirectPath = `/threads`;
@@ -118,7 +121,14 @@ export const Root = () => {
   const isRssUnavailable = typeof unavailableInfoId === 'number';
   const [isRssModalOpen, setRssModalOpen] = useState(isRssUnavailable);
 
+  // Check URL for any info ID to focus on
+  let { hash, infoId, deferScrollIntoView } = useScrollToElement();
+
   if (!init) return <LoadingScreen position={false} />;
+
+  if (hash) {
+    deferScrollIntoView(hash);
+  }
 
   const displayApp = {
     displayName: 'news',
@@ -156,6 +166,8 @@ export const Root = () => {
       </AppHeader>
 
       <Outlet />
+
+      {infoId && <InfoModal infoId={infoId} />}
 
       {isRssUnavailable && (
         <PortalModal

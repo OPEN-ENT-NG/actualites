@@ -16,7 +16,7 @@ export const InfoModalBody = ({ info }: InfoModalBodyProps) => {
 
       <Editor content={info.content} mode="read" variant="ghost" />
 
-      <CommentList info={info} />
+      <CommentList info={info} withPagination={false} />
     </>
   );
 };

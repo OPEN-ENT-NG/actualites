@@ -105,6 +105,17 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
                     },
                   },
                   {
+                    path: 'infos/:infoIdAsString',
+                    async lazy() {
+                      const { loader, Threads: Component } =
+                        await import('~/routes/pages/Threads');
+                      return {
+                        loader: loader(queryClient),
+                        Component,
+                      };
+                    },
+                  },
+                  {
                     path: 'infos/:infoIdAsString/edit',
                     async lazy() {
                       const { loader, Threads: Component } =
