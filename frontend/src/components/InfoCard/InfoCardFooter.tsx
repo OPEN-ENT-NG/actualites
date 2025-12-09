@@ -1,4 +1,4 @@
-import { Button, Flex, SeparatedInfo } from '@edifice.io/react';
+import { Button, Divider, Flex } from '@edifice.io/react';
 import { ViewsCounter } from '@edifice.io/react/audience';
 import { IconRafterDown, IconRafterUp } from '@edifice.io/react/icons';
 import { useI18n } from '~/hooks/useI18n';
@@ -21,19 +21,19 @@ export const InfoCardFooter = ({
   return (
     <footer className="mt-12">
       <Flex align="center" justify="between">
-        {info.numberOfComments > 0 || canComment ? (
-          <SeparatedInfo>
-            <ViewsCounter viewsCounter={0} />
-            <CommentsCounter
-              commentsCounter={info.numberOfComments}
-              aria-controls={`info-${info.id}-comments`}
-              aria-expanded={!collapse}
-              onClick={handleCommentsClick}
-            />
-          </SeparatedInfo>
-        ) : (
-          <ViewsCounter viewsCounter={0} />
-        )}
+        <ViewsCounter viewsCounter={0} />
+        {info.numberOfComments > 0 ||
+          (canComment && (
+            <>
+              <Divider vertical />
+              <CommentsCounter
+                commentsCounter={info.numberOfComments}
+                aria-controls={`info-${info.id}-comments`}
+                aria-expanded={!collapse}
+                onClick={handleCommentsClick}
+              />
+            </>
+          ))}
 
         <Button
           type="button"

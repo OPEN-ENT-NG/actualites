@@ -23,7 +23,9 @@ import { getThreadUserRights } from './utils/threads';
  */
 export function useThreadsUserRights(): {
   threadsWithContributeRight?: Thread[];
+  threadsWithManageRight?: Thread[];
   canContributeOnOneThread?: boolean;
+  canManageOnOneThread?: boolean;
   isReady: boolean;
   hasContributeRightOnThread?: (threadId?: ThreadId) => boolean;
 } {
@@ -40,23 +42,30 @@ export function useThreadsUserRights(): {
       };
     }
 
-    const threadsWithRights = threads.filter(
+    const threadsWithContributeRight = threads.filter(
       (thread) => getThreadUserRights(thread, user.userId)?.canContribute,
     );
-    const canContributeOnOneThread: boolean = threadsWithRights.length > 0;
+    const canContributeOnOneThread: boolean =
+      threadsWithContributeRight.length > 0;
 
     const hasContributeRightOnThread = (threadId?: ThreadId) => {
       return !threadId
         ? canContributeOnOneThread
         : !canContributeOnOneThread
           ? false
-          : threadsWithRights.some((thread) => thread.id === threadId);
+          : threadsWithContributeRight.some((thread) => thread.id === threadId);
     };
+
+    const threadsWithManageRight = threads.filter(
+      (thread) => getThreadUserRights(thread, user.userId)?.canManage,
+    );
 
     return {
       isReady: true,
-      threadsWithContributeRight: threadsWithRights,
+      threadsWithContributeRight,
+      threadsWithManageRight,
       canContributeOnOneThread,
+      canManageOnOneThread: threadsWithManageRight.length > 0,
       hasContributeRightOnThread,
     };
   }, [threads, user?.userId, isSuccess]);

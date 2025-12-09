@@ -3,6 +3,8 @@ import { IconBulletList, IconSettings } from '@edifice.io/react/icons';
 import { useNavigate } from 'react-router-dom';
 import { useI18n } from '~/hooks/useI18n';
 import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
+import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
+import { useUserRights } from '~/hooks/useUserRights';
 import { useThreads } from '~/services/queries';
 import './ThreadListDesktop.css';
 import { ThreadListDesktopThread } from './ThreadListDesktopThread';
@@ -12,6 +14,9 @@ export const ThreadListDesktop = () => {
   const { threadId } = useThreadInfoParams();
   const { data: threads, isLoading, isFetched } = useThreads();
   const navigate = useNavigate();
+
+  const { canCreateThread } = useUserRights();
+  const { canManageOnOneThread } = useThreadsUserRights();
 
   const handleAllThreadsClick = () => {
     navigate('/');
@@ -43,14 +48,16 @@ export const ThreadListDesktop = () => {
               <ThreadListDesktopThread thread={thread} key={thread.id} />
             ))}
           </Menu>
-          <Button
-            color="secondary"
-            leftIcon={<IconSettings />}
-            variant="outline"
-            onClick={handleManageThreadsClick}
-          >
-            {t('actualites.threadList.manageThreads')}
-          </Button>
+          {(canCreateThread || canManageOnOneThread) && (
+            <Button
+              color="secondary"
+              leftIcon={<IconSettings />}
+              variant="outline"
+              onClick={handleManageThreadsClick}
+            >
+              {t('actualites.threadList.manageThreads')}
+            </Button>
+          )}
         </>
       )}
       {isLoading && (
