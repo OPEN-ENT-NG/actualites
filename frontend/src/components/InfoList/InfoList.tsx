@@ -1,6 +1,5 @@
 import { Flex, useInfiniteScroll } from '@edifice.io/react';
-import { ReactElement, useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useEffect, useState } from 'react';
 import { useInfoList } from '~/hooks/useInfoList';
 import { useInfoSearchParams } from '~/hooks/useInfoSearchParams';
 import { useScrollToElement } from '~/hooks/useScrollToElement';
@@ -32,23 +31,21 @@ export const InfoList = () => {
   });
 
   // Check for info ID in URL fragment
-  const { hash, scrollIntoView } = useScrollToElement();
+  let { hash, scrollIntoView } = useScrollToElement();
 
   // ID of the info to display in a modal (and to scroll to in the list, if possible).
-  const [infoModal, setInfoModal] = useState<ReactElement>();
+  const [infoModalId, setInfoModalId] = useState<InfoId | null>(null);
 
   useEffect(() => {
     if (hash.startsWith('info-')) {
+      hash = hash.endsWith('-comments') ? hash.slice(0, hash.length - 9) : hash;
       const infoId: InfoId = Number(hash.slice(5));
       if (infos.findIndex((info) => info.id === infoId) >= 0) {
         scrollIntoView(hash);
       }
-      setInfoModal(
-        createPortal(
-          <InfoModal infoId={infoId} />,
-          document.getElementById('portal') as HTMLElement,
-        ),
-      );
+      setInfoModalId(infoId);
+    } else {
+      setInfoModalId(null);
     }
   }, [hash, infos.length]);
 
@@ -90,7 +87,7 @@ export const InfoList = () => {
           hasNextPage && <InfoCardSkeleton ref={loadNextRef} />
         )}
       </Flex>
-      {infoModal}
+      {infoModalId && <InfoModal infoId={infoModalId} />}
     </>
   );
 };

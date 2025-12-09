@@ -1,4 +1,4 @@
-import { Button, Modal } from '@edifice.io/react';
+import { Button } from '@edifice.io/react';
 import { useState } from 'react';
 import { useI18n } from '~/hooks/useI18n';
 import { useScrollToElement } from '~/hooks/useScrollToElement';
@@ -6,6 +6,7 @@ import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
 import { InfoId } from '~/models/info';
 import { useInfoById } from '~/services/queries';
 import { InfoCardSkeleton } from '../InfoCard/InfoCardSkeleton';
+import { PortalModal } from '../PortalModal';
 import { InfoModalBody } from './InfoModalBody';
 
 export type InfoModalProps = {
@@ -24,32 +25,23 @@ export const InfoModal = ({ infoId }: InfoModalProps) => {
     removeHash();
     setOpened(false);
   };
+
   return (
-    <Modal
+    <PortalModal
       id="info-modal"
       isOpen={opened}
       onModalClose={handleModalClose}
-      size="lg"
+      size={isError ? 'sm' : 'lg'}
+      header={isError ? t('actualites.info.unavailable.title') : <></>}
+      footer={<Button onClick={handleModalClose}>{common_t('close')}</Button>}
     >
-      {isPending || !threadId ? (
+      {isPending ? (
         <InfoCardSkeleton />
+      ) : isError || !threadId ? (
+        t('actualites.info.unavailable.body')
       ) : (
-        <>
-          <Modal.Header onModalClose={handleModalClose}>
-            {isError ? t('actualites.info.unavailable.title') : null}
-          </Modal.Header>
-
-          {isError ? (
-            <Modal.Body>{t('actualites.info.unavailable.body')}</Modal.Body>
-          ) : (
-            <InfoModalBody info={{ threadId, ...data }} />
-          )}
-
-          <Modal.Footer>
-            <Button onClick={handleModalClose}>{common_t('close')}</Button>
-          </Modal.Footer>
-        </>
+        <InfoModalBody info={{ threadId, ...data }} />
       )}
-    </Modal>
+    </PortalModal>
   );
 };
