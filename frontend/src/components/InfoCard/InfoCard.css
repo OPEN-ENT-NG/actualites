@@ -78,3 +78,7 @@
   box-shadow: -3px 0px 3px 0px #00000033;
   border-bottom: solid 1px var(--edifice-info-card-border-color);
 }
+
+.info-card .info-divider {
+  border-color: var(--edifice-info-card-divider-color) !important;
+}
