@@ -20,6 +20,7 @@ import {
 import { IWebApp } from '@edifice.io/client';
 import { IconPlus } from '@edifice.io/react/icons';
 import { existingActions } from '~/config';
+import { AdminNewThreadButton } from '~/features';
 import { useI18n } from '~/hooks/useI18n';
 import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
 import { queryClient } from '~/providers';
@@ -93,6 +94,7 @@ export const Root = () => {
     displayName: 'news',
     icon: 'actualites-large',
   };
+  const isAdminThreadPath = window.location.pathname.includes('/admin/threads');
 
   const pathname = location.pathname;
   const isCreateRoute = pathname.includes('/create/info');
@@ -108,10 +110,14 @@ export const Root = () => {
         <Breadcrumb app={(currentApp as IWebApp) ?? displayApp} />
         {!isCreateRoute && canContributeOnOneThread && (
           <Flex fill align="center" justify="end">
-            {canContributeOnOneThread && (
-              <Button onClick={handleClickNewInfo} leftIcon={<IconPlus />}>
-                {t('actualites.info.create')}
-              </Button>
+            {isAdminThreadPath ? (
+              <AdminNewThreadButton />
+            ) : (
+              canContributeOnOneThread && (
+                <Button onClick={handleClickNewInfo} leftIcon={<IconPlus />}>
+                  {t('actualites.info.create')}
+                </Button>
+              )
             )}
           </Flex>
         )}

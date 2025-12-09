@@ -4,7 +4,6 @@ import {
   Divider,
   Flex,
   Image,
-  SeparatedInfo,
   useBreakpoint,
   useDate,
   useDirectory,
@@ -90,25 +89,36 @@ export const InfoCardHeader = ({
           />
         )}
         {sm ? (
-          <Divider color="var(--edifice-info-card-divider-color)">
-            <Avatar
-              alt={info.owner.displayName}
-              src={avatarUrl}
-              size={iconSize}
-              variant="circle"
-              loading="lazy"
-            />
-            {md ? (
-              <SeparatedInfo className="fs-6 text-gray-700">
-                <div>{info.owner.displayName}</div>
-                <div>{formatDate(info.modified, 'long')}</div>
-              </SeparatedInfo>
-            ) : (
-              <Flex direction="column" className="fs-6 text-gray-700">
-                <div>{info.owner.displayName}</div>
-                <div>{formatDate(info.modified, 'long')}</div>
-              </Flex>
-            )}
+          <Divider className="info-divider ">
+            <Flex align="center" gap="8" justify="center" fill wrap="nowrap">
+              <Avatar
+                alt={info.owner.displayName}
+                src={avatarUrl}
+                size={iconSize}
+                variant="circle"
+                loading="lazy"
+              />
+              {md ? (
+                <Flex
+                  align="center"
+                  className="fs-6 text-gray-700"
+                  wrap="nowrap"
+                >
+                  <div>{info.owner.displayName}</div>
+                  <Divider vertical className="border-gray-700" />
+                  <div>{formatDate(info.modified, 'long')}</div>
+                </Flex>
+              ) : (
+                <Flex
+                  direction="column"
+                  className="fs-6 text-gray-700"
+                  wrap="nowrap"
+                >
+                  <div>{info.owner.displayName}</div>
+                  <div>{formatDate(info.modified, 'long')}</div>
+                </Flex>
+              )}
+            </Flex>
           </Divider>
         ) : (
           <Flex align="center" gap="8" justify="center" fill>
@@ -120,10 +130,11 @@ export const InfoCardHeader = ({
               loading="lazy"
             />
             {md ? (
-              <SeparatedInfo className="fs-6 text-gray-700">
+              <Flex align="center" className="fs-6 text-gray-700">
                 <div>{info.owner.displayName}</div>
+                <Divider vertical className="border-gray-700" />
                 <div>{formatDate(info.modified, 'long')}</div>
-              </SeparatedInfo>
+              </Flex>
             ) : (
               <Flex direction="column" className="fs-6 text-gray-700">
                 <div>{info.owner.displayName}</div>
