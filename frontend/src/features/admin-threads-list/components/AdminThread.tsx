@@ -16,7 +16,7 @@ import {
 import { RefAttributes } from 'react';
 import { ThreadIcon } from '~/components/ThreadIcon';
 import { useI18n } from '~/hooks/useI18n';
-import { ThreadInfoStats } from '~/models/info';
+import { InfoStatus, ThreadInfoStats } from '~/models/info';
 import { Thread } from '~/models/thread';
 
 export function AdminThread({
@@ -39,32 +39,25 @@ export function AdminThread({
       <ThreadIcon thread={thread} iconSize="80" />
       <Flex direction="column" gap="4" fill className="overflow-hidden">
         <strong className="text-truncate">{thread.title}</strong>
-        {xl ? (
-          <Flex align="center" wrap="nowrap" className="text-gray-700 ">
-            {thread.structure?.name && (
-              <>
-                <div className="text-truncate">{thread.structure.name}</div>
-                <Divider vertical className="border-gray-700" />
-              </>
-            )}
-            <div className="text-nowrap">
-              {t('actualites.adminThreads.threadInfoCount', {
-                count: threadInfosStats?.incomingCount || 0,
-              })}
-            </div>
-          </Flex>
-        ) : (
-          <Flex direction="column" gap="2" className="text-gray-700">
-            {thread.structure?.name && (
+
+        <Flex
+          direction={xl ? 'row' : 'column'}
+          align={xl ? 'center' : 'start'}
+          wrap="nowrap"
+          className="text-gray-700 "
+        >
+          {thread.structure?.name && (
+            <>
               <div className="text-truncate">{thread.structure.name}</div>
-            )}
-            <div className="text-truncate">
-              {t('actualites.adminThreads.threadInfoCount', {
-                count: threadInfosStats?.incomingCount || 0,
-              })}
-            </div>
-          </Flex>
-        )}
+              {xl && <Divider vertical className="border-gray-700" />}
+            </>
+          )}
+          <div className="text-nowrap">
+            {t('actualites.adminThreads.threadInfoCount', {
+              count: threadInfosStats?.status[InfoStatus.PUBLISHED] || 0,
+            })}
+          </div>
+        </Flex>
       </Flex>
       <Flex gap="4" align="center" justify="end">
         {lg ? (
