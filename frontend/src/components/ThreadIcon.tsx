@@ -25,7 +25,7 @@ export const ThreadIcon = ({
             width: parseInt(iconSize + ''),
             height: parseInt(iconSize + ''),
           }}
-          className="overflow-hidden rounded"
+          className="overflow-hidden rounded flex-shrink-0"
         >
           <Image
             src={thread.icon}
@@ -44,7 +44,7 @@ export const ThreadIcon = ({
           justify="center"
           className="bg-orange-200 rounded thread-icon"
         >
-          <AppIcon app={appCode} variant="square" />
+          <AppIcon app={appCode} variant="square" size={iconSize} />
         </Flex>
       )}
     </>
