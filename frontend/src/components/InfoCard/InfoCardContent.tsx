@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { CommentList } from '../comment-list/CommentList';
 import { Expandable } from '../Expandable';
 import { InfoCardProps } from './InfoCard';
-import { InfoCardPreviousContent } from './InfoCardPreviousContent';
 
 export const InfoCardContent = ({
   info,
@@ -35,9 +34,6 @@ export const InfoCardContent = ({
           <EditorPreview content={info.content} variant="ghost" />
         )}
 
-        {showFullContent && info.content && (
-          <InfoCardPreviousContent info={info} />
-        )}
         <div className={clsx({ 'd-none': !showFullContent })}>
           <Editor
             content={showFullContent ? info.content : ''}
@@ -45,6 +41,7 @@ export const InfoCardContent = ({
             variant="ghost"
           />
         </div>
+
         {showFullContent && (
           <div id={`info-${info.id}-comments`}>
             <CommentList info={info} />
