@@ -1,5 +1,8 @@
 import { useThreadInfoParams } from './useThreadInfoParams';
 
+const MAX_SCROLL_RETRIES = 20;
+const SCROLL_RETRY_DELAY_MS = 150;
+
 /**
  * Custom React hook for handling scroll-to-element functionality based on URL hash.
  *
@@ -45,11 +48,11 @@ export function useScrollToElement() {
       const element = document.getElementById(elementId);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } else if (count < 20) {
-        setTimeout(() => scrollToElement(count + 1), 150);
+      } else if (count < MAX_SCROLL_RETRIES) {
+        setTimeout(() => scrollToElement(count + 1), SCROLL_RETRY_DELAY_MS);
       }
     }
-    setTimeout(() => scrollToElement(0), 150);
+    setTimeout(() => scrollToElement(0), SCROLL_RETRY_DELAY_MS);
   }
 
   return {
