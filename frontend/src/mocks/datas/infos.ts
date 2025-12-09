@@ -1,6 +1,6 @@
 import { Info, InfoStatus, ThreadInfoStats } from '~/models/info';
-import { getFutureDate } from './helper';
 import { ThreadId } from '~/models/thread';
+import { getFutureDate } from './helper';
 import { mockThreads } from './threads';
 
 //---------------------------------------
