@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "build": "pnpm run typecheck && vite build",
-    "clean": "./build.sh clean",
+    "clean": "./build.sh clean && pnpm install",
     "dev": "vite",
     "dev:mock": "VITE_MOCK=true vite",
     "format": "prettier --write \"**/*.{ts,tsx,css}\"",
@@ -44,7 +44,6 @@
     "@react-spring/web": "^9.7.5",
     "@tanstack/react-query": "5.62.7",
     "@uidotdev/usehooks": "2.4.1",
-    "antd": "^5.29.1",
     "clsx": "^2.1.1",
     "i18next": "23.8.1",
     "i18next-http-backend": "2.4.2",
