@@ -19,7 +19,7 @@ declare interface CommentOptions {
   additionalComments: number;
   maxReplies: number;
   additionalReplies: number;
-  disableReply: boolean;
+  allowReplies: boolean;
 }
 
 /**
@@ -39,7 +39,7 @@ declare interface CommentOptions {
  *   - maxComments: Maximum number of comments allowed
  *   - maxReplies: Maximum number of replies allowed
  *   - maxReplyLength: Maximum length for replies
- *   - disableReplies: Truthy when user cannot reply to comments
+ *   - allowReplies: Falsy when user cannot reply to comments
  * - comments: Array of comments
  */
 export function useCommentList(info: Info) {
@@ -117,7 +117,7 @@ export function useCommentList(info: Info) {
     maxCommentLength: 800,
     additionalComments: 10,
     maxComments: 2,
-    disableReply: true,
+    allowReplies: false,
   } as Partial<CommentOptions>;
 
   return {
