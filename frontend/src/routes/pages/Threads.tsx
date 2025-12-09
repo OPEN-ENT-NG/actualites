@@ -12,7 +12,7 @@ export function Threads() {
   const [_searchParams] = useSearchParams();
 
   return (
-    <Grid>
+    <Grid className="gap-0">
       <ThreadList />
       <Grid.Col sm="12" lg="6" xl="9">
         <InfoList />
