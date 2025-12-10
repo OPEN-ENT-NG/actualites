@@ -95,7 +95,7 @@ export function testThreadMutation(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const title = `Creation test ${seed}`;
-    const threadResp: RefinedResponse<any> = createThread(title);
+    const threadResp: RefinedResponse<any> = createThread(title, data.head.id);
     check(threadResp, {
       "Thread creation must be in success": (r) => r.status === 200,
     });
@@ -121,7 +121,7 @@ export function testThreadMutation(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const title = `Creation test ${seed}`;
-    const thread: Identifier = createThreadOrFail(title);
+    const thread: Identifier = createThreadOrFail(title, data.head.id);
 
     console.log("Updating the thread");
     const titleUpdate = `Update test ${seed}`;
@@ -153,7 +153,7 @@ export function testThreadMutation(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const title = `Creation test ${seed}`;
-    const thread: Identifier = createThreadOrFail(title);
+    const thread: Identifier = createThreadOrFail(title, data.head.id);
 
     console.log("deleting the thread");
 
@@ -178,7 +178,7 @@ export function testThreadMutation(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const title = `Creation and share test ${seed}`;
-    const threadResp: Identifier = createThreadOrFail(title);
+    const threadResp: Identifier = createThreadOrFail(title, data.head.id);
 
     console.log(` Thread of id ${threadResp.id} created`);
 
