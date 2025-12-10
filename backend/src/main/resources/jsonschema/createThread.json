@@ -11,10 +11,23 @@
 		},
 		"mode": {
 			"type": "integer"
+		},
+		"structure": {
+			"type": "object",
+			"required": ["id"],
+			"properties": {
+				"id" : {
+					"type": "string"
+				},
+				"name" : {
+					"type": "string"
+				}
+			}
 		}
 	},
 	"required": [
 		"title",
-		"mode"
+		"mode",
+		"structure"
 	]
 }

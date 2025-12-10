@@ -156,6 +156,25 @@ public class ThreadServiceSqlImpl implements ThreadService {
 	}
 
 	@Override
+	public Future<String> getStructureId(String threadId) {
+		final Promise<String> promise = Promise.promise();
+		JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
+		String query = " SELECT t.structure_id " +
+				" FROM " + threadsTable + " AS t" +
+				" WHERE t.id = ? ";
+		values.add(Sql.parseId(threadId));
+		Sql.getInstance().prepared(query, values,  (sqlResult) -> {
+			final Either<String, JsonObject> result = SqlResult.validUniqueResult(sqlResult);
+			if (result.isLeft()) {
+				promise.fail("internal server error");
+			} else {
+				promise.complete(result.right().getValue().getString("structure_id"));
+			}
+		});
+		return promise.future();
+	}
+
+	@Override
 	public void list(UserInfos user, Handler<Either<String, JsonArray>> handler) {
 		if (user != null) {
 			String query;

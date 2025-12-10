@@ -33,6 +33,8 @@ import java.util.Map;
 
 public interface ThreadService {
 
+	Future<String> getStructureId(String threadId);
+
 	public void list(UserInfos user, Handler<Either<String, JsonArray>> handler);
 
 	public void retrieve(String id, Boolean filterAdmlGroup, UserInfos user, Handler<Either<String, JsonObject>> handler);

@@ -105,7 +105,7 @@ export function testCommentManagement(data: InitData) {
     // Create a thread and a published info
     console.log("Creating thread and info");
     const seed = Math.random().toString(36).substring(7);
-    const thread: ThreadIdentifier = createThreadOrFail(`Thread comment update ${seed}`);
+    const thread: ThreadIdentifier = createThreadOrFail(`Thread comment update ${seed}`, data.head.id);
     const info = createPublishedInfoOrFail({
       title: `Info for comment update ${seed}`,
       content: `Content ${seed}`,
@@ -145,7 +145,7 @@ export function testCommentManagement(data: InitData) {
     // Teacher1 creates a thread and a published info with comment rights for teacher2
     console.log("Creating thread and info");
     const seed = Math.random().toString(36).substring(7);
-    const thread: ThreadIdentifier = createThreadOrFail(`Thread comment rights ${seed}`);
+    const thread: ThreadIdentifier = createThreadOrFail(`Thread comment rights ${seed}`, data.head.id);
     const info = createPublishedInfoOrFail({
       title: `Info for comment rights ${seed}`,
       content: `Content ${seed}`,
@@ -201,7 +201,7 @@ export function testCommentManagement(data: InitData) {
     // Teacher creates a thread and a published info
     console.log("Creating thread and info");
     const seed = Math.random().toString(36).substring(7);
-    const thread: ThreadIdentifier = createThreadOrFail(`Thread manager test ${seed}`);
+    const thread: ThreadIdentifier = createThreadOrFail(`Thread manager test ${seed}`, data.head.id);
     const info = createPublishedInfoOrFail({
       title: `Info for manager test ${seed}`,
       content: `Content ${seed}`,
@@ -256,7 +256,7 @@ export function testCommentManagement(data: InitData) {
     // Create a thread and a published info
     console.log("Creating thread and info");
     const seed = Math.random().toString(36).substring(7);
-    const thread: ThreadIdentifier = createThreadOrFail(`Thread V1 comment ${seed}`);
+    const thread: ThreadIdentifier = createThreadOrFail(`Thread V1 comment ${seed}`, data.head.id);
     const info = createPublishedInfoOrFail({
       title: `Info for V1 comment ${seed}`,
       content: `Content ${seed}`,
@@ -301,7 +301,7 @@ export function testCommentManagement(data: InitData) {
     // Create a thread and a published info
     console.log("Creating thread and info");
     const seed = Math.random().toString(36).substring(7);
-    const thread: ThreadIdentifier = createThreadOrFail(`Thread comment delete ${seed}`);
+    const thread: ThreadIdentifier = createThreadOrFail(`Thread comment delete ${seed}`, data.head.id);
     const info = createPublishedInfoOrFail({
       title: `Info for comment delete ${seed}`,
       content: `Content ${seed}`,
@@ -340,7 +340,7 @@ export function testCommentManagement(data: InitData) {
     // Teacher creates a thread and a published info
     console.log("Creating thread and info");
     const seed = Math.random().toString(36).substring(7);
-    const thread: ThreadIdentifier = createThreadOrFail(`Thread manager delete ${seed}`);
+    const thread: ThreadIdentifier = createThreadOrFail(`Thread manager delete ${seed}`, data.head.id);
     const info = createPublishedInfoOrFail({
       title: `Info for manager delete ${seed}`,
       content: `Content ${seed}`,
@@ -395,7 +395,7 @@ export function testCommentManagement(data: InitData) {
     // Teacher1 creates a thread and a published info
     console.log("Creating thread and info");
     const seed = Math.random().toString(36).substring(7);
-    const thread: ThreadIdentifier = createThreadOrFail(`Thread delete rights ${seed}`);
+    const thread: ThreadIdentifier = createThreadOrFail(`Thread delete rights ${seed}`, data.head.id);
     const info = createPublishedInfoOrFail({
       title: `Info for delete rights ${seed}`,
       content: `Content ${seed}`,
@@ -450,7 +450,7 @@ export function testCommentManagement(data: InitData) {
     // Create a thread and a published info
     console.log("Creating thread and info");
     const seed = Math.random().toString(36).substring(7);
-    const thread: ThreadIdentifier = createThreadOrFail(`Thread V1 delete ${seed}`);
+    const thread: ThreadIdentifier = createThreadOrFail(`Thread V1 delete ${seed}`, data.head.id);
     const info = createPublishedInfoOrFail({
       title: `Info for V1 delete ${seed}`,
       content: `Content ${seed}`,

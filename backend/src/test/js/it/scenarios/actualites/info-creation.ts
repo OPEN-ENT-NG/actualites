@@ -100,7 +100,7 @@ export function testInfoCreation(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for draft info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     // Create an info with DRAFT status
@@ -136,7 +136,7 @@ export function testInfoCreation(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for pending info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     // Create an info with PENDING status
@@ -175,7 +175,7 @@ export function testInfoCreation(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for published info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     // Create a published info directly
@@ -222,7 +222,7 @@ export function testInfoCreation(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for complete info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     // Create an info with all optional fields
@@ -274,7 +274,7 @@ export function testInfoCreation(data: InitData) {
     console.log("Creating a thread as teacher");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Protected thread ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     // Parent tries to create an info on teacher's thread (without rights)
@@ -309,7 +309,7 @@ export function testInfoCreation(data: InitData) {
     console.log("Creating a thread as teacher");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Protected thread pending ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     // Parent tries to create a pending info on teacher's thread (without rights)
@@ -344,7 +344,7 @@ export function testInfoCreation(data: InitData) {
     console.log("Creating a thread as teacher");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Protected thread published ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     // Parent tries to create a published info on teacher's thread (without rights)
@@ -376,7 +376,7 @@ export function testInfoCreation(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for schema validation ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     // Try to create an info with extra fields not in the schema
@@ -424,7 +424,7 @@ export function testInfoCreation(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for required fields test ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     // Try to create an info without title (required field)
