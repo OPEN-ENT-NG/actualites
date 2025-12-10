@@ -107,7 +107,7 @@ export function testThreadRights(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const title = `Creation test ${seed}`;
-    const threadResp: RefinedResponse<any> = createThread(title);
+    const threadResp: RefinedResponse<any> = createThread(title, data.head.id);
     check(threadResp, {
       "Thread creation must be forbidden": (r) => r.status === 401,
     });
@@ -125,7 +125,7 @@ export function testThreadRights(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const title = `Creation and share test ${seed}`;
-    const threadResp: Identifier = createThreadOrFail(title);
+    const threadResp: Identifier = createThreadOrFail(title, data.head.id);
 
     console.log(` Thread of id ${threadResp.id} created`);
 
@@ -156,7 +156,7 @@ export function testThreadRights(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const title = `Creation and share test ${seed}`;
-    const threadResp: Identifier = createThreadOrFail(title);
+    const threadResp: Identifier = createThreadOrFail(title, data.head.id);
     console.log(` Thread of id ${threadResp.id} created`);
 
     shareThreadOrFail(threadResp.id, [headRelative.id],
@@ -191,7 +191,7 @@ export function testThreadRights(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const title = `Creation test ${seed}`;
-    const thread: Identifier = createThreadOrFail(title);
+    const thread: Identifier = createThreadOrFail(title, data.head.id);
 
     authenticateWeb(headRelative.login);
     console.log("Deleting the thread");
@@ -215,7 +215,7 @@ export function testThreadRights(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const title = `Creation test ${seed}`;
-    const thread: Identifier = createThreadOrFail(title);
+    const thread: Identifier = createThreadOrFail(title, data.head.id);
     shareThreadOrFail(thread.id, [headRelative.id],
       [...threadManagerRights, ...threadContributorRights, ...threadPublisherRights],
       ShareTargetType.USER);
@@ -233,20 +233,15 @@ export function testThreadRights(data: InitData) {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
     const headTeacher = getRandomUserWithProfile(headUsers, "Teacher");
-    let headTeacher2 = getRandomUserWithProfile(headUsers, "Teacher");
+    let headTeacher2 = getRandomUserWithProfile(headUsers, "Teacher", [headTeacher]);
 
     console.log("Authenticate head teacher " + headTeacher.login);
     authenticateWeb(headTeacher.login);
-    let i = 0;
-    while(headTeacher.id === headTeacher2.id && i < 10) {
-      i++;
-      headTeacher2 = getRandomUserWithProfile(headUsers, "Teacher");
-    }
 
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const title = `Creation test ${seed}`;
-    const thread: Identifier = createThreadOrFail(title);
+    const thread: Identifier = createThreadOrFail(title, data.head.id);
 
     shareThreadOrFail(thread.id, [headTeacher2.id],
       [...threadManagerRights, ...threadContributorRights, ...threadPublisherRights],
@@ -292,10 +287,10 @@ export function testThreadRights(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const title = `Creation test ${seed}`;
-    const thread: Identifier = createThreadOrFail(title);
-
+    const thread: Identifier = createThreadOrFail(title, data.head.id);
+    //share is async
+    sleep(1);
     const shareResp = getShareThread(thread.id);
-
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const groups : ProfileGroup[] = getProfileGroupsOfStructure(data.head.id);
 

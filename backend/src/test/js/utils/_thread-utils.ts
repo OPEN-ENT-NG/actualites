@@ -24,11 +24,9 @@ export enum ThreadRight {
 export const threadContributorRights: string[] = [ "net-atos-entng-actualites-controllers-InfoController|unsubmit",
   "net-atos-entng-actualites-controllers-InfoController|updateDraft",
   "net-atos-entng-actualites-controllers-InfoController|listInfosByThreadId",
-  "net-atos-entng-actualites-controllers-InfoController|shareInfoSubmit",
   "net-atos-entng-actualites-controllers-InfoController|createPending",
   "net-atos-entng-actualites-controllers-InfoController|createDraft",
   "net-atos-entng-actualites-controllers-InfoController|shareInfo",
-  "net-atos-entng-actualites-controllers-InfoController|shareInfoRemove",
   "net-atos-entng-actualites-controllers-InfoController|shareResourceInfo",
   "net-atos-entng-actualites-controllers-InfoController|submit",
   "net-atos-entng-actualites-controllers-ThreadController|getThread"];
@@ -41,27 +39,25 @@ export const threadPublisherRights: string[] = [ "net-atos-entng-actualites-cont
   "net-atos-entng-actualites-controllers-InfoController|updatePublished"];
 
 export const threadManagerRights: string[] = [ "net-atos-entng-actualites-controllers-ThreadController|shareResource",
-  "net-atos-entng-actualites-controllers-ThreadController|shareThreadSubmit",
   "net-atos-entng-actualites-controllers-InfoController|delete",
   "net-atos-entng-actualites-controllers-ThreadController|deleteThread",
   "net-atos-entng-actualites-controllers-ThreadController|shareThread",
-  "net-atos-entng-actualites-controllers-ThreadController|shareThreadRemove",
   "net-atos-entng-actualites-controllers-ThreadController|updateThread"];
 
 export const threadAllRights =  [...threadContributorRights, ...threadPublisherRights, ...threadManagerRights];
 
-export function createThreadOrFail(title: String) : Identifier {
-  let res = createThread(title);
+export function createThreadOrFail(title: String, structureId: string) : Identifier {
+  let res = createThread(title, structureId);
   check(res, {
     "Creating thread should be ok": (r) => r.status == 200,
   });
   return JSON.parse(res.body as string);
 }
 
-export function createThread(title: String) : RefinedResponse<any> {
+export function createThread(title: String, structureId: string) : RefinedResponse<any> {
  return http.post(
     `${rootUrl}/actualites/api/v1/threads`,
-    `{ "title": "${title}", "mode": 0, "icon": ""}`,
+    `{ "title": "${title}", "mode": 0, "icon": "", "structure" : { "id": "${structureId}" }}`,
     { headers: getHeaders() },
   );
 }

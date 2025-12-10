@@ -5,9 +5,9 @@ import { check } from "k6";
 const rootUrl = __ENV.ROOT_URL;
 
 export type Shares = {
-  users: any;
-  groups: any;
-  sharedBookmarks: any;
+  users?: any;
+  groups?: any;
+  sharedBookmarks?: any;
 }
 
 export enum ShareTargetType {

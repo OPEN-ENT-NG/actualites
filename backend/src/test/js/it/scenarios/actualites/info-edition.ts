@@ -28,10 +28,11 @@ import {
   InfoResponse, Identifier, updateInfo, updateInfoOrFail,
 } from "../../../utils/_info-utils.ts";
 import { check } from "k6";
-import { addUserSharesInfos, shareThreadsOrFail } from "../../../utils/_shares_utils.ts";
+import { addGroupSharesInfos, addUserSharesInfos, shareThreadsOrFail } from "../../../utils/_shares_utils.ts";
+import { ProfileGroup } from "edifice-k6-commons";
 
 const maxDuration = __ENV.MAX_DURATION || "5m";
-const schoolName = __ENV.DATA_SCHOOL_NAME || "Info Update";
+const schoolName = __ENV.DATA_SCHOOL_NAME || "Info Edition";
 const gracefulStop = parseInt(__ENV.GRACEFUL_STOP || "2s");
 
 export const options = {
@@ -74,15 +75,17 @@ export const options = {
 type InitData = {
   head: Structure;
   structures: Structure[];
+  teacherProfileGroup: ProfileGroup;
 }
 
 export function setup() {
   let head: Structure | null = null;
   const structures: Structure[] = [];
+  let teacherProfileGroup = null;
   describe("[Info-Edition-Init] Initialize data", () => {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     head = initStructure(`${schoolName} - Head`)
-    const teacherProfileGroup = getTeacherRole(head);
+    teacherProfileGroup = getTeacherRole(head);
     const attachedStructuresGroups: string[] = []
     const school = initStructure(`${schoolName} - School`);
     structures.push(school);
@@ -99,7 +102,7 @@ export function setup() {
     linkRoleToUsers(head, role, [teacherProfileGroup.name]);
     linkRoleToUsers(school, role, [parentRole.name]);
   });
-  return { head, structures };
+  return { head, structures, teacherProfileGroup };
 }
 
 export function testInfoUpdateOwner(data: InitData) {
@@ -120,7 +123,7 @@ export function testInfoUpdateOwner(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for draft info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     // Create an info with DRAFT status
@@ -169,7 +172,7 @@ export function testInfoUpdateOwner(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for complete info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     // Create an info with all optional fields
@@ -224,7 +227,7 @@ export function testInfoUpdateOwner(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for draft info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     // Create an info with DRAFT status
@@ -272,7 +275,7 @@ export function testInfoUpdateOwner(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for published info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     // Create a published info directly
@@ -313,7 +316,7 @@ export function testInfoUpdateOwner(data: InitData) {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
     const headTeacher = getRandomUserWithProfile(headUsers, 'Teacher');
-    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher');
+    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher', [headTeacher]);
 
     console.log("Authenticate head teacher " + headTeacher.login);
     authenticateWeb(headTeacher.login);
@@ -322,7 +325,7 @@ export function testInfoUpdateOwner(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for draft info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     const shares = addUserSharesInfos({
@@ -367,7 +370,7 @@ export function testInfoUpdateOwner(data: InitData) {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
     const headTeacher = getRandomUserWithProfile(headUsers, 'Teacher');
-    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher');
+    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher', [headTeacher]);
 
     console.log("Authenticate head teacher " + headTeacher.login);
     authenticateWeb(headTeacher.login);
@@ -376,7 +379,7 @@ export function testInfoUpdateOwner(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for draft info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     const shares = addUserSharesInfos({
@@ -429,7 +432,7 @@ export function testInfoUpdateOwner(data: InitData) {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
     const headTeacher = getRandomUserWithProfile(headUsers, 'Teacher');
-    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher');
+    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher', [headTeacher]);
 
     console.log("Authenticate head teacher " + headTeacher.login);
     authenticateWeb(headTeacher.login);
@@ -438,7 +441,7 @@ export function testInfoUpdateOwner(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for published info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     const shares = addUserSharesInfos({
@@ -496,7 +499,7 @@ export function testInfoUpdateContributor(data: InitData) {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
     const headTeacher = getRandomUserWithProfile(headUsers, 'Teacher');
-    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher');
+    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher', [headTeacher]);
 
     console.log("Authenticate head teacher " + headTeacher.login);
     authenticateWeb(headTeacher.login);
@@ -505,7 +508,7 @@ export function testInfoUpdateContributor(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for draft info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     const shares = addUserSharesInfos({
@@ -547,7 +550,7 @@ export function testInfoUpdateContributor(data: InitData) {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
     const headTeacher = getRandomUserWithProfile(headUsers, 'Teacher');
-    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher');
+    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher', [headTeacher]);
 
     console.log("Authenticate head teacher " + headTeacher.login);
     authenticateWeb(headTeacher.login);
@@ -556,7 +559,7 @@ export function testInfoUpdateContributor(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for draft info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     const shares = addUserSharesInfos({
@@ -598,7 +601,7 @@ export function testInfoUpdateContributor(data: InitData) {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
     const headTeacher = getRandomUserWithProfile(headUsers, 'Teacher');
-    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher');
+    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher', [headTeacher]);
 
     console.log("Authenticate head teacher " + headTeacher.login);
     authenticateWeb(headTeacher.login);
@@ -607,7 +610,7 @@ export function testInfoUpdateContributor(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for draft info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     const shares = addUserSharesInfos({
@@ -650,7 +653,7 @@ export function testInfoUpdateContributor(data: InitData) {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
     const headTeacher = getRandomUserWithProfile(headUsers, 'Teacher');
-    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher');
+    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher', [headTeacher]);
 
     console.log("Authenticate head teacher " + headTeacher.login);
     authenticateWeb(headTeacher.login);
@@ -659,7 +662,7 @@ export function testInfoUpdateContributor(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for draft info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     const shares = addUserSharesInfos({
@@ -702,7 +705,7 @@ export function testInfoUpdateContributor(data: InitData) {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
     const headTeacher = getRandomUserWithProfile(headUsers, 'Teacher');
-    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher');
+    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher', [headTeacher]);
 
     console.log("Authenticate head teacher " + headTeacher.login);
     authenticateWeb(headTeacher.login);
@@ -711,7 +714,7 @@ export function testInfoUpdateContributor(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for draft info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     const shares = addUserSharesInfos({
@@ -762,7 +765,7 @@ export function testInfoUpdatePublisher(data: InitData) {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
     const headTeacher = getRandomUserWithProfile(headUsers, 'Teacher');
-    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher');
+    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher', [headTeacher]);
 
     console.log("Authenticate head teacher " + headTeacher.login);
     authenticateWeb(headTeacher.login);
@@ -771,7 +774,7 @@ export function testInfoUpdatePublisher(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for draft info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     const shares = addUserSharesInfos({ users: {}, groups: {}, sharedBookmarks: {} },
@@ -810,7 +813,7 @@ export function testInfoUpdatePublisher(data: InitData) {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
     const headTeacher = getRandomUserWithProfile(headUsers, 'Teacher');
-    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher');
+    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher', [headTeacher]);
 
     console.log("Authenticate head teacher " + headTeacher.login);
     authenticateWeb(headTeacher.login);
@@ -819,7 +822,7 @@ export function testInfoUpdatePublisher(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for draft info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     const shares = addUserSharesInfos({ users: {}, groups: {}, sharedBookmarks: {} }, headTeacher2.id,
@@ -859,7 +862,7 @@ export function testInfoUpdatePublisher(data: InitData) {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
     const headTeacher = getRandomUserWithProfile(headUsers, 'Teacher');
-    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher');
+    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher', [headTeacher]);
 
     console.log("Authenticate head teacher " + headTeacher.login);
     authenticateWeb(headTeacher.login);
@@ -868,7 +871,7 @@ export function testInfoUpdatePublisher(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for draft info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     const shares = addUserSharesInfos({ users: {}, groups: {}, sharedBookmarks: {} }, headTeacher2.id,
@@ -908,7 +911,7 @@ export function testInfoUpdatePublisher(data: InitData) {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
     const headTeacher = getRandomUserWithProfile(headUsers, 'Teacher');
-    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher');
+    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher', [headTeacher]);
 
     console.log("Authenticate head teacher " + headTeacher.login);
     authenticateWeb(headTeacher.login);
@@ -917,7 +920,7 @@ export function testInfoUpdatePublisher(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for draft info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     const shares = addUserSharesInfos({ users: {}, groups: {}, sharedBookmarks: {} }, headTeacher2.id,
@@ -962,7 +965,7 @@ export function testInfoUpdateOwnerTransition(data: InitData) {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
     const headTeacher = getRandomUserWithProfile(headUsers, 'Teacher');
-    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher');
+    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher', [headTeacher]);
 
     console.log("Authenticate head teacher " + headTeacher.login);
     authenticateWeb(headTeacher.login);
@@ -971,10 +974,10 @@ export function testInfoUpdateOwnerTransition(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for draft info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
-    const shares = addUserSharesInfos({ users : {}, groups: {}, sharedBookmarks: {}}, headTeacher2.id, threadContributorRights);
+    const shares = addGroupSharesInfos({ users : {}, groups: {}, sharedBookmarks: {}}, data.teacherProfileGroup.id, threadContributorRights);
 
     shareThreadsOrFail(thread.id, shares);
 
@@ -1009,7 +1012,7 @@ export function testInfoUpdateOwnerTransition(data: InitData) {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
     const headTeacher = getRandomUserWithProfile(headUsers, 'Teacher');
-    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher');
+    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher', [headTeacher]);
 
     console.log("Authenticate head teacher " + headTeacher.login);
     authenticateWeb(headTeacher.login);
@@ -1018,7 +1021,7 @@ export function testInfoUpdateOwnerTransition(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for draft info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     const shares = addUserSharesInfos({ users : {}, groups: {}, sharedBookmarks: {}}, headTeacher2.id, threadContributorRights);
@@ -1065,11 +1068,11 @@ export function testInfoUpdateOwnerTransition(data: InitData) {
     check(uResp,{ "Update of published info to draft as owner should be successful" : (r) => r.status === 200 });
   });
 
-  describe('[Info] Test updating from PUBLISHED to PENDING as OWNER should not be OK', () => {
+  describe('[Info] Test updating from PUBLISHED to PENDING as OWNER should be OK', () => {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
     const headTeacher = getRandomUserWithProfile(headUsers, 'Teacher');
-    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher');
+    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher', [headTeacher]);
 
     console.log("Authenticate head teacher " + headTeacher.login);
     authenticateWeb(headTeacher.login);
@@ -1078,7 +1081,7 @@ export function testInfoUpdateOwnerTransition(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for draft info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     const shares = addUserSharesInfos({ users : {}, groups: {}, sharedBookmarks: {}}, headTeacher2.id, threadContributorRights);
@@ -1090,17 +1093,28 @@ export function testInfoUpdateOwnerTransition(data: InitData) {
     const infoData: Info = {
       title: `Published info ${seed}`,
       content: `This is a publish content ${seed}`,
-      status: 3, // PUBLISHED
+      status: 2, // PENDING
       thread_id: parseInt(thread.id as string),
     };
-
-    const createResp: Identifier = createPublishedInfoOrFail(infoData);
-    console.log(`Info of id ${createResp.id} created`);
 
     console.log("Authenticate head teacher " + headTeacher2.login);
     authenticateWeb(headTeacher2.login);
 
-    const uInfo: Info = {
+    const createResp: Identifier = createInfoOrFail(infoData);
+    console.log(`Info of id ${createResp.id} created`);
+
+    console.log("Authenticate head teacher " + headTeacher.login);
+    authenticateWeb(headTeacher.login);
+
+    let uInfo: Info = {
+      status: 3,
+    }
+    updateInfoOrFail(createResp.id, uInfo);
+
+    console.log("Authenticate head teacher " + headTeacher2.login);
+    authenticateWeb(headTeacher2.login);
+
+    uInfo = {
       title: `Pending update info ${seed}`,
       content: `This is a update PENDING content ${seed}`,
       status: 2,
@@ -1108,8 +1122,7 @@ export function testInfoUpdateOwnerTransition(data: InitData) {
     }
 
     const uResp = updateInfo(createResp.id, uInfo);
-
-    check(uResp,{ "Update of published info to pending as owner should not be successful" : (r) => r.status === 401 });
+    check(uResp,{ "Update of published info to pending as owner should be successful" : (r) => r.status < 300 });
   });
 
 
@@ -1117,7 +1130,7 @@ export function testInfoUpdateOwnerTransition(data: InitData) {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
     const headTeacher = getRandomUserWithProfile(headUsers, 'Teacher');
-    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher');
+    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher', [headTeacher]);
 
     console.log("Authenticate head teacher " + headTeacher.login);
     authenticateWeb(headTeacher.login);
@@ -1126,7 +1139,7 @@ export function testInfoUpdateOwnerTransition(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for draft info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     const shares = addUserSharesInfos({ users : {}, groups: {}, sharedBookmarks: {}}, headTeacher2.id, threadContributorRights);
@@ -1165,7 +1178,7 @@ export function testInfoUpdateOwnerTransition(data: InitData) {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
     const headTeacher = getRandomUserWithProfile(headUsers, 'Teacher');
-    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher');
+    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher', [headTeacher]);
 
     console.log("Authenticate head teacher " + headTeacher.login);
     authenticateWeb(headTeacher.login);
@@ -1174,7 +1187,7 @@ export function testInfoUpdateOwnerTransition(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for draft info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     const shares = addUserSharesInfos({ users : {}, groups: {}, sharedBookmarks: {}}, headTeacher2.id, threadContributorRights);
@@ -1209,11 +1222,11 @@ export function testInfoUpdateOwnerTransition(data: InitData) {
   });
 
 
-  describe('[Info] Test updating from DRAFT to PUBLISHED as OWNER with µPUBLISH right should be OK', () => {
+  describe('[Info] Test updating from DRAFT to PUBLISHED as OWNER with PUBLISH right should be OK', () => {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
     const headTeacher = getRandomUserWithProfile(headUsers, 'Teacher');
-    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher');
+    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher', [headTeacher]);
 
     console.log("Authenticate head teacher " + headTeacher.login);
     authenticateWeb(headTeacher.login);
@@ -1222,7 +1235,7 @@ export function testInfoUpdateOwnerTransition(data: InitData) {
     console.log("Creating a thread");
     const seed = Math.random().toString(36).substring(7);
     const threadTitle = `Thread for draft info ${seed}`;
-    const thread: ThreadIdentifier = createThreadOrFail(threadTitle);
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
     console.log(`Thread of id ${thread.id} created`);
 
     const shares = addUserSharesInfos({ users: {}, groups: {}, sharedBookmarks: {} }, headTeacher2.id,

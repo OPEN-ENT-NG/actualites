@@ -100,7 +100,7 @@ export function testInfoStats(data: InitData) {
   describe('[Info-Stats] Setup - Create main thread with various infos', () => {
     authenticateWeb(data.teacher.login);
 
-    const thread = createThreadOrFail(`Thread stats ${seed}`);
+    const thread = createThreadOrFail(`Thread stats ${seed}`, data.head.id);
     data.mainThreadId = thread.id as string;
     console.log(`Thread id: ${thread.id}`);
 
@@ -298,7 +298,7 @@ export function testInfoStats(data: InitData) {
   describe('[Info-Stats] Thread without PUBLISHED infos', () => {
     authenticateWeb(data.teacher.login);
 
-    const thread = createThreadOrFail(`Thread no published ${seed}`);
+    const thread = createThreadOrFail(`Thread no published ${seed}`, data.head.id);
 
     createInfoOrFail({
       title: `Draft 1 ${seed}`,
@@ -331,7 +331,7 @@ export function testInfoStats(data: InitData) {
   describe('[Info-Stats] All statuses combined in one thread', () => {
     authenticateWeb(data.teacher.login);
 
-    const thread = createThreadOrFail(`Thread all statuses ${seed}`);
+    const thread = createThreadOrFail(`Thread all statuses ${seed}`, data.head.id);
     const tid = parseInt(thread.id as string);
 
     createInfoOrFail({ title: `Draft ${seed}`, content: `Content`, thread_id: tid, status: 1 } as any);
@@ -381,7 +381,7 @@ export function testInfoStats(data: InitData) {
   describe('[Info-Stats] TRASH status counted', () => {
     authenticateWeb(data.teacher.login);
 
-    const thread = createThreadOrFail(`Thread with trash ${seed}`);
+    const thread = createThreadOrFail(`Thread with trash ${seed}`, data.head.id);
 
     const draftInfo = createInfoOrFail({
       title: `Info to trash ${seed}`,
@@ -418,7 +418,7 @@ export function testInfoStats(data: InitData) {
   describe('[Info-Stats] Multiple threads', () => {
     authenticateWeb(data.teacher.login);
 
-    const thread2 = createThreadOrFail(`Second thread ${seed}`);
+    const thread2 = createThreadOrFail(`Second thread ${seed}`, data.head.id);
 
     createPublishedInfoOrFail({
       title: `Expired in thread 2 ${seed}`,
@@ -451,7 +451,7 @@ export function testInfoStats(data: InitData) {
   describe('[Info-Stats] Empty thread should NOT appear', () => {
     authenticateWeb(data.teacher.login);
 
-    const emptyThread = createThreadOrFail(`Empty thread ${seed}`);
+    const emptyThread = createThreadOrFail(`Empty thread ${seed}`, data.head.id);
 
     const stats = getStats(statsUrl);
     const emptyThreadStats = stats.threads.find((t: any) => t.id === parseInt(emptyThread.id as string));
@@ -468,7 +468,7 @@ export function testInfoStats(data: InitData) {
   describe('[Info-Stats] Thread shared with user appears', () => {
     authenticateWeb(data.teacher.login);
 
-    const sharedThread = createThreadOrFail(`Shared thread ${seed}`);
+    const sharedThread = createThreadOrFail(`Shared thread ${seed}`, data.head.id);
 
     createPublishedInfoOrFail({
       title: `Info in shared thread ${seed}`,
@@ -494,7 +494,7 @@ export function testInfoStats(data: InitData) {
   describe('[Info-Stats] Unshared thread does NOT appear', () => {
     authenticateWeb(data.teacher.login);
 
-    const privateThread = createThreadOrFail(`Private thread ${seed}`);
+    const privateThread = createThreadOrFail(`Private thread ${seed}`, data.head.id);
 
     createPublishedInfoOrFail({
       title: `Info in private thread ${seed}`,
@@ -518,7 +518,7 @@ export function testInfoStats(data: InitData) {
   describe('[Info-Stats] Directly shared info makes thread appear', () => {
     authenticateWeb(data.teacher.login);
 
-    const thread = createThreadOrFail(`Thread with shared info ${seed}`);
+    const thread = createThreadOrFail(`Thread with shared info ${seed}`, data.head.id);
 
     const info = createPublishedInfoOrFail({
       title: `Shared info ${seed}`,
