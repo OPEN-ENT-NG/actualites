@@ -121,7 +121,7 @@ export const Root = () => {
   const isRssUnavailable = typeof unavailableInfoId === 'number';
   const [isRssModalOpen, setRssModalOpen] = useState(isRssUnavailable);
 
-  // Check URL for any info ID to focus on
+  // Check URL for any hash (HTML element ID) to scroll into view
   let { hash, infoId, deferScrollIntoView } = useScrollToElement();
 
   if (!init) return <LoadingScreen position={false} />;
