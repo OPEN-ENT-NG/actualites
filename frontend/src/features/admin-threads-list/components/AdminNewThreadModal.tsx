@@ -20,8 +20,8 @@ import { IconFilter } from '@edifice.io/react/icons';
 import { createPortal } from 'react-dom';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useI18n } from '~/hooks/useI18n';
-import { Thread, ThreadMode, ThreadPayload } from '~/models/thread';
-import { useCreateThread } from '~/services/queries';
+import { Thread, ThreadMode, ThreadQueryPayload } from '~/models/thread';
+import { useCreateThread, useUpdateThread } from '~/services/queries';
 
 export interface FormInputs {
   title: string;
@@ -55,6 +55,7 @@ export const AdminNewThreadModal = ({
   const formId = useId();
 
   const { mutate: createThread } = useCreateThread();
+  const { mutate: updateThread } = useUpdateThread();
   const [icon, setIcon] = useState<string>(thread?.icon || '');
   const {
     ref: mediaLibraryRef,
@@ -105,20 +106,34 @@ export const AdminNewThreadModal = ({
     formData: FormInputs,
   ) {
     try {
-      const data: ThreadPayload = {
+      const data: ThreadQueryPayload = {
         mode: ThreadMode.SUBMIT,
         title: formData.title,
-        // structureId: formData.structureId,
+        structure: {
+          id: formData.structureId || '',
+          name:
+            structureList.find((s) => s.value === formData.structureId)
+              ?.label || '',
+        },
         icon,
       };
       if (!thread?.id) {
-        console.log('Creating thread with data:', data);
         createThread(data, {
           onSuccess: () => {
             reset();
             onSuccess();
           },
         });
+      } else {
+        updateThread(
+          { threadId: thread.id, payload: data },
+          {
+            onSuccess: () => {
+              reset();
+              onSuccess();
+            },
+          },
+        );
       }
     } catch (e) {
       console.error(e);
@@ -215,6 +230,7 @@ export const AdminNewThreadModal = ({
                     )}
                     data-testid="actualites.adminThreads.newThread.selectStructure"
                     icon={<IconFilter />}
+                    defaultValue={thread?.structureId || ''}
                   />
                 )}
               />

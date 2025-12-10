@@ -2,6 +2,7 @@ import { useUser } from '@edifice.io/react';
 import { useMemo } from 'react';
 import { Thread, ThreadId } from '~/models/thread';
 import { useThreads } from '~/services/queries';
+import { useUserRights } from './useUserRights';
 import { getThreadUserRights } from './utils/threads';
 
 /**
@@ -31,6 +32,7 @@ export function useThreadsUserRights(): {
 } {
   const { data: threads, isSuccess } = useThreads();
   const { user } = useUser();
+  const { canCreateThread } = useUserRights();
 
   return useMemo(() => {
     if (!isSuccess || !threads || !user?.userId) {
@@ -65,7 +67,8 @@ export function useThreadsUserRights(): {
       threadsWithContributeRight,
       threadsWithManageRight,
       canContributeOnOneThread,
-      canManageOnOneThread: threadsWithManageRight.length > 0,
+      canManageOnOneThread:
+        threadsWithManageRight.length > 0 || canCreateThread,
       hasContributeRightOnThread,
     };
   }, [threads, user?.userId, isSuccess]);

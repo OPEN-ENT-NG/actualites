@@ -43,6 +43,7 @@
   "actualites.info.createForm.publishedSuccess": "L'actualité a été publiée avec succès",
   "actualites.threadList.allThreads": "Tous les fils d’actus",
   "actualites.threadList.manageThreads": "Gérer les fils",
+  "actualites.adminThreads.accessDenied": "Vous n’avez pas les droits pour accéder à cette page.",
   "actualites.adminThreads.goBack": "Retour aux actualités",
   "actualites.adminThreads.newThread": "Nouveau fil",
   "actualites.adminThreads.searchPlaceholder": "Chercher un fil",

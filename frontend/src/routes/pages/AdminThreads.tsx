@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { AdminThreadList } from '~/features/admin-threads-list/AdminThreadList';
 import { AdminThreadListSkeleton } from '~/features/admin-threads-list/components/AdminThreadListSkeleton';
 import { useI18n } from '~/hooks/useI18n';
+import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
 import { threadQueryOptions, useThreads } from '~/services/queries';
 
 export const loader = (queryClient: QueryClient) => async () => {
@@ -18,6 +19,11 @@ export function AdminThreads() {
   const { isPending } = useThreads();
   const { t } = useI18n();
   const navigate = useNavigate();
+  const { canManageOnOneThread } = useThreadsUserRights();
+
+  if (canManageOnOneThread !== undefined && !canManageOnOneThread) {
+    throw new Error(t('actualites.adminThreads.accessDenied'));
+  }
 
   const handleGoBackClick = () => {
     navigate('/');

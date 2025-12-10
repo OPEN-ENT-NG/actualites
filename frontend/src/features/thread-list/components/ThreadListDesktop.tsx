@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { useI18n } from '~/hooks/useI18n';
 import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
 import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
-import { useUserRights } from '~/hooks/useUserRights';
 import { useThreads } from '~/services/queries';
 import './ThreadListDesktop.css';
 import { ThreadListDesktopThread } from './ThreadListDesktopThread';
@@ -15,7 +14,6 @@ export const ThreadListDesktop = () => {
   const { data: threads, isLoading, isFetched } = useThreads();
   const navigate = useNavigate();
 
-  const { canCreateThread } = useUserRights();
   const { canManageOnOneThread } = useThreadsUserRights();
 
   const handleAllThreadsClick = () => {
@@ -48,7 +46,7 @@ export const ThreadListDesktop = () => {
               <ThreadListDesktopThread thread={thread} key={thread.id} />
             ))}
           </Menu>
-          {(canCreateThread || canManageOnOneThread) && (
+          {canManageOnOneThread && (
             <div className="border-top pt-16">
               <Button
                 color="secondary"

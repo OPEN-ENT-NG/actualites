@@ -5,8 +5,10 @@ import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
 
 import { StringUtils } from '@edifice.io/client';
 import { ChangeEvent, useMemo, useState } from 'react';
+import { Thread } from '~/models/thread';
 import { useInfosStats } from '~/services/queries';
 import './AdminThreadList.css';
+import AdminNewThreadModal from './components/AdminNewThreadModal';
 import { AdminThread } from './components/AdminThread';
 
 export function AdminThreadList() {
@@ -15,6 +17,9 @@ export function AdminThreadList() {
   const { data: infosStats } = useInfosStats();
 
   const [search, setSearch] = useState('');
+  const [threadToUpdate, setThreadToUpdate] = useState<Thread | undefined>(
+    undefined,
+  );
 
   const threadInfosStats = (threadId: number) => {
     return infosStats?.threads?.find((thread) => thread.id === threadId);
@@ -67,9 +72,18 @@ export function AdminThreadList() {
             key={thread.id}
             thread={thread}
             threadInfosStats={threadInfosStats(thread.id)}
+            onUpdateClick={() => setThreadToUpdate(thread)}
           />
         );
       })}
+      {threadToUpdate && (
+        <AdminNewThreadModal
+          isOpen={!!threadToUpdate}
+          thread={threadToUpdate}
+          onCancel={() => setThreadToUpdate(undefined)}
+          onSuccess={() => setThreadToUpdate(undefined)}
+        />
+      )}
     </Flex>
   );
 }

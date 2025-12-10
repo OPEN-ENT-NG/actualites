@@ -22,9 +22,11 @@ import { Thread } from '~/models/thread';
 export function AdminThread({
   thread,
   threadInfosStats,
+  onUpdateClick,
 }: {
   thread: Thread;
   threadInfosStats?: ThreadInfoStats;
+  onUpdateClick: () => void;
 }) {
   const { t } = useI18n();
   const { lg, xl } = useBreakpoint();
@@ -76,6 +78,7 @@ export function AdminThread({
               variant="ghost"
               color="tertiary"
               leftIcon={<IconEdit />}
+              onClick={onUpdateClick}
             >
               {t('actualites.adminThreads.editButton')}
             </Button>

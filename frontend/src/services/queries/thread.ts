@@ -1,5 +1,16 @@
-import { queryOptions, useMutation, useQuery } from '@tanstack/react-query';
-import { ThreadId, ThreadMode, ThreadPayload } from '~/models/thread';
+import { useEdificeClient } from '@edifice.io/react';
+import {
+  queryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
+import {
+  Thread,
+  ThreadId,
+  ThreadPayload,
+  ThreadQueryPayload,
+} from '~/models/thread';
 import { threadService } from '../api';
 
 export const threadQueryKeys = {
@@ -44,13 +55,51 @@ export const useThreads = () => useQuery(threadQueryOptions.getThreads());
 export const useThreadShares = (threadId: ThreadId) =>
   useQuery(threadQueryOptions.getShares(threadId));
 
-export const useCreateThread = () =>
-  useMutation({
-    mutationFn: (payload: ThreadPayload) => threadService.create(payload),
-    // TODO optimistic update
-    // onSuccess: async (, { mode, title }) => {
-    // },
+export const useCreateThread = () => {
+  const queryClient = useQueryClient();
+  const { user } = useEdificeClient();
+  return useMutation({
+    mutationFn: (queryPayload: ThreadQueryPayload) => {
+      const payload: ThreadPayload = {
+        ...queryPayload,
+        structure: queryPayload.structure?.id
+          ? { id: queryPayload.structure.id }
+          : undefined,
+      };
+      return threadService.create(payload);
+    },
+    onSuccess: ({ id }, threadPayload) => {
+      queryClient.setQueryData(
+        threadQueryKeys.all(),
+        (oldData: Thread[] | undefined) => {
+          const newThread: Thread = {
+            id,
+            title: threadPayload.title,
+            icon: threadPayload.icon || null,
+            mode: threadPayload.mode,
+            created: new Date().toISOString(),
+            modified: new Date().toISOString(),
+            structure: threadPayload.structure
+              ? { id: threadPayload.structure.id, name: '' }
+              : null,
+            structureId: threadPayload.structure
+              ? threadPayload.structure.id
+              : null,
+            owner: user?.userId || '',
+            username: user?.username || '',
+          };
+          if (oldData) {
+            return [...oldData, newThread].sort((a, b) =>
+              a.title.localeCompare(b.title),
+            );
+          } else {
+            return [newThread];
+          }
+        },
+      );
+    },
   });
+};
 
 export const useUpdateThread = () =>
   useMutation({
@@ -59,7 +108,7 @@ export const useUpdateThread = () =>
       payload,
     }: {
       threadId: ThreadId;
-      payload: { mode: ThreadMode; title: string };
+      payload: ThreadQueryPayload;
     }) => threadService.update(threadId, payload),
     // TODO optimistic update
     // onSuccess: async (, { mode, title }) => {
