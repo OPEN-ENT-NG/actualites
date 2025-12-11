@@ -46,6 +46,10 @@ export function AdminThreadList() {
     setSearch(e.target.value);
   };
 
+  const handleCloseModal = () => {
+    setThreadToUpdate(undefined);
+  };
+
   if (!threadsWithManageRight || threadsWithManageRight.length === 0) {
     return (
       <EmptyScreen
@@ -80,8 +84,8 @@ export function AdminThreadList() {
         <AdminNewThreadModal
           isOpen={!!threadToUpdate}
           thread={threadToUpdate}
-          onCancel={() => setThreadToUpdate(undefined)}
-          onSuccess={() => setThreadToUpdate(undefined)}
+          onCancel={handleCloseModal}
+          onSuccess={handleCloseModal}
         />
       )}
     </Flex>

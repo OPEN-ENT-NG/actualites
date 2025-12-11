@@ -82,11 +82,8 @@ export const AdminNewThreadModal = ({
   } = useForm<FormInputs>({
     mode: 'onChange',
     defaultValues: {
-      title: thread?.title || '',
-      structureId:
-        thread?.structureId || structureList.length === 1
-          ? structureList[0].value
-          : undefined,
+      title: '',
+      structureId: undefined,
     },
   });
 
@@ -151,14 +148,19 @@ export const AdminNewThreadModal = ({
     setIcon('');
   };
 
+  const handleCloseModal = () => {
+    reset();
+    onCancel();
+  };
+
   return createPortal(
     <Modal
       id={`admin-new-thread-modal`}
       size="lg"
       isOpen={isOpen}
-      onModalClose={onCancel}
+      onModalClose={handleCloseModal}
     >
-      <Modal.Header onModalClose={onCancel}>
+      <Modal.Header onModalClose={handleCloseModal}>
         {t(`actualites.adminThreads.newThread.modalTitle`)}
       </Modal.Header>
 
@@ -242,7 +244,7 @@ export const AdminNewThreadModal = ({
       <Modal.Footer>
         <Button
           color="tertiary"
-          onClick={onCancel}
+          onClick={handleCloseModal}
           type="button"
           variant="ghost"
         >
