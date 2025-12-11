@@ -5,10 +5,10 @@ actualitesWidget.display = {
 };
 
 actualitesWidget.updateInfos  = function(){
-	http().get('/actualites/infos/last/' + actualitesWidget.resultSize).done(function(infos){
+	http().get('/actualites/api/v1/infos/preview/last/' + actualitesWidget.resultSize).done(function(infos){
 		var enrichedInfos = _.chain(infos).map(function(info){
-			info.relativeDate = moment(info.date).fromNow();
-			info.tooltip = lang.translate('actualites.widget.thread') + ' : ' + info.thread_title +
+			info.relativeDate = moment(info.modifiedDate).fromNow();
+			info.tooltip = lang.translate('actualites.widget.thread') + ' : ' + info.thread.title +
 				' | ' + lang.translate('actualites.widget.author') + ' : ' + info.username;
 			return info;
 		}).value();
