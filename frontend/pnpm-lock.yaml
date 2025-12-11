@@ -10,7 +10,6 @@ importers:
     dependencies:
       '@edifice.io/bootstrap':
         specifier: develop-b2school-actualites
-<<<<<<< HEAD
         version: 2.5.4-develop-b2school-actualites.20251211160636
       '@edifice.io/client':
         specifier: develop-b2school-actualites
@@ -18,15 +17,6 @@ importers:
       '@edifice.io/react':
         specifier: develop-b2school-actualites
         version: 2.5.4-develop-b2school-actualites.20251211160636(kligzzjj3z3e3lw6sjnp5tkowa)
-=======
-        version: 2.5.4-develop-b2school-actualites.20251209155049
-      '@edifice.io/client':
-        specifier: develop-b2school-actualites
-        version: 2.5.4-develop-b2school-actualites.20251209155049
-      '@edifice.io/react':
-        specifier: develop-b2school-actualites
-        version: 2.5.4-develop-b2school-actualites.20251209155049(kligzzjj3z3e3lw6sjnp5tkowa)
->>>>>>> 564cf26 (update pnpm-lock.yaml)
       '@edifice.io/utilities':
         specifier: develop-b2school-actualites
         version: 2.5.4-develop-b2school-actualites.20251209155049
@@ -105,7 +95,7 @@ importers:
         version: 4.7.0(vite@5.4.21(@types/node@18.19.130))
       '@vitest/coverage-v8':
         specifier: ^2.1.3
-        version: 2.1.9(vitest@2.1.9)
+        version: 2.1.9(vitest@2.1.9(@types/node@18.19.130)(@vitest/ui@2.1.9)(jsdom@25.0.1)(msw@2.12.4(@types/node@18.19.130)(typescript@5.9.3)))
       '@vitest/ui':
         specifier: ^2.1.3
         version: 2.1.9(vitest@2.1.9)
@@ -356,35 +346,20 @@ packages:
     peerDependencies:
       react: '>=16.8.0'
 
-<<<<<<< HEAD
   '@edifice.io/bootstrap@2.5.4-develop-b2school-actualites.20251211160636':
     resolution: {integrity: sha512-wp/bqrGKwU2SP+lQHERIDBHx/4G0i9z/X04K+GtR33gYK8azE9njot0B8frPtQNh/CaRoR3MGApvXTD88NmHew==}
-=======
-  '@edifice.io/bootstrap@2.5.4-develop-b2school-actualites.20251209155049':
-    resolution: {integrity: sha512-5AcbSEjFFmZl2a5jwU/mD/3foER/HCa/do1zVCUPtGQ8OzD3qsplxIPbvC+9CvjpF70HuGjHXMsT2q/Uf4o1pA==}
->>>>>>> 564cf26 (update pnpm-lock.yaml)
 
   '@edifice.io/bootstrap@2.5.4-develop-b2school.20251208180912':
     resolution: {integrity: sha512-UiZabPfhkKpBqMWASbcx5VLxqdLC4EtYBzA92f1u84GobUxEiD5wJ7Ezz4agimnjqWQkFD64v8r0iyMJSC7zEQ==}
 
-<<<<<<< HEAD
   '@edifice.io/client@2.5.4-develop-b2school-actualites.20251211160636':
     resolution: {integrity: sha512-n029nBVsNRIPj41EoPpuPLlpu/wbCckOAHl8LYhgdD8++C+2VDhNl9VQCxSKv7I6l5HpPDIG6qOcaG0WK8O+0Q==}
-=======
-  '@edifice.io/client@2.5.4-develop-b2school-actualites.20251209155049':
-    resolution: {integrity: sha512-TCJ5MYsOvH4qmzjH6V4guq8LdhNOTES7GSQ5KN1vv5XsKMfLZcWJtI951dBPygo+GLSn2rp7FdIZIh5aPDVjcA==}
->>>>>>> 564cf26 (update pnpm-lock.yaml)
 
   '@edifice.io/client@2.5.4-develop-b2school.20251208180912':
     resolution: {integrity: sha512-Akb9fLdqzwUr59/6rEo3lVgehikkluv3NxHZFvZZ1cdYj4KMvMeIUO85l02DtrLvvfLY5EBzTgzlmhe8ymC9GA==}
 
-<<<<<<< HEAD
   '@edifice.io/react@2.5.4-develop-b2school-actualites.20251211160636':
     resolution: {integrity: sha512-4ZnvU0hI0wPD04AUC6ZDvSQRnxfx3bMVqK/F9Ia3ExdcjmTqIeo+nLOa+qnCrjlQxhrtCKGL2RLtppmEN0NC7Q==}
-=======
-  '@edifice.io/react@2.5.4-develop-b2school-actualites.20251209155049':
-    resolution: {integrity: sha512-Hh6ruu10CUKXKbzXC1dCupMDbtYzDnuVCzJ0F0Whxs57c06moPmQJ0imhcSVwQk4YlYdX2tG/2HsJ1bUnCEVXQ==}
->>>>>>> 564cf26 (update pnpm-lock.yaml)
     peerDependencies:
       '@react-spring/web': ^9.7.5
       '@tanstack/react-query': 5.62.7
@@ -403,13 +378,8 @@ packages:
       react-hook-form: ^7.53.0
       react-i18next: ^14.1.0
 
-<<<<<<< HEAD
   '@edifice.io/tiptap-extensions@2.5.4-develop-b2school-actualites.20251211160636':
     resolution: {integrity: sha512-bY6bE4BjMdDQGZ8HiZrQGHK2xBVO0DHSlDtn61Z3xE2cActhtY8iG4I1Cuzbx9QmJNGU+GFCz9Y+dUQsQnmlEw==}
-=======
-  '@edifice.io/tiptap-extensions@2.5.4-develop-b2school-actualites.20251209155049':
-    resolution: {integrity: sha512-wzA4dkHmVhu3UrThx+lOtevBZ8l2bTQ/UPrJg25YhK/mG7SdArKtF4y7/dX9EYZ9h/rA3aLuG08/GpcR+xS4/w==}
->>>>>>> 564cf26 (update pnpm-lock.yaml)
 
   '@edifice.io/tiptap-extensions@2.5.4-develop-b2school.20251208180912':
     resolution: {integrity: sha512-k2cNFBCl/CCKhezIDRFlXEgO+xMHNgewv/Wn+aXLw3VuDW6mIG6is9cxt2IQho4eJF3vCQYtaEFSIi5O1vZDGQ==}
@@ -4479,11 +4449,7 @@ snapshots:
       react: 18.3.1
       tslib: 2.8.1
 
-<<<<<<< HEAD
   '@edifice.io/bootstrap@2.5.4-develop-b2school-actualites.20251211160636':
-=======
-  '@edifice.io/bootstrap@2.5.4-develop-b2school-actualites.20251209155049':
->>>>>>> 564cf26 (update pnpm-lock.yaml)
     dependencies:
       '@popperjs/core': 2.11.8
       bootstrap: 5.3.2(@popperjs/core@2.11.8)
@@ -4493,15 +4459,9 @@ snapshots:
       '@popperjs/core': 2.11.8
       bootstrap: 5.3.2(@popperjs/core@2.11.8)
 
-<<<<<<< HEAD
   '@edifice.io/client@2.5.4-develop-b2school-actualites.20251211160636':
     dependencies:
       '@edifice.io/utilities': 2.5.4-develop-b2school-actualites.20251211160636
-=======
-  '@edifice.io/client@2.5.4-develop-b2school-actualites.20251209155049':
-    dependencies:
-      '@edifice.io/utilities': 2.5.4-develop-b2school-actualites.20251209155049
->>>>>>> 564cf26 (update pnpm-lock.yaml)
       axios: 1.13.2
       core-js: 3.47.0
     transitivePeerDependencies:
@@ -4515,25 +4475,15 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-<<<<<<< HEAD
   '@edifice.io/react@2.5.4-develop-b2school-actualites.20251211160636(kligzzjj3z3e3lw6sjnp5tkowa)':
-=======
-  '@edifice.io/react@2.5.4-develop-b2school-actualites.20251209155049(kligzzjj3z3e3lw6sjnp5tkowa)':
->>>>>>> 564cf26 (update pnpm-lock.yaml)
     dependencies:
       '@ant-design/icons': 5.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@dnd-kit/core': 6.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@dnd-kit/sortable': 8.0.0(@dnd-kit/core@6.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       '@dnd-kit/utilities': 3.2.2(react@18.3.1)
-<<<<<<< HEAD
       '@edifice.io/bootstrap': 2.5.4-develop-b2school-actualites.20251211160636
       '@edifice.io/tiptap-extensions': 2.5.4-develop-b2school-actualites.20251211160636(@types/node@18.19.130)(rollup@4.53.3)(typescript@5.9.3)
       '@edifice.io/utilities': 2.5.4-develop-b2school-actualites.20251211160636
-=======
-      '@edifice.io/bootstrap': 2.5.4-develop-b2school-actualites.20251209155049
-      '@edifice.io/tiptap-extensions': 2.5.4-develop-b2school-actualites.20251209155049(@types/node@18.19.130)(rollup@4.53.3)(typescript@5.9.3)
-      '@edifice.io/utilities': 2.5.4-develop-b2school-actualites.20251209155049
->>>>>>> 564cf26 (update pnpm-lock.yaml)
       '@floating-ui/react': 0.26.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@pixi/mixin-get-child-by-name': 7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2))
       '@pixi/react': 7.1.2(p7odtnnenfgvhs76mwyuql6w3u)
@@ -4737,15 +4687,9 @@ snapshots:
       - terser
       - typescript
 
-<<<<<<< HEAD
   '@edifice.io/tiptap-extensions@2.5.4-develop-b2school-actualites.20251211160636(@types/node@18.19.130)(rollup@4.53.3)(typescript@5.9.3)':
     dependencies:
       '@edifice.io/utilities': 2.5.4-develop-b2school-actualites.20251211160636
-=======
-  '@edifice.io/tiptap-extensions@2.5.4-develop-b2school-actualites.20251209155049(@types/node@18.19.130)(rollup@4.53.3)(typescript@5.9.3)':
-    dependencies:
-      '@edifice.io/utilities': 2.5.4-develop-b2school-actualites.20251209155049
->>>>>>> 564cf26 (update pnpm-lock.yaml)
       '@tiptap/core': 2.11.0(@tiptap/pm@2.11.0)
       '@tiptap/extension-blockquote': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
       '@tiptap/extension-bold': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
@@ -6112,7 +6056,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vitest/coverage-v8@2.1.9(vitest@2.1.9)':
+  '@vitest/coverage-v8@2.1.9(vitest@2.1.9(@types/node@18.19.130)(@vitest/ui@2.1.9)(jsdom@25.0.1)(msw@2.12.4(@types/node@18.19.130)(typescript@5.9.3)))':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@bcoe/v8-coverage': 0.2.3
