@@ -20,7 +20,7 @@ export type InfoCardProps = {
 export const InfoCard = ({ info, id }: InfoCardProps) => {
   const { t } = useI18n();
   const { isIncoming, isExpired, extendedStatus } = useInfoStatus(info);
-  const { scrollIntoView } = useScrollToElement();
+  const { deferScrollIntoView } = useScrollToElement();
   const [collapse, setCollapse] = useState(true);
   const [scrollTo, setScrollTo] = useState<string>();
 
@@ -61,7 +61,7 @@ export const InfoCard = ({ info, id }: InfoCardProps) => {
 
   const handleCollapseApplied = useCallback(() => {
     if (scrollTo) {
-      scrollIntoView(scrollTo);
+      deferScrollIntoView(scrollTo);
       setScrollTo(undefined);
     }
   }, [scrollTo]);

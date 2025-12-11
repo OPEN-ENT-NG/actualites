@@ -1,5 +1,6 @@
 import { QueryClient } from '@tanstack/react-query';
 import { RouteObject, createBrowserRouter } from 'react-router-dom';
+import { manageRedirections } from '~/routes/redirections';
 
 import { NotFound } from './errors/not-found';
 import { PageError } from './errors/page-error';
@@ -76,6 +77,17 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
         },
       },
       {
+        path: 'infos/:infoIdAsString',
+        async lazy() {
+          const { loader, Infos: Component } =
+            await import('~/routes/pages/Infos');
+          return {
+            loader: loader(queryClient),
+            Component,
+          };
+        },
+      },
+      {
         path: '',
         async lazy() {
           const { loader, Threads: Component } =
@@ -143,7 +155,15 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
 
 export const basename = import.meta.env.PROD ? '/actualites' : '/';
 
-export const router = (queryClient: QueryClient) =>
-  createBrowserRouter(routes(queryClient), {
+export const router = (queryClient: QueryClient) => {
+  const redirectPath = manageRedirections();
+
+  if (redirectPath) {
+    const newUrl =
+      window.location.origin + basename.replace(/\/$/g, '') + redirectPath;
+    window.history.replaceState(null, '', newUrl);
+  }
+  return createBrowserRouter(routes(queryClient), {
     basename,
   });
+};

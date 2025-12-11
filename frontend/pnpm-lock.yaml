@@ -22,7 +22,7 @@ importers:
         version: 2.5.4-develop-b2school-actualites.20251211160636(kligzzjj3z3e3lw6sjnp5tkowa)
       '@edifice.io/utilities':
         specifier: develop-b2school-actualites
-        version: 2.4.2-develop-b2school-actualites.20251126114120
+        version: 2.5.4-develop-b2school-actualites.20251209155049
       '@react-spring/web':
         specifier: ^9.7.5
         version: 9.7.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -449,8 +449,8 @@ packages:
         integrity: sha512-U8UHoD26iBTez1oTccHcNvyxrhKJx83tRSe+rBxyeFKY8kuenE3MmLIr85bJUtbdI2KNCDhEozoGr5me/SK1/Q==,
       }
 
-  '@edifice.io/utilities@2.4.2-develop-b2school-actualites.20251126114120':
-    resolution: {integrity: sha512-2AYD4BZCEL909BxOvvuEFJFeqNlfrbHnVDBSOQeIHbs9SYu0WPr+QMPY1siL+jRWa8voJUiv/cHp2JObGHJu6Q==}
+  '@edifice.io/utilities@2.5.4-develop-b2school-actualites.20251209155049':
+    resolution: {integrity: sha512-J0g50ypVZgmxK05AAOIyEt98RMVo4aQDMB4SltufBcwXaNwyB6nkIWlZV76vTvT6YOjrOw6mYysDaCIR7c776A==}
 
   '@edifice.io/utilities@2.5.4-develop-b2school-actualites.20251211160636':
     resolution: {integrity: sha512-6G503nNESMQSCIobZNKznohO+eF2lX9kB5ITx7NLIrFgWf+fRW9iPrLY7P/ouWnW5HD5ie+5FhdioJWHTO8OgQ==}
@@ -5047,7 +5047,7 @@ snapshots:
 
   '@edifice.io/utilities@2.4.2-develop-b2school-actualites.20251126114120': {}
 
-  '@edifice.io/utilities@2.5.2-develop-b2school-actualites.20251208181225': {}
+  '@edifice.io/utilities@2.5.4-develop-b2school-actualites.20251209155049': {}
 
   '@edifice.io/utilities@2.5.4-develop-b2school-actualites.20251211160636': {}
 
