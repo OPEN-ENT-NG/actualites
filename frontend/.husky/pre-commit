@@ -3,6 +3,6 @@
 MODIFIED_FILES=$(git diff --cached --name-only)
 
 if echo "$MODIFIED_FILES" | grep -q '^frontend'; then
-  echo "🔍 Changes detected in the conversation module..."
+  echo "🔍 Changes detected in the actualites module..."
   cd frontend && pnpm run pre-commit && pnpm run build
 fi
