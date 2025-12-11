@@ -9,10 +9,11 @@ import { ThreadList } from '~/features/thread-list/ThreadList';
 import { useI18n } from '~/hooks/useI18n';
 import { useScrollToElement } from '~/hooks/useScrollToElement';
 import { InfoDetails } from '~/models/info';
+import { baseUrl } from '~/services';
 import { infoQueryOptions } from '~/services/queries';
 
 export const loader = (queryClient: QueryClient) => async () => {
-  const isPathToInfo = matchPath('/infos/:infoId', location.pathname);
+  const isPathToInfo = matchPath(`${baseUrl}/infos/:infoId`, location.pathname);
 
   if (isPathToInfo) {
     const infoId = Number(isPathToInfo.params.infoId);
