@@ -11,7 +11,7 @@ import org.entcore.common.sql.SqlResult;
 
 /**
  * Implementation of InfoCleanupService
- * Deletes news and their related comments based on publication date
+ * Deletes news and their related comments based on publication date or modified date if publication date is not set.
  */
 public class InfoCleanupServiceImpl implements InfoCleanupService {
 
@@ -29,12 +29,12 @@ public class InfoCleanupServiceImpl implements InfoCleanupService {
 
     private void deleteBatch(int monthsAfterPublication, int batchSize, int totalDeleted, Handler<JsonObject> handler) {
         // Query to delete news published more than X months ago in batches
+        // Uses publication_date if available, otherwise falls back to modified date
         // Comments, shares and revisions will be automatically deleted due to ON DELETE CASCADE constraint
         String query = "DELETE FROM " + Actualites.NEWS_SCHEMA + "." + Actualites.INFO_TABLE +
                        " WHERE id IN (" +
                        "  SELECT id FROM " + Actualites.NEWS_SCHEMA + "." + Actualites.INFO_TABLE +
-                       "  WHERE publication_date IS NOT NULL " +
-                       "  AND publication_date < (NOW() - INTERVAL '" + monthsAfterPublication + " months')" +
+                       "  WHERE COALESCE(publication_date, modified) < (NOW() - INTERVAL '" + monthsAfterPublication + " months')" +
                        "  LIMIT " + batchSize +
                        ")";
 
