@@ -111,7 +111,7 @@ export function initLocal(schoolName: string): InitData {
     authenticateWeb(teacher.login);
 
     const seed = Math.random().toString(36).substring(7);
-    const thread: ThreadIdentifier = createThreadOrFail(`Thread 1 ${seed}`);
+    const thread: ThreadIdentifier = createThreadOrFail(`Thread 1 ${seed}`, head.id);
 
     console.log("Created thread ",`Thread 1 ${seed} `, thread.id );
 
