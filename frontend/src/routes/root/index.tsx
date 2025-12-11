@@ -64,7 +64,7 @@ export const Root = () => {
     <Layout>
       <AppHeader>
         <Breadcrumb app={(currentApp as IWebApp) ?? displayApp} />
-        {!isCreateRoute && canContributeOnOneThread && (
+        {!isCreateRoute && (
           <Flex fill align="center" justify="end">
             {isAdminThreadPath ? (
               <AdminNewThreadButton />
