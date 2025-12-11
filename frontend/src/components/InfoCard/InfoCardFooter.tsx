@@ -23,18 +23,17 @@ export const InfoCardFooter = ({
       <Flex align="center" justify="between">
         <Flex align="center">
           <ViewsCounter viewsCounter={0} />
-          {info.numberOfComments > 0 ||
-            (canComment && (
-              <>
-                <Divider vertical />
-                <CommentsCounter
-                  commentsCounter={info.numberOfComments}
-                  aria-controls={`info-${info.id}-comments`}
-                  aria-expanded={!collapse}
-                  onClick={handleCommentsClick}
-                />
-              </>
-            ))}
+          {(info.numberOfComments > 0 || canComment) && (
+            <>
+              <Divider vertical />
+              <CommentsCounter
+                commentsCounter={info.numberOfComments}
+                aria-controls={`info-${info.id}-comments`}
+                aria-expanded={!collapse}
+                onClick={handleCommentsClick}
+              />
+            </>
+          )}
         </Flex>
         <Button
           type="button"
