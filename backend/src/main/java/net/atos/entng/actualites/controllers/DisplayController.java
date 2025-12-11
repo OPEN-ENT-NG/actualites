@@ -55,7 +55,7 @@ public class DisplayController extends BaseController {
 	 * Secured by an access right named `actualites.view`
 	 */
 	@Get("")
-	@SecuredAction("actualites.view")
+	@SecuredAction(value = "actualites.view", right = "net.atos.entng.actualites.controllers.DisplayController|view")
 	public void viewRoot(final HttpServerRequest request) {
 		renderView(request, new JsonObject(), "index.html", null);
 
