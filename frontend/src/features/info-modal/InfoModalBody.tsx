@@ -1,8 +1,8 @@
 import { Editor } from '@edifice.io/react/editor';
 import { useInfoStatus } from '~/hooks/useInfoStatus';
 import { Info, InfoDetails } from '~/models/info';
-import { CommentList } from '../comment-list/CommentList';
-import { InfoCardHeader } from '../InfoCard/InfoCardHeader';
+import { CommentList } from '../../components/comment-list/CommentList';
+import { InfoCardHeader } from '../../components/InfoCard/InfoCardHeader';
 
 export type InfoModalBodyProps = {
   info: InfoDetails & Info;

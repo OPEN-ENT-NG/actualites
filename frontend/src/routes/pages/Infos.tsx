@@ -3,8 +3,8 @@ import { QueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { matchPath, useLoaderData } from 'react-router-dom';
 import { InfoList } from '~/components';
-import { InfoModalBody } from '~/components/InfoModal/InfoModalBody';
 import { PortalModal } from '~/components/PortalModal';
+import { InfoModalBody } from '~/features/info-modal/InfoModalBody';
 import { ThreadList } from '~/features/thread-list/ThreadList';
 import { useI18n } from '~/hooks/useI18n';
 import { useScrollToElement } from '~/hooks/useScrollToElement';
@@ -38,12 +38,13 @@ export function Infos() {
   const [isModalOpen, setModalOpen] = useState(true);
 
   // Check URL for any hash (HTML element ID) to scroll into view
-  let { hash, deferScrollIntoView } = useScrollToElement();
+  let { hash, removeHash, deferScrollIntoView } = useScrollToElement();
   if (hash) {
     deferScrollIntoView(hash);
   }
 
   const handleModalClose = () => {
+    removeHash();
     setModalOpen(false);
   };
 
