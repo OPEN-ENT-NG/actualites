@@ -167,24 +167,36 @@ export const InfoCardHeader = ({
 
       <div className="position-absolute top-0 end-0 z-3">
         <Dropdown placement="bottom-end" overflow>
-          {(triggerProps: JSX.IntrinsicAttributes &
-            Omit<IconButtonProps, 'ref'> &
-            RefAttributes<HTMLButtonElement>) => (
-            <><IconButton
-              {...triggerProps}
-              aria-label={t('card.open.menu')}
-              className="bg-white"
-              color="secondary"
-              icon={<IconOptions />}
-              variant="ghost" /><Dropdown.Menu>
-                <Dropdown.Item icon={<IconEdit />} onClick={() => alert('edit')}>
+          {(
+            triggerProps: JSX.IntrinsicAttributes &
+              Omit<IconButtonProps, 'ref'> &
+              RefAttributes<HTMLButtonElement>,
+          ) => (
+            <>
+              <IconButton
+                {...triggerProps}
+                aria-label={t('card.open.menu')}
+                className="bg-white"
+                color="secondary"
+                icon={<IconOptions />}
+                variant="ghost"
+              />
+              <Dropdown.Menu>
+                <Dropdown.Item
+                  icon={<IconEdit />}
+                  onClick={() => alert('edit')}
+                >
                   {t('common.edit')}
                 </Dropdown.Item>
                 <Dropdown.Separator />
-                <Dropdown.Item icon={<IconEdit />} onClick={() => alert('copy')}>
+                <Dropdown.Item
+                  icon={<IconEdit />}
+                  onClick={() => alert('copy')}
+                >
                   {t('common.copy')}
                 </Dropdown.Item>
-              </Dropdown.Menu></>
+              </Dropdown.Menu>
+            </>
           )}
         </Dropdown>
       </div>
