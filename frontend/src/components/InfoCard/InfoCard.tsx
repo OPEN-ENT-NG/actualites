@@ -67,7 +67,7 @@ export const InfoCard = ({ info, id }: InfoCardProps) => {
   }, [scrollTo]);
 
   return (
-    <Card className={className} isClickable={false} isSelectable={false}>
+    <Card className={className} isClickable={false} isSelectable={true}>
       <article id={id} className="overflow-hidden" data-testid="info-card">
         <InfoCardHeader info={info} extendedStatus={extendedStatus} />
 
