@@ -1,4 +1,4 @@
-import { Alert, Card } from '@edifice.io/react';
+import { Alert, Card, useDate } from '@edifice.io/react';
 import clsx from 'clsx';
 import { useCallback, useState } from 'react';
 import { useI18n } from '~/hooks/useI18n';
@@ -23,6 +23,7 @@ export const InfoCard = ({ info, id }: InfoCardProps) => {
   const { scrollIntoView } = useScrollToElement();
   const [collapse, setCollapse] = useState(true);
   const [scrollTo, setScrollTo] = useState<string>();
+  const { formatDate } = useDate();
 
   const className = clsx(
     'px-16 px-md-24 py-16 info-card position-relative border-none overflow-visible',
@@ -71,10 +72,17 @@ export const InfoCard = ({ info, id }: InfoCardProps) => {
       <article id={id} className="overflow-hidden" data-testid="info-card">
         <InfoCardHeader info={info} extendedStatus={extendedStatus} />
 
-        {isExpired && (
+        {isExpired && info.expirationDate && (
           <Alert type="danger" className="mb-16">
             <div>
-              <strong>{t('info.alert.expired.title')}</strong>
+              <strong>
+                {t('actualites.info.alert.expired.message', {
+                  expiredDate: formatDate(
+                    info.expirationDate,
+                    t('actualites.info.alert.expired.message.date.format'),
+                  ),
+                })}
+              </strong>
             </div>
             <div>{t('actualites.info.status.expired.description')}</div>
           </Alert>

@@ -2,23 +2,32 @@ import { SegmentedControl } from '@edifice.io/react';
 import { useInfoStats } from '~/components/InfoList/hooks/useInfoStats';
 import { useI18n } from '~/hooks/useI18n';
 import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
-import { InfoSegmentedValue, InfoStatus } from '~/models/info';
+import {
+  InfoExtendedStatus,
+  InfoSegmentedValue,
+  InfoStatus,
+} from '~/models/info';
 import { useInfosStats } from '~/services/queries/info';
 
+interface InfoListSegmentedOption {
+  label: string;
+  value: InfoSegmentedValue;
+}
+interface InfoListSegmentedProps {
+  value: InfoSegmentedValue;
+  onChange: (value: InfoSegmentedValue) => void;
+}
 export const InfoListSegmented = ({
   value = InfoStatus.PUBLISHED,
   onChange,
-}: {
-  value: InfoSegmentedValue;
-  onChange: (value: InfoSegmentedValue) => void;
-}) => {
+}: InfoListSegmentedProps) => {
   const { t } = useI18n();
   const { threadId } = useThreadInfoParams();
   const { data: infosStats } = useInfosStats();
 
   const threadInfosStats = useInfoStats(infosStats, threadId);
 
-  const options = [
+  const options: InfoListSegmentedOption[] = [
     {
       label: `${t('actualites.infoList.segmented.published')} ${threadInfosStats.status[InfoStatus.PUBLISHED]}`,
       value: InfoStatus.PUBLISHED,
@@ -27,14 +36,8 @@ export const InfoListSegmented = ({
       label: `${t('actualites.infoList.segmented.draft')} ${threadInfosStats.status[InfoStatus.DRAFT]}`,
       value: InfoStatus.DRAFT,
     },
-    // TODO: add expired and incoming stats
-    // {
-    //   label:
-    //     t('actualites.infoList.segmented.expired') +
-    //     ' ' +
-    //     (threadInfosStats?.expiredCount ?? 0),
-    //   value: InfoExtendedStatus.EXPIRED,
-    // },
+
+    //    TODO: add incoming stats
     // {
     //   label:
     //     t('actualites.infoList.segmented.incoming') +
@@ -43,6 +46,16 @@ export const InfoListSegmented = ({
     //   value: InfoExtendedStatus.INCOMING,
     // },
   ];
+
+  if (threadInfosStats.expiredCount > 0) {
+    options.push({
+      label:
+        t('actualites.infoList.segmented.expired') +
+        ' ' +
+        (threadInfosStats?.expiredCount ?? 0),
+      value: InfoExtendedStatus.EXPIRED,
+    });
+  }
 
   return (
     <SegmentedControl
