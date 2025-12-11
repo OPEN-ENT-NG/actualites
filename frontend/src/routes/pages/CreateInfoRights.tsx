@@ -110,8 +110,8 @@ export function CreateInfoRights() {
     };
   }, [infoShares, infoId]);
 
-  const handleShareInfoSubmit = () => {
-    setIsSaving(true);
+  const handleShareInfoSubmit = (isSubmitting: boolean) => {
+    setIsSaving(isSubmitting);
   };
 
   const handleShareInfoChange = (_: ShareRight[], isDirty: boolean) => {
