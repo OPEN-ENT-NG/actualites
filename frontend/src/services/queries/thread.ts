@@ -99,7 +99,7 @@ export const useUpdateThread = () => {
               mode: payload.mode,
               modified: new Date().toISOString(),
               structure: payload.structure
-                ? { id: payload.structure.id, name: '' }
+                ? { id: payload.structure.id, name: payload.structure.name }
                 : null,
               structureId: payload.structure ? payload.structure.id : null,
             };
@@ -118,7 +118,7 @@ export const useUpdateThread = () => {
               mode: payload.mode,
               modified: new Date().toISOString(),
               structure: payload.structure
-                ? { id: payload.structure.id, name: '' }
+                ? { id: payload.structure.id, name: payload.structure.name }
                 : null,
               structureId: payload.structure ? payload.structure.id : null,
             };
