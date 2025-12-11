@@ -5,7 +5,7 @@ import { s2CreateInfo } from "../target-tests/s2-create-info.ts";
 import { s3ValidateInfo } from "../target-tests/s3-validate-info.ts";
 
 const schoolName = __ENV.DATA_SCHOOL_NAME || `Load tests average load`;
-const constantVu =  Number.parseInt(__ENV.CONSTANT_VU) || 150;
+const constantVu =  Number.parseInt(__ENV.CONSTANT_VU || '150');
 const duration = __ENV.DURATION || '1m';
 const env = __ENV.ENVIRONMENT || 'local';
 
