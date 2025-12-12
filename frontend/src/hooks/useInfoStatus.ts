@@ -31,5 +31,6 @@ export function useInfoStatus(info?: InfoBase) {
     isIncoming,
     isExpired,
     extendedStatus,
+    isDraft: info.status === InfoStatus.DRAFT,
   };
 }
