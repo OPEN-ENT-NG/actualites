@@ -10,6 +10,7 @@ import {
 } from '~/services/queries';
 import { useInfoUserRights } from './useInfoUserRights';
 import { useThreadUserRights } from './useThreadUserRights';
+import { useInfoStatus } from './useInfoStatus';
 
 // Local interface definition
 declare interface CommentOptions {
@@ -45,6 +46,7 @@ declare interface CommentOptions {
 export function useCommentList(info: Info) {
   const { canContribute, canManage } = useThreadUserRights(info.threadId);
   const { isCreator, canComment } = useInfoUserRights(info);
+  const { isExpired, isDraft } = useInfoStatus(info);
   const { data } = useComments(info.id);
   const comments = useMemo(
     () =>
@@ -71,7 +73,8 @@ export function useCommentList(info: Info) {
   const updateCommentMutation = useUpdateComment();
   const deleteCommentMutation = useDeleteComment();
 
-  const type: 'read' | 'edit' = canComment ? 'edit' : 'read';
+  const type: 'read' | 'edit' =
+    isExpired || isDraft || !canComment ? 'read' : 'edit';
 
   const callbacks = {
     post: async (comment: string) => {
