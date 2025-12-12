@@ -174,7 +174,7 @@ export const AdminNewThreadModal = ({
             <div>
               <ImagePicker
                 app={currentApp}
-                src={thread?.icon || ''}
+                src={icon || ''}
                 addButtonLabel={t('explorer.imagepicker.button.add')}
                 deleteButtonLabel={t('explorer.imagepicker.button.delete')}
                 onUploadImage={handleUploadImage}
