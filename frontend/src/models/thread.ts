@@ -58,5 +58,14 @@ export interface ThreadPayload {
   mode: ThreadMode;
   title: string;
   icon?: string;
-  structureId?: string;
+  structure: {
+    id: string;
+  };
+}
+
+export interface ThreadQueryPayload extends ThreadPayload {
+  structure: {
+    id: string;
+    name: string;
+  };
 }
