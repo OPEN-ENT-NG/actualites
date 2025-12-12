@@ -107,10 +107,11 @@ export const AdminNewThreadModal = ({
         mode: ThreadMode.SUBMIT,
         title: formData.title,
         structure: {
-          id: formData.structureId || '',
+          id: formData.structureId ?? undefined,
           name:
-            structureList.find((s) => s.value === formData.structureId)
-              ?.label || '',
+            formData.structureId
+              ? structureList.find((s) => s.value === formData.structureId)?.label
+              : undefined,
         },
         icon,
       };
