@@ -51,7 +51,6 @@ export const AdminNewThreadModal = ({
 }: AdminNewThreadModalProps) => {
   const { t } = useI18n();
   const { appCode, user, currentApp } = useEdificeClient();
-  // Use custom app code if provided, otherwise use the one from context
   const formId = useId();
 
   const { mutate: createThread } = useCreateThread();
