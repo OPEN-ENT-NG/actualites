@@ -74,7 +74,7 @@ export function useCommentList(info: Info) {
   const deleteCommentMutation = useDeleteComment();
 
   const type: 'read' | 'edit' =
-    isExpired || isDraft ? 'read' : canComment ? 'edit' : 'read';
+    isExpired || isDraft || !canComment ? 'read' : 'edit';
 
   const callbacks = {
     post: async (comment: string) => {

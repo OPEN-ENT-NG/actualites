@@ -52,7 +52,7 @@ export const InfoListSegmented = ({
       label:
         t('actualites.infoList.segmented.expired') +
         ' ' +
-        (threadInfosStats?.expiredCount ?? 0),
+        threadInfosStats?.expiredCount,
       value: InfoExtendedStatus.EXPIRED,
     });
   }
