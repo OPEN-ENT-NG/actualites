@@ -34,6 +34,7 @@ describe('Thread Queries', () => {
     const variables = {
       mode: ThreadMode.DIRECT,
       title: 'Création de fil',
+      structure: { id: '1', name: 'Structure 1' },
     };
 
     act(() => {
@@ -57,6 +58,7 @@ describe('Thread Queries', () => {
       payload: {
         mode: ThreadMode.SUBMIT,
         title: 'Changement de titre',
+        structure: { id: '1', name: 'Structure 1' },
       },
     };
 
