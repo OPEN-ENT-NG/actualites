@@ -40,43 +40,47 @@ export const InfoCardHeader = ({
     'text-center': md,
   });
   const iconSize = md ? 'sm' : 'xs';
-  const styleBadge = md
-    ? { textAlign: 'right' as const, minWidth: '150px' }
-    : { minWidth: '150px' };
 
   const isExpired = extendedStatus === InfoExtendedStatus.EXPIRED;
+
+  const badgeContent = () => (
+    <div style={{ textAlign: 'right' }}>
+      {info.status === 'DRAFT' && (
+        <Badge className="bg-blue-200 text-blue">
+          <Flex align="center" gap="8" wrap="nowrap" className="mx-4">
+            {t('actualites.info.status.draft')}
+            <IconSave />
+          </Flex>
+        </Badge>
+      )}
+      {!isExpired && extendedStatus === InfoExtendedStatus.INCOMING && (
+        <Badge className="bg-purple-200 text-purple-500">
+          <Flex align="center" gap="8" wrap="nowrap" className="mx-4">
+            {t('actualites.info.status.incoming')}
+            <IconClock />
+          </Flex>
+        </Badge>
+      )}
+      {isExpired && (
+        <Badge className="bg-red-200 text-red-500">
+          <Flex align="center" gap="8" wrap="nowrap" className="mx-4">
+            {t('actualites.info.status.expired')}
+            <IconClockAlert />
+          </Flex>
+        </Badge>
+      )}
+    </div>
+  );
 
   return (
     <header key={info.id} className="mb-12">
       <div className="d-grid" style={styles}>
-        <InfoCardThreadHeader thread={thread} />
+        <Flex align="center" justify="between">
+          <InfoCardThreadHeader thread={thread} />
+          {!lg && badgeContent()}
+        </Flex>
         <h3 className={classes}>{info?.title}</h3>
-        <div style={styleBadge}>
-          {info.status === 'DRAFT' && (
-            <Badge className="bg-blue-200 text-blue">
-              <Flex align="center" gap="8" wrap="nowrap" className="mx-4">
-                {t('actualites.info.status.draft')}
-                <IconSave />
-              </Flex>
-            </Badge>
-          )}
-          {!isExpired && extendedStatus === InfoExtendedStatus.INCOMING && (
-            <Badge className="bg-purple-200 text-purple-500">
-              <Flex align="center" gap="8" wrap="nowrap" className="mx-4">
-                {t('actualites.info.status.incoming')}
-                <IconClock />
-              </Flex>
-            </Badge>
-          )}
-          {isExpired && (
-            <Badge className="bg-red-200 text-red-500">
-              <Flex align="center" gap="8" wrap="nowrap" className="mx-4">
-                {t('actualites.info.status.expired')}
-                <IconClockAlert />
-              </Flex>
-            </Badge>
-          )}
-        </div>
+        {lg && badgeContent()}
       </div>
 
       <Flex className="flex-fill mt-12" align="center" wrap="nowrap" gap="16">
@@ -89,7 +93,7 @@ export const InfoCardHeader = ({
           />
         )}
         {sm ? (
-          <Divider className="info-divider ">
+          <Divider className="info-divider m-0" style={{ minWidth: 0 }}>
             <Flex align="center" gap="8" justify="center" fill wrap="nowrap">
               <Avatar
                 alt={info.owner.displayName}

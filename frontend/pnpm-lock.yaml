@@ -13,13 +13,13 @@ importers:
         version: 6.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@edifice.io/bootstrap':
         specifier: develop-b2school-actualites
-        version: 2.5.4-develop-b2school-actualites.20251211160636
+        version: 2.5.4-develop-b2school-actualites.20251212113049
       '@edifice.io/client':
         specifier: develop-b2school-actualites
-        version: 2.5.4-develop-b2school-actualites.20251211160636
+        version: 2.5.4-develop-b2school-actualites.20251212113049
       '@edifice.io/react':
         specifier: develop-b2school-actualites
-        version: 2.5.4-develop-b2school-actualites.20251211160636(kligzzjj3z3e3lw6sjnp5tkowa)
+        version: 2.5.4-develop-b2school-actualites.20251212113049(kligzzjj3z3e3lw6sjnp5tkowa)
       '@edifice.io/utilities':
         specifier: develop-b2school-actualites
         version: 2.5.4-develop-b2school-actualites.20251209155049
@@ -399,8 +399,8 @@ packages:
     peerDependencies:
       react: '>=16.8.0'
 
-  '@edifice.io/bootstrap@2.5.4-develop-b2school-actualites.20251211160636':
-    resolution: {integrity: sha512-wp/bqrGKwU2SP+lQHERIDBHx/4G0i9z/X04K+GtR33gYK8azE9njot0B8frPtQNh/CaRoR3MGApvXTD88NmHew==}
+  '@edifice.io/bootstrap@2.5.4-develop-b2school-actualites.20251212113049':
+    resolution: {integrity: sha512-FXSldMJXwIYZ/w78RoCXTSZbjq8vfXYSBCpIDWeUSlIUR6d4Ll5OJsZGAtFA/TiVR1FG1ep9QZOCMnoyGI2hAg==}
 
   '@edifice.io/bootstrap@2.3.1-develop-b2school-actualites.20250911174726':
     resolution:
@@ -408,8 +408,8 @@ packages:
         integrity: sha512-sh+s2UGWZXc72xrd+d2Iem7cusBx4E2tF7kQGua90SUDTOjd5qbxQ/QMII+IA2e8BWdAwBNbzFfCiHONw276UQ==,
       }
 
-  '@edifice.io/client@2.5.4-develop-b2school-actualites.20251211160636':
-    resolution: {integrity: sha512-n029nBVsNRIPj41EoPpuPLlpu/wbCckOAHl8LYhgdD8++C+2VDhNl9VQCxSKv7I6l5HpPDIG6qOcaG0WK8O+0Q==}
+  '@edifice.io/client@2.5.4-develop-b2school-actualites.20251212113049':
+    resolution: {integrity: sha512-1lYHZy9d5nhvnKDJ/i24EuteVXIR3shF0KiQQgVnG/vxlULV/Lb5ag9aqve48L+CFk0B6D+gaa4cadlXzZzbWA==}
 
   '@edifice.io/client@2.3.1-develop-b2school-actualites.20250911174726':
     resolution:
@@ -417,8 +417,8 @@ packages:
         integrity: sha512-tMCScI8VTCqo+bMLhAvFYNJUn4w1I8u5c33CrGIQ56J53lMGbFDuqkaMd2qW6mWbM8BRUfj9iMifxikDSruv6A==,
       }
 
-  '@edifice.io/react@2.5.4-develop-b2school-actualites.20251211160636':
-    resolution: {integrity: sha512-4ZnvU0hI0wPD04AUC6ZDvSQRnxfx3bMVqK/F9Ia3ExdcjmTqIeo+nLOa+qnCrjlQxhrtCKGL2RLtppmEN0NC7Q==}
+  '@edifice.io/react@2.5.4-develop-b2school-actualites.20251212113049':
+    resolution: {integrity: sha512-LDJRePKNYo0gGrEEH+lyfEM0l/YGRvxrK4k/nqEg/38t/nIZEATJTHtdIQglhDr17O6NQlY1DuW33NdakUNWcA==}
     peerDependencies:
       '@react-spring/web': ^9.7.5
       '@tanstack/react-query': 5.62.7
@@ -440,8 +440,8 @@ packages:
       react-hook-form: ^7.53.0
       react-i18next: ^14.1.0
 
-  '@edifice.io/tiptap-extensions@2.5.4-develop-b2school-actualites.20251211160636':
-    resolution: {integrity: sha512-bY6bE4BjMdDQGZ8HiZrQGHK2xBVO0DHSlDtn61Z3xE2cActhtY8iG4I1Cuzbx9QmJNGU+GFCz9Y+dUQsQnmlEw==}
+  '@edifice.io/tiptap-extensions@2.5.4-develop-b2school-actualites.20251212113049':
+    resolution: {integrity: sha512-RusPDihStLhvVpLmIwnVVlPCuED6G3HGkIB0KEKSGhS/fRSG4gLxlJGO09IVR6DlhC+WZ8tH6RdAGj+jNuSbxA==}
 
   '@edifice.io/tiptap-extensions@2.3.1-develop-b2school-actualites.20250911174726':
     resolution:
@@ -452,8 +452,8 @@ packages:
   '@edifice.io/utilities@2.5.4-develop-b2school-actualites.20251209155049':
     resolution: {integrity: sha512-J0g50ypVZgmxK05AAOIyEt98RMVo4aQDMB4SltufBcwXaNwyB6nkIWlZV76vTvT6YOjrOw6mYysDaCIR7c776A==}
 
-  '@edifice.io/utilities@2.5.4-develop-b2school-actualites.20251211160636':
-    resolution: {integrity: sha512-6G503nNESMQSCIobZNKznohO+eF2lX9kB5ITx7NLIrFgWf+fRW9iPrLY7P/ouWnW5HD5ie+5FhdioJWHTO8OgQ==}
+  '@edifice.io/utilities@2.5.4-develop-b2school-actualites.20251212113049':
+    resolution: {integrity: sha512-al0Nim0o7ygRQwYUAM4s2aJAtVTyQ30HWhrJR2L3IZ/HGL86p8BddQ0QiUoiaIVIIYI0sMJla/Eil4QONgcCmw==}
 
   '@edifice.io/utilities@2.5.4-develop-b2school.20251208180912':
     resolution: {integrity: sha512-gK0r7WsPUYzLjFwbKfDVxKQLw/hRVHrlTR6g4IljpadEMv2ldqQtD4feeV4UReTqkBM/IrslQ0YZOHBIO7yTxw==}
@@ -4822,7 +4822,7 @@ snapshots:
       react: 18.3.1
       tslib: 2.8.1
 
-  '@edifice.io/bootstrap@2.5.4-develop-b2school-actualites.20251211160636':
+  '@edifice.io/bootstrap@2.5.4-develop-b2school-actualites.20251212113049':
     dependencies:
       '@popperjs/core': 2.11.8
       bootstrap: 5.3.2(@popperjs/core@2.11.8)
@@ -4832,9 +4832,9 @@ snapshots:
       '@popperjs/core': 2.11.8
       bootstrap: 5.3.2(@popperjs/core@2.11.8)
 
-  '@edifice.io/client@2.5.4-develop-b2school-actualites.20251211160636':
+  '@edifice.io/client@2.5.4-develop-b2school-actualites.20251212113049':
     dependencies:
-      '@edifice.io/utilities': 2.5.4-develop-b2school-actualites.20251211160636
+      '@edifice.io/utilities': 2.5.4-develop-b2school-actualites.20251212113049
       axios: 1.13.2
       core-js: 3.47.0
     transitivePeerDependencies:
@@ -4848,14 +4848,14 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@edifice.io/react@2.5.4-develop-b2school-actualites.20251211160636(kligzzjj3z3e3lw6sjnp5tkowa)':
+  '@edifice.io/react@2.5.4-develop-b2school-actualites.20251212113049(kligzzjj3z3e3lw6sjnp5tkowa)':
     dependencies:
       '@dnd-kit/core': 6.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@dnd-kit/sortable': 8.0.0(@dnd-kit/core@6.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       '@dnd-kit/utilities': 3.2.2(react@18.3.1)
-      '@edifice.io/bootstrap': 2.5.4-develop-b2school-actualites.20251211160636
-      '@edifice.io/tiptap-extensions': 2.5.4-develop-b2school-actualites.20251211160636(@types/node@18.19.130)(rollup@4.53.3)(typescript@5.9.3)
-      '@edifice.io/utilities': 2.5.4-develop-b2school-actualites.20251211160636
+      '@edifice.io/bootstrap': 2.5.4-develop-b2school-actualites.20251212113049
+      '@edifice.io/tiptap-extensions': 2.5.4-develop-b2school-actualites.20251212113049(@types/node@18.19.130)(rollup@4.53.3)(typescript@5.9.3)
+      '@edifice.io/utilities': 2.5.4-develop-b2school-actualites.20251212113049
       '@floating-ui/react': 0.26.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@pixi/mixin-get-child-by-name': 7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2))
       '@pixi/react': 7.1.2(p7odtnnenfgvhs76mwyuql6w3u)
@@ -4997,9 +4997,9 @@ snapshots:
       - terser
       - typescript
 
-  '@edifice.io/tiptap-extensions@2.5.4-develop-b2school-actualites.20251211160636(@types/node@18.19.130)(rollup@4.53.3)(typescript@5.9.3)':
+  '@edifice.io/tiptap-extensions@2.5.4-develop-b2school-actualites.20251212113049(@types/node@18.19.130)(rollup@4.53.3)(typescript@5.9.3)':
     dependencies:
-      '@edifice.io/utilities': 2.5.4-develop-b2school-actualites.20251211160636
+      '@edifice.io/utilities': 2.5.4-develop-b2school-actualites.20251212113049
       '@tiptap/core': 2.11.0(@tiptap/pm@2.11.0)
       '@tiptap/extension-blockquote': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
       '@tiptap/extension-bold': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
@@ -5049,7 +5049,7 @@ snapshots:
 
   '@edifice.io/utilities@2.5.4-develop-b2school-actualites.20251209155049': {}
 
-  '@edifice.io/utilities@2.5.4-develop-b2school-actualites.20251211160636': {}
+  '@edifice.io/utilities@2.5.4-develop-b2school-actualites.20251212113049': {}
 
   '@edifice.io/utilities@2.5.4-develop-b2school.20251208180912': {}
 
