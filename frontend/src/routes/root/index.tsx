@@ -69,7 +69,7 @@ export const Root = () => {
         {!isCreateRoute && (
           <Flex fill align="center" justify="end">
             {isAdminThreadPath ? (
-              <>{canCreateThread && <AdminNewThreadButton />}</>
+              {canCreateThread && <AdminNewThreadButton />}
             ) : (
               canContributeOnOneThread && (
                 <Button onClick={handleClickNewInfo} leftIcon={<IconPlus />}>
