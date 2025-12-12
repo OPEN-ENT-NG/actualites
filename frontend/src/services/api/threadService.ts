@@ -1,7 +1,7 @@
 import { odeServices } from '@edifice.io/client';
 import { baseUrlAPI } from '.';
 import { Share } from '../../models/share';
-import { Thread, ThreadId, ThreadMode } from '../../models/thread';
+import { Thread, ThreadId, ThreadPayload } from '../../models/thread';
 
 /**
  * Creates a thread service that provides methods for managing threads.
@@ -28,7 +28,7 @@ export const createThreadService = () => {
      * @param payload - The data for the new thread.
      * @returns The created thread's ID.
      */
-    create(payload: { mode: ThreadMode; title: string }) {
+    create(payload: ThreadPayload) {
       return odeServices.http().post<{
         id: ThreadId;
       }>(`${baseUrlAPI}/threads`, payload);
@@ -39,7 +39,7 @@ export const createThreadService = () => {
      * @param payload - The updated data for the thread.
      * @returns A promise that resolves when the thread is updated.
      */
-    update(threadId: ThreadId, payload: { mode: ThreadMode; title: string }) {
+    update(threadId: ThreadId, payload: ThreadPayload) {
       return odeServices
         .http()
         .put<void>(`${baseUrlAPI}/threads/${threadId}`, payload);
