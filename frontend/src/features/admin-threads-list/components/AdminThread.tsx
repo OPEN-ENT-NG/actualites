@@ -111,7 +111,7 @@ export function AdminThread({
                   <Dropdown.Item icon={<IconTool />}>
                     {t('actualites.adminThreads.shareRightsButton')}
                   </Dropdown.Item>
-                  <Dropdown.Item icon={<IconEdit />}>
+                  <Dropdown.Item icon={<IconEdit />} onClick={onUpdateClick}>
                     {t('actualites.adminThreads.editButton')}
                   </Dropdown.Item>
                   <Dropdown.Item icon={<IconDelete />}>
