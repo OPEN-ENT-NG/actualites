@@ -132,6 +132,7 @@ export const useUpdateThread = () => {
           queryKey: threadQueryKeys.all(),
           data: oldData,
         });
+        if (!oldData) return oldData;
         const updatedThreadList = oldData.map((thread) => {
           if (thread.id === threadId) {
             return {

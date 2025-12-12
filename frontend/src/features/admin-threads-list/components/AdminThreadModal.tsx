@@ -101,40 +101,36 @@ export const AdminThreadModal = ({
   const onSubmit: SubmitHandler<FormInputs> = async function (
     formData: FormInputs,
   ) {
-    try {
-      if (isValid === false || !formData.structureId) return;
+    if (isValid === false || !formData.structureId) return;
 
-      const data: ThreadQueryPayload = {
-        mode: ThreadMode.SUBMIT,
-        title: formData.title,
-        structure: {
-          id: formData.structureId,
-          name:
-            structureList.find((s) => s.value === formData.structureId)
-              ?.label || '',
+    const data: ThreadQueryPayload = {
+      mode: ThreadMode.SUBMIT,
+      title: formData.title,
+      structure: {
+        id: formData.structureId,
+        name:
+          structureList.find((s) => s.value === formData.structureId)?.label ||
+          '',
+      },
+      icon,
+    };
+    if (!thread?.id) {
+      createThread(data, {
+        onSuccess: () => {
+          reset();
+          onSuccess();
         },
-        icon,
-      };
-      if (!thread?.id) {
-        createThread(data, {
+      });
+    } else {
+      updateThread(
+        { threadId: thread.id, payload: data },
+        {
           onSuccess: () => {
             reset();
             onSuccess();
           },
-        });
-      } else {
-        updateThread(
-          { threadId: thread.id, payload: data },
-          {
-            onSuccess: () => {
-              reset();
-              onSuccess();
-            },
-          },
-        );
-      }
-    } catch (e) {
-      console.error(e);
+        },
+      );
     }
   };
 
@@ -151,6 +147,7 @@ export const AdminThreadModal = ({
 
   const handleCloseModal = () => {
     reset();
+    setIcon('');
     onCancel();
   };
 
