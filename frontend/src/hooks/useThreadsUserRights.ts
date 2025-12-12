@@ -71,5 +71,5 @@ export function useThreadsUserRights(): {
         threadsWithManageRight.length > 0 || canCreateThread,
       hasContributeRightOnThread,
     };
-  }, [threads, user?.userId, isSuccess]);
+  }, [threads, user?.userId, isSuccess, canCreateThread]);
 }
