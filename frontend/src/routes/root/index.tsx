@@ -21,6 +21,7 @@ import { existingActions } from '~/config';
 import { AdminNewThreadButton } from '~/features';
 import { useI18n } from '~/hooks/useI18n';
 import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
+import { useUserRights } from '~/hooks/useUserRights';
 import { queryClient } from '~/providers';
 import { actionsQueryOptions } from '~/services/queries/actions';
 import { useActionUserRights } from '~/store';
@@ -45,6 +46,7 @@ export const Root = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { canContributeOnOneThread } = useThreadsUserRights();
+  const { canCreateThread } = useUserRights();
 
   if (!init) return <LoadingScreen position={false} />;
 
@@ -67,7 +69,7 @@ export const Root = () => {
         {!isCreateRoute && (
           <Flex fill align="center" justify="end">
             {isAdminThreadPath ? (
-              <AdminNewThreadButton />
+              <>{canCreateThread && <AdminNewThreadButton />}</>
             ) : (
               canContributeOnOneThread && (
                 <Button onClick={handleClickNewInfo} leftIcon={<IconPlus />}>

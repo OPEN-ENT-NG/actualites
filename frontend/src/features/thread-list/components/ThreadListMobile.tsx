@@ -13,7 +13,6 @@ import { ThreadIcon } from '~/components/ThreadIcon';
 import { useI18n } from '~/hooks/useI18n';
 import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
 import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
-import { useUserRights } from '~/hooks/useUserRights';
 import { Thread } from '~/models/thread';
 import { useThreads } from '~/services/queries';
 
@@ -24,7 +23,6 @@ export const ThreadListMobile = () => {
 
   const threadSelected = threads?.find((t) => t.id === threadId);
   const navigate = useNavigate();
-  const { canCreateThread } = useUserRights();
   const { canManageOnOneThread } = useThreadsUserRights();
   const { md } = useBreakpoint();
 
@@ -91,7 +89,7 @@ export const ThreadListMobile = () => {
           </Dropdown.Menu>
         </Dropdown>
       </Flex>
-      {(canCreateThread || canManageOnOneThread) && (
+      {canManageOnOneThread && (
         <>
           {!md && <Divider className="my-16" />}
           <Button
