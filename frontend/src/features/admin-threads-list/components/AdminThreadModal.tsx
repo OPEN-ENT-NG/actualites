@@ -56,6 +56,7 @@ export const AdminThreadModal = ({
   const { mutate: createThread } = useCreateThread();
   const { mutate: updateThread } = useUpdateThread();
   const [icon, setIcon] = useState<string>(thread?.icon || '');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const {
     ref: mediaLibraryRef,
     libraryMedia,
@@ -77,7 +78,7 @@ export const AdminThreadModal = ({
     setValue,
     reset,
     control,
-    formState: { isSubmitting, isValid },
+    formState: { isValid },
   } = useForm<FormInputs>({
     mode: 'onChange',
     defaultValues: {
@@ -114,11 +115,13 @@ export const AdminThreadModal = ({
       },
       icon,
     };
+    setIsSubmitting(true);
     if (!thread?.id) {
       createThread(data, {
         onSuccess: () => {
           reset();
           onSuccess();
+          setIsSubmitting(false);
         },
       });
     } else {
@@ -128,6 +131,7 @@ export const AdminThreadModal = ({
           onSuccess: () => {
             reset();
             onSuccess();
+            setIsSubmitting(false);
           },
         },
       );
@@ -249,6 +253,7 @@ export const AdminThreadModal = ({
           onClick={handleCloseModal}
           type="button"
           variant="ghost"
+          disabled={isSubmitting}
         >
           {t('actualites.adminThreads.modal.cancel')}
         </Button>
