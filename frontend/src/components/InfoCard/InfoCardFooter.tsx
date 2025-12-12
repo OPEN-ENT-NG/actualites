@@ -1,5 +1,4 @@
-import { Button, Divider, Flex } from '@edifice.io/react';
-import { ViewsCounter } from '@edifice.io/react/audience';
+import { Button, Flex } from '@edifice.io/react';
 import { IconRafterDown, IconRafterUp } from '@edifice.io/react/icons';
 import { useI18n } from '~/hooks/useI18n';
 import { useInfoUserRights } from '~/hooks/useInfoUserRights';
@@ -22,10 +21,11 @@ export const InfoCardFooter = ({
     <footer className="mt-12">
       <Flex align="center" justify="between">
         <Flex align="center">
-          <ViewsCounter viewsCounter={0} />
+          {/* To be implemented later 
+          <ViewsCounter viewsCounter={0} /> */}
           {(info.numberOfComments > 0 || canComment) && (
             <>
-              <Divider vertical />
+              {/* <Divider vertical /> */}
               <CommentsCounter
                 commentsCounter={info.numberOfComments}
                 aria-controls={`info-${info.id}-comments`}
