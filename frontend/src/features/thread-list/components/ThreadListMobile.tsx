@@ -52,7 +52,7 @@ export const ThreadListMobile = () => {
     <Flex
       direction={md ? 'row' : 'column'}
       gap={md ? '24' : '0'}
-      className="position-relative mx-n16 py-16 px-0 px-md-16 border-bottom bg-gray-200"
+      className="position-relative mx-n16 py-16 px-0 px-md-16 border-bottom"
     >
       <Flex className="px-16 px-md-0" fill>
         <Dropdown block>
