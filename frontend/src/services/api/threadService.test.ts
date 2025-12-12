@@ -22,6 +22,7 @@ describe('Thread Mutation Methods', () => {
     const response = await threadService.create({
       mode: ThreadMode.SUBMIT,
       title: 'Un nouveau fil',
+      structure: { id: 'de8743c1-97f0-408c-b5ec-ec735ad65fd8' },
     });
 
     expect(response).toBeDefined();
@@ -31,6 +32,7 @@ describe('Thread Mutation Methods', () => {
     const response = await threadService.update(1, {
       mode: ThreadMode.DIRECT,
       title: 'Test de renommage',
+      structure: { id: 'de8743c1-97f0-408c-b5ec-ec735ad65fd8' },
     });
 
     expect(response).toStrictEqual({

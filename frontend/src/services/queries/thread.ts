@@ -61,9 +61,9 @@ export const useCreateThread = () => {
     mutationFn: (queryPayload: ThreadQueryPayload) => {
       const payload: ThreadPayload = {
         ...queryPayload,
-        structure: queryPayload.structure?.id
-          ? { id: queryPayload.structure.id }
-          : undefined,
+        structure: {
+          id: queryPayload.structure.id,
+        },
       };
       return threadService.create(payload);
     },

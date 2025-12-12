@@ -58,7 +58,7 @@ export interface ThreadPayload {
   mode: ThreadMode;
   title: string;
   icon?: string;
-  structure?: {
+  structure: {
     id: string;
   };
 }

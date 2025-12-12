@@ -8,8 +8,8 @@ import { ChangeEvent, useMemo, useState } from 'react';
 import { Thread } from '~/models/thread';
 import { useInfosStats } from '~/services/queries';
 import './AdminThreadList.css';
-import AdminNewThreadModal from './components/AdminNewThreadModal';
 import { AdminThread } from './components/AdminThread';
+import AdminThreadModal from './components/AdminThreadModal';
 
 export function AdminThreadList() {
   const { threadsWithManageRight } = useThreadsUserRights();
@@ -81,7 +81,7 @@ export function AdminThreadList() {
         );
       })}
       {threadToUpdate && (
-        <AdminNewThreadModal
+        <AdminThreadModal
           isOpen={!!threadToUpdate}
           thread={threadToUpdate}
           onCancel={handleCloseModal}

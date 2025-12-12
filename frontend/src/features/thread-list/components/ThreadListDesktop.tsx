@@ -1,4 +1,10 @@
-import { Button, ButtonSkeleton, Flex, Menu } from '@edifice.io/react';
+import {
+  Button,
+  ButtonSkeleton,
+  Flex,
+  Menu,
+  useScrollToTop,
+} from '@edifice.io/react';
 import { IconBulletList, IconSettings } from '@edifice.io/react/icons';
 import { useNavigate } from 'react-router-dom';
 import { useI18n } from '~/hooks/useI18n';
@@ -15,12 +21,14 @@ export const ThreadListDesktop = () => {
   const navigate = useNavigate();
 
   const { canManageOnOneThread } = useThreadsUserRights();
+  const scrollToTop = useScrollToTop();
 
   const handleAllThreadsClick = () => {
     navigate('/');
   };
 
   const handleManageThreadsClick = () => {
+    scrollToTop();
     navigate('/admin/threads');
   };
 

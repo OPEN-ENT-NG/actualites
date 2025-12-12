@@ -2,7 +2,7 @@ import { Button } from '@edifice.io/react';
 import { IconPlus } from '@edifice.io/react/icons';
 import { useState } from 'react';
 import { useI18n } from '~/hooks/useI18n';
-import { AdminNewThreadModal } from './AdminNewThreadModal';
+import { AdminThreadModal } from './AdminThreadModal';
 
 export function AdminNewThreadButton() {
   const { t } = useI18n();
@@ -18,7 +18,7 @@ export function AdminNewThreadButton() {
       <Button leftIcon={<IconPlus />} onClick={handleNewThreadClick}>
         {t('actualites.adminThreads.newThread')}
       </Button>
-      <AdminNewThreadModal
+      <AdminThreadModal
         isOpen={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         onSuccess={() => setIsModalOpen(false)}

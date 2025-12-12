@@ -28,7 +28,7 @@ export interface FormInputs {
   structureId?: string;
 }
 
-interface AdminNewThreadModalProps {
+interface AdminThreadModalProps {
   /** Controls modal visibility */
   isOpen: boolean;
   /** The thread to edit (if any) */
@@ -43,12 +43,12 @@ interface AdminNewThreadModalProps {
 
 const DEFAULT_INPUT_MAX_LENGTH = 80;
 
-export const AdminNewThreadModal = ({
+export const AdminThreadModal = ({
   isOpen,
   onCancel,
   onSuccess,
   thread,
-}: AdminNewThreadModalProps) => {
+}: AdminThreadModalProps) => {
   const { t } = useI18n();
   const { appCode, user, currentApp } = useEdificeClient();
   const formId = useId();
@@ -102,15 +102,16 @@ export const AdminNewThreadModal = ({
     formData: FormInputs,
   ) {
     try {
+      if (isValid === false || !formData.structureId) return;
+
       const data: ThreadQueryPayload = {
         mode: ThreadMode.SUBMIT,
         title: formData.title,
         structure: {
-          id: formData.structureId ?? undefined,
+          id: formData.structureId,
           name:
-            formData.structureId
-              ? structureList.find((s) => s.value === formData.structureId)?.label
-              : undefined,
+            structureList.find((s) => s.value === formData.structureId)
+              ?.label || '',
         },
         icon,
       };
@@ -161,12 +162,12 @@ export const AdminNewThreadModal = ({
       onModalClose={handleCloseModal}
     >
       <Modal.Header onModalClose={handleCloseModal}>
-        {t(`actualites.adminThreads.newThread.modalTitle`)}
+        {t(`actualites.adminThreads.modal.modalTitle`)}
       </Modal.Header>
 
       <Modal.Body>
         <Heading headingStyle="h4" level="h3" className="mb-16">
-          {t('actualites.adminThreads.newThread.details')}
+          {t('actualites.adminThreads.modal.details')}
         </Heading>
 
         <form id={formId} onSubmit={handleSubmit(onSubmit)}>
@@ -175,8 +176,12 @@ export const AdminNewThreadModal = ({
               <ImagePicker
                 app={currentApp}
                 src={icon || ''}
-                addButtonLabel={t('explorer.imagepicker.button.add')}
-                deleteButtonLabel={t('explorer.imagepicker.button.delete')}
+                addButtonLabel={t(
+                  'actualites.adminThreads.modal.imagepicker.add',
+                )}
+                deleteButtonLabel={t(
+                  'actualites.adminThreads.modal.imagepicker.delete',
+                )}
                 onUploadImage={handleUploadImage}
                 onDeleteImage={handleDeleteImage}
                 className="align-self-center mt-8"
@@ -186,7 +191,7 @@ export const AdminNewThreadModal = ({
             </div>
             <div className="col">
               <FormControl id="title" className="mb-16" isRequired>
-                <Label>{t(`actualites.adminThreads.newThread.title`)}</Label>
+                <Label>{t(`actualites.adminThreads.modal.title`)}</Label>
                 <Input
                   type="text"
                   defaultValue={thread?.title || ''}
@@ -196,12 +201,12 @@ export const AdminNewThreadModal = ({
                     pattern: {
                       value: /[^ ]/,
                       message: t(
-                        'actualites.adminThreads.newThread.titleValidation',
+                        'actualites.adminThreads.modal.titleValidation',
                       ),
                     },
                   })}
                   placeholder={t(
-                    'explorer.resource.editModal.title.placeholder',
+                    'actualites.adminThreads.modal.titlePlaceholder',
                   )}
                   size="md"
                   aria-required={true}
@@ -213,10 +218,10 @@ export const AdminNewThreadModal = ({
           </div>
           <Flex direction="column" gap="8" className="mb-24">
             <Heading headingStyle="h4" level="h3" className="mb-16">
-              {t('actualites.adminThreads.newThread.infoStructure.title')}
+              {t('actualites.adminThreads.modal.infoStructure.title')}
             </Heading>
             <Alert type="info">
-              {t('actualites.adminThreads.newThread.infoStructure.alert')}
+              {t('actualites.adminThreads.modal.infoStructure.alert')}
             </Alert>
             {structureList.length > 1 && (
               <Controller
@@ -228,9 +233,9 @@ export const AdminNewThreadModal = ({
                     options={structureList}
                     onValueChange={field.onChange}
                     placeholderOption={t(
-                      'actualites.adminThreads.newThread.infoStructure.placeholder',
+                      'actualites.adminThreads.modal.infoStructure.placeholder',
                     )}
-                    data-testid="actualites.adminThreads.newThread.selectStructure"
+                    data-testid="actualites.adminThreads.modal.selectStructure"
                     icon={<IconFilter />}
                     defaultValue={thread?.structureId || ''}
                   />
@@ -248,7 +253,7 @@ export const AdminNewThreadModal = ({
           type="button"
           variant="ghost"
         >
-          {t('explorer.cancel')}
+          {t('actualites.adminThreads.modal.cancel')}
         </Button>
         <Button
           form={formId}
@@ -258,7 +263,9 @@ export const AdminNewThreadModal = ({
           variant="filled"
           disabled={!isValid || isSubmitting}
         >
-          {thread ? t('explorer.create') : t('save')}
+          {thread
+            ? t('actualites.adminThreads.modal.save')
+            : t('actualites.adminThreads.modal.create')}
         </Button>
       </Modal.Footer>
       <MediaLibrary
@@ -273,4 +280,4 @@ export const AdminNewThreadModal = ({
   );
 };
 
-export default AdminNewThreadModal;
+export default AdminThreadModal;
