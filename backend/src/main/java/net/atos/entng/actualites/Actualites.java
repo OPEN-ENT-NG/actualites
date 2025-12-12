@@ -121,7 +121,7 @@ public class Actualites extends BaseServer {
 		ThreadController threadController = new ThreadController(eb, threadMigrationService);
 		SqlCrudService threadSqlCrudService = new SqlCrudService(getSchema(), THREAD_TABLE, THREAD_SHARE_TABLE, new JsonArray().add("*"), new JsonArray().add("*"), true);
 		threadController.setCrudService(threadSqlCrudService);
-		ShareService threadShareService = new SqlShareService(getSchema(),THREAD_SHARE_TABLE, eb, securedActions, null);
+		ShareService threadShareService = new OptimizedShareService(getSchema(),THREAD_SHARE_TABLE, eb, securedActions, null);
 		threadController.setShareService(threadShareService);
 		addController(threadController);
 
@@ -153,14 +153,14 @@ public class Actualites extends BaseServer {
 		SqlCrudService infoSqlCrudService = new SqlCrudService(getSchema(), INFO_TABLE, INFO_SHARE_TABLE, new JsonArray().add("*"), new JsonArray().add("*"), true);
 		infoController.setInfoService(infoService);
 		infoController.setCrudService(infoSqlCrudService);
-		infoController.setShareService(new SqlShareService(getSchema(),INFO_SHARE_TABLE, eb, securedActions, null));
+		infoController.setShareService(new OptimizedShareService(getSchema(),INFO_SHARE_TABLE, eb, securedActions, null));
 		addController(infoController);
 
 		InfosControllerV1 infosControllerV1 = new InfosControllerV1(notificationTimelineService, rights);
 		infosControllerV1.setInfoService(infoService);
 		infosControllerV1.setTimelineMongo(new TimelineMongoImpl(Field.TIMELINE_COLLECTION, MongoDb.getInstance()));
 		infosControllerV1.setCrudService(infoSqlCrudService);
-		infosControllerV1.setShareService(new SqlShareService(getSchema(),INFO_SHARE_TABLE, eb, securedActions, null));
+		infosControllerV1.setShareService(new OptimizedShareService(getSchema(),INFO_SHARE_TABLE, eb, securedActions, null));
 		addController(infosControllerV1);
 
 
