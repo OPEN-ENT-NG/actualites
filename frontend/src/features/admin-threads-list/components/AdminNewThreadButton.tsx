@@ -18,11 +18,13 @@ export function AdminNewThreadButton() {
       <Button leftIcon={<IconPlus />} onClick={handleNewThreadClick}>
         {t('actualites.adminThreads.newThread')}
       </Button>
-      <AdminThreadModal
-        isOpen={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
-        onSuccess={() => setIsModalOpen(false)}
-      />
+      {isModalOpen && (
+        <AdminThreadModal
+          isOpen={isModalOpen}
+          onCancel={() => setIsModalOpen(false)}
+          onSuccess={() => setIsModalOpen(false)}
+        />
+      )}
     </>
   );
 }
