@@ -2,13 +2,16 @@ import {
   Avatar,
   Badge,
   Divider,
+  Dropdown,
   Flex,
+  IconButton,
+  IconButtonProps,
   Image,
   useBreakpoint,
   useDate,
   useDirectory,
 } from '@edifice.io/react';
-import { IconClock, IconClockAlert, IconSave } from '@edifice.io/react/icons';
+import { IconClock, IconClockAlert, IconEdit, IconOptions, IconSave } from '@edifice.io/react/icons';
 import clsx from 'clsx';
 import iconHeadline from '~/assets/icon-headline.svg';
 import { useI18n } from '~/hooks/useI18n';
@@ -16,6 +19,7 @@ import { useThread } from '~/hooks/useThread';
 import { InfoExtendedStatus } from '~/models/info';
 import { InfoCardProps } from './InfoCard';
 import { InfoCardThreadHeader } from './InfoCardThreadHeader';
+import { RefAttributes } from 'react';
 
 export type InfoCardHeaderProps = Pick<InfoCardProps, 'info'> & {
   extendedStatus?: InfoExtendedStatus;
@@ -158,6 +162,41 @@ export const InfoCardHeader = ({
           />
         )}
       </Flex>
+            <div className="position-absolute top-0 end-0 z-3">
+        <Dropdown placement="bottom-end" overflow>
+          {(
+            triggerProps: JSX.IntrinsicAttributes &
+              Omit<IconButtonProps, 'ref'> &
+              RefAttributes<HTMLButtonElement>,
+          ) => (
+            <>
+              <IconButton
+                {...triggerProps}
+                aria-label={t('card.open.menu')}
+                className="bg-white"
+                color="secondary"
+                icon={<IconOptions />}
+                variant="ghost"
+              />
+              <Dropdown.Menu>
+                <Dropdown.Item
+                  icon={<IconEdit />}
+                  onClick={() => alert('edit')}
+                >
+                  {t('common.edit')}
+                </Dropdown.Item>
+                <Dropdown.Separator />
+                <Dropdown.Item
+                  icon={<IconEdit />}
+                  onClick={() => alert('copy')}
+                >
+                  {t('common.copy')}
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </>
+          )}
+        </Dropdown>
+      </div>
     </header>
   );
 };
