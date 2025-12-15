@@ -72,7 +72,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	private JsonObject rights;
 	private final NotificationTimelineService notificationTimelineService;
 	private final EventHelper eventHelper;
-	private static final String ROOT_RIGHT = "net.atos.entng.actualites.controllers.InfoController";
+	public static final String ROOT_RIGHT = "net.atos.entng.actualites.controllers.InfoController";
 	private static final Logger LOGGER = LoggerFactory.getLogger(InfosControllerV1.class);
 
 
