@@ -11,7 +11,13 @@ import {
   useDate,
   useDirectory,
 } from '@edifice.io/react';
-import { IconClock, IconClockAlert, IconEdit, IconOptions, IconSave } from '@edifice.io/react/icons';
+import {
+  IconClock,
+  IconClockAlert,
+  IconEdit,
+  IconOptions,
+  IconSave,
+} from '@edifice.io/react/icons';
 import clsx from 'clsx';
 import iconHeadline from '~/assets/icon-headline.svg';
 import { useI18n } from '~/hooks/useI18n';
@@ -162,7 +168,7 @@ export const InfoCardHeader = ({
           />
         )}
       </Flex>
-            <div className="position-absolute top-0 end-0 z-3">
+      <div className="position-absolute top-0 end-0 z-3">
         <Dropdown placement="bottom-end" overflow>
           {(
             triggerProps: JSX.IntrinsicAttributes &
