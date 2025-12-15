@@ -1,3 +1,3 @@
-.admin-thread:nth-child(even) {
+.admin-thread:nth-child(odd) {
   background-color: var(--edifice-gray-200);
 }

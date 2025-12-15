@@ -18,7 +18,12 @@ import {
 } from '@edifice.io/react';
 import { IconFilter } from '@edifice.io/react/icons';
 import { createPortal } from 'react-dom';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import {
+  Controller,
+  ControllerRenderProps,
+  SubmitHandler,
+  useForm,
+} from 'react-hook-form';
 import { useI18n } from '~/hooks/useI18n';
 import { Thread, ThreadMode, ThreadQueryPayload } from '~/models/thread';
 import { useCreateThread, useUpdateThread } from '~/services/queries';
@@ -26,6 +31,7 @@ import { useCreateThread, useUpdateThread } from '~/services/queries';
 export interface FormInputs {
   title: string;
   structureId?: string;
+  icon?: string;
 }
 
 interface AdminThreadModalProps {
@@ -55,7 +61,6 @@ export const AdminThreadModal = ({
 
   const { mutate: createThread } = useCreateThread();
   const { mutate: updateThread } = useUpdateThread();
-  const [icon, setIcon] = useState<string>(thread?.icon || '');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const {
     ref: mediaLibraryRef,
@@ -84,6 +89,7 @@ export const AdminThreadModal = ({
     defaultValues: {
       title: '',
       structureId: undefined,
+      icon: undefined,
     },
   });
 
@@ -95,7 +101,9 @@ export const AdminThreadModal = ({
         thread.structureId ||
           (structureList.length === 1 ? structureList[0].value : undefined),
       );
-      setIcon(thread.icon || '');
+      setValue('icon', thread.icon || '');
+    } else if (structureList.length === 1) {
+      setValue('structureId', structureList[0].value);
     }
   }, [thread, setValue, structureList]);
 
@@ -113,7 +121,7 @@ export const AdminThreadModal = ({
           structureList.find((s) => s.value === formData.structureId)?.label ||
           '',
       },
-      icon,
+      icon: formData.icon || undefined,
     };
     setIsSubmitting(true);
     if (!thread?.id) {
@@ -138,20 +146,24 @@ export const AdminThreadModal = ({
     }
   };
 
-  const handleUploadImage = (image: string | Blob | File) => {
+  const handleUploadImage = (
+    image: string | Blob | File,
+    field: ControllerRenderProps<FormInputs, 'icon'>,
+  ) => {
     if (typeof image === 'string') {
-      setIcon(image);
+      field.onChange(image);
       return;
     }
   };
 
-  const handleDeleteImage = () => {
-    setIcon('');
+  const handleDeleteImage = (
+    field: ControllerRenderProps<FormInputs, 'icon'>,
+  ) => {
+    field.onChange(undefined);
   };
 
   const handleCloseModal = () => {
     reset();
-    setIcon('');
     onCancel();
   };
 
@@ -174,20 +186,26 @@ export const AdminThreadModal = ({
         <form id={formId} onSubmit={handleSubmit(onSubmit)}>
           <div className="d-block d-md-flex gap-16 mb-24">
             <div>
-              <ImagePicker
-                app={currentApp}
-                src={icon || ''}
-                addButtonLabel={t(
-                  'actualites.adminThreads.modal.imagepicker.add',
+              <Controller
+                name="icon"
+                control={control}
+                render={({ field }) => (
+                  <ImagePicker
+                    app={currentApp}
+                    src={thread?.icon || ''}
+                    addButtonLabel={t(
+                      'actualites.adminThreads.modal.imagepicker.add',
+                    )}
+                    deleteButtonLabel={t(
+                      'actualites.adminThreads.modal.imagepicker.delete',
+                    )}
+                    onUploadImage={(image) => handleUploadImage(image, field)}
+                    onDeleteImage={() => handleDeleteImage(field)}
+                    className="align-self-center mt-8"
+                    libraryMedia={libraryMedia}
+                    mediaLibraryRef={mediaLibraryRef}
+                  />
                 )}
-                deleteButtonLabel={t(
-                  'actualites.adminThreads.modal.imagepicker.delete',
-                )}
-                onUploadImage={handleUploadImage}
-                onDeleteImage={handleDeleteImage}
-                className="align-self-center mt-8"
-                libraryMedia={libraryMedia}
-                mediaLibraryRef={mediaLibraryRef}
               />
             </div>
             <div className="col">
