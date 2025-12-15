@@ -200,12 +200,12 @@ public class Actualites extends BaseServer {
 			new CronTrigger(vertx, publicationCron).schedule(new PublicationCron(notificationTimelineService));
 		
 		// News cleanup cron task
-		String cronExpression = config.getString("newsCleanupCron");
+		String cronExpression = config.getString("NewsCleanupCron");
 		if (!StringUtils.isEmpty(cronExpression)) {
 			InfoCleanupService cleanupService = new InfoCleanupServiceImpl();
 			ExpiredNewsCleanupCron cleanupCron = new ExpiredNewsCleanupCron(cleanupService, config);
 			new CronTrigger(vertx, cronExpression).schedule(cleanupCron);
-			log.info("News cleanup cron enabled with expression: " + cronExpression + " (threshold: " + config.getInteger("newsCleanupMonthsThreshold", 24) + " months)");
+			log.info("News cleanup cron enabled with expression: " + cronExpression + " (threshold: " + config.getInteger("NewsCleanupMonthsThreshold", 24) + " months)");
 		}
 	}
 
