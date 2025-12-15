@@ -37,12 +37,18 @@ describe('Thread Queries', () => {
       structure: { id: '1', name: 'Structure 1' },
     };
 
+    const expectedPayload = {
+      mode: ThreadMode.DIRECT,
+      title: 'Création de fil',
+      structure: { id: '1' },
+    };
+
     act(() => {
       result.current.mutate(variables);
     });
 
     await waitFor(() => {
-      expect(serviceSpy).toHaveBeenCalledWith(variables);
+      expect(serviceSpy).toHaveBeenCalledWith(expectedPayload);
     });
   });
 
