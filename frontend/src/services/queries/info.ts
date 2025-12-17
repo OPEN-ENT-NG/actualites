@@ -188,18 +188,28 @@ export const useInfoRevisions = (infoId: InfoId) =>
 export const useInfoOriginalFormat = (threadId: ThreadId, infoId: InfoId) =>
   useQuery(infoQueryOptions.getOriginalFormat(threadId, infoId));
 
-export const useCreateDraftInfo = () =>
-  useMutation({
+export const useCreateDraftInfo = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
     mutationFn: (payload: {
       title?: string;
       content?: string;
       thread_id?: number;
       is_headline?: boolean;
     }) => infoService.createDraft(payload),
-    // TODO optimistic update
-    // onSuccess: async (, { title, content, threadId }) => {
+    // onMutate: async (payload) => {
+    //   // TODO set query cache for draft count
     // },
+    onSuccess: async (_, { thread_id }) => {
+      const queryKey = infoQueryKeys.infos({
+        status: InfoStatus.DRAFT,
+        threadId: thread_id,
+      });
+      queryClient.invalidateQueries({ queryKey });
+    },
   });
+};
 
 export const useUpdateInfo = () =>
   useMutation({

@@ -96,7 +96,7 @@ export function InfoDetailsForm({
   }
 
   const items: OptionsType[] = threads.map((thread: Thread) => ({
-    value: thread.id + '',
+    value: String(thread.id),
     label: thread.title,
     icon: <ThreadIcon thread={thread} iconSize={iconSize} />,
   }));
@@ -142,7 +142,7 @@ export function InfoDetailsForm({
                   options={items}
                   block={true}
                   size="md"
-                  onValueChange={field.onChange}
+                  onValueChange={(value) => field.onChange(Number(value))}
                   icon={<IconQuestion />}
                   defaultValue={String(infoDetails?.thread_id)}
                   placeholderOption={t(
