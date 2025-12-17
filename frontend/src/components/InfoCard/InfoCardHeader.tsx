@@ -25,7 +25,7 @@ import { useThread } from '~/hooks/useThread';
 import { InfoExtendedStatus } from '~/models/info';
 import { InfoCardProps } from './InfoCard';
 import { InfoCardThreadHeader } from './InfoCardThreadHeader';
-import { RefAttributes } from 'react';
+import { RefAttributes, useState } from 'react';
 
 export type InfoCardHeaderProps = Pick<InfoCardProps, 'info'> & {
   extendedStatus?: InfoExtendedStatus;
@@ -37,10 +37,11 @@ export const InfoCardHeader = ({
 }: InfoCardHeaderProps) => {
   const { formatDate } = useDate();
   const thread = useThread(info.threadId);
+
+  const [dropDownVisible, setDropDownVisible] = useState(false);
   const { getAvatarURL } = useDirectory();
   const { t } = useI18n();
   const avatarUrl = getAvatarURL(info.owner.id, 'user');
-
   const { sm, md, lg } = useBreakpoint();
   const styles = lg
     ? { gridTemplateColumns: '1fr auto 1fr', gap: '12px' }
@@ -81,6 +82,7 @@ export const InfoCardHeader = ({
       )}
     </div>
   );
+
 
   return (
     <header key={info.id} className="mb-12">
@@ -168,8 +170,8 @@ export const InfoCardHeader = ({
           />
         )}
       </Flex>
-      <div className="position-absolute top-0 end-0 z-3">
-        <Dropdown placement="bottom-end" overflow>
+      <div className="info-card-dropdown position-absolute top-0 end-0 z-3">
+        <Dropdown placement="bottom-end" overflow onToggle={setDropDownVisible}>
           {(
             triggerProps: JSX.IntrinsicAttributes &
               Omit<IconButtonProps, 'ref'> &
@@ -179,8 +181,11 @@ export const InfoCardHeader = ({
               <IconButton
                 {...triggerProps}
                 aria-label={t('card.open.menu')}
-                className="bg-white"
-                color="secondary"
+                className={
+                  'bg-white infocard-header-dropdown-button' +
+                  (dropDownVisible ? ' is-active' : '')
+                }
+                color="primary"
                 icon={<IconOptions />}
                 variant="ghost"
               />
