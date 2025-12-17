@@ -191,7 +191,6 @@ export const InfoCardHeader = ({
                 >
                   {t('common.edit')}
                 </Dropdown.Item>
-                <Dropdown.Separator />
                 <Dropdown.Item
                   icon={<IconEdit />}
                   onClick={() => alert('copy')}
