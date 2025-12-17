@@ -532,7 +532,7 @@ public class InfoController extends ControllerHelper {
 						owner.setUsername(body.getString("username"));
 						Handler<Either<String, JsonObject>> handler = event -> {
                             if (event.isRight()) {
-                                notificationTimelineService.notifyTimeline(request, user, owner, threadId, infoId, title, NEWS_PUBLISH_EVENT_TYPE);
+                                notificationTimelineService.notifyTimeline(request, user, owner, threadId, infoId, title, NEWS_PUBLISH_EVENT_TYPE, false);
                                 renderJson(request, event.right().getValue(), 200);
                             } else {
                                 JsonObject error = new JsonObject().put("error", event.left().getValue());
@@ -571,7 +571,7 @@ public class InfoController extends ControllerHelper {
 							@Override
 							public void handle(Either<String, JsonObject> event) {
 								if (event.isRight()) {
-                                    notificationTimelineService.notifyTimeline(request, user, owner, threadId, infoId, title, NEWS_UNPUBLISH_EVENT_TYPE);
+                                    notificationTimelineService.notifyTimeline(request, user, owner, threadId, infoId, title, NEWS_UNPUBLISH_EVENT_TYPE, false);
 									renderJson(request, event.right().getValue(), 200);
 								} else {
 									JsonObject error = new JsonObject().put("error", event.left().getValue());
@@ -658,7 +658,7 @@ public class InfoController extends ControllerHelper {
                         UserInfos owner = new UserInfos();
                         owner.setUserId(ownerId);
                         notificationTimelineService.notifyTimeline(request,  user, owner, resource.getLong("thread_id").toString(),
-                                infoId, resource.getString("title"), eventType);
+                                infoId, resource.getString("title"), eventType, false);
                     }
                 } else {
                     log.error("Unable to create notification : GetOwnerInfo failed");

@@ -82,6 +82,8 @@ public class InfoServiceSqlImpl implements InfoService {
 		o.remove("id");
 		o.remove("status");
 		o.remove("thread_id");
+		o.remove("published");
+		o.remove("publisher_id");
 		if (o.containsKey("expiration_date")) o.remove("expiration_date");
 		if (o.containsKey("publication_date")) o.remove("publication_date");
 		if (o.containsKey("is_headline")) o.remove("is_headline");

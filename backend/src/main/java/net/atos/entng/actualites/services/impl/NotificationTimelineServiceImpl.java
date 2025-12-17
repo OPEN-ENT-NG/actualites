@@ -48,18 +48,18 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
                                String eventType) {
         // the news owner is behind the action
         UserInfos owner = user;
-        notifyTimeline(request, user, owner, threadId, infoId, title, eventType);
+        notifyTimeline(request, user, owner, threadId, infoId, title, eventType, false);
     }
 
     @Override
     public void notifyTimeline(HttpServerRequest request, UserInfos user, UserInfos owner, String threadId, String infoId,
-                               String title, String eventType) {
+                               String title, String eventType, boolean ignoreFlood) {
         if (eventType.equals(NEWS_SUBMIT_EVENT_TYPE)) {
             threadService.getPublishSharedWithIds(threadId, true, user, event -> {
                 if (event.isRight()) {
                     // get all ids
                     JsonArray shared = event.right().getValue();
-                    extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-submitted");
+                    extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-submitted", ignoreFlood);
                 }
             });
         } else if(eventType.equals(NEWS_UNSUBMIT_EVENT_TYPE)){
@@ -67,7 +67,7 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
                 if (event.isRight()) {
                     // get all ids
                     JsonArray shared = event.right().getValue();
-                    extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-unsubmitted");
+                    extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-unsubmitted", ignoreFlood);
                 }
             });
         } else if(eventType.equals(NEWS_PUBLISH_EVENT_TYPE)){
@@ -75,7 +75,7 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
                 if (event.isRight()) {
                     // get all ids
                     JsonArray shared = event.right().getValue();
-                    extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-published");
+                    extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-published", ignoreFlood);
                 }
             });
         } else if(eventType.equals(NEWS_UNPUBLISH_EVENT_TYPE)){
@@ -83,20 +83,21 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
                 if (event.isRight()) {
                     // get all ids
                     JsonArray shared = event.right().getValue();
-                    extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-unpublished");
+                    extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-unpublished", ignoreFlood);
                 }
             });
         } else if (eventType.equals(NEWS_UPDATE_EVENT_TYPE)) {
             ArrayList<String> ids = new ArrayList<>();
             ids.add(owner.getUserId());
-            sendNotify(request, ids, user, threadId, infoId, title, "news.news-update");
+            sendNotify(request, ids, user, threadId, infoId, title, "news.news-update", ignoreFlood);
         }
     }
 
 
 
     private void extractUserIds(final HttpServerRequest request, final JsonArray shared, final UserInfos user, final UserInfos owner,
-                                final String threadId, final String infoId, final String title, final String notificationName){
+                                final String threadId, final String infoId, final String title, final String notificationName,
+                                final boolean ignoreFlood){
         final Set<String> ids = new HashSet<>();
         if (!shared.isEmpty()) {
             List<Future<?>> futures = new ArrayList<>();
@@ -131,22 +132,23 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
             }
             //synchronous (no group in shared)
             if (futures.isEmpty()) {
-                sendNotify(request, Lists.newArrayList(ids), owner, threadId, infoId, title, notificationName);
+                sendNotify(request, Lists.newArrayList(ids), owner, threadId, infoId, title, notificationName, ignoreFlood);
             } else {
                 Future.any(futures).onComplete(h ->
-                        sendNotify(request, Lists.newArrayList(ids), owner, threadId, infoId, title, notificationName)
+                        sendNotify(request, Lists.newArrayList(ids), owner, threadId, infoId, title, notificationName, ignoreFlood)
                         );
             }
         }
     }
 
-    private void sendNotify(final HttpServerRequest request, final List<String> ids, final UserInfos owner, final String threadId,
-                            final String infoId, final String title, final String notificationName ){
+    private void sendNotify(final HttpServerRequest request, final List<String> ids, final UserInfos owner,
+                            final String threadId, final String infoId, final String title, final String notificationName, final boolean ignoreFlood){
         if (infoId != null && !infoId.isEmpty() && threadId != null && !threadId.isEmpty() && owner != null) {
             JsonObject params = new JsonObject()
                     .put("profilUri", "/userbook/annuaire#" + owner.getUserId() + "#" + (owner.getType() != null ? owner.getType() : ""))
                     .put("username", owner.getUsername())
                     .put("info", title)
+                    .put("disableAntiFlood", ignoreFlood)
                     .put("actuUri", pathPrefix + "#/view/thread/" + threadId + "/info/" + infoId);
             params.put("resourceUri", params.getString("actuUri"));
             if("news.news-published".equals(notificationName)) {

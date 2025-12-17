@@ -85,5 +85,11 @@
             <version>${gatlingHighchartsVersion}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>fr.wseduc</groupId>
+            <artifactId>vertx-cron-timer</artifactId>
+            <version>3.0-develop-b2school-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>
