@@ -12,11 +12,12 @@ export const useUpdateStatsQueryCache = () => {
   ) => {
     const queryKey = infoQueryKeys.stats();
     if (!queryClient.getQueryData(queryKey)) return;
-    queryClient.setQueryData(queryKey, (oldData: InfosStats) => {
+    queryClient.setQueryData(queryKey, (oldData: InfosStats): InfosStats => {
       const targetThread = oldData.threads.find(
         (thread) => thread.id === threadId,
       );
-      const oldStatusCount = targetThread?.status[status] ?? 0;
+      if (!targetThread) return oldData;
+      const oldStatusCount = targetThread.status[status] ?? 0;
       const newStatusCount = oldStatusCount + countDelta;
 
       const updatedThreads = oldData.threads.map((thread) => {

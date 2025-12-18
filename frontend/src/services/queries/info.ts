@@ -201,7 +201,6 @@ export const useCreateDraftInfo = () => {
       is_headline?: boolean;
     }) => infoService.createDraft(payload),
     onMutate: async (payload) => {
-      if (!payload.thread_id) return;
       updateStatsQueryCache(payload.thread_id, InfoStatus.DRAFT, 1);
     },
     onSuccess: async (_, { thread_id }) => {
