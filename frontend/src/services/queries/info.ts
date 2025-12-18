@@ -10,6 +10,7 @@ import {
 import { Info, InfoExtendedStatus, InfoId, InfoStatus } from '~/models/info';
 import { ThreadId } from '~/models/thread';
 import { infoService } from '../api';
+import { useUpdateStatsQueryCache } from './hooks/useUpdateStatsQueryCache';
 import { threadQueryKeys } from './thread';
 
 export const DEFAULT_PAGE_SIZE = 20;
@@ -190,23 +191,25 @@ export const useInfoOriginalFormat = (threadId: ThreadId, infoId: InfoId) =>
 
 export const useCreateDraftInfo = () => {
   const queryClient = useQueryClient();
+  const { updateStatsQueryCache } = useUpdateStatsQueryCache();
 
   return useMutation({
     mutationFn: (payload: {
-      title?: string;
-      content?: string;
-      thread_id?: number;
+      title: string;
+      content: string;
+      thread_id: number;
       is_headline?: boolean;
     }) => infoService.createDraft(payload),
-    // onMutate: async (payload) => {
-    //   // TODO set query cache for draft count
-    // },
+    onMutate: async (payload) => {
+      if (!payload.thread_id) return;
+      updateStatsQueryCache(payload.thread_id, InfoStatus.DRAFT, 1);
+    },
     onSuccess: async (_, { thread_id }) => {
       const queryKey = infoQueryKeys.infos({
         status: InfoStatus.DRAFT,
         threadId: thread_id,
       });
-      queryClient.invalidateQueries({ queryKey });
+      return queryClient.invalidateQueries({ queryKey });
     },
   });
 };

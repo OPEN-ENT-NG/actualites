@@ -31,6 +31,9 @@ export function InfoDetailsForm({
   const { t } = useI18n();
 
   const { threadsWithContributeRight: threads } = useThreadsUserRights();
+  // TODO use thread-id from query params when form will be editable
+  // const search = useLocation().search;
+  // const searchThreadId = new URLSearchParams(search).get('thread-id');
   const { md } = useBreakpoint();
 
   const { setDetailsForm, setResetDetailsForm, setDetailsFormState } =
