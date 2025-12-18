@@ -2,13 +2,22 @@ import {
   Avatar,
   Badge,
   Divider,
+  Dropdown,
   Flex,
+  IconButton,
+  IconButtonProps,
   Image,
   useBreakpoint,
   useDate,
   useDirectory,
 } from '@edifice.io/react';
-import { IconClock, IconClockAlert, IconSave } from '@edifice.io/react/icons';
+import {
+  IconClock,
+  IconClockAlert,
+  IconEdit,
+  IconOptions,
+  IconSave,
+} from '@edifice.io/react/icons';
 import clsx from 'clsx';
 import iconHeadline from '~/assets/icon-headline.svg';
 import { useI18n } from '~/hooks/useI18n';
@@ -16,6 +25,7 @@ import { useThread } from '~/hooks/useThread';
 import { InfoExtendedStatus } from '~/models/info';
 import { InfoCardProps } from './InfoCard';
 import { InfoCardThreadHeader } from './InfoCardThreadHeader';
+import { RefAttributes, useState } from 'react';
 
 export type InfoCardHeaderProps = Pick<InfoCardProps, 'info'> & {
   extendedStatus?: InfoExtendedStatus;
@@ -27,10 +37,11 @@ export const InfoCardHeader = ({
 }: InfoCardHeaderProps) => {
   const { formatDate } = useDate();
   const thread = useThread(info.threadId);
+
+  const [dropDownVisible, setDropDownVisible] = useState(false);
   const { getAvatarURL } = useDirectory();
   const { t } = useI18n();
   const avatarUrl = getAvatarURL(info.owner.id, 'user');
-
   const { sm, md, lg } = useBreakpoint();
   const styles = lg
     ? { gridTemplateColumns: '1fr auto 1fr', gap: '12px' }
@@ -158,6 +169,43 @@ export const InfoCardHeader = ({
           />
         )}
       </Flex>
+      <div className="info-card-dropdown position-absolute top-0 end-0 z-3">
+        <Dropdown placement="bottom-end" overflow onToggle={setDropDownVisible}>
+          {(
+            triggerProps: JSX.IntrinsicAttributes &
+              Omit<IconButtonProps, 'ref'> &
+              RefAttributes<HTMLButtonElement>,
+          ) => (
+            <>
+              <IconButton
+                {...triggerProps}
+                aria-label={t('actualites.info.open.menu')}
+                className={
+                  'bg-white infocard-header-dropdown-button' +
+                  (dropDownVisible ? ' is-active' : '')
+                }
+                color="primary"
+                icon={<IconOptions />}
+                variant="ghost"
+              />
+              <Dropdown.Menu>
+                <Dropdown.Item
+                  icon={<IconEdit />}
+                  onClick={() => alert('edit')}
+                >
+                  {t('common.edit')}
+                </Dropdown.Item>
+                <Dropdown.Item
+                  icon={<IconEdit />}
+                  onClick={() => alert('copy')}
+                >
+                  {t('common.copy')}
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </>
+          )}
+        </Dropdown>
+      </div>
     </header>
   );
 };

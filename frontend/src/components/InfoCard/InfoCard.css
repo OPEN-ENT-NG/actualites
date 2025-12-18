@@ -82,3 +82,21 @@
 .info-card .info-divider {
   border-color: var(--edifice-info-card-divider-color) !important;
 }
+
+/* Show the header action button only on hover/focus/expanded */
+
+.infocard-header-dropdown-button {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease-in-out;
+}
+
+.info-card:hover .infocard-header-dropdown-button {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.info-card-dropdown .infocard-header-dropdown-button.is-active,
+.info-card-dropdown .infocard-header-dropdown-button[aria-expanded='true'] {
+  background-color: var(--edifice-primary-200) !important;
+}
