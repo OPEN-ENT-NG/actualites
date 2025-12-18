@@ -22,7 +22,7 @@ export function s7CommentInfo(data: InitData) {
 
   describe('[s7-Comment-Info] Test scenario s7 access to actualites comment an info', () => {
 
-    const users = data.sessions['Teacher']
+    const users = data.allSessions
       .filter((user: InfoUser) => user.role === 'CONTRIBUTOR' || user.role === 'PUBLISHER');
 
     const randomIndex = exec.scenario.iterationInInstance % users.length;
