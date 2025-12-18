@@ -83,7 +83,6 @@ export const InfoCardHeader = ({
     </div>
   );
 
-
   return (
     <header key={info.id} className="mb-12">
       <div className="d-grid" style={styles}>
@@ -180,7 +179,7 @@ export const InfoCardHeader = ({
             <>
               <IconButton
                 {...triggerProps}
-                aria-label={t('card.open.menu')}
+                aria-label={t('actualites.info.open.menu')}
                 className={
                   'bg-white infocard-header-dropdown-button' +
                   (dropDownVisible ? ' is-active' : '')
