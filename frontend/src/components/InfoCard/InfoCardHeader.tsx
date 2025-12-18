@@ -95,7 +95,7 @@ export const InfoCardHeader = ({
       </div>
 
       <Flex className="flex-fill mt-12" align="center" wrap="nowrap" gap="16">
-        {info.headline && !isExpired && (
+        {info.headline && (
           <Image
             src={iconHeadline}
             alt={t('actualites.info.alt.headline')}
@@ -159,7 +159,7 @@ export const InfoCardHeader = ({
           </Flex>
         )}
 
-        {info.headline && !isExpired && (
+        {info.headline && (
           <Image
             src={iconHeadline}
             style={{ rotate: '180deg' }}
