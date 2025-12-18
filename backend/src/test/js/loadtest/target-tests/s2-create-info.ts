@@ -24,7 +24,7 @@ export function s2CreateInfo(data: InitData) {
 
   describe('[s2-Create-Info] Test scenario s2 access to actualites create an info', () => {
 
-    const users = data.sessions['Teacher']
+    const users = data.allSessions
       .filter((user: InfoUser) => user.role === 'CONTRIBUTOR' || user.role === 'PUBLISHER');
 
     const randomIndex = exec.scenario.iterationInInstance % users.length;
