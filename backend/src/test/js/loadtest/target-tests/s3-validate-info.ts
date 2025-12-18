@@ -24,7 +24,7 @@ export function s3ValidateInfo(data: InitData) {
 
   describe('[s3-Validate-Info] Test scenario s3 access to actualites validate an info', () => {
 
-    const users = data.sessions['Teacher']
+    const users = data.allSessions
       .filter((user: InfoUser) => user.isValidator);
 
     const randomIndex = exec.scenario.iterationInInstance % users.length;
