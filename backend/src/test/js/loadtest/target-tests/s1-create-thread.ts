@@ -26,7 +26,7 @@ export function s1CreateThread(data: InitData) {
 
   describe('[s1-Create-Thread] Test scenario s1 access to actualites create a thread', () => {
 
-    const users = data.sessions['Teacher']
+    const users = data.allSessions
       .filter((user: InfoUser) => user.role === 'CONTRIBUTOR' || user.role === 'PUBLISHER');
 
     const randomIndex = exec.scenario.iterationInInstance % users.length;

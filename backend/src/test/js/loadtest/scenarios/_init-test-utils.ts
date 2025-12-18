@@ -253,7 +253,7 @@ export function initFromCsv(): InitData {
       initData.allSessions.push(user)
     }
 
-    for(let i = 1; i < personnelsRecords.length && i < 10; i++) {
+    for(let i = 1; i < personnelsRecords.length; i++) {
       // @ts-ignore
       let userInfo: string[] = personnelsRecords[i];
       let session = null;
@@ -275,7 +275,7 @@ export function initFromCsv(): InitData {
       initData.allSessions.push(user)
     }
 
-    for(let i = 1; i < studentsRecords.length && i < 10; i++) {
+    for(let i = 1; i < studentsRecords.length; i++) {
       // @ts-ignore
       let userInfo: string[] = studentsRecords[i];
       let session = null;
@@ -297,7 +297,7 @@ export function initFromCsv(): InitData {
       initData.allSessions.push(user)
     }
 
-    for(let i = 1; i < relativesRecords.length && i < 10; i++) {
+    for(let i = 1; i < relativesRecords.length; i++) {
       // @ts-ignore
       let userInfo: string[] = relativesRecords[i];
       let session = null;
@@ -324,7 +324,7 @@ export function initFromCsv(): InitData {
 }
 
 function initValidator(data: InitData) {
-  const users = data.sessions['Teacher']
+  const users = data.allSessions
       .filter((user: InfoUser) => user.role === 'PUBLISHER');
   const user = users[0];
   user.isValidator = true;

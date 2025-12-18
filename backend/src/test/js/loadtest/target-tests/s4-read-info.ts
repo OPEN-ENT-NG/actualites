@@ -35,8 +35,8 @@ export function s4ReadInfo(data: InitData) {
     pushResponseMetrics(res, user);
 
     sleep(baseDelay / 1000);
-
     const infos = JSON.parse(res.body as string);
+
     if(!infos || infos.length === 0) {
       console.error('user in dataset not correct', user);
       return;
@@ -77,4 +77,5 @@ export function s4ReadInfo(data: InitData) {
     pushResponseMetrics(resInfo, user);
     sleep(baseDelay / 1000);
   });
+
 }
