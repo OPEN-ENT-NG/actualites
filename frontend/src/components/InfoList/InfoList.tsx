@@ -25,7 +25,7 @@ export const InfoList = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [infos]);
+  }, [threadId]);
 
   const loadNextRef = useInfiniteScroll({
     callback: loadNextPage,
