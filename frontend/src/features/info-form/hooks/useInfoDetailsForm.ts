@@ -35,7 +35,7 @@ export function useInfoDetailsForm() {
           infoId: infoFormValues.infoId,
           infoStatus: InfoStatus.DRAFT,
           payload: {
-            thread_id: Number(infoFormValues.thread_id),
+            thread_id: infoFormValues.thread_id,
             content: infoFormValues.content,
             title: infoFormValues.title,
             is_headline: infoFormValues.headline,

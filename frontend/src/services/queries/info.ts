@@ -1,4 +1,5 @@
 import { ShareRight } from '@edifice.io/client';
+import { invalidateQueriesWithFirstPage } from '@edifice.io/react';
 import {
   infiniteQueryOptions,
   queryOptions,
@@ -10,7 +11,7 @@ import {
 import { Info, InfoExtendedStatus, InfoId, InfoStatus } from '~/models/info';
 import { ThreadId } from '~/models/thread';
 import { infoService } from '../api';
-import { threadQueryKeys } from './thread';
+import { useUpdateStatsQueryCache } from './hooks/useUpdateStatsQueryCache';
 
 export const DEFAULT_PAGE_SIZE = 20;
 
@@ -19,41 +20,50 @@ export const DEFAULT_PAGE_SIZE = 20;
  * ['threads', threadId|undefined, 'infos', infoId|undefined, ...other_parameters]
  */
 export const infoQueryKeys = {
-  all: ({ threadId }: { threadId?: ThreadId }) => [
-    ...threadQueryKeys.thread(threadId),
-    'infos',
-  ],
+  // ['infos']
+  all: () => ['infos'],
 
-  info: ({ infoId, ...options }: { infoId?: InfoId; threadId?: ThreadId }) => [
-    ...infoQueryKeys.all(options),
+  // ['infos', 'stats']
+  stats: () => [...infoQueryKeys.all(), 'stats'],
+
+  // List
+  // ['infos', 'thread', 'all', 'expired']
+  // ['infos', 'thread', 134, 'expired']
+  byThread: ({
+    ...options
+  }: {
+    threadId: ThreadId | 'all';
+    status?: InfoStatus;
+    state?: InfoExtendedStatus;
+  }) => {
+    const queryKey: any = [...infoQueryKeys.all(), 'thread', options.threadId];
+    if (options.status) queryKey.push(options.status);
+    if (options.state) queryKey.push(options.state);
+    return queryKey;
+  },
+
+  // Details
+  // ['infos', 'details', 234]
+  info: ({ infoId }: { infoId?: InfoId }) => [
+    ...infoQueryKeys.all(),
+    'details',
     infoId,
   ],
 
-  infos: ({
-    ...options
-  }: {
-    threadId?: ThreadId;
-    status?: InfoStatus;
-    state?: InfoExtendedStatus;
-  }) => [
-    ...infoQueryKeys.all({ threadId: options.threadId }),
-    options.status,
-    options.state,
-  ],
-
+  // ['infos', 'details', 234, 'share', 'json']
   share: (options: { threadId?: ThreadId; infoId: InfoId }) => [
     ...infoQueryKeys.info(options),
     'share',
     'json',
   ],
 
-  stats: () => [...infoQueryKeys.all({}), 'stats'],
-
+  // ['infos', 'details', 234, 'revisions']
   revisions: (options: { infoId: InfoId }) => [
     ...infoQueryKeys.info(options),
     'revisions',
   ],
 
+  // ['infos', 'details', 234, 'originalFormat']
   originalFormat: (options: { threadId?: ThreadId; infoId?: InfoId }) => [
     ...infoQueryKeys.info(options),
     'originalFormat',
@@ -94,7 +104,11 @@ export const infoQueryOptions = {
     state?: InfoExtendedStatus;
   }) {
     return infiniteQueryOptions({
-      queryKey: infoQueryKeys.infos(options),
+      queryKey: infoQueryKeys.byThread({
+        threadId: options.threadId ?? 'all',
+        status: options.status,
+        state: options.state,
+      }),
       queryFn: ({ pageParam = 0 }) => {
         return infoService.getInfos({
           ...options,
@@ -188,21 +202,42 @@ export const useInfoRevisions = (infoId: InfoId) =>
 export const useInfoOriginalFormat = (threadId: ThreadId, infoId: InfoId) =>
   useQuery(infoQueryOptions.getOriginalFormat(threadId, infoId));
 
-export const useCreateDraftInfo = () =>
-  useMutation({
+export const useCreateDraftInfo = () => {
+  const queryClient = useQueryClient();
+  const { updateStatsQueryCache } = useUpdateStatsQueryCache();
+
+  return useMutation({
     mutationFn: (payload: {
-      title?: string;
-      content?: string;
-      thread_id?: number;
+      title: string;
+      content: string;
+      thread_id: number;
       is_headline?: boolean;
     }) => infoService.createDraft(payload),
-    // TODO optimistic update
-    // onSuccess: async (, { title, content, threadId }) => {
-    // },
-  });
+    onMutate: async (payload) => {
+      updateStatsQueryCache(payload.thread_id, InfoStatus.DRAFT, 1);
+    },
+    onSuccess: async (_, { thread_id }) => {
+      const queryKeyThread = infoQueryKeys.byThread({
+        status: InfoStatus.DRAFT,
+        threadId: thread_id,
+      });
+      invalidateQueriesWithFirstPage(queryClient, { queryKey: queryKeyThread });
 
-export const useUpdateInfo = () =>
-  useMutation({
+      const queryKeyAllThreads = infoQueryKeys.byThread({
+        status: InfoStatus.DRAFT,
+        threadId: 'all',
+      });
+      invalidateQueriesWithFirstPage(queryClient, {
+        queryKey: queryKeyAllThreads,
+      });
+    },
+  });
+};
+
+export const useUpdateInfo = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
     mutationFn: ({
       infoId,
       infoStatus,
@@ -219,8 +254,13 @@ export const useUpdateInfo = () =>
         expiration_date?: string;
       };
     }) => infoService.update(infoId, infoStatus, payload),
-    // TODO optimistic update
+    onSuccess: async () => {
+      invalidateQueriesWithFirstPage(queryClient, {
+        queryKey: infoQueryKeys.all(),
+      });
+    },
   });
+};
 
 export const useSharesInfo = () => {
   const queryClient = useQueryClient();
