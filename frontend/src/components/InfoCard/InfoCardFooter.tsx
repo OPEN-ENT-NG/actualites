@@ -1,7 +1,7 @@
 import { Button, Flex } from '@edifice.io/react';
 import { IconRafterDown, IconRafterUp } from '@edifice.io/react/icons';
 import { useI18n } from '~/hooks/useI18n';
-import { useInfoUserRights } from '~/hooks/useInfoUserRights';
+import { useInfoStatus } from '~/hooks/useInfoStatus';
 import CommentsCounter from '../comments-counter/CommentsCounter';
 import { InfoCardProps } from './InfoCard';
 
@@ -16,24 +16,25 @@ export const InfoCardFooter = ({
   collapse: boolean;
 }) => {
   const { t } = useI18n();
-  const { canComment } = useInfoUserRights(info);
+  const { canShowComments } = useInfoStatus(info);
+
   return (
     <footer className="mt-12">
       <Flex align="center" justify="between">
         <Flex align="center">
           {/* To be implemented later 
           <ViewsCounter viewsCounter={0} /> */}
-          {(info.numberOfComments > 0 || canComment) && (
-            <>
-              {/* <Divider vertical /> */}
+          <>
+            {/* <Divider vertical /> */}
+            {canShowComments && (
               <CommentsCounter
                 commentsCounter={info.numberOfComments}
                 aria-controls={`info-${info.id}-comments`}
                 aria-expanded={!collapse}
                 onClick={handleCommentsClick}
               />
-            </>
-          )}
+            )}
+          </>
         </Flex>
         <Button
           type="button"
