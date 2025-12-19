@@ -31,6 +31,9 @@ export function InfoDetailsForm({
   const { t } = useI18n();
 
   const { threadsWithContributeRight: threads } = useThreadsUserRights();
+  // TODO use thread-id from query params when form will be editable
+  // const search = useLocation().search;
+  // const searchThreadId = new URLSearchParams(search).get('thread-id');
   const { md } = useBreakpoint();
 
   const { setDetailsForm, setResetDetailsForm, setDetailsFormState } =
@@ -96,7 +99,7 @@ export function InfoDetailsForm({
   }
 
   const items: OptionsType[] = threads.map((thread: Thread) => ({
-    value: thread.id + '',
+    value: String(thread.id),
     label: thread.title,
     icon: <ThreadIcon thread={thread} iconSize={iconSize} />,
   }));
@@ -142,7 +145,7 @@ export function InfoDetailsForm({
                   options={items}
                   block={true}
                   size="md"
-                  onValueChange={field.onChange}
+                  onValueChange={(value) => field.onChange(Number(value))}
                   icon={<IconQuestion />}
                   defaultValue={String(infoDetails?.thread_id)}
                   placeholderOption={t(

@@ -6,7 +6,6 @@ import {
   useQuery,
 } from '@tanstack/react-query';
 import { useI18n } from '~/hooks/useI18n';
-import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
 import { Comment, CommentId } from '~/models/comments';
 import { Info, InfoId } from '~/models/info';
 import { ThreadId } from '~/models/thread';
@@ -57,7 +56,6 @@ export const useCreateComment = () => {
   // For optimistic update to work, we need to search which info to update
   // among all threads (or only 1 thread, depending on the route parameters),
   // and change its comments counter.
-  const { threadId } = useThreadInfoParams();
 
   return useMutation({
     mutationFn: ({
@@ -71,8 +69,7 @@ export const useCreateComment = () => {
     onMutate: async ({ payload }) => {
       const { info_id, comment } = payload;
       const queryKey = commentQueryKeys.all({ infoId: info_id });
-
-      const infosQueryKey = infoQueryKeys.all({ threadId });
+      const infosQueryKey = infoQueryKeys.all();
 
       const now = new Date().toISOString();
 
@@ -192,7 +189,6 @@ export const useDeleteComment = () => {
   // For optimistic update to work, we need to search which info to update
   // among all threads (or only 1 thread, depending on the route parameters),
   // and change its comments counter.
-  const { threadId } = useThreadInfoParams();
   const { t } = useI18n();
   const toast = useToast();
 
@@ -207,7 +203,7 @@ export const useDeleteComment = () => {
     }) => commentService.delete(infoId, commentId),
     onMutate: async ({ commentId, infoId }) => {
       const queryKey = commentQueryKeys.all({ infoId });
-      const infosQueryKey = infoQueryKeys.all({ threadId });
+      const infosQueryKey = infoQueryKeys.all();
 
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey });
