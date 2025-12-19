@@ -46,7 +46,7 @@ declare interface CommentOptions {
 export function useCommentList(info: Info) {
   const { canContribute, canManage } = useThreadUserRights(info.threadId);
   const { isCreator, canComment } = useInfoUserRights(info);
-  const { isExpired, isDraft } = useInfoStatus(info);
+  const { isExpired } = useInfoStatus(info);
   const { data } = useComments(info.id);
   const comments = useMemo(
     () =>
@@ -73,9 +73,7 @@ export function useCommentList(info: Info) {
   const updateCommentMutation = useUpdateComment();
   const deleteCommentMutation = useDeleteComment();
 
-  const type: 'read' | 'edit' =
-    isExpired || isDraft || !canComment ? 'read' : 'edit';
-
+  const type: 'read' | 'edit' = canComment && !isExpired ? 'edit' : 'read';
   const callbacks = {
     post: async (comment: string) => {
       createCommentMutation.mutate({

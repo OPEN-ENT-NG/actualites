@@ -8,7 +8,7 @@ export function useInfoStatus(info?: InfoBase) {
       extendedStatus: undefined,
     };
   }
-
+  const isPending = info.status === InfoStatus.PENDING;
   const isIncoming =
     info.status === InfoStatus.PUBLISHED &&
     !!info.publicationDate &&
@@ -31,6 +31,9 @@ export function useInfoStatus(info?: InfoBase) {
     isIncoming,
     isExpired,
     extendedStatus,
+    isPending,
     isDraft: info.status === InfoStatus.DRAFT,
+    isPublished: info.status === InfoStatus.PUBLISHED,
+    canShowComments: info.status === InfoStatus.PUBLISHED && !isIncoming,
   };
 }

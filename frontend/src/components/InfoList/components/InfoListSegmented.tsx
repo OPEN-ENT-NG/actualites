@@ -49,6 +49,16 @@ export const InfoListSegmented = ({
     });
   }
 
+  if (threadInfosStats.incomingCount > 0) {
+    options.push({
+      label:
+        t('actualites.infoList.segmented.incoming') +
+        ' ' +
+        (threadInfosStats?.incomingCount ?? 0),
+      value: InfoExtendedStatus.INCOMING,
+    });
+  }
+
   options.push({
     label: `${t('actualites.infoList.segmented.draft')} ${threadInfosStats.status[InfoStatus.DRAFT]}`,
     value: InfoStatus.DRAFT,
@@ -61,16 +71,6 @@ export const InfoListSegmented = ({
         ' ' +
         threadInfosStats?.expiredCount,
       value: InfoExtendedStatus.EXPIRED,
-    });
-  }
-
-  if (threadInfosStats.incomingCount > 0) {
-    options.push({
-      label:
-        t('actualites.infoList.segmented.incoming') +
-        ' ' +
-        (threadInfosStats?.incomingCount ?? 0),
-      value: InfoExtendedStatus.INCOMING,
     });
   }
 

@@ -40,7 +40,6 @@ const CommentsCounter = ({
         type="button"
         className={className}
         onClick={handleButtonClick}
-        disabled={!commentsCounter}
       >
         {StringUtils.toCounter(commentsCounter)}
       </Button>

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { CommentList } from '../comment-list/CommentList';
 import { Expandable } from '../Expandable';
 import { InfoCardProps } from './InfoCard';
+import { useInfoStatus } from '~/hooks/useInfoStatus';
 
 export const InfoCardContent = ({
   info,
@@ -14,6 +15,7 @@ export const InfoCardContent = ({
   onCollapseApplied?: () => void;
 }) => {
   const [showFullContent, setShowFullContent] = useState(!collapse);
+  const { canShowComments } = useInfoStatus(info);
 
   const handleTogglePreview = () => {
     setShowFullContent(!collapse);
@@ -42,7 +44,7 @@ export const InfoCardContent = ({
           />
         </div>
 
-        {showFullContent && (
+        {canShowComments && showFullContent && (
           <div id={`info-${info.id}-comments`}>
             <CommentList info={info} />
           </div>
