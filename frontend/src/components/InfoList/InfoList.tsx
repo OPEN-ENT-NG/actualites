@@ -9,6 +9,7 @@ import { InfoListEmpty } from './components/InfoListEmpty';
 import { InfoListSegmented } from './components/InfoListSegmented';
 import { InfoListSegmentedSkeleton } from './components/InfoListSegmentedSkeleton';
 import { useInfoListEmptyScreen } from './hooks/useInfoListEmptyScreen';
+import { useEffect } from 'react';
 
 export const InfoList = () => {
   const { infos, hasNextPage, loadNextPage, isLoading } = useInfoList();
@@ -21,6 +22,10 @@ export const InfoList = () => {
   const { isLoading: isInfosStatsLoading } = useInfosStats({
     enabled: !!isSegmentedVisible,
   });
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [threadId]);
 
   const loadNextRef = useInfiniteScroll({
     callback: loadNextPage,

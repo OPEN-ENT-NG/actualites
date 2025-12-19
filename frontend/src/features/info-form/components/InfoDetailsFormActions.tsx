@@ -32,7 +32,7 @@ export function InfoDetailsFormActions() {
 
   const handleSaveDraftClick = () => {
     onSaveDetails(() => {
-      navigate('/');
+      navigate(`/threads/?status=draft`);
     });
   };
 
