@@ -14,6 +14,7 @@
   "actualites.infoList.segmented.draft": "Brouillon",
   "actualites.infoList.segmented.expired": "Expiré",
   "actualites.infoList.segmented.incoming": "À venir",
+  "actualites.infoList.segmented.pending": "À valider",
   "actualites.infoList.empty.createThread.title": "Créez un premier fil !",
   "actualites.infoList.empty.createThread.description": "Le fil, espace idéal pour diffuser les informations importantes de votre établissement ( dérouler un événement, menu de la cantine...). Créez des fils thématiques et ciblez les destinataires. ",
   "actualites.infoList.empty.default.title": "Pas d'actualités pour le moment",
