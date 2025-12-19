@@ -39,25 +39,24 @@ export function s7CommentInfo(data: InitData) {
 
     sleep(baseDelay / 1000);
 
-    const infos = JSON.parse(res.body as string);
-    if(!infos || infos.length === 0) {
-      console.error('user in dataset not correct', user);
-      return;
-    }
-    const infoId = infos[0].id;
-
     //display interface actualites
-    const listInfoUrl = `${rootUrl}/actualites/api/v1/infos`;
+    const listInfoUrl = `${rootUrl}/actualites/api/v1/infos?threadIds=${user.threadId}`;
     const resListInfo = http.get(listInfoUrl,
       { headers: getHeaders(), tags: {type : 'list_info'} });
     pushResponseMetrics(resListInfo, user);
+
     // short delay to simulate succession of call from browser
     sleep(baseDelay / 5000);
-    const infosList = JSON.parse(res.body as string);
-
+    const infosList = JSON.parse(resListInfo.body as string);
     check(infosList, {
       "Infos list should not be empty": (list) => Array.isArray(list) && list.length !== 0,
     });
+
+    if(!infosList || infosList.length === 0) {
+      console.log("empty info on thread of the user ", user);
+      return;
+    }
+    const infoId = infosList[0].id;
 
     //display thread list
     const listThreadUrl = `${rootUrl}/actualites/api/v1/threads`;
@@ -83,7 +82,7 @@ export function s7CommentInfo(data: InitData) {
     //comment info
     const infoCommentUrl = `${rootUrl}/actualites/api/v1/infos/${infoId}/comments`;
     const resCommentInfo = http.post(infoCommentUrl,
-      JSON.stringify({comment: `Comment on ino ${infoId} by ${user.id}`}),
+      JSON.stringify({comment: `Comment on ino ${infoId} by ${user.id}`, info_id: infoId}),
       { headers: getHeaders(), tags: {type : 'create_comment'} });
     pushResponseMetrics(resCommentInfo, user);
     sleep(baseDelay / 1000);
