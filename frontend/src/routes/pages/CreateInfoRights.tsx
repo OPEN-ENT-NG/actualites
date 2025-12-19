@@ -121,7 +121,7 @@ export function CreateInfoRights() {
   const handleShareInfoSubmitSuccess = () => {
     setIsDirty(false);
     if (isPublishing.current) {
-      handlePublish(infoId, info!.thread.id);
+      handlePublish(infoId);
     } else {
       navigate('/');
       setIsSaving(false);
@@ -139,7 +139,7 @@ export function CreateInfoRights() {
       shareInfoRef.current?.handleShare(false);
     } else {
       // No changes to save, publish immediately
-      handlePublish(infoId, info!.thread.id);
+      handlePublish(infoId);
     }
   };
 
