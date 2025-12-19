@@ -54,7 +54,7 @@ export const InfoListSegmented = ({
       label:
         t('actualites.infoList.segmented.incoming') +
         ' ' +
-        (threadInfosStats?.incomingCount ?? 0),
+        threadInfosStats?.incomingCount,
       value: InfoExtendedStatus.INCOMING,
     });
   }
@@ -69,7 +69,7 @@ export const InfoListSegmented = ({
       label:
         t('actualites.infoList.segmented.expired') +
         ' ' +
-        threadInfosStats?.expiredCount,
+        threadInfosStats.expiredCount,
       value: InfoExtendedStatus.EXPIRED,
     });
   }
