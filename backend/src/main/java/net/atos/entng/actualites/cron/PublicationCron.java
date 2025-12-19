@@ -49,12 +49,12 @@ public class PublicationCron implements Handler<Long> {
         HttpServerRequest request = new JsonHttpServerRequest(defaultRequest);
         JsonArray rows = result.right().getValue();
         int rowsCount = rows.size();
-        int actualRowCount = 0;
+        int actualRowIndex = 0;
 
         List<Long> publishIds = new ArrayList<>();
-        while (actualRowCount < rowsCount) {
-            for (; actualRowCount < actualRowCount + 1000 && actualRowCount < rowsCount; actualRowCount++) {
-                JsonObject row = rows.getJsonObject(actualRowCount);
+        while (actualRowIndex < rowsCount) {
+            for (int maxIteration = actualRowIndex + 1000; actualRowIndex < maxIteration && actualRowIndex < rowsCount; actualRowIndex++) {
+                JsonObject row = rows.getJsonObject(actualRowIndex);
 
                 UserInfos owner = new UserInfos();
                 owner.setUserId(row.getString("owner"));
@@ -77,7 +77,7 @@ public class PublicationCron implements Handler<Long> {
             }
             publishIds.clear();
         }
-        LOGGER.info("[publication-cron] end publishing news : " + actualRowCount + " news published");
+        LOGGER.info("[publication-cron] end publishing news : " + actualRowIndex + " news published");
     }
 
 }
