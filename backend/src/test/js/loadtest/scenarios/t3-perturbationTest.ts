@@ -22,7 +22,8 @@ export const options = {
     'http_req_duration{type:widget_access}': [],
     'http_req_duration{type:create_comment}': [],
     'http_req_duration{type:create_thread}': [],
-    'http_req_duration{type:update_thread_shares}': []
+    'http_req_duration{type:update_thread_shares}': [],
+    'http_req_duration{type:list_info_shares}': []
   },
   scenarios: {
     ramp_up_read_old_info: {
