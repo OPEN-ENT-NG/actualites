@@ -1,15 +1,11 @@
 import {
-  Avatar,
   Badge,
-  Divider,
   Dropdown,
   Flex,
   IconButton,
   IconButtonProps,
   Image,
   useBreakpoint,
-  useDate,
-  useDirectory,
 } from '@edifice.io/react';
 import {
   IconClock,
@@ -19,13 +15,15 @@ import {
   IconSave,
 } from '@edifice.io/react/icons';
 import clsx from 'clsx';
+import { RefAttributes, useState } from 'react';
 import iconHeadline from '~/assets/icon-headline.svg';
 import { useI18n } from '~/hooks/useI18n';
+import { useInfoStatus } from '~/hooks/useInfoStatus';
 import { useThread } from '~/hooks/useThread';
 import { InfoExtendedStatus } from '~/models/info';
 import { InfoCardProps } from './InfoCard';
 import { InfoCardThreadHeader } from './InfoCardThreadHeader';
-import { RefAttributes, useState } from 'react';
+import { UserInfo } from './UserInfo';
 
 export type InfoCardHeaderProps = Pick<InfoCardProps, 'info'> & {
   extendedStatus?: InfoExtendedStatus;
@@ -35,14 +33,13 @@ export const InfoCardHeader = ({
   info,
   extendedStatus,
 }: InfoCardHeaderProps) => {
-  const { formatDate } = useDate();
   const thread = useThread(info.threadId);
 
   const [dropDownVisible, setDropDownVisible] = useState(false);
-  const { getAvatarURL } = useDirectory();
+  const { isExpired } = useInfoStatus(info);
+
   const { t } = useI18n();
-  const avatarUrl = getAvatarURL(info.owner.id, 'user');
-  const { sm, md, lg } = useBreakpoint();
+  const { md, lg } = useBreakpoint();
   const styles = lg
     ? { gridTemplateColumns: '1fr auto 1fr', gap: '12px' }
     : { gridTemplateColumns: '1fr', gap: '12px' };
@@ -50,9 +47,6 @@ export const InfoCardHeader = ({
   const classes = clsx({
     'text-center': md,
   });
-  const iconSize = md ? 'sm' : 'xs';
-
-  const isExpired = extendedStatus === InfoExtendedStatus.EXPIRED;
 
   const badgeContent = () => (
     <div style={{ textAlign: 'right' }}>
@@ -103,61 +97,7 @@ export const InfoCardHeader = ({
             height={24}
           />
         )}
-        {sm ? (
-          <Divider className="info-divider m-0" style={{ minWidth: 0 }}>
-            <Flex align="center" gap="8" justify="center" fill wrap="nowrap">
-              <Avatar
-                alt={info.owner.displayName}
-                src={avatarUrl}
-                size={iconSize}
-                variant="circle"
-                loading="lazy"
-              />
-              {md ? (
-                <Flex
-                  align="center"
-                  className="fs-6 text-gray-700"
-                  wrap="nowrap"
-                >
-                  <div>{info.owner.displayName}</div>
-                  <Divider vertical className="border-gray-700" />
-                  <div>{formatDate(info.modified, 'long')}</div>
-                </Flex>
-              ) : (
-                <Flex
-                  direction="column"
-                  className="fs-6 text-gray-700"
-                  wrap="nowrap"
-                >
-                  <div>{info.owner.displayName}</div>
-                  <div>{formatDate(info.modified, 'long')}</div>
-                </Flex>
-              )}
-            </Flex>
-          </Divider>
-        ) : (
-          <Flex align="center" gap="8" justify="center" fill>
-            <Avatar
-              alt={info.owner.displayName}
-              src={avatarUrl}
-              size={iconSize}
-              variant="circle"
-              loading="lazy"
-            />
-            {md ? (
-              <Flex align="center" className="fs-6 text-gray-700">
-                <div>{info.owner.displayName}</div>
-                <Divider vertical className="border-gray-700" />
-                <div>{formatDate(info.modified, 'long')}</div>
-              </Flex>
-            ) : (
-              <Flex direction="column" className="fs-6 text-gray-700">
-                <div>{info.owner.displayName}</div>
-                <div>{formatDate(info.modified, 'long')}</div>
-              </Flex>
-            )}
-          </Flex>
-        )}
+        <UserInfo info={info} />
 
         {info.headline && (
           <Image
