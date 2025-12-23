@@ -49,6 +49,7 @@
   "actualites.adminThreads.goBack": "Retour aux actualités",
   "actualites.adminThreads.newThread": "Nouveau fil",
   "actualites.adminThreads.searchPlaceholder": "Chercher un fil",
+  "actualites.adminThreads.noStructure": "Aucun établissement n'est rattaché à ce fil",
   "actualites.adminThreads.shareRightsButton": "Droits de contributions",
   "actualites.adminThreads.editButton": "Modifier",
   "actualites.adminThreads.threadActions": "Actions du fil",
