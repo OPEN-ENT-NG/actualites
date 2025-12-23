@@ -35,7 +35,7 @@ export function useInfoDetailsForm() {
           infoId: infoFormValues.infoId,
           infoStatus: InfoStatus.DRAFT,
           payload: {
-            thread_id: infoFormValues.thread_id,
+            thread_id: Number(infoFormValues.thread_id),
             content: infoFormValues.content,
             title: infoFormValues.title,
             is_headline: infoFormValues.headline,
@@ -51,12 +51,18 @@ export function useInfoDetailsForm() {
         },
       );
     } else {
+      const publication_date = new Date();
+      const expiration_date = new Date();
+      expiration_date.setFullYear(expiration_date.getFullYear() + 1);
+
       return createDraftInfo(
         {
           title: infoFormValues.title,
           content:
             infoFormValues.content !== '' ? infoFormValues.content : '<p></p>',
           thread_id: infoFormValues.thread_id,
+          publication_date: publication_date.toISOString(),
+          expiration_date: expiration_date.toISOString(),
           is_headline: infoFormValues.headline,
         },
         {
