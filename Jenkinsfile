@@ -19,7 +19,7 @@ pipeline {
           sh 'find ./src/main/resources/public/ -maxdepth 1 -type f -exec rm -f {} +'
           sh 'cp -R ../frontend/dist/* ./src/main/resources/'
           sh 'mv ./src/main/resources/*.html ./src/main/resources/view'
-          sh './build.sh clean build publish'
+          sh './build.sh clean init build publish'
           sh 'rm -rf ../frontend/dist'
         }
       }
