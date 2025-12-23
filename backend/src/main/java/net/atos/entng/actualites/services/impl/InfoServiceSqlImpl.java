@@ -39,9 +39,10 @@ import org.entcore.common.sql.SqlResult;
 import org.entcore.common.sql.SqlStatementsBuilder;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.utils.StopWatch;
+import org.entcore.common.utils.StringUtils;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -122,20 +123,27 @@ public class InfoServiceSqlImpl implements InfoService {
 	}
 
 	/**
-	 * Check if the date format is correct for PostgresSQL
+	 * Check if the date format is correct for PostgresSQL (ISO 8601 with timezone required)
+	 * Supported formats:
+	 * - 2025-12-20T10:00:00Z
+	 * - 2025-12-20T10:00:00+10:00
+	 * - 2025-12-20T10:00:00.000+01:00
 	 * @param date	The date to check
-	 * @return	True is the date match the format, false otherwise.
+	 * @return	True if the date matches a valid ISO 8601 format with timezone, false otherwise.
 	 */
 	private boolean isDateFormatOK(String date) {
-		if (date == null)
+		if (StringUtils.isEmpty(date)) {
 			return true;
-		try {
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYY-MM-DD'T'HH:mm:ss.SSS");
-			simpleDateFormat.parse(date);
-		} catch (ParseException e) {
-			return false;
 		}
-		return true;
+
+		try {
+			OffsetDateTime.parse(date);
+			return true;
+		} catch (DateTimeParseException e) {
+			// Do nothing, it will return false
+		}
+
+		return false;
 	}
 
 	@Override
@@ -151,7 +159,7 @@ public class InfoServiceSqlImpl implements InfoService {
 			sb.append(attr);
 			if (Boolean.TRUE.equals(attr.contains("date"))) {
 				if (Boolean.TRUE.equals(isDateFormatOK(data.getString(attr)))) {
-					sb.append("= to_timestamp(?, 'YYYY-MM-DDThh24:mi:ss'),");
+					sb.append(" = ?::timestamptz,");
 				} else {
 					String error = "[Actualites@%s::update] Error in date format";
 					log.error(String.format(error, this.getClass().getSimpleName()));
@@ -209,7 +217,7 @@ public class InfoServiceSqlImpl implements InfoService {
 			String query;
 			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
 			String admlFilter = filterAdmlGroup ? " AND (ts.adml_group = false OR ts.adml_group IS NULL) " : "";
-			query = "SELECT i.id as _id, i.title, i.content, i.status, i.publication_date, i.expiration_date, i.is_headline, i.thread_id, i.created, i.modified" +
+			query = "SELECT i.id as _id, i.title, i.content, i.status, i.publication_date::text, i.expiration_date::text, i.is_headline, i.thread_id, i.created::text, i.modified::text" +
 				", i.owner, i.content_version, u.username, t.title AS thread_title, t.icon AS thread_icon" +
 				", (SELECT json_agg(cr.*) FROM (" +
 					"SELECT c.id as _id, c.comment, c.owner, c.created, c.modified, au.username, au.deleted" +
@@ -243,7 +251,7 @@ public class InfoServiceSqlImpl implements InfoService {
 			if (user.getGroupsIds() != null) {
 				groupsAndUserIds.addAll(user.getGroupsIds());
 			}
-			query = "SELECT i.id as _id, i.title, " + getContentFieldQuery(originalContent) + " as content, i.status, i.publication_date, i.expiration_date, i.is_headline, i.thread_id, i.created, i.modified" +
+			query = "SELECT i.id as _id, i.title, " + getContentFieldQuery(originalContent) + " as content, i.status, i.publication_date::text, i.expiration_date::text, i.is_headline, i.thread_id, i.created::text, i.modified::text" +
 				", i.owner, i.content_version, u.username, t.title AS thread_title, t.icon AS thread_icon" +
 				", (SELECT json_agg(cr.*) FROM (" +
 					"SELECT c.id as _id, c.comment, c.owner, c.created, c.modified, au.username, au.deleted" +
@@ -308,7 +316,7 @@ public class InfoServiceSqlImpl implements InfoService {
 			if (user.getGroupsIds() != null) {
 				groupsAndUserIds.addAll(user.getGroupsIds());
 			}
-			query = "SELECT i.id as _id, i.title, i.content, i.status, i.publication_date, i.expiration_date, i.is_headline, i.thread_id, i.created, i.modified" +
+			query = "SELECT i.id as _id, i.title, i.content, i.status, i.publication_date::text, i.expiration_date::text, i.is_headline, i.thread_id, i.created::text, i.modified::text" +
 				", i.owner, i.content_version, u.username, t.title AS thread_title, t.icon AS thread_icon" +
 				", (SELECT json_agg(cr.*) FROM (" +
 					"SELECT c.id as _id, c.comment, c.owner, c.created, c.modified, au.username, au.deleted" +
@@ -392,8 +400,8 @@ public class InfoServiceSqlImpl implements InfoService {
 			}
 			query = "SELECT i.id as _id, i.title, u.username, t.id AS thread_id, t.title AS thread_title , t.icon AS thread_icon, " +
 				" CASE WHEN i.publication_date > i.modified" +
-					" THEN i.publication_date" +
-					" ELSE i.modified" +
+					" THEN i.publication_date::text" +
+					" ELSE i.modified::text" +
 					" END as date" +
 				", json_agg(row_to_json(row(ios.member_id, ios.action)::actualites.share_tuple)) as shared" +
 				", array_to_json(array_agg(group_id)) as groups" +
@@ -439,8 +447,8 @@ public class InfoServiceSqlImpl implements InfoService {
 				{
 					final StringBuilder subquery = new StringBuilder();
 					subquery.append("SELECT info.id as _id, info.title, users.username, thread.id AS thread_id, thread.title AS thread_title, ");
-					subquery.append("thread.icon AS thread_icon, CASE WHEN info.publication_date > info.modified THEN info.publication_date ");
-					subquery.append("ELSE info.modified END AS date ");
+					subquery.append("thread.icon AS thread_icon, CASE WHEN info.publication_date > info.modified THEN info.publication_date::text ");
+					subquery.append("ELSE info.modified::text END AS date ");
 					subquery.append("FROM "+NEWS_INFO_TABLE+" ");
 					subquery.append("INNER JOIN "+NEWS_THREAD_TABLE+" ON (info.thread_id = thread.id) ");
 					subquery.append("INNER JOIN "+NEWS_USER_TABLE+" ON (info.owner = users.id) ");
@@ -597,7 +605,7 @@ public class InfoServiceSqlImpl implements InfoService {
 									"        SELECT id FROM " + GROUPS_TABLE + " WHERE id IN " + 	Sql.listPrepared(groupsAndUserIds.toArray()) +
 									"    	) as u_groups )" +
 									"    SELECT i.id, i.thread_id, i.title, i.content, i.status, i.owner, u.username AS owner_name, " +
-									"        u.deleted as owner_deleted, i.created, i.modified, i.publication_date, i.expiration_date, " +
+									"        u.deleted as owner_deleted, i.created::text, i.modified::text, i.publication_date::text, i.expiration_date::text, " +
 									"        i.is_headline, i.number_of_comments," +
 									"        (SELECT array_agg(DISTINCT ish.action) " +
 									"            FROM actualites.info_shares AS ish  " +
@@ -715,8 +723,8 @@ public class InfoServiceSqlImpl implements InfoService {
 					"    	 WHERE tsh.member_id IN (SELECT id FROM user_groups) " +
 					"    	 GROUP BY t.id, tsh.member_id " +
 					"	 ) " +
-					"SELECT i.id, i.title, " + getContentFieldQuery(originalContent) + " as content , i.created, i.modified, i.is_headline, i.number_of_comments, " + // info data
-					"        i.status, i.publication_date, i.expiration_date, " + // info publication data
+					"SELECT i.id, i.title, " + getContentFieldQuery(originalContent) + " as content , i.created::text, i.modified::text, i.is_headline, i.number_of_comments, " + // info data
+					"        i.status, i.publication_date::text, i.expiration_date::text, " + // info publication data
 					"		 i.owner, u.username AS owner_name, u.deleted AS owner_deleted, " + // info owner data
 					"		 i.thread_id, i.content_version as content_version, t.title AS thread_title, t.icon AS thread_icon, " +
 					"		 t.owner AS thread_owner, ut.username AS thread_owner_name, ut.deleted AS thread_owner_deleted, " + // thread owner data
