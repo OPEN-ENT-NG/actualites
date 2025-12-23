@@ -19,6 +19,7 @@
 
 package net.atos.entng.actualites;
 
+import fr.wseduc.cron.CronTrigger;
 import fr.wseduc.mongodb.MongoDb;
 import fr.wseduc.transformer.ContentTransformerFactoryProvider;
 import fr.wseduc.transformer.IContentTransformerClient;
@@ -35,6 +36,7 @@ import net.atos.entng.actualites.controllers.ThreadController;
 import net.atos.entng.actualites.controllers.v1.CommentControllerV1;
 import net.atos.entng.actualites.controllers.v1.InfosControllerV1;
 import net.atos.entng.actualites.controllers.v1.ThreadControllerV1;
+import net.atos.entng.actualites.cron.PublicationCron;
 import net.atos.entng.actualites.services.*;
 import net.atos.entng.actualites.services.impl.*;
 import org.entcore.common.editor.ContentTransformerConfig;
@@ -52,6 +54,7 @@ import org.entcore.common.share.ShareService;
 import org.entcore.common.share.impl.SqlShareService;
 import org.entcore.common.sql.SqlConf;
 import org.entcore.common.sql.SqlConfs;
+import org.entcore.common.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -196,6 +199,12 @@ public class Actualites extends BaseServer {
 		commentControllerV1.setInfoService(infoService);
 		commentControllerV1.setCrudService(commentSqlCrudService);
 		addController(commentControllerV1);
+
+		// News publication cron task
+		String publicationCron = config.getString("news-publication-cron", "0 0 * * * ? *");
+		if (!StringUtils.isEmpty(publicationCron)) {
+			new CronTrigger(vertx, publicationCron).schedule(new PublicationCron(notificationTimelineService));
+		}
 		return Future.succeededFuture();
 	}
 
