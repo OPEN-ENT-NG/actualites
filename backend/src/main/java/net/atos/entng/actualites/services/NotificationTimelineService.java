@@ -29,7 +29,8 @@ public interface NotificationTimelineService {
      * @param infoId id of the info
      * @param title title of the info
      * @param eventType type of event to select the right notification
+     * @param ignoreFlood ignore anti flood filter in notification service
      */
     void notifyTimeline(final HttpServerRequest request, final UserInfos user, final UserInfos owner, final String threadId,
-                        final String infoId, final String title, final String eventType);
+                        final String infoId, final String title, final String eventType, final boolean ignoreFlood);
 }
