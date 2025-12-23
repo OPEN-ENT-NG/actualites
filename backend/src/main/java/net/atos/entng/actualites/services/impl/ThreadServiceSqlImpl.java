@@ -75,7 +75,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 			if(filterAdmlGroup) {
 				filterAdml = " AND (ts.adml_group IS NULL OR ts.adml_group = false) ";
 			}
-			query = "SELECT t.id as _id, t.title, t.icon, t.mode, t.created, t.modified, t.owner, u.username" +
+			query = "SELECT t.id as _id, t.title, t.icon, t.mode, t.created::text, t.modified::text, t.owner, u.username" +
 				", json_agg(row_to_json(row(ts.member_id, ts.action)::actualites.share_tuple)) as shared" +
 				", array_to_json(array_agg(group_id)) as groups" +
 				" FROM actualites.thread AS t" +
@@ -110,7 +110,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 					"    SELECT ? as id UNION ALL " +
 					"    SELECT id FROM " + groupsTable + " WHERE id IN " + 	Sql.listPrepared(groupsAndUserIds.toArray()) +
 					" ) as u_groups )" +
-					" SELECT t.id as id, t.title, t.icon, t.mode, t.created, t.modified, t.structure_id, t.owner, u.username,  u.deleted as owner_deleted," +
+					" SELECT t.id as id, t.title, t.icon, t.mode, t.created::text, t.modified::text, t.structure_id, t.owner, u.username,  u.deleted as owner_deleted," +
 					"	     json_agg(row_to_json(row(ts.member_id, ts.action)::actualites.share_tuple)) as shared," +
 					"	     array_to_json(array_agg(group_id)) as groups" +
 					" FROM " + threadsTable + " AS t" +
@@ -189,7 +189,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 				? user.getFunctions().get(ADMIN_LOCAL).getScope() 
 				: Collections.EMPTY_LIST;
 			final Object[] groupsAndUserIds = gu.toArray();
-			query = "SELECT t.id as _id, t.title, t.icon, t.mode, t.created, t.modified, t.structure_id, t.owner, u.username" +
+			query = "SELECT t.id as _id, t.title, t.icon, t.mode, t.created::text, t.modified::text, t.structure_id, t.owner, u.username" +
 				", json_agg(row_to_json(row(ts.member_id, ts.action)::actualites.share_tuple)) as shared" +
 				", array_to_json(array_agg(group_id)) as groups" +
 				" FROM actualites.thread AS t" +
@@ -320,7 +320,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 					"    WHERE tsh.member_id IN  (SELECT id FROM user_groups) " + filterAdml +
 					"    GROUP BY t.id, tsh.member_id " +
 					") SELECT t.id, t.owner, u.username AS owner_name, u.deleted as owner_deleted, t.title, t.icon," +
-					"    t.created, t.modified, t.structure_id, max(thread_for_user.rights) as rights " + // note : we can use max() here only because the rights are inclusive of each other
+					"    t.created::text, t.modified::text, t.structure_id, max(thread_for_user.rights) as rights " + // note : we can use max() here only because the rights are inclusive of each other
 					"    FROM " + threadsTable + " AS t " +
 					"        LEFT JOIN thread_for_user ON thread_for_user.id = t.id " +
 					"        LEFT JOIN " + usersTable + " AS u ON t.owner = u.id " +
