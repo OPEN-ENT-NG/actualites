@@ -48,12 +48,12 @@ export function AdminThread({
           wrap="nowrap"
           className="text-gray-700 "
         >
-          {thread.structure?.name && (
-            <>
-              <div className="text-truncate">{thread.structure.name}</div>
-              {xl && <Divider vertical className="border-gray-700" />}
-            </>
-          )}
+          <div
+            className={'text-truncate' + (!thread.structure && ' text-red-500')}
+          >
+            {thread.structure?.name || t('actualites.adminThreads.noStructure')}
+          </div>
+          {xl && <Divider vertical className="border-gray-700" />}
           <div className="text-nowrap">
             {t('actualites.adminThreads.threadInfoCount', {
               count: threadInfosStats?.status[InfoStatus.PUBLISHED] || 0,
