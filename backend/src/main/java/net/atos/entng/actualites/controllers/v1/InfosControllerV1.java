@@ -20,6 +20,7 @@ import net.atos.entng.actualites.services.InfoService;
 import net.atos.entng.actualites.services.NotificationTimelineService;
 import net.atos.entng.actualites.to.NewsState;
 import net.atos.entng.actualites.to.NewsStatus;
+import net.atos.entng.actualites.utils.DateUtils;
 import net.atos.entng.actualites.utils.Events;
 import org.apache.commons.lang3.StringUtils;
 import org.entcore.common.controller.ControllerHelper;
@@ -33,6 +34,8 @@ import org.entcore.common.user.UserUtils;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -351,7 +354,7 @@ public class InfosControllerV1 extends ControllerHelper {
 										if(date != null && !date.trim().isEmpty()){
 											try {
 												Date publicationDate = dfm.parse(date);
-												Date timeNow=new Date(System.currentTimeMillis());
+												Date timeNow = new Date(System.currentTimeMillis());
 												if(publicationDate.after(timeNow)){
 													params.put("timeline-publish-date", publicationDate.getTime());
 												}
@@ -407,6 +410,9 @@ public class InfosControllerV1 extends ControllerHelper {
 					renderJson(request, error, 400);
 					return;
 				}
+
+				resource.put("published", false);
+
 				Events events = resource.getString("status").equals("1") ? Events.DRAFT : Events.CREATE_AND_PENDING;
 
 				Handler<Either<String, JsonObject>> handler = eventHelper.onCreateResource(request, RESOURCE_NAME, notEmptyResponseHandler(request));
@@ -441,6 +447,7 @@ public class InfosControllerV1 extends ControllerHelper {
 			RequestUtils.bodyToJson(request, pathPrefix + SCHEMA_INFO_CREATE, resource -> {
 				LOGGER.info(String.format("User %s create a published info", user.getUserId()));
 				resource.put("status", 3); //PUBLISH
+				resource.put("publisher_id", user.getUserId());
 				final Handler<Either<String, JsonObject>> handler = eventHelper.onCreateResource(request, RESOURCE_NAME, notEmptyResponseHandler(request));
 				infoService.create(resource, user, Events.CREATE_AND_PUBLISH.toString(), request, handler);
 			});
@@ -475,20 +482,42 @@ public class InfosControllerV1 extends ControllerHelper {
 							resource.putNull("publication_date");
 						}
 					}
+					String notificationFromTransition = getNotificationFromTransition(targetStatus, actualStatus);
+
+					String publicationDate = resource.getString("publication_date") != null ?
+														 resource.getString("publication_date")
+														: actualInfo.getString("publication_date");
+
+					boolean isPublishedEvent = notificationFromTransition != null &&
+							notificationFromTransition.equals(NEWS_PUBLISH_EVENT_TYPE);
+					boolean shouldPublishedNow = isPublishedEvent &&
+							( publicationDate == null ||
+							DateUtils.utcFromString(publicationDate).isBefore(Instant.now().atZone(ZoneId.of("UTC")).toInstant()));
+
+					//immediate publication => we notify
+					if (shouldPublishedNow) {
+						resource.put("published", true);
+						resource.put("publisher_id", user.getUserId());
+					//delayed publication => handle by the cron publicationCron
+					} else if (isPublishedEvent) {
+						resource.put("published", false);
+						resource.put("publisher_id", user.getUserId());
+					}
+
 					infoService.update(infoId, resource, user, event.name(), request, h -> {
 						notEmptyResponseHandler(request).handle(h);
-						String notificationFromTransition = getNotificationFromTransition(targetStatus, actualStatus);
 						if (notificationFromTransition != null) {
 							if (resource.getString("title") == null) {
 								resource.put("title", actualInfo.getString("title"));
 							}
 							if (notificationFromTransition.equals(NEWS_UPDATE_EVENT_TYPE)) {
 								notifyOwner(request, user, resource, infoId, actualInfo, notificationFromTransition);
-							} else {
+							}
+							if (shouldPublishedNow) {
 								UserInfos owner = new UserInfos();
 								owner.setUserId(actualInfo.getString("owner"));
 								notificationTimelineService.notifyTimeline(request, user, owner, actualInfo.getString("thread_id"),
-										infoId, resource.getString("title"), notificationFromTransition);
+										infoId, resource.getString("title"), notificationFromTransition, false);
 							}
 						}
 					});
@@ -567,7 +596,7 @@ public class InfosControllerV1 extends ControllerHelper {
 			UserInfos owner = new UserInfos();
 			owner.setUserId(ownerId);
 			notificationTimelineService.notifyTimeline(request,  user, owner, actualInfo.getString("thread_id"),
-					infoId, updatedInfo.getString("title"), eventType);
+					infoId, updatedInfo.getString("title"), eventType, false);
 		}
 	}
 }
