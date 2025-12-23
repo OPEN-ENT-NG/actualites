@@ -27,6 +27,18 @@ export const mockThreadAsOwner = {
   sharedRights: [THREAD_MANAGER, THREAD_CONTRIBUTOR, THREAD_PUBLISHER],
 };
 
+export const mockThreadAsOwnerWithNoStructure = {
+  id: 4,
+  title: 'Menus de Noël !',
+  icon: null,
+  mode: 0 as ThreadMode,
+  created: '2025-08-07T16:33:54.698',
+  modified: '2025-08-07T16:33:54.698',
+  owner: mockUserLogged.id,
+  username: mockUserLogged.displayName,
+  sharedRights: [THREAD_MANAGER, THREAD_CONTRIBUTOR, THREAD_PUBLISHER],
+};
+
 export const mockThreadAsCatherine = {
   id: 2,
   title: 'Echange scolaire de Catherine!',
@@ -64,6 +76,7 @@ export const mockThreadAsCatherineWithContributeRight = {
 // TODO Clean this mock
 export const mockThreads: Array<Thread> = [
   mockThreadAsOwner,
+  mockThreadAsOwnerWithNoStructure,
   mockThreadAsCatherine,
   mockThreadAsCatherineWithContributeRight,
 ];

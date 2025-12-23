@@ -33,12 +33,12 @@ export interface Thread {
   /**
    * Structure object this thread is attached to.
    */
-  structure: {
+  structure?: {
     id: string;
     name: string;
   } | null;
   /** ID of the structure this thread is attached to. */
-  structureId: string | null;
+  structureId?: string | null;
   /** ID of the user who created this thread. */
   owner: string;
   /** Name of the user who created this thread. */
