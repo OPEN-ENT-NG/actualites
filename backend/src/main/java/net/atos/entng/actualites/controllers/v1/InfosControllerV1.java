@@ -448,7 +448,35 @@ public class InfosControllerV1 extends ControllerHelper {
 				LOGGER.info(String.format("User %s create a published info", user.getUserId()));
 				resource.put("status", 3); //PUBLISH
 				resource.put("publisher_id", user.getUserId());
-				final Handler<Either<String, JsonObject>> handler = eventHelper.onCreateResource(request, RESOURCE_NAME, notEmptyResponseHandler(request));
+
+				String publicationDate = resource.getString("publication_date");
+				boolean shouldPublishNow = publicationDate == null || DateUtils.utcFromString(publicationDate).isBefore(Instant.now().atZone(ZoneId.of("UTC")).toInstant());
+						
+				if (shouldPublishNow) {
+					//immediate publication => we notify
+					resource.put("published", true);
+				} else {
+					//delayed publication => handle by the cron publicationCron
+					resource.put("published", false);
+				}
+
+				Handler<Either<String, JsonObject>> handler = eventHelper.onCreateResource(request, RESOURCE_NAME, notEmptyResponseHandler(request));
+				if (shouldPublishNow) {
+					handler = event -> {
+						if (event.isRight()) {
+							eventHelper.onCreateResource(request, RESOURCE_NAME);
+							JsonObject info = event.right().getValue();
+							String infoId = info.getLong("id").toString();
+							String threadId = resource.getString("thread_id");
+							String title = resource.getString("title");
+							notificationTimelineService.notifyTimeline(request, user, threadId, infoId, title, NEWS_PUBLISH_EVENT_TYPE);
+							renderJson(request, event.right().getValue(), 200);
+						} else {
+							JsonObject error = new JsonObject().put("error", event.left().getValue());
+							renderJson(request, error, 400);
+						}
+					};
+				}
 				infoService.create(resource, user, Events.CREATE_AND_PUBLISH.toString(), request, handler);
 			});
 		});
@@ -474,14 +502,6 @@ public class InfosControllerV1 extends ControllerHelper {
 					int targetStatus = resource.getInteger("status");
 					Events event = getEventFromTransition(targetStatus, actualStatus);
 
-					if (event == Events.UPDATE || event == Events.PENDING) {
-						if (!resource.containsKey("expiration_date")) {
-							resource.putNull("expiration_date");
-						}
-						if (!resource.containsKey("publication_date")) {
-							resource.putNull("publication_date");
-						}
-					}
 					String notificationFromTransition = getNotificationFromTransition(targetStatus, actualStatus);
 
 					String publicationDate = resource.getString("publication_date") != null ?
@@ -530,6 +550,9 @@ public class InfosControllerV1 extends ControllerHelper {
 		if (actualStatus == 1 && updatedStatus == 2) {
 			return NEWS_SUBMIT_EVENT_TYPE;
 		}
+		if (actualStatus == 1 && updatedStatus == 3) {
+			return NEWS_PUBLISH_EVENT_TYPE;
+		}
 		if (actualStatus == 2 && updatedStatus == 3) {
 			return NEWS_PUBLISH_EVENT_TYPE;
 		}
@@ -548,11 +571,14 @@ public class InfosControllerV1 extends ControllerHelper {
 				actualStatus == 3 && updatedStatus == 3) {
 			return Events.UPDATE;
 		}
-		if(actualStatus == 2 && updatedStatus == 2) {
-			return Events.PENDING;
-		}
 		if(actualStatus == 1 && updatedStatus == 2) {
 			return Events.SUBMIT;
+		}
+		if(actualStatus == 1 && updatedStatus == 3) {
+			return Events.PUBLISH;
+		}
+		if(actualStatus == 2 && updatedStatus == 2) {
+			return Events.PENDING;
 		}
 		if(actualStatus == 2 && updatedStatus == 1 ||
 		   actualStatus == 3 && updatedStatus == 2) {

@@ -109,7 +109,38 @@ public class InfoServiceSqlImpl implements InfoService {
 					data.put("owner", user.getUserId())
 						.put("id", infoId)
 						.put("content_version", 1);
-					s.insert(NEWS_INFO_TABLE, data, "id");
+
+					// Validate dates and build INSERT query manually with proper cast
+					StringBuilder columns = new StringBuilder();
+					StringBuilder placeholders = new StringBuilder();
+					JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
+					boolean first = true;
+
+					for (String attr : data.fieldNames()) {
+						if (!first) {
+							columns.append(", ");
+							placeholders.append(", ");
+						}
+						first = false;
+
+						columns.append(attr);
+						if (Boolean.TRUE.equals(attr.contains("date"))) {
+							if (Boolean.TRUE.equals(isDateFormatOK(data.getString(attr)))) {
+								placeholders.append("?::timestamptz");
+							} else {
+								String error = "[Actualites@%s::create] Error in date format";
+								log.error(String.format(error, InfoServiceSqlImpl.this.getClass().getSimpleName()));
+								handler.handle(new Either.Left<>("error.date.format"));
+								return;
+							}
+						} else {
+							placeholders.append("?");
+						}
+						values.add(data.getValue(attr));
+					}
+
+					String insertQuery = "INSERT INTO " + NEWS_INFO_TABLE + " (" + columns.toString() + ") VALUES (" + placeholders.toString() + ") RETURNING id";
+					s.prepared(insertQuery, values);
 
 					JsonObject revision = mapRevision(infoId, data);
 					revision.put("event", eventStatus);
@@ -122,30 +153,6 @@ public class InfoServiceSqlImpl implements InfoService {
 				}
 			}
 		}));
-	}
-
-	/**
-	 * Check if the date format is correct for PostgresSQL (ISO 8601 with timezone required)
-	 * Supported formats:
-	 * - 2025-12-20T10:00:00Z
-	 * - 2025-12-20T10:00:00+10:00
-	 * - 2025-12-20T10:00:00.000+01:00
-	 * @param date	The date to check
-	 * @return	True if the date matches a valid ISO 8601 format with timezone, false otherwise.
-	 */
-	private boolean isDateFormatOK(String date) {
-		if (StringUtils.isEmpty(date)) {
-			return true;
-		}
-
-		try {
-			OffsetDateTime.parse(date);
-			return true;
-		} catch (DateTimeParseException e) {
-			// Do nothing, it will return false
-		}
-
-		return false;
 	}
 
 	@Override
@@ -186,6 +193,30 @@ public class InfoServiceSqlImpl implements InfoService {
 		s.insert(NEWS_INFO_REVISION_TABLE, revision, null);
 
 		Sql.getInstance().transaction(s.build(), SqlResult.validUniqueResultHandler(1, handler));
+	}
+
+	/**
+	 * Check if the date format is correct for PostgresSQL (ISO 8601 with timezone required)
+	 * Supported formats:
+	 * - 2025-12-20T10:00:00Z
+	 * - 2025-12-20T10:00:00+10:00
+	 * - 2025-12-20T10:00:00.000+01:00
+	 * @param date	The date to check
+	 * @return	True if the date matches a valid ISO 8601 format with timezone, false otherwise.
+	 */
+	private boolean isDateFormatOK(String date) {
+		if (StringUtils.isEmpty(date)) {
+			return true;
+		}
+
+		try {
+			OffsetDateTime.parse(date);
+			return true;
+		} catch (DateTimeParseException e) {
+			// Do nothing, it will return false
+		}
+
+		return false;
 	}
 
 	@Override
