@@ -38,6 +38,8 @@ describe('Info Queries', () => {
       title: 'Création de fil',
       content: '<div>New draft</div>',
       thread_id: 1,
+      expiration_date: new Date().toISOString(),
+      publication_date: new Date().toISOString(),
     };
 
     act(() => {

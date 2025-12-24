@@ -29,16 +29,21 @@ export function useInfoDetailsForm() {
       return;
     }
     setIsSaving(true);
+    const publication_date = new Date();
+    const expiration_date = new Date();
+    expiration_date.setFullYear(expiration_date.getFullYear() + 1);
     if (infoFormValues.infoId) {
       return updateDraftInfo(
         {
           infoId: infoFormValues.infoId,
           infoStatus: InfoStatus.DRAFT,
           payload: {
-            thread_id: infoFormValues.thread_id,
+            thread_id: Number(infoFormValues.thread_id),
             content: infoFormValues.content,
             title: infoFormValues.title,
             is_headline: infoFormValues.headline,
+            publication_date: publication_date.toISOString(),
+            expiration_date: expiration_date.toISOString(),
           },
         },
         {
@@ -56,7 +61,9 @@ export function useInfoDetailsForm() {
           title: infoFormValues.title,
           content:
             infoFormValues.content !== '' ? infoFormValues.content : '<p></p>',
-          thread_id: infoFormValues.thread_id,
+          thread_id: Number(infoFormValues.thread_id),
+          publication_date: publication_date.toISOString(),
+          expiration_date: expiration_date.toISOString(),
           is_headline: infoFormValues.headline,
         },
         {

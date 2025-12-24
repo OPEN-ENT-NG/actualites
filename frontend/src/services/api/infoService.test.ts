@@ -1,7 +1,7 @@
 import {
   mockInfoRevisions,
-  mockInfosPublished,
   mockInfoShare,
+  mockInfosPublished,
   mockOriginalInfo,
 } from '~/mocks/datas/infos';
 import { InfoStatus } from '~/models/info';
@@ -43,6 +43,8 @@ describe('Info Mutation Methods', () => {
       content: 'Yoplaboum',
       title: 'Un nouveau fil',
       thread_id: 229,
+      publication_date: new Date().toISOString(),
+      expiration_date: new Date().toISOString(),
     });
 
     expect(response).toBeDefined();
