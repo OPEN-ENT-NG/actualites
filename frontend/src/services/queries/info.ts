@@ -211,6 +211,8 @@ export const useCreateDraftInfo = () => {
       title: string;
       content: string;
       thread_id: number;
+      publication_date: string;
+      expiration_date: string;
       is_headline?: boolean;
     }) => infoService.createDraft(payload),
     onMutate: async (payload) => {

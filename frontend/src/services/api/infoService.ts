@@ -82,16 +82,16 @@ export const createInfoService = () => {
       title: string;
       content: string;
       thread_id: ThreadId;
+      publication_date: string;
+      expiration_date: string;
       is_headline?: boolean;
     }) {
       return odeServices.http().post<{
         id: InfoId;
       }>(`${baseUrlAPI}/infos`, {
-        title: payload.title,
-        content: payload.content,
-        status: 1, // DRAFT
+        ...payload,
         thread_id: Number(payload.thread_id),
-        is_headline: payload.is_headline,
+        status: 1, // DRAFT
       });
     },
 
