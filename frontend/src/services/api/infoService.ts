@@ -90,6 +90,7 @@ export const createInfoService = () => {
         id: InfoId;
       }>(`${baseUrlAPI}/infos`, {
         ...payload,
+        thread_id: Number(payload.thread_id),
         status: 1, // DRAFT
       });
     },
