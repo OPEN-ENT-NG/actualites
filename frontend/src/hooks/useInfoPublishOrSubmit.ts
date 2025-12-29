@@ -1,4 +1,4 @@
-import { useToast } from '@edifice.io/react';
+import { invalidateQueriesWithFirstPage, useToast } from '@edifice.io/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useI18n } from '~/hooks/useI18n';
@@ -42,18 +42,18 @@ export function useInfoPublishOrSubmit() {
             1,
           );
           updateStatsQueryCache(info.thread.id, InfoStatus.DRAFT, -1);
-          queryClient.invalidateQueries(
-            infoQueryKeys.byThread({
+          invalidateQueriesWithFirstPage(queryClient, {
+            queryKey: infoQueryKeys.byThread({
               threadId: info.thread.id,
               status: canPublish ? InfoStatus.PUBLISHED : InfoStatus.PENDING,
             }),
-          );
-          queryClient.invalidateQueries(
-            infoQueryKeys.byThread({
+          });
+          invalidateQueriesWithFirstPage(queryClient, {
+            queryKey: infoQueryKeys.byThread({
               threadId: 'all',
               status: canPublish ? InfoStatus.PUBLISHED : InfoStatus.PENDING,
             }),
-          );
+          });
           navigate(`/threads/?status=${canPublish ? 'published' : 'pending'}`);
         },
       },
