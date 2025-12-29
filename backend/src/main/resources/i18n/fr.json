@@ -46,6 +46,8 @@
   "actualites.info.createForm.draftSaved": "L'actualité a été enregistrée en brouillon",
   "actualites.info.createForm.publishedSuccess": "L'actualité a été publiée avec succès",
   "actualites.info.createForm.pendingSuccess": "L’actualité a été soumise aux valideurs du fil “[[threadName]]” pour publication.",
+  "actualites.info.editForm.title": "Édition de l’actualité",
+  "actualites.info.editForm.subtitle": "Modifiez le contenu de votre actualité ",
   "actualites.threadList.allThreads": "Tous les fils d’actus",
   "actualites.threadList.manageThreads": "Gérer les fils",
   "actualites.adminThreads.accessDenied": "Vous n’avez pas les droits pour accéder à cette page.",

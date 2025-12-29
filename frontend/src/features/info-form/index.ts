@@ -5,8 +5,8 @@
  This folder should contain all features in an app
  * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
+export * from './components/InfoDetailsCreateFormActions';
 export * from './components/InfoDetailsForm';
-export * from './components/InfoDetailsFormActions';
 export * from './components/InfoFormActionsSkeleton';
 export * from './components/InfoFormHeader';
 export * from './components/InfoFormHeaderSkeleton';

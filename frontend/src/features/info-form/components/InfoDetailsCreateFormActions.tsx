@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useInfoFormStore } from '~/store/infoFormStore';
 import { useInfoDetailsForm } from '../hooks/useInfoDetailsForm';
 
-export function InfoDetailsFormActions() {
+export function InfoDetailsCreateFormActions() {
   const { t } = useI18n();
   const { md } = useBreakpoint();
   const navigate = useNavigate();
