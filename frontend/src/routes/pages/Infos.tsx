@@ -35,7 +35,7 @@ export function Infos() {
   const { info } = useLoaderData() as {
     info?: InfoDetails;
   };
-  let { removeHash } = useScrollToElement();
+  const { removeHash } = useScrollToElement();
 
   const [isModalOpen, setModalOpen] = useState(true);
 
