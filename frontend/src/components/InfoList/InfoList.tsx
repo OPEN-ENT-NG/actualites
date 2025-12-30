@@ -25,7 +25,7 @@ export const InfoList = () => {
   });
 
   // Check URL for any hash (HTML element ID) to scroll into view
-  let { hash, deferScrollIntoView } = useScrollToElement();
+  const { hash, deferScrollIntoView } = useScrollToElement();
 
   useEffect(() => {
     if (hash) {
