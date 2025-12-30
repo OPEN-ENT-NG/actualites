@@ -7,11 +7,13 @@ import {
   ShareResources,
   ShareResourcesRef,
   useBreakpoint,
+  useUser,
 } from '@edifice.io/react';
 import {
   IconArrowLeft,
-  IconArrowRight,
   IconSave,
+  IconSend,
+  IconSubmitToValidate,
 } from '@edifice.io/react/icons';
 import { QueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -22,9 +24,10 @@ import {
 } from 'react-router-dom';
 import { InfoFormActionsSkeleton, InfoFormHeaderSkeleton } from '~/features';
 import { InfoFormHeader } from '~/features/info-form/components/InfoFormHeader';
-import { useInfoSharesForm } from '~/features/info-form/hooks/useInfoSharesForm';
 import { isInfoDetailsValid } from '~/features/info-form/utils/utils';
 import { useI18n } from '~/hooks/useI18n';
+import { useInfoPublishOrSubmit } from '~/hooks/useInfoPublishOrSubmit';
+import { getThreadUserRights } from '~/hooks/utils/threads';
 import { baseUrlAPI } from '~/services';
 import {
   infoQueryOptions,
@@ -58,12 +61,13 @@ export function CreateInfoRights() {
   const { t } = useI18n();
   const navigate = useNavigate();
   const { md } = useBreakpoint();
+  const { user } = useUser();
 
   const { infoId } = useLoaderData() as CreateInfoRightsProps;
   const { data: info } = useInfoById(infoId);
   const shareInfoRef = useRef<ShareResourcesRef>(null);
   const isPublishing = useRef(false);
-  const { handlePublish } = useInfoSharesForm();
+  const { handlePublish } = useInfoPublishOrSubmit();
   const setCurrentCreationStep = useInfoFormStore.use.setCurrentCreationStep();
 
   const [isDirty, setIsDirty] = useState(false);
@@ -110,6 +114,11 @@ export function CreateInfoRights() {
     };
   }, [infoShares, infoId]);
 
+  const canPublish = getThreadUserRights(
+    info?.thread,
+    user?.userId || '',
+  ).canPublish;
+
   const handleShareInfoSubmit = (isSubmitting: boolean) => {
     setIsSaving(isSubmitting);
   };
@@ -119,9 +128,10 @@ export function CreateInfoRights() {
   };
 
   const handleShareInfoSubmitSuccess = () => {
+    if (!info) return;
     setIsDirty(false);
     if (isPublishing.current) {
-      handlePublish(infoId);
+      handlePublish(info, canPublish);
     } else {
       navigate('/');
       setIsSaving(false);
@@ -133,13 +143,15 @@ export function CreateInfoRights() {
   };
 
   const handlePublishClick = () => {
+    if (!info) return;
+
     isPublishing.current = true;
     if (isDirty) {
       // Save shares, then publish in onSuccess callback
       shareInfoRef.current?.handleShare(false);
     } else {
       // No changes to save, publish immediately
-      handlePublish(infoId);
+      handlePublish(info, canPublish);
     }
   };
 
@@ -206,13 +218,17 @@ export function CreateInfoRights() {
           <Button
             color="primary"
             type="submit"
-            rightIcon={<IconArrowRight />}
+            leftIcon={canPublish ? <IconSend /> : <IconSubmitToValidate />}
             onClick={handlePublishClick}
             data-testid="actualites.info.form.submitButton"
             disabled={isSaving || isPublishing.current}
             isLoading={isPublishing.current}
           >
-            {t('actualites.info.createForm.publish')}
+            {t(
+              canPublish
+                ? 'actualites.info.createForm.publish'
+                : 'actualites.info.createForm.submit',
+            )}
           </Button>
         </Flex>
       </Flex>

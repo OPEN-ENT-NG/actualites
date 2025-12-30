@@ -6,6 +6,7 @@ import {
   IconButtonProps,
   Image,
   useBreakpoint,
+  useUser,
 } from '@edifice.io/react';
 import {
   IconClock,
@@ -13,14 +14,17 @@ import {
   IconEdit,
   IconOptions,
   IconSave,
+  IconSubmitToValidate,
 } from '@edifice.io/react/icons';
 import clsx from 'clsx';
 import { RefAttributes, useState } from 'react';
 import iconHeadline from '~/assets/icon-headline.svg';
 import { useI18n } from '~/hooks/useI18n';
+import { useInfoPublishOrSubmit } from '~/hooks/useInfoPublishOrSubmit';
 import { useInfoStatus } from '~/hooks/useInfoStatus';
 import { useThread } from '~/hooks/useThread';
-import { InfoExtendedStatus } from '~/models/info';
+import { getThreadUserRights } from '~/hooks/utils/threads';
+import { InfoExtendedStatus, InfoStatus } from '~/models/info';
 import { InfoCardProps } from './InfoCard';
 import { InfoCardThreadHeader } from './InfoCardThreadHeader';
 import { UserInfo } from './UserInfo';
@@ -37,6 +41,11 @@ export const InfoCardHeader = ({
 
   const [dropDownVisible, setDropDownVisible] = useState(false);
   const { isExpired } = useInfoStatus(info);
+
+  const { handlePublish } = useInfoPublishOrSubmit();
+  const { user } = useUser();
+
+  const threadRights = getThreadUserRights(thread, user?.userId || '');
 
   const { t } = useI18n();
   const { md, lg } = useBreakpoint();
@@ -76,6 +85,14 @@ export const InfoCardHeader = ({
       )}
     </div>
   );
+
+  const handleSubmit = () => {
+    if (!thread) {
+      return;
+    }
+
+    handlePublish({ ...info, thread: thread }, threadRights.canPublish);
+  };
 
   return (
     <header key={info.id} className="mb-12">
@@ -141,6 +158,16 @@ export const InfoCardHeader = ({
                 >
                   {t('common.copy')}
                 </Dropdown.Item>
+                {info.status === InfoStatus.DRAFT &&
+                  threadRights.canContribute &&
+                  !threadRights.canPublish && (
+                    <Dropdown.Item
+                      icon={<IconSubmitToValidate />}
+                      onClick={handleSubmit}
+                    >
+                      {t('actualites.info.actions.submitToValidation')}
+                    </Dropdown.Item>
+                  )}
               </Dropdown.Menu>
             </>
           )}
