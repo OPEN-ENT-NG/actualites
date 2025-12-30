@@ -95,7 +95,7 @@ export function AdminThreadList() {
 
   const handleDeleteClick = useCallback(() => {
     if (threadToDelete) {
-      deleteThread(threadToDelete?.id);
+      deleteThread(threadToDelete.id);
     }
     setThreadToDelete(undefined);
   }, [threadToDelete]);
