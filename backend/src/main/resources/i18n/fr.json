@@ -58,6 +58,7 @@
   "actualites.adminThreads.searchPlaceholder": "Chercher un fil",
   "actualites.adminThreads.noStructure": "Aucun établissement n'est rattaché à ce fil",
   "actualites.adminThreads.shareRightsButton": "Droits de contributions",
+  "actualites.adminThreads.shareRightsInfo": "Déterminez ici les utilisateurs pouvant contribuer au fil et leur niveau de droit. <br />L’ajout des lecteurs se fera lors de la publication de chaque actualité. <br />À noter : les contributeurs, valideurs et gestionnaires verront toutes les actualités publiées dans le fil.",
   "actualites.adminThreads.editButton": "Modifier",
   "actualites.adminThreads.threadActions": "Actions du fil",
   "actualites.adminThreads.deleteButton": "Supprimer",

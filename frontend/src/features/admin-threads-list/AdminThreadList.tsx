@@ -12,6 +12,7 @@ import { useDeleteThread, useInfosStats } from '~/services/queries';
 import './AdminThreadList.css';
 import { AdminThread } from './components/AdminThread';
 import AdminThreadModal from './components/AdminThreadModal';
+import AdminThreadShareModal from './components/AdminThreadShareModal';
 
 export function AdminThreadList() {
   const { threadsWithManageRight } = useThreadsUserRights();
@@ -20,8 +21,9 @@ export function AdminThreadList() {
   const { mutate: deleteThread } = useDeleteThread();
 
   const [search, setSearch] = useState('');
-  const [threadToUpdate, setThreadToUpdate] = useState<Thread>();
   const [threadToDelete, setThreadToDelete] = useState<Thread>();
+  const [threadToUpdate, setThreadToUpdate] = useState<Thread>();
+  const [threadToShare, setThreadToShare] = useState<Thread>();
 
   function getInfoCount(thread: Thread, state?: InfoStatus) {
     const stats = infosStats?.threads?.find((t) => t.id === thread.id);
@@ -65,6 +67,7 @@ export function AdminThreadList() {
 
   const handleCloseAdminThreadModal = () => {
     setThreadToUpdate(undefined);
+    setThreadToShare(undefined);
   };
 
   const handleCloseDeleteModal = () => {
@@ -125,6 +128,7 @@ export function AdminThreadList() {
             threadInfosCount={getInfoCount(thread, InfoStatus.PUBLISHED)}
             onUpdateClick={() => setThreadToUpdate(thread)}
             onDeleteClick={() => setThreadToDelete(thread)}
+            onShareClick={() => setThreadToShare(thread)}
           />
         );
       })}
@@ -162,6 +166,14 @@ export function AdminThreadList() {
         >
           {getDeletionText()}
         </PortalModal>
+      )}
+      {threadToShare && (
+        <AdminThreadShareModal
+          isOpen={!!threadToShare}
+          thread={threadToShare}
+          onCancel={handleCloseAdminThreadModal}
+          onSuccess={handleCloseAdminThreadModal}
+        />
       )}
     </Flex>
   );
