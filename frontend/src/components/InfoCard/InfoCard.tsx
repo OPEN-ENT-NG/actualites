@@ -20,8 +20,8 @@ export type InfoCardProps = {
 export const InfoCard = ({ info, id }: InfoCardProps) => {
   const { t } = useI18n();
   const { isIncoming, isExpired, extendedStatus } = useInfoStatus(info);
-  const { deferScrollIntoView } = useScrollToElement();
-  const [collapse, setCollapse] = useState(true);
+  const { hash, deferScrollIntoView } = useScrollToElement();
+  const [collapse, setCollapse] = useState(hash != id);
   const [scrollTo, setScrollTo] = useState<string>();
   const { formatDate } = useDate();
 

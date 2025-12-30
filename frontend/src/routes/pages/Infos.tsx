@@ -35,14 +35,9 @@ export function Infos() {
   const { info } = useLoaderData() as {
     info?: InfoDetails;
   };
+  let { removeHash } = useScrollToElement();
 
   const [isModalOpen, setModalOpen] = useState(true);
-
-  // Check URL for any hash (HTML element ID) to scroll into view
-  let { hash, removeHash, deferScrollIntoView } = useScrollToElement();
-  if (hash) {
-    deferScrollIntoView(hash);
-  }
 
   const handleModalClose = () => {
     removeHash();
