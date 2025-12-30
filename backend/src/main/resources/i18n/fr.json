@@ -76,7 +76,7 @@
   "actualites.adminThreads.modal.delete.paragraph": "Êtes-vous sûr de vouloir supprimer le fil ?",
   "actualites.adminThreads.modal.delete.paragraph.none": "Êtes-vous sûr de vouloir supprimer le fil ?\nIl n’y a aucune actualité dans le fil, vous pouvez le supprimer sans crainte.",
   "actualites.adminThreads.modal.delete.paragraph.one": "Êtes-vous sûr de vouloir supprimer le fil ? La suppression du fil entraînera la suppression d’une actualité.",
-  "actualites.adminThreads.modal.delete.paragraph.many": "Êtes-vous sûr de vouloir supprimer le fil ?\nCette action engendrera la suppression de [[count]] actualités liées à ce fil.",
+  "actualites.adminThreads.modal.delete.paragraph.many": "Êtes-vous sûr de vouloir supprimer le fil ?\nCette action entraînera la suppression de [[count]] actualités liées à ce fil.",
   "actualites.adminThreads.modal.delete.error": "Le fil n'a pas pu être supprimé.",
   "actualites.adminThreads.modal.delete.success": "Fil supprimé avec succès.",
   "actualites.adminThreads.empty.title": "Créez votre premier fil !",
