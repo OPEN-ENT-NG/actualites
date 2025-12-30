@@ -1,0 +1,139 @@
+import { ShareRight, ShareRightActionDisplayName } from '@edifice.io/client';
+import {
+  Alert,
+  Button,
+  Modal,
+  ShareOptions,
+  ShareResources,
+  ShareResourcesRef,
+} from '@edifice.io/react';
+import { useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { useI18n } from '~/hooks/useI18n';
+import { Thread } from '~/models/thread';
+import { baseUrlAPI } from '~/services';
+import { useThreadShares } from '~/services/queries';
+
+export interface FormInputs {
+  title: string;
+  structureId?: string;
+  icon?: string;
+}
+
+interface AdminThreadShareModalProps {
+  /** Controls modal visibility */
+  isOpen: boolean;
+  /** The thread being shared */
+  thread: Thread;
+
+  /** Callback when operation succeeds, with operation result as parameter */
+  onSuccess: () => void;
+
+  /** Callback when operation is cancelled */
+  onCancel: () => void;
+}
+
+export const AdminThreadShareModal = ({
+  isOpen,
+  onCancel,
+  onSuccess,
+  thread,
+}: AdminThreadShareModalProps) => {
+  const { data: infoShares } = useThreadShares(thread.id);
+  const { t } = useI18n();
+  const shareInfoRef = useRef<ShareResourcesRef>(null);
+  const [isDirty, setIsDirty] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const shareOptions = useMemo<ShareOptions>(() => {
+    return {
+      resourceCreatorId: infoShares?.owner || '',
+      resourceId: String(thread.id),
+      resourceRights: infoShares?.rights || [],
+      filteredActions: [
+        'contrib',
+        'publish',
+        'manager',
+      ] as ShareRightActionDisplayName[],
+      shareUrls: {
+        getResourceRights: `${baseUrlAPI}/threads/${String(thread.id)}/shares`,
+        saveResourceRights: `${baseUrlAPI}/threads/${String(thread.id)}/shares`,
+        getShareMapping: `${baseUrlAPI}/rights/sharing`,
+      },
+    };
+  }, [infoShares, thread.id]);
+
+  const handleCloseModal = () => {
+    onCancel();
+  };
+
+  const handleShareThreadSubmit = (isSubmitting: boolean) => {
+    setIsSaving(isSubmitting);
+  };
+
+  const handleShareThreadChange = (_: ShareRight[], isDirty: boolean) => {
+    setIsDirty(isDirty);
+  };
+
+  const handleShareThreadSubmitSuccess = () => {
+    setIsDirty(false);
+    setIsSaving(false);
+    onSuccess();
+  };
+
+  return createPortal(
+    <Modal
+      id={`admin-new-thread-modal`}
+      size="lg"
+      isOpen={isOpen}
+      onModalClose={handleCloseModal}
+    >
+      <Modal.Header onModalClose={handleCloseModal}>
+        {t(`actualites.adminThreads.modal.modalTitle`)}
+      </Modal.Header>
+
+      <Modal.Body>
+        <Alert type="info" className="mb-24">
+          <div
+            dangerouslySetInnerHTML={{
+              __html: t('actualites.adminThreads.shareRightsInfo'),
+            }}
+          />
+        </Alert>
+        <ShareResources
+          ref={shareInfoRef}
+          onSuccess={handleShareThreadSubmitSuccess}
+          onChange={handleShareThreadChange}
+          onSubmit={handleShareThreadSubmit}
+          shareOptions={shareOptions}
+        />
+      </Modal.Body>
+
+      <Modal.Footer>
+        <Button
+          color="tertiary"
+          onClick={handleCloseModal}
+          type="button"
+          variant="ghost"
+          disabled={isSaving}
+        >
+          {t('actualites.adminThreads.modal.cancel')}
+        </Button>
+        <Button
+          type="submit"
+          color="primary"
+          isLoading={isSaving}
+          disabled={!isDirty || isSaving}
+          variant="filled"
+        >
+          {thread
+            ? t('actualites.adminThreads.modal.save')
+            : t('actualites.adminThreads.modal.create')}
+        </Button>
+      </Modal.Footer>
+    </Modal>,
+    (document.getElementById('portal') as HTMLElement) || document.body,
+  );
+};
+
+export default AdminThreadShareModal;
