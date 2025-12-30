@@ -79,7 +79,6 @@ export function CreateInfoRights() {
 
   useEffect(() => {
     if (info) {
-      console.log('info', info);
       const infoDetails = {
         infoId: info.id,
         content: info.content,
