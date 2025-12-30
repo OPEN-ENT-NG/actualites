@@ -1,6 +1,6 @@
 import { useI18n } from '~/hooks/useI18n';
 
-import { Button, Flex, useBreakpoint } from '@edifice.io/react';
+import { Button, Flex, useBreakpoint, useToast } from '@edifice.io/react';
 import { IconArrowRight, IconSave } from '@edifice.io/react/icons';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +8,7 @@ import { useInfoFormStore } from '~/store/infoFormStore';
 import { useInfoDetailsForm } from '../hooks/useInfoDetailsForm';
 
 export function InfoDetailsCreateFormActions() {
+  const toast = useToast();
   const { t } = useI18n();
   const { md } = useBreakpoint();
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ export function InfoDetailsCreateFormActions() {
 
   const handleSaveDraftClick = () => {
     onSaveDetails(() => {
+      toast.success(t('actualites.info.createForm.draftSaved'));
       navigate(`/threads/?status=draft`);
     });
   };

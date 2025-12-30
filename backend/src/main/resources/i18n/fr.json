@@ -48,6 +48,7 @@
   "actualites.info.createForm.pendingSuccess": "L’actualité a été soumise aux valideurs du fil “[[threadName]]” pour publication.",
   "actualites.info.editForm.title": "Édition de l’actualité",
   "actualites.info.editForm.subtitle": "Modifiez le contenu de votre actualité ",
+  "actualites.info.editForm.update.success": "L'actualité a bien été modifiée",
   "actualites.threadList.allThreads": "Tous les fils d’actus",
   "actualites.threadList.manageThreads": "Gérer les fils",
   "actualites.adminThreads.accessDenied": "Vous n’avez pas les droits pour accéder à cette page.",

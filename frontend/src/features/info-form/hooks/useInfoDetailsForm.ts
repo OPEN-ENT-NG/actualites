@@ -1,7 +1,5 @@
-import { useToast } from '@edifice.io/react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useI18n } from '~/hooks/useI18n';
 import { InfoId, InfoStatus } from '~/models/info';
 import { useCreateDraftInfo, useUpdateInfo } from '~/services/queries';
 import { InfoDetailsFormParams, useInfoFormStore } from '~/store/infoFormStore';
@@ -17,8 +15,6 @@ export function useInfoDetailsForm() {
   const { mutate: createDraftInfo } = useCreateDraftInfo();
   const { mutate: updateDraftInfo } = useUpdateInfo();
   const [isSaving, setIsSaving] = useState(false);
-  const toast = useToast();
-  const { t } = useI18n();
 
   const createOrUpdateInfo = (
     infoFormValues: InfoDetailsFormParams,
@@ -28,6 +24,10 @@ export function useInfoDetailsForm() {
       console.error('Thread ID is undefined');
       return;
     }
+    if (!infoFormValues.infoStatus) {
+      infoFormValues.infoStatus = InfoStatus.DRAFT;
+    }
+
     setIsSaving(true);
     const publication_date = new Date();
     const expiration_date = new Date();
@@ -36,7 +36,7 @@ export function useInfoDetailsForm() {
       return updateDraftInfo(
         {
           infoId: infoFormValues.infoId,
-          infoStatus: InfoStatus.DRAFT,
+          infoStatus: infoFormValues.infoStatus,
           payload: {
             thread_id: Number(infoFormValues.thread_id),
             content: infoFormValues.content,
@@ -50,7 +50,6 @@ export function useInfoDetailsForm() {
           onSuccess: ({ id }: { id: InfoId }) => {
             setIsSaving(false);
             resetDetailsForm?.();
-            toast.success(t('actualites.info.createForm.draftSaved'));
             onSuccess?.({ id });
           },
         },
@@ -75,7 +74,6 @@ export function useInfoDetailsForm() {
             };
             setDetailsForm(infoUpdated);
             resetDetailsForm?.(infoUpdated);
-            toast.success(t('actualites.info.createForm.draftSaved'));
             setIsSaving(false);
             onSuccess?.({ id });
           },
