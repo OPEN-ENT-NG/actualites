@@ -160,10 +160,21 @@ export const useUpdateThread = () => {
   });
 };
 
-export const useDeleteThread = () =>
-  useMutation({
+export const useDeleteThread = () => {
+  const queryClient = useQueryClient();
+  const { t } = useI18n();
+  const toast = useToast();
+
+  return useMutation({
     mutationFn: (threadId: ThreadId) => threadService.delete(threadId),
-    // TODO optimistic update
-    // onSuccess: async (, { mode, title }) => {
-    // },
+    onSuccess: () => {
+      toast.success(t('actualites.adminThreads.modal.delete.success'));
+    },
+    onError: () => {
+      toast.error(t('actualites.adminThreads.modal.delete.error'));
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: threadQueryKeys.all() });
+    },
   });
+};
