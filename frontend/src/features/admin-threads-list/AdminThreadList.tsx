@@ -23,12 +23,8 @@ export function AdminThreadList() {
   const [threadToUpdate, setThreadToUpdate] = useState<Thread>();
   const [threadToDelete, setThreadToDelete] = useState<Thread>();
 
-  const threadInfosStats = (threadId: number) => {
-    return infosStats?.threads?.find((thread) => thread.id === threadId);
-  };
-
   function getInfoCount(thread: Thread, state?: InfoStatus) {
-    const stats = threadInfosStats(thread.id);
+    const stats = infosStats?.threads?.find((t) => t.id === thread.id);
     let count = 0;
     if (stats) {
       [
