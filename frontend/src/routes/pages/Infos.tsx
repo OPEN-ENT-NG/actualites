@@ -6,8 +6,8 @@ import { InfoList } from '~/components';
 import { PortalModal } from '~/components/PortalModal';
 import { InfoModalBody } from '~/features/info-modal/InfoModalBody';
 import { ThreadList } from '~/features/thread-list/ThreadList';
+import { useHashScrolling } from '~/hooks/useHashScrolling';
 import { useI18n } from '~/hooks/useI18n';
-import { useScrollToElement } from '~/hooks/useScrollToElement';
 import { InfoDetails } from '~/models/info';
 import { baseUrl } from '~/services';
 import { infoQueryOptions } from '~/services/queries';
@@ -35,7 +35,7 @@ export function Infos() {
   const { info } = useLoaderData() as {
     info?: InfoDetails;
   };
-  const { removeHash } = useScrollToElement();
+  const { removeHash } = useHashScrolling();
 
   const [isModalOpen, setModalOpen] = useState(true);
 

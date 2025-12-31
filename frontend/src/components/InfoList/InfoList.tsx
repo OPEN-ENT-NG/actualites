@@ -1,8 +1,8 @@
 import { Flex, useInfiniteScroll } from '@edifice.io/react';
 import { useEffect } from 'react';
+import { useHashScrolling } from '~/hooks/useHashScrolling';
 import { useInfoList } from '~/hooks/useInfoList';
 import { useInfoSearchParams } from '~/hooks/useInfoSearchParams';
-import { useScrollToElement } from '~/hooks/useScrollToElement';
 import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
 import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
 import { useInfosStats } from '~/services/queries/info';
@@ -25,7 +25,7 @@ export const InfoList = () => {
   });
 
   // Check URL for any hash (HTML element ID) to scroll into view
-  const { hash, deferScrollIntoView } = useScrollToElement();
+  const { hash, deferScrollIntoView } = useHashScrolling();
 
   useEffect(() => {
     if (hash) {
