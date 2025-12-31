@@ -16,17 +16,18 @@ import {
 import { RefAttributes } from 'react';
 import { ThreadIcon } from '~/components/ThreadIcon';
 import { useI18n } from '~/hooks/useI18n';
-import { InfoStatus, ThreadInfoStats } from '~/models/info';
 import { Thread } from '~/models/thread';
 
 export function AdminThread({
   thread,
-  threadInfosStats,
+  threadInfosCount,
   onUpdateClick,
+  onDeleteClick,
 }: {
   thread: Thread;
-  threadInfosStats?: ThreadInfoStats;
+  threadInfosCount: { count: number };
   onUpdateClick: () => void;
+  onDeleteClick: () => void;
 }) {
   const { t } = useI18n();
   const { lg, xl } = useBreakpoint();
@@ -55,9 +56,7 @@ export function AdminThread({
           </div>
           {xl && <Divider vertical className="border-gray-700" />}
           <div className="text-nowrap">
-            {t('actualites.adminThreads.threadInfoCount', {
-              count: threadInfosStats?.status[InfoStatus.PUBLISHED] || 0,
-            })}
+            {t('actualites.adminThreads.threadInfoCount', threadInfosCount)}
           </div>
         </Flex>
       </Flex>
@@ -87,6 +86,7 @@ export function AdminThread({
               variant="ghost"
               color="tertiary"
               leftIcon={<IconDelete />}
+              onClick={onDeleteClick}
             >
               {t('actualites.adminThreads.deleteButton')}
             </Button>
@@ -114,7 +114,7 @@ export function AdminThread({
                   <Dropdown.Item icon={<IconEdit />} onClick={onUpdateClick}>
                     {t('actualites.adminThreads.editButton')}
                   </Dropdown.Item>
-                  <Dropdown.Item icon={<IconDelete />}>
+                  <Dropdown.Item icon={<IconDelete />} onClick={onDeleteClick}>
                     {t('actualites.adminThreads.deleteButton')}
                   </Dropdown.Item>
                 </Dropdown.Menu>
