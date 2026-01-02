@@ -1,5 +1,19 @@
 package net.atos.entng.actualites.filters;
 
+import static net.atos.entng.actualites.filters.RightConstants.RIGHT_PUBLISH;
+import static org.entcore.common.sql.Sql.parseId;
+import static org.entcore.common.user.DefaultFunctions.ADMIN_LOCAL;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.entcore.common.http.filter.ResourcesProvider;
+import org.entcore.common.sql.Sql;
+import org.entcore.common.sql.SqlResult;
+import org.entcore.common.user.UserInfos;
+import org.entcore.common.utils.StringUtils;
+
 import fr.wseduc.webutils.http.Binding;
 import fr.wseduc.webutils.request.RequestUtils;
 import io.vertx.core.Handler;
@@ -7,20 +21,6 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.Actualites;
-import org.entcore.common.http.filter.ResourcesProvider;
-import org.entcore.common.sql.Sql;
-import org.entcore.common.sql.SqlResult;
-import org.entcore.common.user.UserInfos;
-import org.entcore.common.utils.StringUtils;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static net.atos.entng.actualites.filters.RightConstants.RIGHT_CONTRIB;
-import static net.atos.entng.actualites.filters.RightConstants.RIGHT_PUBLISH;
-import static org.entcore.common.sql.Sql.parseId;
-import static org.entcore.common.user.DefaultFunctions.ADMIN_LOCAL;
 
 /**
  * Filter resource for info update (PUT)
@@ -56,8 +56,9 @@ public class UpdateInfoFilter implements ResourcesProvider {
             Sql.getInstance().prepared(query.toString(), values, SqlResult.validUniqueResultHandler(res -> {
                 if(res.isLeft()) {
                     handler.handle(false);
+                } else {
+                    validStatusMutation(res.right().getValue(), modifiedInfo, user, idInfo, handler);
                 }
-                validStatusMutation(res.right().getValue(), modifiedInfo, user, idInfo, handler);
             }));
         });
     }
