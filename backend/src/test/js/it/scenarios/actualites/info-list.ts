@@ -120,8 +120,8 @@ export function testInfoList(data: InitData) {
         content: `Expired content ${i}`,
         thread_id: parseInt(thread.id as string),
         status: 3,
-        publication_date: "2020-01-01",
-        expiration_date: "2020-12-31",
+        publication_date: "2020-01-01T00:00:00Z",
+        expiration_date: "2020-12-31T00:00:00Z",
       } as any);
       expiredIds.push(expiredCreated.id);
     }
@@ -133,8 +133,8 @@ export function testInfoList(data: InitData) {
       content: `Incoming content`,
       thread_id: parseInt(thread.id as string),
       status: 3,
-      publication_date: "2030-01-01",
-      expiration_date: "2030-12-31",
+      publication_date: "2030-01-01T00:00:00Z",
+      expiration_date: "2030-12-31T00:00:00Z",
     } as any);
     console.log(`Incoming info id: ${incomingCreated.id}`);
 
@@ -144,8 +144,8 @@ export function testInfoList(data: InitData) {
       content: `Current content`,
       thread_id: parseInt(thread.id as string),
       status: 3,
-      publication_date: "2020-01-01",
-      expiration_date: "2035-12-31",
+      publication_date: "2020-01-01T00:00:00Z",
+      expiration_date: "2035-12-31T00:00:00Z",
     } as any);
     console.log(`Current info id: ${currentCreated.id}`);
 
@@ -178,8 +178,8 @@ export function testInfoList(data: InitData) {
       content: `Thread 2 content`,
       thread_id: parseInt(thread2.id as string),
       status: 3,
-      publication_date: "2020-01-01",
-      expiration_date: "2035-12-31",
+      publication_date: "2020-01-01T00:00:00Z",
+      expiration_date: "2035-12-31T00:00:00Z",
     } as any);
     console.log(`Thread 2 info id: ${thread2InfoCreated.id}`);
 

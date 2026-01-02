@@ -33,6 +33,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.services.InfoService;
 import net.atos.entng.actualites.to.*;
+import net.atos.entng.actualites.utils.DateUtils;
 import net.atos.entng.actualites.utils.Events;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
@@ -210,7 +211,7 @@ public class InfoServiceSqlImpl implements InfoService {
 		}
 
 		try {
-			OffsetDateTime.parse(date);
+			DateUtils.utcFromString(date);
 			return true;
 		} catch (DateTimeParseException e) {
 			// Do nothing, it will return false
