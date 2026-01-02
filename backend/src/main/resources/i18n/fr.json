@@ -93,7 +93,7 @@
   "actualites.comment.deleted": "Commentaire supprimé avec succès.",
   "actualites.comment.error": "Votre commentaire n'a pas pu être publié",
   "actualites.info.unpublish.modal.title": "Dépublier l’actualité",
-  "actualites.info.unpublish.modal.body": "Êtes-vous sur de vouloir dépublier l’actualité ? Cela la rendra indisponible a la lecture.\nVous pourrez la retrouver dans la section “À valider”.",
+  "actualites.info.unpublish.modal.body": "Êtes-vous sûr de vouloir dépublier l’actualité ? Cela la rendra indisponible à la lecture.\nVous pourrez la retrouver dans la section “À valider”.",
   "actualites.info.unpublish.success": "Actualité dépubliée avec succès.",
   "actualites.info.unpublish.error": "L'actualité n'a pas pu être dépubliée.",
   "actualites.info.unavailable.title": "Actualité indisponible",
