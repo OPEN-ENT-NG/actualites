@@ -536,6 +536,7 @@ public class InfosControllerV1 extends ControllerHelper {
 								notifyOwner(request, user, resource, infoId, actualInfo, notificationFromTransition);
 								return;
 							}
+							//notify if we must published now or if it is another type of notification
 							if (shouldPublishedNow || !isPublishedEvent) {
 								UserInfos owner = new UserInfos();
 								owner.setUserId(actualInfo.getString("owner"));
