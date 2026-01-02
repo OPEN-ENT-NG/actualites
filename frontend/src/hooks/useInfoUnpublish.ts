@@ -18,7 +18,7 @@ export function useInfoUnpublish() {
   const unpublish = ({ id, thread }: InfoDetails) => {
     updateInfoMutate(
       {
-        infoId: id + 150045,
+        infoId: id,
         infoStatus: InfoStatus.PENDING,
         payload: {},
       },
