@@ -285,7 +285,7 @@ public class InfoServiceSqlImpl implements InfoService {
 				groupsAndUserIds.addAll(user.getGroupsIds());
 			}
 			query = "SELECT i.id as _id, i.title, " + getContentFieldQuery(originalContent) + " as content, i.status, i.publication_date::text, i.expiration_date::text, i.is_headline, i.thread_id, i.created::text, i.modified::text" +
-				", i.owner, i.content_version, u.username, t.title AS thread_title, t.icon AS thread_icon" +
+				", i.owner, i.content_version, i.published, u.username, t.title AS thread_title, t.icon AS thread_icon" +
 				", (SELECT json_agg(cr.*) FROM (" +
 					"SELECT c.id as _id, c.comment, c.owner, c.created, c.modified, au.username, au.deleted" +
 					" FROM "+NEWS_COMMENT_TABLE+" AS c" +

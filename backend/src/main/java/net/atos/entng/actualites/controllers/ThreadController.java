@@ -70,10 +70,6 @@ public class ThreadController extends ControllerHelper {
 
 	private static final String RESOURCE_NAME = "thread";
 
-	private static final String ADMC_TASK = "admcTask";
-	private static final String TASK_ATTACH = "autoAttachToStructures";
-	
-
 	protected final ThreadService threadService;
 	protected final ThreadMigrationService threadMigrationService;
 	protected final EventHelper eventHelper;
@@ -107,31 +103,6 @@ public class ThreadController extends ControllerHelper {
 				threadService.list(user, arrayResponseHandler(request));
 			}
 		});
-	}
-
-	@Deprecated
-	@Post("/threads/admc")
-	@ApiDoc("Launch a maintenance task."+
-		"Task \"autoAttachToStructures\": attaches threads without a structure to their owner's structure, when a single one exists. DEPRECATED - This endpoint is no longer used and will be removed in a future version.")
-	@SecuredAction(value = "", type = ActionType.RESOURCE)
-	@ResourceFilter(SuperAdminFilter.class)
-	public void admcTask(final HttpServerRequest request) {
-		log.warn("[DEPRECATED] POST /threads/admc called - This endpoint should no longer be used");
-		RequestUtils.bodyToJson(request, pathPrefix + ADMC_TASK, (JsonObject resource) -> {
-			switch(resource.getString("task")) {
-				case TASK_ATTACH: {
-					this.threadService.attachThreadsWithNullStructureToDefault()
-					.onSuccess(Void -> ok(request))
-					.onFailure(throwable -> {
-						renderError(request, null, 500, throwable.getMessage());
-					});
-					return;
-				}
-
-				default: break;
-			}
-			badRequest(request);
-        });
 	}
 
 	@Deprecated

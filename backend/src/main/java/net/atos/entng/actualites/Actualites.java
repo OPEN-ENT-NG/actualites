@@ -161,6 +161,8 @@ public class Actualites extends BaseServer {
 
 		//notification timeline
 		NotificationTimelineService notificationTimelineService = new NotificationTimelineServiceImpl(infoService,  new ThreadServiceSqlImpl().setEventBus(eb), vertx, eb, config);
+		PublicationCron publicationCron  = new PublicationCron(notificationTimelineService);
+		threadControllerV1.setPublicationCron(publicationCron);
 
 		// info controller
 		InfoController infoController = new InfoController(config, notificationTimelineService);
@@ -197,8 +199,8 @@ public class Actualites extends BaseServer {
 		// News publication cron task
 		String publicationCron = config.getString("news-publication-cron", "0 0 * * * ? *");
 		if (!StringUtils.isEmpty(publicationCron)) {
-			new CronTrigger(vertx, publicationCron).schedule(new PublicationCron(notificationTimelineService));
-		
+			new CronTrigger(vertx, publicationCron).schedule(publicationCron);
+		}
 		// News cleanup cron task
 		String cronExpression = config.getString("NewsCleanupCron");
 		if (!StringUtils.isEmpty(cronExpression)) {
