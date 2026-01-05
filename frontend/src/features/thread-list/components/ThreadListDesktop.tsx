@@ -57,6 +57,7 @@ export const ThreadListDesktop = () => {
           {canManageOnOneThread && (
             <div className="border-top pt-16">
               <Button
+                data-testid="manage-threads-button"
                 color="secondary"
                 leftIcon={<IconSettings />}
                 variant="outline"

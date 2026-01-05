@@ -110,6 +110,7 @@ export function AdminThreadList() {
     <Flex direction="column" gap="16" className="w-100 pb-24 pb-lg-0">
       <Flex justify="center">
         <SearchBar
+          data-testid="admin-thread-search-input"
           className="col-12 col-lg-8"
           placeholder={t('actualites.adminThreads.searchPlaceholder')}
           isVariant

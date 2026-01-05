@@ -24,7 +24,10 @@ export const InfoCardThreadHeader = ({
       style={{ minWidth: '150px' }}
     >
       <ThreadIcon thread={thread} iconSize={iconSize} />
-      <span className="fs-5 text-truncate text-truncate-2 text-gray-700">
+      <span
+        data-testid="info-thread-name"
+        className="fs-5 text-truncate text-truncate-2 text-gray-700"
+      >
         {title}
       </span>
     </Flex>
