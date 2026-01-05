@@ -16,6 +16,7 @@
     <properties>
         <jacksonDatabindVersion>2.15.2</jacksonDatabindVersion>
         <entCoreVersion>6.13-SNAPSHOT</entCoreVersion>
+        <vertxCronTimerVersion>3.0-develop-b2school-SNAPSHOT</vertxCronTimerVersion>
         <gatlingHighchartsVersion>2.3.1</gatlingHighchartsVersion>
         <junitVersion>4.13.2</junitVersion>
         <mockitoVersion>[2.0,3.0)</mockitoVersion>
@@ -54,6 +55,12 @@
             <groupId>org.entcore</groupId>
             <artifactId>common</artifactId>
             <version>${entCoreVersion}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>fr.wseduc</groupId>
+            <artifactId>vertx-cron-timer</artifactId>
+            <version>${vertxCronTimerVersion}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
