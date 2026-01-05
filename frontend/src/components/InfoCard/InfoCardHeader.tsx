@@ -90,7 +90,6 @@ export const InfoCardHeader = ({
     if (!thread) {
       return;
     }
-
     handlePublish({ ...info, thread: thread }, threadRights.canPublish);
   };
 
