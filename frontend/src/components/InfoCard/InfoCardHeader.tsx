@@ -68,6 +68,21 @@ export const InfoCardHeader = ({
     ? { gridTemplateColumns: '1fr auto 1fr', gap: '12px' }
     : { gridTemplateColumns: '1fr', gap: '12px' };
 
+  const canSubmit =
+    info.status === InfoStatus.DRAFT && canContribute && !canPublish;
+
+  const canEdit =
+    (info.status === InfoStatus.DRAFT && info.owner.id === user?.userId) ||
+    (info.status === InfoStatus.PENDING &&
+      (info.owner.id === user?.userId || canPublish || canManage)) ||
+    (info.status === InfoStatus.PUBLISHED && (canPublish || canManage));
+
+  const canUnpublish =
+    info.status === InfoStatus.PUBLISHED &&
+    ((canContribute && info.owner.id === user?.userId) ||
+      canPublish ||
+      canManage);
+
   const classes = clsx({
     'text-center': md,
   });
@@ -117,12 +132,6 @@ export const InfoCardHeader = ({
     }
     handleUnpublishAlertClose();
   };
-
-  const canEdit =
-    (info.status === InfoStatus.DRAFT && info.owner.id === user?.userId) ||
-    (info.status === InfoStatus.PENDING &&
-      (info.owner.id === user?.userId || canPublish || canManage)) ||
-    (info.status === InfoStatus.PUBLISHED && (canPublish || canManage));
 
   return (
     <header key={info.id} className="mb-12">
@@ -183,26 +192,23 @@ export const InfoCardHeader = ({
                   </Dropdown.Item>
                 )}
 
-                {info.status === InfoStatus.PUBLISHED &&
-                  (canContribute || canPublish || canManage) && (
-                    <Dropdown.Item
-                      icon={<IconHide />}
-                      onClick={handleUnpublishAlertOpen}
-                    >
-                      {t('actualites.info.actions.unpublish')}
-                    </Dropdown.Item>
-                  )}
+                {canUnpublish && (
+                  <Dropdown.Item
+                    icon={<IconHide />}
+                    onClick={handleUnpublishAlertOpen}
+                  >
+                    {t('actualites.info.actions.unpublish')}
+                  </Dropdown.Item>
+                )}
 
-                {info.status === InfoStatus.DRAFT &&
-                  canContribute &&
-                  !canPublish && (
-                    <Dropdown.Item
-                      icon={<IconSubmitToValidate />}
-                      onClick={handleSubmit}
-                    >
-                      {t('actualites.info.actions.submitToValidation')}
-                    </Dropdown.Item>
-                  )}
+                {canSubmit && (
+                  <Dropdown.Item
+                    icon={<IconSubmitToValidate />}
+                    onClick={handleSubmit}
+                  >
+                    {t('actualites.info.actions.submitToValidation')}
+                  </Dropdown.Item>
+                )}
               </Dropdown.Menu>
             </>
           )}
