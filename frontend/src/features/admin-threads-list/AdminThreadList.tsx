@@ -107,7 +107,7 @@ export function AdminThreadList() {
     );
   }
   return (
-    <Flex direction="column" gap="16" className="w-100">
+    <Flex direction="column" gap="16" className="w-100 pb-24 pb-lg-0">
       <Flex justify="center">
         <SearchBar
           className="col-12 col-lg-8"
