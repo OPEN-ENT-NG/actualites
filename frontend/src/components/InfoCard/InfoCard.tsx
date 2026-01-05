@@ -1,9 +1,9 @@
 import { Alert, Card, useDate } from '@edifice.io/react';
 import clsx from 'clsx';
 import { useCallback, useState } from 'react';
+import { useHashScrolling } from '~/hooks/useHashScrolling';
 import { useI18n } from '~/hooks/useI18n';
 import { useInfoStatus } from '~/hooks/useInfoStatus';
-import { useScrollToElement } from '~/hooks/useScrollToElement';
 import { Info, InfoStatus } from '~/models/info';
 import './InfoCard.css';
 import { InfoCardContent } from './InfoCardContent';
@@ -20,8 +20,8 @@ export type InfoCardProps = {
 export const InfoCard = ({ info, id }: InfoCardProps) => {
   const { t } = useI18n();
   const { isIncoming, isExpired, extendedStatus } = useInfoStatus(info);
-  const { deferScrollIntoView } = useScrollToElement();
-  const [collapse, setCollapse] = useState(true);
+  const { hash, deferScrollIntoView } = useHashScrolling();
+  const [collapse, setCollapse] = useState(hash !== id);
   const [scrollTo, setScrollTo] = useState<string>();
   const { formatDate } = useDate();
 

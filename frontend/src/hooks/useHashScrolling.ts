@@ -22,8 +22,7 @@ const SCROLL_RETRY_DELAY_MS = 150;
  * - `deferScrollIntoView` - Function to scroll to an element by ID with retry logic
  * ```
  */
-export function useScrollToElement() {
-  // Hash can be either #info-:infoId or #comment-:commentId
+export function useHashScrolling() {
   const hash = window.location.hash ? window.location.hash.slice(1) : '';
 
   const { infoId: infoIdFromPathParam, stringToId } = useThreadInfoParams();
