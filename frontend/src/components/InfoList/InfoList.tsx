@@ -1,4 +1,6 @@
 import { Flex, useInfiniteScroll } from '@edifice.io/react';
+import { useEffect } from 'react';
+import { useHashScrolling } from '~/hooks/useHashScrolling';
 import { useInfoList } from '~/hooks/useInfoList';
 import { useInfoSearchParams } from '~/hooks/useInfoSearchParams';
 import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
@@ -9,7 +11,6 @@ import { InfoListEmpty } from './components/InfoListEmpty';
 import { InfoListSegmented } from './components/InfoListSegmented';
 import { InfoListSegmentedSkeleton } from './components/InfoListSegmentedSkeleton';
 import { useInfoListEmptyScreen } from './hooks/useInfoListEmptyScreen';
-import { useEffect } from 'react';
 
 export const InfoList = () => {
   const { infos, hasNextPage, loadNextPage, isLoading } = useInfoList();
@@ -23,8 +24,15 @@ export const InfoList = () => {
     enabled: !!isSegmentedVisible,
   });
 
+  // Check URL for any hash (HTML element ID) to scroll into view
+  const { hash, deferScrollIntoView } = useHashScrolling();
+
   useEffect(() => {
-    window.scrollTo(0, 0);
+    if (hash) {
+      deferScrollIntoView(hash);
+    } else {
+      window.scrollTo(0, 0);
+    }
   }, [threadId]);
 
   const loadNextRef = useInfiniteScroll({
@@ -57,7 +65,7 @@ export const InfoList = () => {
           <InfoListEmpty type={emptyScreenType} />
         )}
         {infos.map((info) => (
-          <InfoCard id={`info-${info.id}`} key={info.id} info={info}></InfoCard>
+          <InfoCard id={`info-${info.id}`} key={info.id} info={info} />
         ))}
         {isLoading ? (
           <>

@@ -5,7 +5,8 @@ import {
   mockInfoPublishedDraft,
   mockInfoPublishedHeadline,
 } from '~/mocks/datas/infos';
-import { render, screen } from '~/mocks/setup';
+import { renderWithRouter } from '~/mocks/renderWithRouter';
+import { screen } from '~/mocks/setup';
 import { InfoCard } from './InfoCard';
 
 const mocks = vi.hoisted(() => ({
@@ -38,7 +39,7 @@ function getHeadlineImg(card: HTMLElement) {
 describe('InfoCard', () => {
   it('should render headline info', () => {
     mocks.useBreakpoint.mockReturnValue({ md: false });
-    render(<InfoCard info={mockInfoPublished} />);
+    renderWithRouter('/', <InfoCard info={mockInfoPublished} />);
 
     const card = screen.getByRole('article');
     expect(card.getElementsByTagName('h3')[0].textContent).toBe(
@@ -48,7 +49,7 @@ describe('InfoCard', () => {
 
   it('should display headline message', () => {
     mocks.useBreakpoint.mockReturnValue({ md: false });
-    render(<InfoCard info={mockInfoPublishedHeadline} />);
+    renderWithRouter('/', <InfoCard info={mockInfoPublishedHeadline} />);
 
     const card = screen.getByRole('article');
     expect(card.parentElement).toHaveClass('info-card-headline');
@@ -58,7 +59,7 @@ describe('InfoCard', () => {
 
   it('should display draft message', () => {
     mocks.useBreakpoint.mockReturnValue({ md: false });
-    render(<InfoCard info={mockInfoPublishedDraft} />);
+    renderWithRouter('/', <InfoCard info={mockInfoPublishedDraft} />);
 
     const card = screen.getByRole('article');
     expect(card.parentElement).toHaveClass('info-card-draft');
@@ -73,7 +74,7 @@ describe('InfoCard', () => {
 
   it('should display incoming message', () => {
     mocks.useBreakpoint.mockReturnValue({ md: false });
-    render(<InfoCard info={mockInfoIncoming} />);
+    renderWithRouter('/', <InfoCard info={mockInfoIncoming} />);
 
     const card = screen.getByRole('article');
     expect(card.parentElement).toHaveClass('info-card-incoming');
@@ -90,7 +91,7 @@ describe('InfoCard', () => {
 
   it('should display expired message', () => {
     mocks.useBreakpoint.mockReturnValue({ md: false });
-    render(<InfoCard info={mockInfoExpired} />);
+    renderWithRouter('/', <InfoCard info={mockInfoExpired} />);
 
     const card = screen.getByRole('article');
     expect(card.parentElement).toHaveClass('info-card-expired');
