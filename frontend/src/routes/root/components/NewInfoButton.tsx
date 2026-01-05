@@ -21,7 +21,11 @@ export const NewInfoButton = () => {
 
   return (
     visible && (
-      <Button onClick={handleClickNewInfo} leftIcon={<IconPlus />}>
+      <Button
+        data-testid="new-info-button"
+        onClick={handleClickNewInfo}
+        leftIcon={<IconPlus />}
+      >
         {t('actualites.info.create')}
       </Button>
     )

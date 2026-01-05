@@ -36,14 +36,14 @@ export const UserInfo = ({ info }: { info: Info }) => {
   const UserInfoContent = () =>
     md ? (
       <Flex align="center" className="fs-6 text-gray-700" wrap="nowrap">
-        <div>{info.owner.displayName}</div>
+        <div data-testid="info-owner-name">{info.owner.displayName}</div>
         <Divider vertical className="border-gray-700" />
-        <div>{formatDate(infoDate, 'long')}</div>
+        <div data-testid="info-date">{formatDate(infoDate, 'long')}</div>
       </Flex>
     ) : (
       <Flex direction="column" className="fs-6 text-gray-700" wrap="nowrap">
-        <div>{info.owner.displayName}</div>
-        <div>{formatDate(infoDate, 'long')}</div>
+        <div data-testid="info-owner-name">{info.owner.displayName}</div>
+        <div data-testid="info-date">{formatDate(infoDate, 'long')}</div>
       </Flex>
     );
 

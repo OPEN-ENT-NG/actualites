@@ -37,7 +37,7 @@ export const InfoCardFooter = ({
           </>
         </Flex>
         <Button
-          type="button"
+          data-testid="info-view-more-button"
           color="secondary"
           variant="ghost"
           size="sm"

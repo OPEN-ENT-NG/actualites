@@ -140,7 +140,9 @@ export const InfoCardHeader = ({
           <InfoCardThreadHeader thread={thread} />
           {!lg && badgeContent()}
         </Flex>
-        <h3 className={classes}>{info?.title}</h3>
+        <h3 data-testid="info-name" className={classes}>
+          {info?.title}
+        </h3>
         {lg && badgeContent()}
       </div>
 
