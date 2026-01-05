@@ -66,6 +66,18 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
         ],
       },
       {
+        id: 'EditInfo',
+        path: 'threads/:threadIdAsString/infos/:infoIdAsString/edit',
+        async lazy() {
+          const { loader, EditInfo: Component } =
+            await import('~/routes/pages/EditInfo');
+          return {
+            loader: loader(queryClient),
+            Component,
+          };
+        },
+      },
+      {
         path: 'admin/threads',
         async lazy() {
           const { loader, AdminThreads: Component } =
@@ -107,17 +119,6 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
                   {
                     path: '',
                     index: true,
-                    async lazy() {
-                      const { loader, Threads: Component } =
-                        await import('~/routes/pages/Threads');
-                      return {
-                        loader: loader(queryClient),
-                        Component,
-                      };
-                    },
-                  },
-                  {
-                    path: 'infos/:infoIdAsString/edit',
                     async lazy() {
                       const { loader, Threads: Component } =
                         await import('~/routes/pages/Threads');

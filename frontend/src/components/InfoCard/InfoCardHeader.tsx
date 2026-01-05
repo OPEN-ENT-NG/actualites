@@ -18,6 +18,7 @@ import {
 } from '@edifice.io/react/icons';
 import clsx from 'clsx';
 import { RefAttributes, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import iconHeadline from '~/assets/icon-headline.svg';
 import { useI18n } from '~/hooks/useI18n';
 import { useInfoPublishOrSubmit } from '~/hooks/useInfoPublishOrSubmit';
@@ -47,7 +48,8 @@ export const InfoCardHeader = ({
 
   const threadRights = getThreadUserRights(thread, user?.userId || '');
 
-  const { t } = useI18n();
+  const { t, common_t } = useI18n();
+  const navigate = useNavigate();
   const { md, lg } = useBreakpoint();
   const styles = lg
     ? { gridTemplateColumns: '1fr auto 1fr', gap: '12px' }
@@ -56,6 +58,10 @@ export const InfoCardHeader = ({
   const classes = clsx({
     'text-center': md,
   });
+
+  const handleEditClick = () => {
+    navigate(`/threads/${info.threadId}/infos/${info.id}/edit`);
+  };
 
   const badgeContent = () => (
     <div style={{ textAlign: 'right' }}>
@@ -92,6 +98,15 @@ export const InfoCardHeader = ({
     }
     handlePublish({ ...info, thread: thread }, threadRights.canPublish);
   };
+
+  const canEdit =
+    (info.status === InfoStatus.DRAFT && info.owner.id === user?.userId) ||
+    (info.status === InfoStatus.PENDING &&
+      (info.owner.id === user?.userId ||
+        threadRights.canPublish ||
+        threadRights.canManage)) ||
+    (info.status === InfoStatus.PUBLISHED &&
+      (threadRights.canPublish || threadRights.canManage));
 
   return (
     <header key={info.id} className="mb-12">
@@ -145,12 +160,11 @@ export const InfoCardHeader = ({
                 variant="ghost"
               />
               <Dropdown.Menu>
-                <Dropdown.Item
-                  icon={<IconEdit />}
-                  onClick={() => alert('edit')}
-                >
-                  {t('common.edit')}
-                </Dropdown.Item>
+                {canEdit && (
+                  <Dropdown.Item icon={<IconEdit />} onClick={handleEditClick}>
+                    {common_t('edit')}
+                  </Dropdown.Item>
+                )}
                 <Dropdown.Item
                   icon={<IconEdit />}
                   onClick={() => alert('copy')}
