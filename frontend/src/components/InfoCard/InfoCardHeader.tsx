@@ -140,7 +140,9 @@ export const InfoCardHeader = ({
           <InfoCardThreadHeader thread={thread} />
           {!lg && badgeContent()}
         </Flex>
-        <h3 className={classes}>{info?.title}</h3>
+        <h3 data-testid="info-name" className={classes}>
+          {info?.title}
+        </h3>
         {lg && badgeContent()}
       </div>
 
@@ -187,13 +189,18 @@ export const InfoCardHeader = ({
               />
               <Dropdown.Menu>
                 {canEdit && (
-                  <Dropdown.Item icon={<IconEdit />} onClick={handleEditClick}>
+                  <Dropdown.Item
+                    data-testid="info-card-header-edit-dd-item"
+                    icon={<IconEdit />}
+                    onClick={handleEditClick}
+                  >
                     {common_t('edit')}
                   </Dropdown.Item>
                 )}
 
                 {canUnpublish && (
                   <Dropdown.Item
+                    data-testid="info-card-header-unpublish-dd-item"
                     icon={<IconHide />}
                     onClick={handleUnpublishAlertOpen}
                   >
@@ -203,6 +210,7 @@ export const InfoCardHeader = ({
 
                 {canSubmit && (
                   <Dropdown.Item
+                    data-testid="info-card-header-submit-dd-item"
                     icon={<IconSubmitToValidate />}
                     onClick={handleSubmit}
                   >

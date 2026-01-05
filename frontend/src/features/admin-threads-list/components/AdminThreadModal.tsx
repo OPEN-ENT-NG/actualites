@@ -254,7 +254,7 @@ export const AdminThreadModal = ({
                     placeholderOption={t(
                       'actualites.adminThreads.modal.infoStructure.placeholder',
                     )}
-                    data-testid="actualites.adminThreads.modal.selectStructure"
+                    data-testid="admin-thread-modal-structure-select"
                     icon={<IconFilter />}
                     defaultValue={thread?.structureId || ''}
                   />
@@ -267,15 +267,20 @@ export const AdminThreadModal = ({
 
       <Modal.Footer>
         <Button
+          data-testid="admin-thread-modal-cancel-button"
           color="tertiary"
           onClick={handleCloseModal}
-          type="button"
           variant="ghost"
           disabled={isSubmitting}
         >
           {t('actualites.adminThreads.modal.cancel')}
         </Button>
         <Button
+          data-testid={
+            thread
+              ? 'admin-thread-modal-save-button'
+              : 'admin-thread-modal-create-button'
+          }
           form={formId}
           type="submit"
           color="primary"

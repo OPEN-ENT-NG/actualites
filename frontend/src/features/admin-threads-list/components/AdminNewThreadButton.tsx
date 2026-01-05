@@ -15,7 +15,11 @@ export function AdminNewThreadButton() {
 
   return (
     <>
-      <Button leftIcon={<IconPlus />} onClick={handleNewThreadClick}>
+      <Button
+        data-testid="admin-thread-create-button"
+        leftIcon={<IconPlus />}
+        onClick={handleNewThreadClick}
+      >
         {t('actualites.adminThreads.newThread')}
       </Button>
       {isModalOpen && (

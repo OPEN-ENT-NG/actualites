@@ -151,7 +151,7 @@ export function InfoDetailsForm({
                   placeholderOption={t(
                     'actualites.info.createForm.selectThreadPlaceholder',
                   )}
-                  data-testid="actualites.info.thread.select"
+                  data-testid="create-info-thread-select"
                 />
               )}
             />
@@ -188,7 +188,7 @@ export function InfoDetailsForm({
                 placeholder={t('actualites.info.createForm.titlePlaceholder')}
                 showCounter
                 maxLength={60}
-                data-testid="actualites.info.title.input"
+                data-testid="create-info-title-input"
                 {...register('title', { required: true })}
               />
             )}
@@ -200,7 +200,7 @@ export function InfoDetailsForm({
           <Switch
             {...register('headline')}
             label={t('actualites.info.createForm.headlineLabel')}
-            data-testid="actualites.info.headline.switch"
+            data-testid="create-info-headline-checkbox"
             variant="secondary"
           />
         </Flex>

@@ -34,6 +34,7 @@ export function AdminThread({
 
   return (
     <Flex
+      data-testid="admin-thread-div"
       align="center"
       className="p-8 p-lg-12 admin-thread rounded"
       gap="24"
@@ -50,12 +51,16 @@ export function AdminThread({
           className="text-gray-700 "
         >
           <div
+            data-testid="admin-thread-div-structure-name"
             className={'text-truncate' + (!thread.structure && ' text-red-500')}
           >
             {thread.structure?.name || t('actualites.adminThreads.noStructure')}
           </div>
           {xl && <Divider vertical className="border-gray-700" />}
-          <div className="text-nowrap">
+          <div
+            data-testid="admin-thread-div-infos-count"
+            className="text-nowrap"
+          >
             {t('actualites.adminThreads.threadInfoCount', threadInfosCount)}
           </div>
         </Flex>
@@ -64,6 +69,7 @@ export function AdminThread({
         {lg ? (
           <>
             <Button
+              data-testid="admin-thread-div-share-button"
               size="sm"
               variant="ghost"
               color="tertiary"
@@ -73,6 +79,7 @@ export function AdminThread({
               {t('actualites.adminThreads.shareRightsButton')}
             </Button>
             <Button
+              data-testid="admin-thread-div-edit-button"
               size="sm"
               variant="ghost"
               color="tertiary"
@@ -82,6 +89,7 @@ export function AdminThread({
               {t('actualites.adminThreads.editButton')}
             </Button>
             <Button
+              data-testid="admin-thread-div-delete-button"
               size="sm"
               variant="ghost"
               color="tertiary"
