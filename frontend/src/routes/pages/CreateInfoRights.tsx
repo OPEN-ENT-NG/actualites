@@ -133,7 +133,7 @@ export function CreateInfoRights() {
     if (isPublishing.current) {
       handlePublish(info, canPublish);
     } else {
-      navigate('/');
+      navigate(`/threads/?status=draft`);
       setIsSaving(false);
     }
   };
