@@ -35,9 +35,9 @@ const CommentsCounter = ({
   return (
     <div>
       <Button
+        data-testid="info-view-comments-button"
         rightIcon={<IconMessageInfo />}
         variant="ghost"
-        type="button"
         className={className}
         onClick={handleButtonClick}
       >

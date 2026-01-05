@@ -35,6 +35,7 @@ export function AdminThreads() {
   return (
     <Flex direction="column" align="start" fill>
       <Button
+        data-testid="admin-thread-goback-button"
         variant="ghost"
         color="tertiary"
         onClick={handleGoBackClick}
