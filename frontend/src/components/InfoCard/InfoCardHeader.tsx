@@ -100,6 +100,15 @@ export const InfoCardHeader = ({
     handlePublish({ ...info, thread: thread }, threadRights.canPublish);
   };
 
+  const canEdit =
+    (info.status === InfoStatus.DRAFT && info.owner.id === user?.userId) ||
+    (info.status === InfoStatus.PENDING &&
+      (info.owner.id === user?.userId ||
+        threadRights.canPublish ||
+        threadRights.canManage)) ||
+    (info.status === InfoStatus.PUBLISHED &&
+      (threadRights.canPublish || threadRights.canManage));
+
   return (
     <header key={info.id} className="mb-12">
       <div className="d-grid" style={styles}>
@@ -152,9 +161,11 @@ export const InfoCardHeader = ({
                 variant="ghost"
               />
               <Dropdown.Menu>
-                <Dropdown.Item icon={<IconEdit />} onClick={handleEditClick}>
-                  {common_t('edit')}
-                </Dropdown.Item>
+                {canEdit && (
+                  <Dropdown.Item icon={<IconEdit />} onClick={handleEditClick}>
+                    {common_t('edit')}
+                  </Dropdown.Item>
+                )}
                 <Dropdown.Item
                   icon={<IconEdit />}
                   onClick={() => alert('copy')}
