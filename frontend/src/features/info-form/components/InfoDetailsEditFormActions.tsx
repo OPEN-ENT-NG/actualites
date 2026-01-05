@@ -34,11 +34,12 @@ export function InfoDetailsEditFormActions() {
       justify="end"
       align={md ? 'center' : 'end'}
       gap="12"
-      className="mb-48"
+      className="mt-8 mb-48"
     >
       <Button
         color="primary"
         variant="ghost"
+        className="btn-icon"
         onClick={handleCancelClick}
         data-testid="actualites.info.form.cancelButton"
         disabled={isSaving}
