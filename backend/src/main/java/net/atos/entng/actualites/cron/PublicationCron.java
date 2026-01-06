@@ -31,7 +31,10 @@ public class PublicationCron implements Handler<Long> {
     public void handle(Long event) {
         LOGGER.info("[publication-cron] start publishing news");
         Sql.getInstance().prepared(
-                "SELECT id, publisher_id, owner, thread_id, title FROM actualites.info as i " +
+                "SELECT i.id, i.publisher_id, i.owner, i.thread_id, i.title, u_owner.username as o_username, u_publisher.username as p_username " +
+                      "  FROM actualites.info as i" +
+                      " JOIN actualites.users u_owner ON u_owner.id = i.owner " +
+                      " JOIN actualites.users u_publisher ON u_publisher.id = i.publisher_id " +
                       " WHERE i.published = false AND i.status = 3 AND " +
                       " (i.publication_date IS NOT NULL AND i.publication_date <  now() at time zone 'utc') ", new JsonArray(), validResultHandler( this::publishNews));
     }
@@ -58,8 +61,10 @@ public class PublicationCron implements Handler<Long> {
 
                 UserInfos owner = new UserInfos();
                 owner.setUserId(row.getString("owner"));
+                owner.setUsername(row.getString("o_username"));
                 UserInfos user = new UserInfos();
                 user.setUserId(row.getString("publisher_id"));
+                user.setUsername(row.getString("p_username"));
 
                 notificationTimelineService.notifyTimeline(request, user, owner, row.getString("thread_id"),
                         row.getString("id"), row.getString("title"), NEWS_PUBLISH_EVENT_TYPE, true);

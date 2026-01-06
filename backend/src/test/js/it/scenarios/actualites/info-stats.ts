@@ -110,8 +110,8 @@ export function testInfoStats(data: InitData) {
       content: `Content`,
       thread_id: parseInt(thread.id as string),
       status: 3,
-      publication_date: "2020-01-01",
-      expiration_date: "2020-06-30",
+      publication_date: "2020-01-01T00:00:00Z",
+      expiration_date: "2020-06-30T00:00:00Z",
     } as any);
 
     createPublishedInfoOrFail({
@@ -119,8 +119,8 @@ export function testInfoStats(data: InitData) {
       content: `Content`,
       thread_id: parseInt(thread.id as string),
       status: 3,
-      publication_date: "2020-01-01",
-      expiration_date: "2020-12-31",
+      publication_date: "2020-01-01T00:00:00Z",
+      expiration_date: "2020-12-31T00:00:00Z",
     } as any);
 
     // 2 INCOMING published infos
@@ -129,8 +129,8 @@ export function testInfoStats(data: InitData) {
       content: `Content`,
       thread_id: parseInt(thread.id as string),
       status: 3,
-      publication_date: "2030-01-01",
-      expiration_date: "2030-06-30",
+      publication_date: "2030-01-01T00:00:00Z",
+      expiration_date: "2030-06-30T00:00:00Z",
     } as any);
 
     createPublishedInfoOrFail({
@@ -138,8 +138,8 @@ export function testInfoStats(data: InitData) {
       content: `Content`,
       thread_id: parseInt(thread.id as string),
       status: 3,
-      publication_date: "2030-07-01",
-      expiration_date: "2030-12-31",
+      publication_date: "2030-07-01T00:00:00Z",
+      expiration_date: "2030-12-31T00:00:00Z",
     } as any);
 
     // 1 CURRENT published info
@@ -148,8 +148,8 @@ export function testInfoStats(data: InitData) {
       content: `Content`,
       thread_id: parseInt(thread.id as string),
       status: 3,
-      publication_date: "2020-01-01",
-      expiration_date: "2035-12-31",
+      publication_date: "2020-01-01T00:00:00Z",
+      expiration_date: "2035-12-31T00:00:00Z",
     } as any);
 
     // 2 DRAFT infos (should NOT be counted as expired/incoming)
@@ -216,7 +216,7 @@ export function testInfoStats(data: InitData) {
       content: `Content`,
       thread_id: parseInt(data.mainThreadId),
       status: 3,
-      publication_date: "2020-01-01",
+      publication_date: "2020-01-01T00:00:00Z",
     } as any);
 
     const threadStats = getThreadStats(statsUrl, data.mainThreadId);
@@ -233,7 +233,7 @@ export function testInfoStats(data: InitData) {
       content: `Content`,
       thread_id: parseInt(data.mainThreadId),
       status: 3,
-      expiration_date: "2035-12-31",
+      expiration_date: "2035-12-31T00:00:00Z",
     } as any);
 
     const threadStats = getThreadStats(statsUrl, data.mainThreadId);
@@ -254,7 +254,7 @@ export function testInfoStats(data: InitData) {
       content: `Content`,
       thread_id: parseInt(data.mainThreadId),
       status: 3,
-      publication_date: "2020-01-01",
+      publication_date: "2020-01-01T00:00:00Z",
       expiration_date: formatDate(oneSecondAgo),
     } as any);
 
@@ -264,7 +264,7 @@ export function testInfoStats(data: InitData) {
       thread_id: parseInt(data.mainThreadId),
       status: 3,
       publication_date: formatDate(fiveSecondsLater),
-      expiration_date: "2035-12-31",
+      expiration_date: "2035-12-31T00:00:00Z",
     } as any);
 
     const threadStats = getThreadStats(statsUrl, data.mainThreadId);
@@ -342,8 +342,8 @@ export function testInfoStats(data: InitData) {
       content: `Content`,
       thread_id: tid,
       status: 3,
-      publication_date: "2020-01-01",
-      expiration_date: "2020-12-31",
+      publication_date: "2020-01-01T00:00:00Z",
+      expiration_date: "2020-12-31T00:00:00Z",
     } as any);
 
     createPublishedInfoOrFail({
@@ -351,8 +351,8 @@ export function testInfoStats(data: InitData) {
       content: `Content`,
       thread_id: tid,
       status: 3,
-      publication_date: "2030-01-01",
-      expiration_date: "2030-12-31",
+      publication_date: "2030-01-01T00:00:00Z",
+      expiration_date: "2030-12-31T00:00:00Z",
     } as any);
 
     createPublishedInfoOrFail({
@@ -360,8 +360,8 @@ export function testInfoStats(data: InitData) {
       content: `Content`,
       thread_id: tid,
       status: 3,
-      publication_date: "2020-01-01",
-      expiration_date: "2035-12-31",
+      publication_date: "2020-01-01T00:00:00Z",
+      expiration_date: "2035-12-31T00:00:00Z",
     } as any);
 
     const threadStats = getThreadStats(statsUrl, tid);
@@ -425,8 +425,8 @@ export function testInfoStats(data: InitData) {
       content: `Content`,
       thread_id: parseInt(thread2.id as string),
       status: 3,
-      publication_date: "2020-01-01",
-      expiration_date: "2020-12-31",
+      publication_date: "2020-01-01T00:00:00Z",
+      expiration_date: "2020-12-31T00:00:00Z",
     } as any);
 
     createInfoOrFail({
@@ -475,8 +475,8 @@ export function testInfoStats(data: InitData) {
       content: `Content`,
       thread_id: parseInt(sharedThread.id as string),
       status: 3,
-      publication_date: "2020-01-01",
-      expiration_date: "2035-12-31",
+      publication_date: "2020-01-01T00:00:00Z",
+      expiration_date: "2035-12-31T00:00:00Z",
     } as any);
 
     const allRights = [...threadContributorRights, ...threadPublisherRights];
@@ -501,8 +501,8 @@ export function testInfoStats(data: InitData) {
       content: `Content`,
       thread_id: parseInt(privateThread.id as string),
       status: 3,
-      publication_date: "2020-01-01",
-      expiration_date: "2035-12-31",
+      publication_date: "2020-01-01T00:00:00Z",
+      expiration_date: "2035-12-31T00:00:00Z",
     } as any);
 
     authenticateWeb(data.teacher2.login);
@@ -525,8 +525,8 @@ export function testInfoStats(data: InitData) {
       content: `Content`,
       thread_id: parseInt(thread.id as string),
       status: 3,
-      publication_date: "2020-01-01",
-      expiration_date: "2035-12-31",
+      publication_date: "2020-01-01T00:00:00Z",
+      expiration_date: "2035-12-31T00:00:00Z",
     } as any);
 
     const shareBody = {
