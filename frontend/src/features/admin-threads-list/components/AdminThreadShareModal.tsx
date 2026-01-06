@@ -133,9 +133,7 @@ export const AdminThreadShareModal = ({
           variant="filled"
           onClick={handleShareClick}
         >
-          {thread
-            ? t('actualites.adminThreads.modal.save')
-            : t('actualites.adminThreads.modal.create')}
+          {t('actualites.adminThreads.modal.save')}
         </Button>
       </Modal.Footer>
     </Modal>,
