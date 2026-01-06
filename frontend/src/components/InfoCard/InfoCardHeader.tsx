@@ -1,5 +1,6 @@
 import {
   Badge,
+  Button,
   Dropdown,
   Flex,
   IconButton,
@@ -12,6 +13,7 @@ import {
   IconClock,
   IconClockAlert,
   IconEdit,
+  IconHide,
   IconOptions,
   IconSave,
   IconSubmitToValidate,
@@ -23,9 +25,11 @@ import iconHeadline from '~/assets/icon-headline.svg';
 import { useI18n } from '~/hooks/useI18n';
 import { useInfoPublishOrSubmit } from '~/hooks/useInfoPublishOrSubmit';
 import { useInfoStatus } from '~/hooks/useInfoStatus';
+import { useInfoUnpublish } from '~/hooks/useInfoUnpublish';
 import { useThread } from '~/hooks/useThread';
 import { getThreadUserRights } from '~/hooks/utils/threads';
 import { InfoExtendedStatus, InfoStatus } from '~/models/info';
+import { PortalModal } from '../PortalModal';
 import { InfoCardProps } from './InfoCard';
 import { InfoCardThreadHeader } from './InfoCardThreadHeader';
 import { UserInfo } from './UserInfo';
@@ -44,9 +48,18 @@ export const InfoCardHeader = ({
   const { isExpired } = useInfoStatus(info);
 
   const { handlePublish } = useInfoPublishOrSubmit();
+  const {
+    unpublish,
+    handleUnpublishAlertClose,
+    handleUnpublishAlertOpen,
+    isUnpublishAlertOpen,
+  } = useInfoUnpublish();
   const { user } = useUser();
 
-  const threadRights = getThreadUserRights(thread, user?.userId || '');
+  const { canContribute, canPublish, canManage } = getThreadUserRights(
+    thread,
+    user?.userId || '',
+  );
 
   const { t, common_t } = useI18n();
   const navigate = useNavigate();
@@ -54,6 +67,21 @@ export const InfoCardHeader = ({
   const styles = lg
     ? { gridTemplateColumns: '1fr auto 1fr', gap: '12px' }
     : { gridTemplateColumns: '1fr', gap: '12px' };
+
+  const canSubmit =
+    info.status === InfoStatus.DRAFT && canContribute && !canPublish;
+
+  const canEdit =
+    (info.status === InfoStatus.DRAFT && info.owner.id === user?.userId) ||
+    (info.status === InfoStatus.PENDING &&
+      (info.owner.id === user?.userId || canPublish || canManage)) ||
+    (info.status === InfoStatus.PUBLISHED && (canPublish || canManage));
+
+  const canUnpublish =
+    info.status === InfoStatus.PUBLISHED &&
+    ((canContribute && info.owner.id === user?.userId) ||
+      canPublish ||
+      canManage);
 
   const classes = clsx({
     'text-center': md,
@@ -93,20 +121,17 @@ export const InfoCardHeader = ({
   );
 
   const handleSubmit = () => {
-    if (!thread) {
-      return;
+    if (thread) {
+      handlePublish({ ...info, thread: thread }, canPublish);
     }
-    handlePublish({ ...info, thread: thread }, threadRights.canPublish);
   };
 
-  const canEdit =
-    (info.status === InfoStatus.DRAFT && info.owner.id === user?.userId) ||
-    (info.status === InfoStatus.PENDING &&
-      (info.owner.id === user?.userId ||
-        threadRights.canPublish ||
-        threadRights.canManage)) ||
-    (info.status === InfoStatus.PUBLISHED &&
-      (threadRights.canPublish || threadRights.canManage));
+  const handleUnpublishClick = () => {
+    if (thread) {
+      unpublish({ ...info, thread: thread });
+    }
+    handleUnpublishAlertClose();
+  };
 
   return (
     <header key={info.id} className="mb-12">
@@ -158,6 +183,7 @@ export const InfoCardHeader = ({
                 color="primary"
                 icon={<IconOptions />}
                 variant="ghost"
+                data-testid="info-card-header-dd-trigger"
               />
               <Dropdown.Menu>
                 {canEdit && (
@@ -165,27 +191,53 @@ export const InfoCardHeader = ({
                     {common_t('edit')}
                   </Dropdown.Item>
                 )}
-                <Dropdown.Item
-                  icon={<IconEdit />}
-                  onClick={() => alert('copy')}
-                >
-                  {t('common.copy')}
-                </Dropdown.Item>
-                {info.status === InfoStatus.DRAFT &&
-                  threadRights.canContribute &&
-                  !threadRights.canPublish && (
-                    <Dropdown.Item
-                      icon={<IconSubmitToValidate />}
-                      onClick={handleSubmit}
-                    >
-                      {t('actualites.info.actions.submitToValidation')}
-                    </Dropdown.Item>
-                  )}
+
+                {canUnpublish && (
+                  <Dropdown.Item
+                    icon={<IconHide />}
+                    onClick={handleUnpublishAlertOpen}
+                  >
+                    {t('actualites.info.actions.unpublish')}
+                  </Dropdown.Item>
+                )}
+
+                {canSubmit && (
+                  <Dropdown.Item
+                    icon={<IconSubmitToValidate />}
+                    onClick={handleSubmit}
+                  >
+                    {t('actualites.info.actions.submitToValidation')}
+                  </Dropdown.Item>
+                )}
               </Dropdown.Menu>
             </>
           )}
         </Dropdown>
       </div>
+
+      <PortalModal
+        id="modal-unpublish"
+        onModalClose={handleUnpublishAlertClose}
+        isOpen={isUnpublishAlertOpen}
+        size={'sm'}
+        header={t('actualites.info.unpublish.modal.title')}
+        footer={
+          <>
+            <Button
+              variant="ghost"
+              color="tertiary"
+              onClick={handleUnpublishAlertClose}
+            >
+              {common_t('close')}
+            </Button>
+            <Button color="danger" onClick={handleUnpublishClick}>
+              {t('actualites.info.actions.unpublish')}
+            </Button>
+          </>
+        }
+      >
+        {t('actualites.info.unpublish.modal.body')}
+      </PortalModal>
     </header>
   );
 };

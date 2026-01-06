@@ -26,6 +26,7 @@
   "actualites.read.less": "Voir moins",
   "actualites.info.create": "Nouvelle actualité",
   "actualites.info.actions.submitToValidation": "Soumettre à validation",
+  "actualites.info.actions.unpublish": "Dépublier",
   "actualites.info.createForm.required": "Champs requis",
   "actualites.info.createForm.details.title": "Création d’une actualité",
   "actualites.info.createForm.details.subtitle": "Saisir le contenu de votre actualité ",
@@ -91,6 +92,10 @@
   "actualites.comment.updated": "Commentaire modifié avec succès.",
   "actualites.comment.deleted": "Commentaire supprimé avec succès.",
   "actualites.comment.error": "Votre commentaire n'a pas pu être publié",
+  "actualites.info.unpublish.modal.title": "Dépublier l’actualité",
+  "actualites.info.unpublish.modal.body": "Êtes-vous sûr de vouloir dépublier l’actualité ? Cela la rendra indisponible à la lecture.\nVous pourrez la retrouver dans la section “À valider”.",
+  "actualites.info.unpublish.success": "Actualité dépubliée avec succès.",
+  "actualites.info.unpublish.error": "L'actualité n'a pas pu être dépubliée.",
   "actualites.info.unavailable.title": "Actualité indisponible",
   "actualites.info.unavailable.body": "Cette actualité a expiré ou a été supprimée par son auteur. Il est aussi possible que vous n'ayez plus le droit d'y accéder."
 }
