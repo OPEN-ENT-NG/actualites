@@ -15,12 +15,6 @@ import { Thread } from '~/models/thread';
 import { baseUrlAPI } from '~/services';
 import { useThreadShares } from '~/services/queries';
 
-export interface FormInputs {
-  title: string;
-  structureId?: string;
-  icon?: string;
-}
-
 interface AdminThreadShareModalProps {
   /** Controls modal visibility */
   isOpen: boolean;
