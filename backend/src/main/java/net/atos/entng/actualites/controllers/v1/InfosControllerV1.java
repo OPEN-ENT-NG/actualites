@@ -328,53 +328,51 @@ public class InfosControllerV1 extends ControllerHelper {
 			return;
 		}
 		request.pause();
-		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
-			@Override
-			public void handle(final UserInfos user) {
-				if (user != null) {
-					infoService.retrieve(infoId, user, false, new Handler<Either<String, JsonObject>>() {
-						@Override
-						public void handle(Either<String, JsonObject> event) {
-							request.resume();
-							if(event.right() != null){
-								JsonObject info = event.right().getValue();
-								if(info != null && info.containsKey("status")){
-									if(info.getInteger("status") > 2){
-										JsonObject params = new JsonObject()
-												.put("profilUri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
-												.put("username", user.getUsername())
-												.put("resourceUri", pathPrefix + "#/view/thread/" + info.getString("thread_id") + "/info/" + infoId)
-												.put("disableAntiFlood", true)
-												.put("pushNotif", new JsonObject().put("title", "push.notif.actu.info.published").put("body", user.getUsername()+ " : "+ info.getString("title")));
-										params.put("preview", NotificationUtils.htmlContentToPreview(
-												info.getString("content")));
-
-										DateFormat dfm = new SimpleDateFormat("yyyy-MM-dd");
-										String date = info.getString("publication_date");
-										if(date != null && !date.trim().isEmpty()){
-											try {
-												Date publicationDate = dfm.parse(date);
-												Date timeNow = new Date(System.currentTimeMillis());
-												if(publicationDate.after(timeNow)){
-													params.put("timeline-publish-date", publicationDate.getTime());
-												}
-											} catch (ParseException e) {
-												LOGGER.error("An error occured when sharing an info : " + e.getMessage());
-											}
-										}
-										shareResource(request, "news.info-shared", false, params, "title");
-									} else {
-										shareResource(request, null, false, null, null);
-									}
+		UserUtils.getUserInfos(eb, request, user -> {
+            if (user != null) {
+                infoService.retrieve(infoId, user, false, event -> {
+                    request.resume();
+                    if(event.right() != null){
+                        JsonObject info = event.right().getValue();
+                        if(info != null && info.containsKey("status")){
+                            if(info.getInteger("status") > 2){
+                                JsonObject params = new JsonObject()
+                                        .put("profilUri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
+                                        .put("username", user.getUsername())
+                                        .put("resourceUri", pathPrefix + "#/view/thread/" + info.getString("thread_id") + "/info/" + infoId)
+                                        .put("disableAntiFlood", true);
+								//send push notification on published info by the cron that publish the news
+								if(info.getBoolean("published")) {
+									params.put("pushNotif", new JsonObject().put("title", "push.notif.actu.info.published").put("body", user.getUsername() + " : " + info.getString("title")));
 								}
-							}
-						}
-					});
-				} else {
-					unauthorized(request);
-				}
-			}
-		});
+                                params.put("preview", NotificationUtils.htmlContentToPreview(
+                                        info.getString("content")));
+
+                                DateFormat dfm = new SimpleDateFormat("yyyy-MM-dd");
+                                String date = info.getString("publication_date");
+                                if(date != null && !date.trim().isEmpty()){
+                                    try {
+                                        Date publicationDate = dfm.parse(date);
+                                        Date timeNow = new Date(System.currentTimeMillis());
+										//share should not be visible before the effective publication of the news
+                                        if(publicationDate.after(timeNow)){
+                                            params.put("timeline-publish-date", publicationDate.getTime());
+                                        }
+                                    } catch (ParseException e) {
+                                        LOGGER.error("An error occured when sharing an info : " + e.getMessage());
+                                    }
+                                }
+                                shareResource(request, "news.info-shared", false, params, "title");
+                            } else {
+                                shareResource(request, null, false, null, null);
+                            }
+                        }
+                    }
+                });
+            } else {
+                unauthorized(request);
+            }
+        });
 	}
 
 	@Get("/api/v1/infos/:" + INFO_RESOURCE_ID + "/timeline")
@@ -502,6 +500,10 @@ public class InfosControllerV1 extends ControllerHelper {
 					int targetStatus = resource.getInteger("status");
 					Events event = getEventFromTransition(targetStatus, actualStatus);
 
+					if (event == Events.UNPUBLISH) {
+						resource.put("published", false);
+					}
+
 					String notificationFromTransition = getNotificationFromTransition(targetStatus, actualStatus);
 
 					String publicationDate = resource.getString("publication_date") != null ?
@@ -532,10 +534,13 @@ public class InfosControllerV1 extends ControllerHelper {
 							}
 							if (notificationFromTransition.equals(NEWS_UPDATE_EVENT_TYPE)) {
 								notifyOwner(request, user, resource, infoId, actualInfo, notificationFromTransition);
+								return;
 							}
-							if (shouldPublishedNow) {
+							//notify if we must published now or if it is another type of notification
+							if (shouldPublishedNow || !isPublishedEvent) {
 								UserInfos owner = new UserInfos();
 								owner.setUserId(actualInfo.getString("owner"));
+								owner.setUsername(actualInfo.getString("username"));
 								notificationTimelineService.notifyTimeline(request, user, owner, actualInfo.getString("thread_id"),
 										infoId, resource.getString("title"), notificationFromTransition, false);
 							}
@@ -580,7 +585,10 @@ public class InfosControllerV1 extends ControllerHelper {
 		if(actualStatus == 2 && updatedStatus == 2) {
 			return Events.PENDING;
 		}
-		if(actualStatus == 2 && updatedStatus == 1 ||
+		if(actualStatus == 2 && updatedStatus == 1) {
+			return Events.UNSUBMIT;
+		}
+		if(actualStatus == 3 && updatedStatus == 1 ||
 		   actualStatus == 3 && updatedStatus == 2) {
 			return Events.UNPUBLISH;
 		}
@@ -621,6 +629,7 @@ public class InfosControllerV1 extends ControllerHelper {
 		if (!ownerId.equals(user.getUserId())) {
 			UserInfos owner = new UserInfos();
 			owner.setUserId(ownerId);
+			owner.setUsername(user.getUsername());
 			notificationTimelineService.notifyTimeline(request,  user, owner, actualInfo.getString("thread_id"),
 					infoId, updatedInfo.getString("title"), eventType, false);
 		}

@@ -21,22 +21,14 @@
 package net.atos.entng.actualites.utils;
 
 public enum Events {
-    DRAFT ("DRAFT"),
-    PENDING ("PENDING"),
-    SUBMIT ("SUBMIT"),
-    CREATE_AND_PENDING ("CREATE_AND_PENDING"),
-    CREATE_AND_PUBLISH ("CREATE_AND_PUBLISH"),
-    UPDATE ("UPDATE"),
-    PUBLISH ("PUBLISH"),
-    UNPUBLISH ("UNPUBLISH");
+    DRAFT,
+    PENDING,
+    SUBMIT,
+    CREATE_AND_PENDING,
+    CREATE_AND_PUBLISH,
+    UPDATE,
+    PUBLISH,
+    UNPUBLISH,
+    UNSUBMIT;
 
-    private final String eventName;
-
-    Events(String text) {
-        this.eventName = text;
-    }
-
-    public String toString () {
-        return this.eventName;
-    }
 }
