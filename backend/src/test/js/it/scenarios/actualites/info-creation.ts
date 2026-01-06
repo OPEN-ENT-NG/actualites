@@ -232,8 +232,8 @@ export function testInfoCreation(data: InitData) {
       content: `<p>This is a <strong>rich HTML</strong> content ${seed}</p>`,
       status: 1, // DRAFT
       thread_id: parseInt(thread.id as string),
-      publication_date: "2025-10-25",
-      expiration_date: "2025-12-31",
+      publication_date: "2025-10-25T00:00:00Z",
+      expiration_date: "2025-12-31T00:00:00Z",
       is_headline: true,
     };
 
@@ -250,8 +250,8 @@ export function testInfoCreation(data: InitData) {
       "Retrieved info has correct content": (info) => info.content === infoData.content,
       "Retrieved info has correct status": (info) => info.status === 'DRAFT',
       "Retrieved info has correct thread_id": (info) => info.thread?.id === infoData.thread_id,
-      "Retrieved info has publication_date": (info) => info.publicationDate !== undefined && info.publicationDate.includes(infoData.publication_date || ''),
-      "Retrieved info has expiration_date": (info) => info.expirationDate !== undefined && info.expirationDate.includes(infoData.expiration_date || ''),
+      "Retrieved info has publication_date": (info) => info.publicationDate !== undefined && info.publicationDate.includes(infoData.publication_date?.substring(0, 10) || ''),
+      "Retrieved info has expiration_date": (info) => info.expirationDate !== undefined && info.expirationDate.includes(infoData.expiration_date?.substring(0, 10) || ''),
       "Retrieved info has is_headline": (info) => info.headline,
     });
   });
@@ -386,8 +386,8 @@ export function testInfoCreation(data: InitData) {
       content: `Content with valid fields ${seed}`,
       status: 1, // DRAFT
       thread_id: parseInt(thread.id as string),
-      publication_date: "2025-10-25",
-      expiration_date: "2025-12-31",
+      publication_date: "2025-10-25T00:00:00Z",
+      expiration_date: "2025-12-31T00:00:00Z",
       is_headline: false,
     };
 

@@ -8,11 +8,11 @@ import fr.wseduc.webutils.I18n;
 import fr.wseduc.webutils.http.Renders;
 import fr.wseduc.webutils.request.RequestUtils;
 import io.vertx.core.Handler;
-import io.vertx.core.Promise;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.Actualites;
+import net.atos.entng.actualites.cron.PublicationCron;
 import net.atos.entng.actualites.filters.ThreadFilter;
 import net.atos.entng.actualites.services.ThreadMigrationService;
 import net.atos.entng.actualites.services.ThreadService;
@@ -20,10 +20,8 @@ import org.entcore.common.controller.ControllerHelper;
 import org.entcore.common.events.EventHelper;
 import org.entcore.common.http.filter.ResourceFilter;
 import org.entcore.common.http.filter.SuperAdminFilter;
-import org.entcore.common.user.UserInfos;
 import org.entcore.common.user.UserUtils;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -40,9 +38,12 @@ public class ThreadControllerV1 extends ControllerHelper {
 	private static final String RESOURCE_NAME = "thread";
 	private static final String ADMC_TASK = "admcTask";
 	private static final String TASK_ATTACH = "autoAttachToStructures";
+    private static final String TASK_PUBLISH = "publishNews";
 
 	protected ThreadService threadService;
 	protected ThreadMigrationService threadMigrationService;
+    private PublicationCron publicationCron;
+
 	protected EventHelper eventHelper;
     public static final String ROOT_RIGHT = "net.atos.entng.actualites.controllers.ThreadController";
 
@@ -67,6 +68,10 @@ public class ThreadControllerV1 extends ControllerHelper {
 	public void setEventHelper(EventHelper eventHelper) {
 		this.eventHelper = eventHelper;
 	}
+
+    public void setPublicationCron(PublicationCron publicationCron) {
+        this.publicationCron = publicationCron;
+    }
 
     @Get("/api/v1/threads")
     @ApiDoc("Get all threads ")
@@ -238,16 +243,22 @@ public class ThreadControllerV1 extends ControllerHelper {
     @ApiDoc("Launch a maintenance task")
     @ResourceFilter(SuperAdminFilter.class)
     @SecuredAction(value = "", right = ROOT_RIGHT + "|admcTask", type = ActionType.RESOURCE)
-    public void linkThread(final HttpServerRequest request) {
+    public void launchTask(final HttpServerRequest request) {
 		RequestUtils.bodyToJson(request, pathPrefix + ADMC_TASK, (JsonObject resource) -> {
-			if (TASK_ATTACH.equals(resource.getString("task"))) {
-				this.threadService.attachThreadsWithNullStructureToDefault()
-					.onSuccess(Void -> ok(request))
-					.onFailure(throwable -> {
-						renderError(request, null, 500, throwable.getMessage());
-					});
-			} else {
-				badRequest(request);
+			switch(resource.getString("task")) {
+                case TASK_ATTACH :
+                    this.threadService.attachThreadsWithNullStructureToDefault()
+                        .onSuccess(Void -> ok(request))
+                        .onFailure(throwable -> {
+                            renderError(request, null, 500, throwable.getMessage());
+                        });
+                    break;
+                case TASK_PUBLISH :
+                    publicationCron.handle(1L);
+                    ok(request);
+                    break;
+                default:
+				    badRequest(request);
 			}
         });
 	}
