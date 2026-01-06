@@ -23,11 +23,13 @@ export function AdminThread({
   threadInfosCount,
   onUpdateClick,
   onDeleteClick,
+  onShareClick,
 }: {
   thread: Thread;
   threadInfosCount: { count: number };
   onUpdateClick: () => void;
   onDeleteClick: () => void;
+  onShareClick: () => void;
 }) {
   const { t } = useI18n();
   const { lg, xl } = useBreakpoint();
@@ -74,6 +76,7 @@ export function AdminThread({
               variant="ghost"
               color="tertiary"
               leftIcon={<IconTool />}
+              onClick={onShareClick}
               className="text-nowrap"
             >
               {t('actualites.adminThreads.shareRightsButton')}
@@ -116,7 +119,7 @@ export function AdminThread({
                   icon={<IconOptions />}
                 />
                 <Dropdown.Menu>
-                  <Dropdown.Item icon={<IconTool />}>
+                  <Dropdown.Item icon={<IconTool />} onClick={onShareClick}>
                     {t('actualites.adminThreads.shareRightsButton')}
                   </Dropdown.Item>
                   <Dropdown.Item icon={<IconEdit />} onClick={onUpdateClick}>
