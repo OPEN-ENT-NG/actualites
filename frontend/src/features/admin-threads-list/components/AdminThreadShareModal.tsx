@@ -6,6 +6,7 @@ import {
   ShareOptions,
   ShareResources,
   ShareResourcesRef,
+  useToast,
 } from '@edifice.io/react';
 import { useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -41,6 +42,7 @@ export const AdminThreadShareModal = ({
 }: AdminThreadShareModalProps) => {
   const { data: infoShares } = useThreadShares(thread.id);
   const { t } = useI18n();
+  const toast = useToast();
   const shareInfoRef = useRef<ShareResourcesRef>(null);
   const [isDirty, setIsDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -78,7 +80,17 @@ export const AdminThreadShareModal = ({
   const handleShareThreadSubmitSuccess = () => {
     setIsDirty(false);
     setIsSaving(false);
+    toast.success(t('actualites.adminThreads.shareModal.success'));
     onSuccess();
+  };
+
+  const handleShareClick = () => {
+    if (isDirty) {
+      // Save shares, then publish in onSuccess callback
+      shareInfoRef.current?.handleShare(false);
+    } else {
+      handleCloseModal();
+    }
   };
 
   return createPortal(
@@ -125,6 +137,7 @@ export const AdminThreadShareModal = ({
           isLoading={isSaving}
           disabled={!isDirty || isSaving}
           variant="filled"
+          onClick={handleShareClick}
         >
           {thread
             ? t('actualites.adminThreads.modal.save')
