@@ -95,7 +95,7 @@ export const AdminThreadShareModal = ({
 
   return createPortal(
     <Modal
-      id={`admin-new-thread-modal`}
+      id={`admin-share-thread-modal`}
       size="lg"
       isOpen={isOpen}
       onModalClose={handleCloseModal}
