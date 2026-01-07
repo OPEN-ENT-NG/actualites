@@ -484,11 +484,12 @@ public class InfosControllerV1 extends ControllerHelper {
 
 	private void initExpirationDate(JsonObject resource) {
 		if(!resource.containsKey("expiration_date")) {
-			Instant publicationDate = ZonedDateTime.now(ZoneId.of("UTC")).toInstant();
+			ZonedDateTime publicationDate = ZonedDateTime.now(ZoneId.of("UTC")).plusYears(1);
 			if (resource.containsKey("publication_date")) {
-				publicationDate = DateUtils.utcFromString(resource.getString("publication_date"));
+				publicationDate = DateUtils.utcFromString(resource.getString("publication_date"))
+											.atZone(ZoneId.of("UTC")).plusYears(1);
 			}
-			resource.put("expiration_date", publicationDate.plus(Duration.ofDays(365)).toString());
+			resource.put("expiration_date", publicationDate.toString());
 		}
 	}
 
