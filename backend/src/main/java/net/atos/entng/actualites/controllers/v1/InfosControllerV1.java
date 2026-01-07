@@ -34,8 +34,12 @@ import org.entcore.common.user.UserUtils;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -408,9 +412,8 @@ public class InfosControllerV1 extends ControllerHelper {
 					renderJson(request, error, 400);
 					return;
 				}
-
 				resource.put("published", false);
-
+				initExpirationDate(resource);
 				Events events = resource.getString("status").equals("1") ? Events.DRAFT : Events.CREATE_AND_PENDING;
 
 				Handler<Either<String, JsonObject>> handler = eventHelper.onCreateResource(request, RESOURCE_NAME, notEmptyResponseHandler(request));
@@ -446,7 +449,7 @@ public class InfosControllerV1 extends ControllerHelper {
 				LOGGER.info(String.format("User %s create a published info", user.getUserId()));
 				resource.put("status", 3); //PUBLISH
 				resource.put("publisher_id", user.getUserId());
-
+				initExpirationDate(resource);
 				String publicationDate = resource.getString("publication_date");
 				boolean shouldPublishNow = publicationDate == null || DateUtils.utcFromString(publicationDate).isBefore(Instant.now().atZone(ZoneId.of("UTC")).toInstant());
 						
@@ -457,7 +460,6 @@ public class InfosControllerV1 extends ControllerHelper {
 					//delayed publication => handle by the cron publicationCron
 					resource.put("published", false);
 				}
-
 				Handler<Either<String, JsonObject>> handler = eventHelper.onCreateResource(request, RESOURCE_NAME, notEmptyResponseHandler(request));
 				if (shouldPublishNow) {
 					handler = event -> {
@@ -478,6 +480,17 @@ public class InfosControllerV1 extends ControllerHelper {
 				infoService.create(resource, user, Events.CREATE_AND_PUBLISH.toString(), request, handler);
 			});
 		});
+	}
+
+	private void initExpirationDate(JsonObject resource) {
+		if(!resource.containsKey("expiration_date")) {
+			ZonedDateTime publicationDate = ZonedDateTime.now(ZoneId.of("UTC")).plusYears(1);
+			if (resource.containsKey("publication_date")) {
+				publicationDate = DateUtils.utcFromString(resource.getString("publication_date"))
+											.atZone(ZoneId.of("UTC")).plusYears(1);
+			}
+			resource.put("expiration_date", publicationDate.toInstant().toString());
+		}
 	}
 
 	@Put("/api/v1/infos/:" + INFO_RESOURCE_ID)
@@ -505,6 +518,10 @@ public class InfosControllerV1 extends ControllerHelper {
 					}
 
 					String notificationFromTransition = getNotificationFromTransition(targetStatus, actualStatus);
+
+					if (resource.containsKey("expiration_date") && resource.getString("publication_date") == null) {
+						resource.remove("expiration_date");
+					}
 
 					String publicationDate = resource.getString("publication_date") != null ?
 														 resource.getString("publication_date")
