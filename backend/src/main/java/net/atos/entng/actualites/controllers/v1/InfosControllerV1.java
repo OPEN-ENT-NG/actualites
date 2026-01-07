@@ -489,7 +489,7 @@ public class InfosControllerV1 extends ControllerHelper {
 				publicationDate = DateUtils.utcFromString(resource.getString("publication_date"))
 											.atZone(ZoneId.of("UTC")).plusYears(1);
 			}
-			resource.put("expiration_date", publicationDate.toString());
+			resource.put("expiration_date", publicationDate.toInstant().toString());
 		}
 	}
 
