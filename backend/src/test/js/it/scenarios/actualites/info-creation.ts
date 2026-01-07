@@ -256,6 +256,83 @@ export function testInfoCreation(data: InitData) {
     });
   });
 
+
+  describe('[Info] Test creating an info without expiration date', () => {
+    <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
+    const headUsers = getUsersOfSchool(data.head);
+    const headTeacher = getRandomUserWithProfile(headUsers, 'Teacher');
+
+    console.log("Authenticate head teacher " + headTeacher.login);
+    authenticateWeb(headTeacher.login);
+
+    // Create a thread first
+    console.log("Creating a thread");
+    const seed = Math.random().toString(36).substring(7);
+    const threadTitle = `Thread for complete info ${seed}`;
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
+    console.log(`Thread of id ${thread.id} created`);
+
+    // Create an info with all optional fields
+    console.log("Creating an info without expiration date");
+
+    const infoData: Info = {
+      title: `Info without expiration date${seed}`,
+      content: `<p>This is a <strong>rich HTML</strong> content ${seed}</p>`,
+      status: 1, // DRAFT
+      thread_id: parseInt(thread.id as string),
+      publication_date: "2025-10-25T00:00:00Z",
+      is_headline: true,
+    };
+
+    const createdInfo = createInfoOrFail(infoData);
+
+    console.log(`Info of id ${createdInfo.id} created without expiration date`);
+
+    const retrievedInfo: InfoResponse = getInfoById(createdInfo.id);
+
+    check(retrievedInfo, {
+      "Retrieved info has updated expiration_date": (info) => info.expirationDate !== undefined && info.expirationDate.includes("2026-10-25"),
+    });
+  });
+
+
+  describe('[Info] Test creating an info without expiration date or publication date', () => {
+    <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
+    const headUsers = getUsersOfSchool(data.head);
+    const headTeacher = getRandomUserWithProfile(headUsers, 'Teacher');
+
+    console.log("Authenticate head teacher " + headTeacher.login);
+    authenticateWeb(headTeacher.login);
+
+    // Create a thread first
+    console.log("Creating a thread");
+    const seed = Math.random().toString(36).substring(7);
+    const threadTitle = `Thread for complete info ${seed}`;
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
+    console.log(`Thread of id ${thread.id} created`);
+
+    // Create an info with all optional fields
+    console.log("Creating an info without expiration date");
+
+    const infoData: Info = {
+      title: `Info without expiration date${seed}`,
+      content: `<p>This is a <strong>rich HTML</strong> content ${seed}</p>`,
+      status: 1, // DRAFT
+      thread_id: parseInt(thread.id as string),
+      is_headline: true,
+    };
+
+    const createdInfo = createInfoOrFail(infoData);
+    const now = new Date();
+    const expirationDate = (now.getFullYear() + 1) + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+
+    const retrievedInfo: InfoResponse = getInfoById(createdInfo.id);
+
+    check(retrievedInfo, {
+      "Retrieved info has updated expiration_date from now": (info) => info.expirationDate !== undefined && info.expirationDate.includes(expirationDate),
+    });
+  });
+
   // ============================================================
   // TESTS DE CAS LIMITES DE DROITS
   // ============================================================
