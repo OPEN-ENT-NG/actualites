@@ -105,12 +105,18 @@ export function CreateInfoRights() {
       resourceCreatorId: infoShares?.owner || '',
       resourceId: String(infoId),
       resourceRights: infoShares?.rights || [],
-      filteredActions: ['read', 'comment'] as ShareRightActionDisplayName[],
       shareUrls: {
         getResourceRights: `${baseUrlAPI}/infos/${String(infoId)}/shares`,
         saveResourceRights: `${baseUrlAPI}/infos/${String(infoId)}/shares`,
         getShareMapping: `${baseUrlAPI}/rights/sharing`,
       },
+      filteredActions: ['read', 'comment'] as ShareRightActionDisplayName[],
+      defaultActions: [
+        {
+          id: 'read',
+          displayName: 'read',
+        },
+      ],
     };
   }, [infoShares, infoId]);
 

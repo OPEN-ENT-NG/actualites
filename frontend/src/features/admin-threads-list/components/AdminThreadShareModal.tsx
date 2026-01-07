@@ -46,16 +46,22 @@ export const AdminThreadShareModal = ({
       resourceCreatorId: infoShares?.owner || '',
       resourceId: String(thread.id),
       resourceRights: infoShares?.rights || [],
-      filteredActions: [
-        'contrib',
-        'publish',
-        'manager',
-      ] as ShareRightActionDisplayName[],
       shareUrls: {
         getResourceRights: `${baseUrlAPI}/threads/${String(thread.id)}/shares`,
         saveResourceRights: `${baseUrlAPI}/threads/${String(thread.id)}/shares`,
         getShareMapping: `${baseUrlAPI}/rights/sharing`,
       },
+      filteredActions: [
+        'contrib',
+        'publish',
+        'manager',
+      ] as ShareRightActionDisplayName[],
+      defaultActions: [
+        {
+          id: 'contrib',
+          displayName: 'contrib',
+        },
+      ],
     };
   }, [infoShares, thread.id]);
 
