@@ -14,15 +14,16 @@ import {
 } from '../../../node_modules/edifice-k6-commons/dist/index.js';
 import {
   createThreadOrFail,
-  Identifier as ThreadIdentifier,
+  Identifier as ThreadIdentifier, threadContributorRights,
 } from "../../../utils/_thread-utils.ts";
 import {
   createInfoOrFail,
-  createPublishedInfoOrFail,
+  createPublishedInfoOrFail, Identifier, Info, updateInfo,
 } from "../../../utils/_info-utils.ts";
 import { check } from "k6";
 import http, { RefinedResponse } from "k6/http";
 import { getHeaders } from "../../../node_modules/edifice-k6-commons/dist/index.js";
+import { addUserSharesInfos, shareThreadsOrFail } from "../../../utils/_shares_utils.ts";
 
 const maxDuration = __ENV.MAX_DURATION || "5m";
 const schoolName = __ENV.DATA_SCHOOL_NAME || `Info list tests `;
@@ -270,6 +271,63 @@ export function testInfoList(data: InitData) {
     check(page1, {
       "Page 1 should return exactly 5 results": (list) => Array.isArray(list) && list.length === 5,
       "Page 1 results should all be expired": (list) => list.every((info: any) => isExpired(info.expirationDate)),
+    });
+  });
+
+
+  describe('[Info] Test an info with DRAFT status from another user as thread owner should not be seen', () => {
+    <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
+    const headUsers = getUsersOfSchool(data.head);
+    const headTeacher = getRandomUserWithProfile(headUsers, 'Teacher');
+    const headTeacher2 = getRandomUserWithProfile(headUsers, 'Teacher', [headTeacher]);
+
+    console.log("Authenticate head teacher " + headTeacher.login);
+    authenticateWeb(headTeacher.login);
+
+    // Create a thread first
+    console.log("Creating a thread");
+    const seed = Math.random().toString(36).substring(7);
+    const threadTitle = `Thread for draft info ${seed}`;
+    const thread: ThreadIdentifier = createThreadOrFail(threadTitle, data.head.id);
+    console.log(`Thread of id ${thread.id} created`);
+
+    const shares = addUserSharesInfos({
+      users: {},
+      groups: {},
+      sharedBookmarks: {}
+    }, headTeacher2.id, threadContributorRights);
+
+    shareThreadsOrFail(thread.id, shares);
+
+    console.log("Authenticate head teacher " + headTeacher2.login);
+    authenticateWeb(headTeacher2.login);
+
+    // Create an info with DRAFT status
+    console.log("Creating an info with DRAFT status");
+    const infoData: Info = {
+      title: `Draft info ${seed}`,
+      content: `This is a draft content ${seed}`,
+      status: 1, // DRAFT
+      thread_id: parseInt(thread.id as string),
+    };
+
+    const createResp: Identifier = createInfoOrFail(infoData);
+    console.log(`Info of id ${createResp.id} created`);
+
+    console.log("Authenticate head teacher " + headTeacher.login);
+
+    authenticateWeb(headTeacher.login);
+    const url = `${rootUrl}/actualites/api/v1/infos`;
+    const res = http.get(url, { headers: getHeaders() });
+
+    check(res, {
+      "Pagination page 1 should succeed": (r) => r.status === 200,
+    });
+
+    const infos = JSON.parse(res.body as string);
+    check(infos, {
+      "The list should not contain any item": (list) =>
+        Array.isArray(list) && list.length === 0,
     });
   });
 

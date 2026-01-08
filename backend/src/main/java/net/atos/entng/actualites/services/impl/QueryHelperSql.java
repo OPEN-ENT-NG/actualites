@@ -202,7 +202,8 @@ public class QueryHelperSql {
             queryIds.append("    AND " + threadFilter + " ");
         }
         queryIds.append("    AND " + statusFilter);
-        queryIds.append("    AND (i.status <> 3 OR ( " + dateFilter + " ) ) )");
+        // in pending or published in the date range specified
+        queryIds.append("    AND (i.status = 2 OR i.status = 3 AND ( " + dateFilter + " ) ) )");
         queryIds.append("UNION ");
         queryIds.append("  (SELECT i.id as id, (CASE WHEN i.publication_date > i.modified THEN i.publication_date ELSE i.modified END) as date ");
         queryIds.append("    FROM actualites.thread_shares ");
