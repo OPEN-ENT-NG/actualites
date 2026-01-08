@@ -28,7 +28,6 @@ import { InfoFormHeader } from '~/features/info-form/components/InfoFormHeader';
 import { isInfoDetailsValid } from '~/features/info-form/utils/utils';
 import { useI18n } from '~/hooks/useI18n';
 import { useInfoPublishOrSubmit } from '~/hooks/useInfoPublishOrSubmit';
-import { getThreadUserRights } from '~/hooks/utils/threads';
 import { InfoStatus } from '~/models/info';
 import { baseUrlAPI } from '~/services';
 import {
@@ -37,6 +36,7 @@ import {
   useInfoShares,
 } from '~/services/queries';
 import { InfoWorkflowStep, useInfoFormStore } from '~/store/infoFormStore';
+import { getThreadUserRights } from '~/utils/getThreadUserRights';
 
 interface CreateInfoRightsProps {
   infoId: number;

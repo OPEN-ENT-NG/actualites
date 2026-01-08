@@ -67,6 +67,11 @@ export const infoQueryKeys = {
     ...infoQueryKeys.info(options),
     'originalFormat',
   ],
+
+  viewsDetails: (options: { infoId: InfoId }) => [
+    ...infoQueryKeys.info(options),
+    'viewsDetails',
+  ],
 };
 
 /*********************************************************************************
@@ -169,6 +174,20 @@ export const infoQueryOptions = {
       enabled: !!threadId && !!infoId,
     });
   },
+
+  getViewsCounters(infoIds: InfoId[]) {
+    return queryOptions({
+      queryKey: infoQueryKeys.viewsDetails({ infoId: -1 }), // TODO store counters
+      queryFn: () => infoService.getViewsCounters(infoIds),
+    });
+  },
+
+  getViewsDetails(infoId: InfoId) {
+    return queryOptions({
+      queryKey: infoQueryKeys.viewsDetails({ infoId }),
+      queryFn: () => infoService.getViewsDetails(infoId),
+    });
+  },
 };
 
 //*******************************************************************************
@@ -201,6 +220,9 @@ export const useInfoRevisions = (infoId: InfoId) =>
 
 export const useInfoOriginalFormat = (threadId: ThreadId, infoId: InfoId) =>
   useQuery(infoQueryOptions.getOriginalFormat(threadId, infoId));
+
+export const useInfoViewsDetails = (infoId: InfoId) =>
+  useQuery(infoQueryOptions.getViewsDetails(infoId));
 
 export const useCreateDraftInfo = () => {
   const queryClient = useQueryClient();
@@ -275,3 +297,15 @@ export const useDeleteInfo = () =>
     }) => infoService.delete(threadId, infoId),
     // TODO optimistic update
   });
+
+export const useIncrementInfoViews = (infoId: InfoId) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => infoService.incrementViews(infoId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: infoQueryKeys.viewsDetails({ infoId }),
+      });
+    },
+  });
+};

@@ -1,8 +1,11 @@
-import { Button, Flex } from '@edifice.io/react';
+import { Button, Divider, Flex } from '@edifice.io/react';
+import { ViewsCounter } from '@edifice.io/react/audience';
 import { IconRafterDown, IconRafterUp } from '@edifice.io/react/icons';
+import { useAudienceModal } from '~/hooks/useAudienceModal';
 import { useI18n } from '~/hooks/useI18n';
 import { useInfoStatus } from '~/hooks/useInfoStatus';
 import CommentsCounter from '../comments-counter/CommentsCounter';
+import { AudienceModal } from './AudienceModal';
 import { InfoCardProps } from './InfoCard';
 
 export const InfoCardFooter = ({
@@ -17,24 +20,30 @@ export const InfoCardFooter = ({
 }) => {
   const { t } = useI18n();
   const { canShowComments } = useInfoStatus(info);
+  const {
+    viewsCounter,
+    isAudienceOpen,
+    handleViewsCounterClick,
+    handleModalClose,
+  } = useAudienceModal(info);
 
   return (
     <footer className="mt-12">
       <Flex align="center" justify="between">
         <Flex align="center">
-          {/* To be implemented later 
-          <ViewsCounter viewsCounter={0} /> */}
-          <>
-            {/* <Divider vertical /> */}
-            {canShowComments && (
-              <CommentsCounter
-                commentsCounter={info.numberOfComments}
-                aria-controls={`info-${info.id}-comments`}
-                aria-expanded={!collapse}
-                onClick={handleCommentsClick}
-              />
-            )}
-          </>
+          <ViewsCounter
+            viewsCounter={viewsCounter}
+            onClick={handleViewsCounterClick}
+          />
+          {canShowComments && <Divider vertical className="border-gray-700" />}
+          {canShowComments && (
+            <CommentsCounter
+              commentsCounter={info.numberOfComments}
+              aria-controls={`info-${info.id}-comments`}
+              aria-expanded={!collapse}
+              onClick={handleCommentsClick}
+            />
+          )}
         </Flex>
         <Button
           data-testid={
@@ -52,6 +61,10 @@ export const InfoCardFooter = ({
           {t(collapse ? 'actualites.read.more' : 'actualites.read.less')}
         </Button>
       </Flex>
+
+      {isAudienceOpen && (
+        <AudienceModal infoId={info.id} onModalClose={handleModalClose} />
+      )}
     </footer>
   );
 };
