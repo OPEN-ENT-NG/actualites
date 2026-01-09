@@ -52,7 +52,6 @@ export function InfoWorkflowDetails() {
     }
     return undefined;
   }, [infoId, info]);
-
   return threads && (!infoId || (infoId && infoDetails)) ? (
     <>
       <InfoFormHeader />

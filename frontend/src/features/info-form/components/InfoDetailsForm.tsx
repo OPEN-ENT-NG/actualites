@@ -4,21 +4,29 @@ import {
   AppIconSize,
   Flex,
   FormControl,
-  OptionsType,
   Switch,
   useBreakpoint,
 } from '@edifice.io/react';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { ThreadIcon } from '~/components/ThreadIcon';
-import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
-import { Thread } from '~/models/thread';
 import { InfoDetailsFormParams } from '~/store/infoFormStore';
 import { useInfoDetailsForm } from '../hooks/useInfoDetailsForm';
+import './InfoDetailsForm.css';
+import { InfoDetailsFormDates } from './InfoDetailsFormDates';
 import { InfoDetailsFormEditor } from './InfoDetailsFormEditor';
 import { InfoDetailsFormThread } from './InfoDetailsFormThread';
 import { InfoDetailsFormTitle } from './InfoDetailsFormTitle';
-import './InfoDetailsForm.css';
+
+export const INFO_DETAILS_DEFAULT_VALUES: InfoDetailsFormParams = {
+  thread_id: undefined,
+  title: '',
+  headline: false,
+  content: '',
+  publicationDate: new Date().toISOString(),
+  expirationDate: new Date(
+    new Date().setFullYear(new Date().getFullYear() + 1),
+  ).toISOString(),
+};
 
 export function InfoDetailsForm({
   infoDetails,
@@ -27,10 +35,6 @@ export function InfoDetailsForm({
 }) {
   const { t } = useI18n();
 
-  const { threadsWithContributeRight: threads } = useThreadsUserRights();
-  // TODO use thread-id from query params when form will be editable
-  // const search = useLocation().search;
-  // const searchThreadId = new URLSearchParams(search).get('thread-id');
   const { md } = useBreakpoint();
 
   const { setDetailsForm, setResetDetailsForm, setDetailsFormState } =
@@ -38,32 +42,25 @@ export function InfoDetailsForm({
 
   const iconSize: AppIconSize = '24';
 
-  const defaultValues: InfoDetailsFormParams = {
-    thread_id: threads?.length === 1 ? threads[0].id : undefined,
-    title: '',
-    headline: false,
-    content: '',
-  };
-
   const {
     control,
     register,
     setValue,
+    getValues,
     watch,
     formState: { isValid, isDirty, errors },
     reset,
     trigger,
   } = useForm<InfoDetailsFormParams>({
-    defaultValues: infoDetails || defaultValues,
+    defaultValues: infoDetails || INFO_DETAILS_DEFAULT_VALUES,
     mode: 'all',
   });
 
   useEffect(() => {
-    setDetailsForm(infoDetails || defaultValues);
+    setDetailsForm(infoDetails || INFO_DETAILS_DEFAULT_VALUES);
     if (infoDetails) {
       trigger();
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [infoDetails]);
 
@@ -91,24 +88,6 @@ export function InfoDetailsForm({
     });
   }, [setDetailsFormState, isDirty, isValid]);
 
-  if (!threads || threads.length === 0) {
-    return null;
-  }
-
-  const items: OptionsType[] = threads.map((thread: Thread) => ({
-    value: String(thread.id),
-    label: thread.title,
-    icon: <ThreadIcon thread={thread} iconSize={iconSize} />,
-  }));
-
-  const thread = useMemo(() => {
-    if (!infoDetails) return threads[0];
-    return (
-      threads.find((thread) => thread.id === infoDetails.thread_id) ||
-      threads[0]
-    );
-  }, [infoDetails, threads]);
-
   return (
     <Flex direction="column" gap="24">
       <Flex
@@ -121,8 +100,6 @@ export function InfoDetailsForm({
         <InfoDetailsFormThread
           control={control}
           errors={errors}
-          items={items}
-          thread={thread}
           iconSize={iconSize}
           threadId={infoDetails?.thread_id}
         />
@@ -148,14 +125,7 @@ export function InfoDetailsForm({
         content={infoDetails?.content}
         setValue={setValue}
       />
-      {/* <Flex>
-        <p>
-          {t('actualites.info.createForm.contentLabel', {
-            publicationDate: new Date().toLocaleDateString(),
-            expirationDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toLocaleDateString(),
-          })}
-        </p>
-      </Flex> */}
+      <InfoDetailsFormDates getValues={getValues} />
     </Flex>
   );
 }

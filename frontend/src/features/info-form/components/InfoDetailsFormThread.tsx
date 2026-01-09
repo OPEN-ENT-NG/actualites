@@ -7,17 +7,17 @@ import {
   Select,
 } from '@edifice.io/react';
 import { IconQuestion } from '@edifice.io/react/icons';
+import { useMemo } from 'react';
 import { Control, Controller, FieldErrors } from 'react-hook-form';
 import { ThreadIcon } from '~/components/ThreadIcon';
 import { useI18n } from '~/hooks/useI18n';
+import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
 import { Thread } from '~/models/thread';
 import { InfoDetailsFormParams } from '~/store/infoFormStore';
 
 interface InfoDetailsFormThreadProps {
   control: Control<InfoDetailsFormParams>;
   errors: FieldErrors<InfoDetailsFormParams>;
-  items: OptionsType[];
-  thread?: Thread;
   iconSize: AppIconSize;
   threadId?: number;
 }
@@ -25,12 +25,31 @@ interface InfoDetailsFormThreadProps {
 export function InfoDetailsFormThread({
   control,
   errors,
-  items,
-  thread,
   iconSize,
   threadId,
 }: InfoDetailsFormThreadProps) {
   const { t } = useI18n();
+  const { threadsWithContributeRight: threads } = useThreadsUserRights();
+
+  const selectedThread = useMemo(() => {
+    const selectedId = threadId;
+    if (selectedId) {
+      return threads?.find((thread) => thread.id === selectedId);
+    } else if (threads && threads.length === 1) {
+      return threads[0];
+    }
+    return undefined;
+  }, [threadId, threads]);
+
+  if (!threads || threads.length === 0) {
+    return null;
+  }
+
+  const items: OptionsType[] = threads.map((thread: Thread) => ({
+    value: String(thread.id),
+    label: thread.title,
+    icon: <ThreadIcon thread={thread} iconSize={iconSize} />,
+  }));
 
   return (
     <FormControl
@@ -52,7 +71,7 @@ export function InfoDetailsFormThread({
               size="md"
               onValueChange={(value) => field.onChange(Number(value))}
               icon={<IconQuestion />}
-              defaultValue={String(threadId)}
+              defaultValue={String(selectedThread?.id)}
               placeholderOption={t(
                 'actualites.info.createForm.selectThreadPlaceholder',
               )}
@@ -67,8 +86,8 @@ export function InfoDetailsFormThread({
           className="border rounded py-4 px-8"
           style={{ height: '40px' }}
         >
-          <ThreadIcon thread={thread} iconSize={iconSize} />
-          <span>{thread?.title}</span>
+          <ThreadIcon thread={selectedThread} iconSize={iconSize} />
+          <span>{selectedThread?.title}</span>
         </Flex>
       )}
     </FormControl>
