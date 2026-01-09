@@ -290,10 +290,10 @@ export const InfoCardHeader = ({
                 color="tertiary"
                 onClick={handleDeleteAlertClose}
               >
-                {common_t('close')}
+                {t('actualites.info.delete.modal.cancel')}
               </Button>
               <Button color="danger" onClick={handleDeleteClick}>
-                {common_t('delete')}
+                {t('actualites.info.delete.modal.action')}
               </Button>
             </>
           }

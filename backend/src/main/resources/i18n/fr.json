@@ -97,6 +97,8 @@
   "actualites.comment.error": "Votre commentaire n'a pas pu être publié",
   "actualites.info.delete.modal.title": "Supprimer l’actualité",
   "actualites.info.delete.modal.body": "Cette action entrainera la suppression définitive de l’actualité. Êtes-vous sûr de vouloir continuer ?",
+  "actualites.info.delete.modal.action": "Supprimer",
+  "actualites.info.delete.modal.cancel": "Annuler",
   "actualites.info.delete.success": "L’actualité a bien été supprimée.",
   "actualites.info.delete.error": "L'actualité n'a pas pu être supprimée.",
   "actualites.info.unpublish.modal.title": "Dépublier l’actualité",

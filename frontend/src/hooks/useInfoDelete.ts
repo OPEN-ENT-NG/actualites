@@ -2,7 +2,7 @@ import { invalidateQueriesWithFirstPage, useToast } from '@edifice.io/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useI18n } from '~/hooks/useI18n';
-import { InfoDetails, InfoStatus } from '~/models/info';
+import { InfoDetails } from '~/models/info';
 import { infoQueryKeys, useDeleteInfo } from '~/services/queries';
 import { useUpdateStatsQueryCache } from '~/services/queries/hooks/useUpdateStatsQueryCache';
 
@@ -15,7 +15,7 @@ export function useInfoDelete() {
 
   const queryClient = useQueryClient();
 
-  const trash = ({ id, thread }: InfoDetails) => {
+  const trash = ({ id, thread, status }: InfoDetails) => {
     deleteInfoMutate(
       {
         threadId: thread.id,
@@ -29,19 +29,18 @@ export function useInfoDelete() {
         },
         onSuccess() {
           toast.success(t('actualites.info.delete.success'));
-          updateStatsQueryCache(thread.id, InfoStatus.PENDING, 1);
-          updateStatsQueryCache(thread.id, InfoStatus.PUBLISHED, -1);
+          updateStatsQueryCache(thread.id, status, -1);
 
           invalidateQueriesWithFirstPage(queryClient, {
             queryKey: infoQueryKeys.byThread({
               threadId: thread.id,
-              status: InfoStatus.PENDING,
+              status,
             }),
           });
           invalidateQueriesWithFirstPage(queryClient, {
             queryKey: infoQueryKeys.byThread({
               threadId: 'all',
-              status: InfoStatus.PENDING,
+              status,
             }),
           });
         },
