@@ -49,7 +49,7 @@ export const InfoCardHeader = ({
   const [dropDownVisible, setDropDownVisible] = useState(false);
   const { isExpired } = useInfoStatus(info);
 
-  const { handlePublish } = useInfoPublishOrSubmit();
+  const { publishOrSubmit } = useInfoPublishOrSubmit();
   const {
     unpublish,
     handleUnpublishAlertClose,
@@ -132,7 +132,7 @@ export const InfoCardHeader = ({
 
   const handleSubmitClick = () => {
     if (thread) {
-      handlePublish({ ...info, thread: thread }, canPublish);
+      publishOrSubmit({ ...info, thread: thread }, canPublish);
     }
   };
 
@@ -239,7 +239,7 @@ export const InfoCardHeader = ({
                   <Dropdown.Item
                     data-testid="info-card-header-delete-dd-item"
                     icon={<IconDelete />}
-                    onClick={handleDeleteClick}
+                    onClick={handleDeleteAlertOpen}
                   >
                     {t('actualites.info.actions.delete')}
                   </Dropdown.Item>
