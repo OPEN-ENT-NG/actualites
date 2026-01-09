@@ -23,7 +23,7 @@ public class OptimizedShareService  extends SqlShareService {
     }
 
     public OptimizedShareService(String schema, String shareTable, EventBus eb, Map<String, SecuredAction> securedActions, Map<String, List<String>> groupedActions) {
-        super(schema, shareTable, eb, securedActions, groupedActions);
+        super(schema, shareTable, eb, securedActions, groupedActions, true);
     }
 
     @Override
