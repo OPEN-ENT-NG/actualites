@@ -82,7 +82,7 @@ export function s2CreateInfo(data: InitData) {
         content: `Incoming content`,
         thread_id: parseInt(user.threadId as string),
         status: 3,
-        publication_date: "2020-01-01"
+        publication_date: "2020-01-01T00:00:00Z"
       } ),
       { headers: getHeaders(), tags: {type: 'create_info'} });
 
