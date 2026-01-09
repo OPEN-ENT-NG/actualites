@@ -1,10 +1,9 @@
-import { Button, Flex, useDate } from '@edifice.io/react';
-import { IconEdit } from '@edifice.io/react/icons';
+import { Flex, useDate } from '@edifice.io/react';
+import { useMemo } from 'react';
 import { UseFormGetValues } from 'react-hook-form';
 import { useI18n } from '~/hooks/useI18n';
 import { InfoDetailsFormParams } from '~/store/infoFormStore';
 import { INFO_DETAILS_DEFAULT_VALUES } from './InfoDetailsForm';
-import { useMemo } from 'react';
 
 interface InfoDetailsFormDatesProps {
   getValues: UseFormGetValues<InfoDetailsFormParams>;
@@ -33,7 +32,7 @@ export function InfoDetailsFormDates({ getValues }: InfoDetailsFormDatesProps) {
   return (
     <Flex align="center" gap="8" justify="end">
       <p className="text-gray-700">{dateString}</p>
-      <Button
+      {/* <Button
         data-testid={'info-view-dates-edit-button'}
         color="tertiary"
         variant="ghost"
@@ -45,7 +44,7 @@ export function InfoDetailsFormDates({ getValues }: InfoDetailsFormDatesProps) {
         }}
       >
         {t('actualites.info.createForm.dates.updateButton')}
-      </Button>
+      </Button> */}
     </Flex>
   );
 }
