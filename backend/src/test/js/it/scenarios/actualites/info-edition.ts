@@ -214,7 +214,7 @@ export function testInfoUpdateOwner(data: InitData) {
       "Retrieved info has is_headline": (info) => info.headline,
     });
   });
-/*
+
   describe('[Info] Test updating an info with PENDING status as owner', () => {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
@@ -486,7 +486,7 @@ export function testInfoUpdateOwner(data: InitData) {
       "Retrieved updated info has publish status": (info) => info.status === 'PUBLISHED',
       "Retrieved updated info has correct thread_id": (info) => info.thread?.id === uInfo.thread_id,
     });
-  });*/
+  });
 };
 
 export function testInfoUpdateContributor(data: InitData) {
