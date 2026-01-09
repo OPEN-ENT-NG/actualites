@@ -333,49 +333,35 @@ public class InfosControllerV1 extends ControllerHelper {
 		}
 		request.pause();
 		UserUtils.getUserInfos(eb, request, user -> {
-            if (user != null) {
-                infoService.retrieve(infoId, user, false, event -> {
-                    request.resume();
-                    if(event.right() != null){
-                        JsonObject info = event.right().getValue();
-                        if(info != null && info.containsKey("status")){
-                            if(info.getInteger("status") > 2){
-                                JsonObject params = new JsonObject()
-                                        .put("profilUri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
-                                        .put("username", user.getUsername())
-                                        .put("resourceUri", pathPrefix + "#/view/thread/" + info.getString("thread_id") + "/info/" + infoId)
-                                        .put("disableAntiFlood", true);
-								//send push notification on published info by the cron that publish the news
-								if(info.getBoolean("published")) {
-									params.put("pushNotif", new JsonObject().put("title", "push.notif.actu.info.published").put("body", user.getUsername() + " : " + info.getString("title")));
-								}
-                                params.put("preview", NotificationUtils.htmlContentToPreview(
-                                        info.getString("content")));
+            if (user == null) {
+				unauthorized(request);
+				return;
+			}
+			infoService.retrieve(infoId, user, false, event -> {
+				request.resume();
+				if(event.right() != null){
+					JsonObject info = event.right().getValue();
+					if(info != null && info.containsKey("status")){
+						//send only if published and the cron has already send notification => the service will only send to new shared
+						if(info.getInteger("status") > 2 && info.getBoolean("published")){
+							JsonObject params = new JsonObject()
+									.put("profilUri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
+									.put("username", user.getUsername())
+									.put("info", info.getString("title"))
+									.put("resourceUri", pathPrefix + "#/view/thread/" + info.getString("thread_id") + "/info/" + infoId)
+									.put("disableAntiFlood", true);
 
-                                DateFormat dfm = new SimpleDateFormat("yyyy-MM-dd");
-                                String date = info.getString("publication_date");
-                                if(date != null && !date.trim().isEmpty()){
-                                    try {
-                                        Date publicationDate = dfm.parse(date);
-                                        Date timeNow = new Date(System.currentTimeMillis());
-										//share should not be visible before the effective publication of the news
-                                        if(publicationDate.after(timeNow)){
-                                            params.put("timeline-publish-date", publicationDate.getTime());
-                                        }
-                                    } catch (ParseException e) {
-                                        LOGGER.error("An error occured when sharing an info : " + e.getMessage());
-                                    }
-                                }
-                                shareResource(request, "news.info-shared", false, params, "title");
-                            } else {
-                                shareResource(request, null, false, null, null);
-                            }
-                        }
-                    }
-                });
-            } else {
-                unauthorized(request);
-            }
+							params.put("pushNotif", new JsonObject().put("title", "push.notif.actu.info.published")
+												.put("body", user.getUsername() + " : " + info.getString("title")));
+							params.put("preview", NotificationUtils.htmlContentToPreview(
+									info.getString("content")));
+							shareResource(request, "news.news-published", false, params, "title");
+						} else {
+							shareResource(request, null, false, null, null);
+						}
+					}
+				}
+			});
         });
 	}
 
