@@ -170,7 +170,7 @@ export function initLocal(schoolName: string): InitData {
         content: `Incoming content`,
         thread_id: parseInt(thread.id as string),
         status: 3,
-        publication_date: "2020-01-01",
+        publication_date: "2020-01-01T00:00:00Z",
         expiration_date: futureExpirationDate.toUTCString(),
       } as any);
     }
@@ -184,7 +184,7 @@ export function initLocal(schoolName: string): InitData {
         content: `Incoming content`,
         thread_id: parseInt(thread.id as string),
         status: 1,
-        publication_date: "2020-01-01",
+        publication_date:  "2020-01-01T00:00:00Z",
         expiration_date: futureExpirationDate.toUTCString(),
       } as any);
     }
@@ -198,7 +198,7 @@ export function initLocal(schoolName: string): InitData {
         content: `Incoming content`,
         thread_id: parseInt(thread.id as string),
         status: 2,
-        publication_date: "2020-01-01",
+        publication_date:  "2020-01-01T00:00:00Z",
         expiration_date: futureExpirationDate.toUTCString(),
       } as any);
     }
@@ -210,8 +210,8 @@ export function initLocal(schoolName: string): InitData {
         content: `Incoming content`,
         thread_id: parseInt(thread.id as string),
         status: 3,
-        publication_date: "2020-01-01",
-        expiration_date: "2021-01-01",
+        publication_date: "2020-01-01T00:00:00Z",
+        expiration_date:  "2021-01-01T00:00:00Z",
       } as any);
     }
   });
@@ -341,7 +341,7 @@ function initValidator(data: InitData) {
       content: `Incoming content`,
       thread_id: parseInt(user.threadId as string),
       status: 2,
-      publication_date: "2020-01-01",
+      publication_date: "2020-01-01T00:00:00Z",
     } as any);
   }
 }
