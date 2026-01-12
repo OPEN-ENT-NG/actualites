@@ -14,7 +14,7 @@ export function InfoDetailsEditFormActions() {
   const { detailsFormState, onSaveDetails, isSaving } = useInfoDetailsForm();
 
   const handleCancelClick = () => {
-    window.history.back();
+    navigate(-1);
   };
 
   const handleSubmitClick = () => {

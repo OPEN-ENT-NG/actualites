@@ -67,7 +67,7 @@ export const Expandable = ({ children, ...props }: ExpandableProps) => {
 
   const handleTransitionEnd = (e: TransitionEvent) => {
     if (e.target === ref.current && e.propertyName === 'grid-template-rows') {
-      onTransitionEnd();
+      setTimeout(onTransitionEnd, 0);
     }
   };
 

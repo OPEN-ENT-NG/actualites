@@ -54,7 +54,7 @@ export function useInfoPublishOrSubmit() {
               status: canPublish ? InfoStatus.PUBLISHED : InfoStatus.PENDING,
             }),
           });
-          navigate(`/threads/?status=${canPublish ? 'published' : 'pending'}`);
+          navigate(`/?status=${canPublish ? 'published' : 'pending'}`);
         },
       },
     );
