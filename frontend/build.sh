@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -e
 # Options
 NO_DOCKER=""
 for i in "$@"
