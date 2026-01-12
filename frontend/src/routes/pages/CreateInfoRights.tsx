@@ -67,7 +67,7 @@ export function CreateInfoRights() {
   const { data: info } = useInfoById(infoId);
   const shareInfoRef = useRef<ShareResourcesRef>(null);
   const isPublishing = useRef(false);
-  const { handlePublish } = useInfoPublishOrSubmit();
+  const { publishOrSubmit } = useInfoPublishOrSubmit();
   const setCurrentCreationStep = useInfoFormStore.use.setCurrentCreationStep();
 
   const [isDirty, setIsDirty] = useState(false);
@@ -137,7 +137,7 @@ export function CreateInfoRights() {
     if (!info) return;
     setIsDirty(false);
     if (isPublishing.current) {
-      handlePublish(info, canPublish);
+      publishOrSubmit(info, canPublish);
     } else {
       navigate(`/threads/?status=draft`);
       setIsSaving(false);
@@ -157,7 +157,7 @@ export function CreateInfoRights() {
       shareInfoRef.current?.handleShare(false);
     } else {
       // No changes to save, publish immediately
-      handlePublish(info, canPublish);
+      publishOrSubmit(info, canPublish);
     }
   };
 
