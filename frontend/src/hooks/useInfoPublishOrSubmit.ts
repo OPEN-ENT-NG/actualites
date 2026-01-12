@@ -15,7 +15,7 @@ export function useInfoPublishOrSubmit() {
 
   const queryClient = useQueryClient();
 
-  const handlePublish = (info: InfoDetails, canPublish: boolean) => {
+  const publishOrSubmit = (info: InfoDetails, canPublish: boolean) => {
     if (!info.id) {
       throw new Error('infoId is undefined');
     }
@@ -61,6 +61,6 @@ export function useInfoPublishOrSubmit() {
   };
 
   return {
-    handlePublish,
+    publishOrSubmit,
   };
 }
