@@ -12,6 +12,7 @@ import {
 import {
   IconClock,
   IconClockAlert,
+  IconDelete,
   IconEdit,
   IconHide,
   IconOptions,
@@ -23,6 +24,7 @@ import { RefAttributes, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import iconHeadline from '~/assets/icon-headline.svg';
 import { useI18n } from '~/hooks/useI18n';
+import { useInfoDelete } from '~/hooks/useInfoDelete';
 import { useInfoPublishOrSubmit } from '~/hooks/useInfoPublishOrSubmit';
 import { useInfoStatus } from '~/hooks/useInfoStatus';
 import { useInfoUnpublish } from '~/hooks/useInfoUnpublish';
@@ -47,13 +49,19 @@ export const InfoCardHeader = ({
   const [dropDownVisible, setDropDownVisible] = useState(false);
   const { isExpired } = useInfoStatus(info);
 
-  const { handlePublish } = useInfoPublishOrSubmit();
+  const { publishOrSubmit } = useInfoPublishOrSubmit();
   const {
     unpublish,
     handleUnpublishAlertClose,
     handleUnpublishAlertOpen,
     isUnpublishAlertOpen,
   } = useInfoUnpublish();
+  const {
+    trash,
+    handleDeleteAlertClose,
+    handleDeleteAlertOpen,
+    isDeleteAlertOpen,
+  } = useInfoDelete();
   const { user } = useUser();
 
   const { canContribute, canPublish, canManage } = getThreadUserRights(
@@ -83,13 +91,11 @@ export const InfoCardHeader = ({
       canPublish ||
       canManage);
 
+  const canDelete = info.owner.id === user?.userId || canManage || canPublish;
+
   const classes = clsx({
     'text-center': md,
   });
-
-  const handleEditClick = () => {
-    navigate(`/threads/${info.threadId}/infos/${info.id}/edit`);
-  };
 
   const badgeContent = () => (
     <div style={{ textAlign: 'right' }}>
@@ -120,9 +126,13 @@ export const InfoCardHeader = ({
     </div>
   );
 
-  const handleSubmit = () => {
+  const handleEditClick = () => {
+    navigate(`/threads/${info.threadId}/infos/${info.id}/edit`);
+  };
+
+  const handleSubmitClick = () => {
     if (thread) {
-      handlePublish({ ...info, thread: thread }, canPublish);
+      publishOrSubmit({ ...info, thread: thread }, canPublish);
     }
   };
 
@@ -131,6 +141,13 @@ export const InfoCardHeader = ({
       unpublish({ ...info, thread: thread });
     }
     handleUnpublishAlertClose();
+  };
+
+  const handleDeleteClick = () => {
+    if (thread) {
+      trash({ ...info, thread: thread });
+    }
+    handleDeleteAlertClose();
   };
 
   return (
@@ -212,9 +229,19 @@ export const InfoCardHeader = ({
                   <Dropdown.Item
                     data-testid="info-card-header-submit-dd-item"
                     icon={<IconSubmitToValidate />}
-                    onClick={handleSubmit}
+                    onClick={handleSubmitClick}
                   >
                     {t('actualites.info.actions.submitToValidation')}
+                  </Dropdown.Item>
+                )}
+
+                {canDelete && (
+                  <Dropdown.Item
+                    data-testid="info-card-header-delete-dd-item"
+                    icon={<IconDelete />}
+                    onClick={handleDeleteAlertOpen}
+                  >
+                    {t('actualites.info.actions.delete')}
                   </Dropdown.Item>
                 )}
               </Dropdown.Menu>
@@ -223,29 +250,57 @@ export const InfoCardHeader = ({
         </Dropdown>
       </div>
 
-      <PortalModal
-        id="modal-unpublish"
-        onModalClose={handleUnpublishAlertClose}
-        isOpen={isUnpublishAlertOpen}
-        size={'sm'}
-        header={t('actualites.info.unpublish.modal.title')}
-        footer={
-          <>
-            <Button
-              variant="ghost"
-              color="tertiary"
-              onClick={handleUnpublishAlertClose}
-            >
-              {common_t('close')}
-            </Button>
-            <Button color="danger" onClick={handleUnpublishClick}>
-              {t('actualites.info.actions.unpublish')}
-            </Button>
-          </>
-        }
-      >
-        {t('actualites.info.unpublish.modal.body')}
-      </PortalModal>
+      {isUnpublishAlertOpen && (
+        <PortalModal
+          id="modal-unpublish"
+          onModalClose={handleUnpublishAlertClose}
+          isOpen={isUnpublishAlertOpen}
+          size={'sm'}
+          header={t('actualites.info.unpublish.modal.title')}
+          footer={
+            <>
+              <Button
+                variant="ghost"
+                color="tertiary"
+                onClick={handleUnpublishAlertClose}
+              >
+                {common_t('close')}
+              </Button>
+              <Button color="danger" onClick={handleUnpublishClick}>
+                {t('actualites.info.actions.unpublish')}
+              </Button>
+            </>
+          }
+        >
+          {t('actualites.info.unpublish.modal.body')}
+        </PortalModal>
+      )}
+
+      {isDeleteAlertOpen && (
+        <PortalModal
+          id="modal-delete"
+          onModalClose={handleDeleteAlertClose}
+          isOpen={isDeleteAlertOpen}
+          size={'sm'}
+          header={t('actualites.info.delete.modal.title')}
+          footer={
+            <>
+              <Button
+                variant="ghost"
+                color="tertiary"
+                onClick={handleDeleteAlertClose}
+              >
+                {t('actualites.info.delete.modal.cancel')}
+              </Button>
+              <Button color="danger" onClick={handleDeleteClick}>
+                {t('actualites.info.delete.modal.action')}
+              </Button>
+            </>
+          }
+        >
+          {t('actualites.info.delete.modal.body')}
+        </PortalModal>
+      )}
     </header>
   );
 };
