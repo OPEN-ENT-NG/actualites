@@ -197,7 +197,7 @@ public class Actualites extends BaseServer {
 		addController(commentControllerV1);
 
 		// News publication cron task
-		String publicationCronConf = config.getString("news-publication-cron", "0 0 * * * ? *");
+		String publicationCronConf = config.getString("news-publication-cron");
 		if (!StringUtils.isEmpty(publicationCronConf)) {
             new CronTrigger(vertx, publicationCronConf).schedule(publicationCron);
         }
