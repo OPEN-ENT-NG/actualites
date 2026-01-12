@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 MVN_OPTS="-Duser.home=/var/maven"
 
