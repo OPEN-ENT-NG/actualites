@@ -26,6 +26,7 @@
   "actualites.read.less": "Voir moins",
   "actualites.info.create": "Nouvelle actualité",
   "actualites.info.actions.delete": "Supprimer l'actualité",
+  "actualites.info.actions.edit": "Éditer l'actualité",
   "actualites.info.actions.submitToValidation": "Soumettre à validation",
   "actualites.info.actions.unpublish": "Dépublier",
   "actualites.info.actions.publish": "Publier l'actualité",
