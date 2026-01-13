@@ -29,7 +29,7 @@ export const ThreadListDesktop = () => {
 
   const handleManageThreadsClick = () => {
     scrollToTop();
-    navigate('/admin/threads');
+    navigate('/threads/admin');
   };
 
   return (
