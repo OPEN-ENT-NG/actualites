@@ -1,19 +1,21 @@
 import { Flex, Stepper } from '@edifice.io/react';
 import { useI18n } from '~/hooks/useI18n';
-import { CreationStep, useInfoFormStore } from '~/store/infoFormStore';
+import { InfoWorkflowStep, useInfoFormStore } from '~/store/infoFormStore';
 import { useInfoForm } from '../hooks/useInfoForm';
 
-export function InfoFormHeader() {
-  const currentCreationStep = useInfoFormStore.use.currentCreationStep();
+export function InfoFormHeader({ className }: { className?: string }) {
+  const currentCreationStep = useInfoFormStore.use.currentWorkflowStep();
   const { t } = useI18n();
   const { type } = useInfoForm();
 
   const currentStepTitle =
-    currentCreationStep === CreationStep.INFO_DETAILS ? 'details' : 'rights';
+    currentCreationStep === InfoWorkflowStep.INFO_DETAILS
+      ? 'details'
+      : 'rights';
 
   return (
-    <Flex direction="column" gap="16" className="mb-24">
-      {type === 'create' && (
+    <Flex direction="column" gap="16" className={className}>
+      {(type === 'create' || type === 'publish') && (
         <Stepper
           currentStep={currentCreationStep}
           nbSteps={2}
@@ -24,12 +26,16 @@ export function InfoFormHeader() {
         <h2>
           {type === 'create'
             ? t(`actualites.info.createForm.${currentStepTitle}.title`)
-            : t(`actualites.info.editForm.title`)}
+            : type === 'edit'
+              ? t(`actualites.info.editForm.title`)
+              : t(`actualites.info.publishForm.${currentStepTitle}.title`)}
         </h2>
         <p className=" text-gray-700">
           {type === 'create'
             ? t(`actualites.info.createForm.${currentStepTitle}.subtitle`)
-            : t(`actualites.info.editForm.subtitle`)}
+            : type === 'edit'
+              ? t(`actualites.info.editForm.subtitle`)
+              : t(`actualites.info.publishForm.${currentStepTitle}.subtitle`)}
         </p>
       </Flex>
     </Flex>

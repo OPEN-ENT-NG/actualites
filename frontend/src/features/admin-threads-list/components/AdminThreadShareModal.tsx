@@ -34,7 +34,7 @@ export const AdminThreadShareModal = ({
   onSuccess,
   thread,
 }: AdminThreadShareModalProps) => {
-  const { data: infoShares } = useThreadShares(thread.id);
+  const { data: threadShares } = useThreadShares(thread.id);
   const { t } = useI18n();
   const toast = useToast();
   const shareInfoRef = useRef<ShareResourcesRef>(null);
@@ -43,9 +43,9 @@ export const AdminThreadShareModal = ({
 
   const shareOptions = useMemo<ShareOptions>(() => {
     return {
-      resourceCreatorId: infoShares?.owner || '',
+      resourceCreatorId: threadShares?.owner || '',
       resourceId: String(thread.id),
-      resourceRights: infoShares?.rights || [],
+      resourceRights: threadShares?.rights || [],
       shareUrls: {
         getResourceRights: `${baseUrlAPI}/threads/${String(thread.id)}/shares`,
         saveResourceRights: `${baseUrlAPI}/threads/${String(thread.id)}/shares`,
@@ -63,7 +63,7 @@ export const AdminThreadShareModal = ({
         },
       ],
     };
-  }, [infoShares, thread.id]);
+  }, [threadShares, thread.id]);
 
   const handleCloseModal = () => {
     onCancel();
@@ -106,11 +106,9 @@ export const AdminThreadShareModal = ({
 
       <Modal.Body>
         <Alert type="info" className="mb-24">
-          <div
-            dangerouslySetInnerHTML={{
-              __html: t('actualites.adminThreads.shareRightsInfo'),
-            }}
-          />
+          <div style={{ whiteSpace: 'pre-line' }}>
+            {t('actualites.adminThreads.shareRightsInfo')}
+          </div>
         </Alert>
         <ShareResources
           ref={shareInfoRef}

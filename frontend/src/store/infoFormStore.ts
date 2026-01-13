@@ -4,7 +4,7 @@ import { InfoId, InfoStatus } from '~/models/info';
 import { ThreadId } from '~/models/thread';
 import { createSelectors } from './createSelectors';
 
-export enum CreationStep {
+export enum InfoWorkflowStep {
   INFO_DETAILS = 0,
   INFO_RIGHTS = 1,
 }
@@ -24,9 +24,9 @@ export interface InfoDetailsFormState {
 }
 
 interface InfoFormState {
-  currentCreationStep: CreationStep;
+  currentWorkflowStep: InfoWorkflowStep;
   infoId: InfoId | undefined;
-  setCurrentCreationStep: (value: CreationStep) => void;
+  setCurrentWorkflowStep: (value: InfoWorkflowStep) => void;
   setInfoId: (value: InfoId) => void;
 
   // Info Details Form
@@ -50,7 +50,7 @@ interface InfoFormState {
 
 export const useInfoFormStore = createSelectors(
   create<InfoFormState>((set) => ({
-    currentCreationStep: CreationStep.INFO_DETAILS,
+    currentWorkflowStep: InfoWorkflowStep.INFO_DETAILS,
     infoId: undefined,
     infoDetailsForm: undefined,
     infoDetailsFormState: { isValid: false, isDirty: false },
@@ -64,8 +64,8 @@ export const useInfoFormStore = createSelectors(
       set({ infoDetailsFormState }),
     setResetInfoDetailsForm: (resetInfoDetailsForm) =>
       set({ resetInfoDetailsForm }),
-    setCurrentCreationStep: (creationStep) =>
-      set({ currentCreationStep: creationStep }),
+    setCurrentWorkflowStep: (creationStep) =>
+      set({ currentWorkflowStep: creationStep }),
     setInfoShares: (infoRights) => set({ infoShares: infoRights }),
     setInfoSharesFormDirty: (infoRightsFormDirty) =>
       set({ infoSharesFormDirty: infoRightsFormDirty }),

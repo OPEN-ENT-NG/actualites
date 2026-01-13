@@ -62,7 +62,7 @@ export const createThreadService = () => {
     getShares(threadId: ThreadId) {
       return odeServices
         .http()
-        .get<Share>(`${baseUrlAPI}/threads/${threadId}/shares`);
+        .get<Share>(`${baseUrlAPI}/threads/${threadId}/shares?search=`);
     },
   };
 };

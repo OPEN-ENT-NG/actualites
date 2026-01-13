@@ -17,6 +17,7 @@ import {
   IconHide,
   IconOptions,
   IconSave,
+  IconSend,
   IconSubmitToValidate,
 } from '@edifice.io/react/icons';
 import clsx from 'clsx';
@@ -64,10 +65,11 @@ export const InfoCardHeader = ({
   } = useInfoDelete();
   const { user } = useUser();
 
-  const { canContribute, canPublish, canManage } = getThreadUserRights(
-    thread,
-    user?.userId || '',
-  );
+  const {
+    canContribute,
+    canPublish: canPublishInThread,
+    canManage,
+  } = getThreadUserRights(thread, user?.userId || '');
 
   const { t, common_t } = useI18n();
   const navigate = useNavigate();
@@ -76,8 +78,13 @@ export const InfoCardHeader = ({
     ? { gridTemplateColumns: '1fr auto 1fr', gap: '12px' }
     : { gridTemplateColumns: '1fr', gap: '12px' };
 
-  const canSubmit =
-    info.status === InfoStatus.DRAFT && canContribute && !canPublish;
+  const isOwner = info.owner.id === user?.userId;
+
+  const canSubmit = info.status === InfoStatus.DRAFT && canContribute;
+
+  const canPublish =
+    (info.status === InfoStatus.DRAFT || info.status === InfoStatus.PENDING) &&
+    canPublishInThread;
 
   const canEdit =
     (info.status === InfoStatus.DRAFT && info.owner.id === user?.userId) ||
@@ -107,6 +114,19 @@ export const InfoCardHeader = ({
           </Flex>
         </Badge>
       )}
+      {canPublish && (
+        <Button
+          variant="outline"
+          data-testid={isOwner ? "info-card-header-publish-button" : "info-card-header-submit-button"}
+          leftIcon={isOwner ? <IconSend /> : <IconSubmitToValidate />}
+          onClick={handleSubmitClick}
+          color="secondary"
+        >
+          {isOwner
+            ? t('actualites.info.actions.publish')
+            : t('actualites.info.actions.validateAndPublish')}
+        </Button>
+      )}
       {!isExpired && extendedStatus === InfoExtendedStatus.INCOMING && (
         <Badge className="bg-purple-200 text-purple-500">
           <Flex align="center" gap="8" wrap="nowrap" className="mx-4">
@@ -127,12 +147,16 @@ export const InfoCardHeader = ({
   );
 
   const handleEditClick = () => {
-    navigate(`/threads/${info.threadId}/infos/${info.id}/edit`);
+    navigate(`/infos/${info.id}/edit`);
   };
 
   const handleSubmitClick = () => {
     if (thread) {
-      publishOrSubmit({ ...info, thread: thread }, canPublish);
+      if (isOwner) {
+        publishOrSubmit({ ...info, thread: thread }, canPublish);
+      } else {
+        navigate(`/infos/${info.id}/publish`);
+      }
     }
   };
 
@@ -184,8 +208,13 @@ export const InfoCardHeader = ({
           />
         )}
       </Flex>
-      <div className="info-card-dropdown position-absolute top-0 end-0 z-3">
-        <Dropdown placement="bottom-end" overflow onToggle={setDropDownVisible}>
+      <div className="info-card-dropdown position-absolute top-0 end-0 z-2">
+        <Dropdown
+          placement="bottom-end"
+          overflow
+          onToggle={setDropDownVisible}
+          noWrap
+        >
           {(
             triggerProps: JSX.IntrinsicAttributes &
               Omit<IconButtonProps, 'ref'> &
