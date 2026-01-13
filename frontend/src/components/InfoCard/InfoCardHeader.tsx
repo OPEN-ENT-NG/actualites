@@ -117,7 +117,11 @@ export const InfoCardHeader = ({
       {canPublish && (
         <Button
           variant="outline"
-          data-testid={isOwner ? "info-card-header-publish-button" : "info-card-header-submit-button"}
+          data-testid={
+            isOwner
+              ? 'info-card-header-publish-button'
+              : 'info-card-header-submit-button'
+          }
           leftIcon={isOwner ? <IconSend /> : <IconSubmitToValidate />}
           onClick={handleSubmitClick}
           color="secondary"
@@ -240,7 +244,7 @@ export const InfoCardHeader = ({
                     icon={<IconEdit />}
                     onClick={handleEditClick}
                   >
-                    {common_t('edit')}
+                    {t('actualites.info.actions.edit')}
                   </Dropdown.Item>
                 )}
 
