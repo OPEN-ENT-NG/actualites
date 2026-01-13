@@ -7,7 +7,7 @@ import {
   IconButtonProps,
   Image,
   useBreakpoint,
-  useUser,
+  useEdificeClient,
 } from '@edifice.io/react';
 import {
   IconClock,
@@ -63,7 +63,7 @@ export const InfoCardHeader = ({
     handleDeleteAlertOpen,
     isDeleteAlertOpen,
   } = useInfoDelete();
-  const { user } = useUser();
+  const { user } = useEdificeClient();
 
   const {
     canContribute,
