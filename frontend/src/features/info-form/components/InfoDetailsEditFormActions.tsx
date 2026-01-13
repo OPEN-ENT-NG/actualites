@@ -3,7 +3,6 @@ import { useI18n } from '~/hooks/useI18n';
 import { Button, Flex, useBreakpoint, useToast } from '@edifice.io/react';
 import { IconEdit } from '@edifice.io/react/icons';
 import { useNavigate } from 'react-router-dom';
-import { useInfoFormStore } from '~/store/infoFormStore';
 import { useInfoDetailsForm } from '../hooks/useInfoDetailsForm';
 
 export function InfoDetailsEditFormActions() {
@@ -11,7 +10,6 @@ export function InfoDetailsEditFormActions() {
   const toast = useToast();
   const { md } = useBreakpoint();
   const navigate = useNavigate();
-  const detailsForm = useInfoFormStore.use.infoDetailsForm();
 
   const { detailsFormState, onSaveDetails, isSaving } = useInfoDetailsForm();
 
@@ -22,9 +20,7 @@ export function InfoDetailsEditFormActions() {
   const handleSubmitClick = () => {
     onSaveDetails(() => {
       toast.success(t('actualites.info.editForm.update.success'));
-      navigate(
-        `/threads/${detailsForm?.thread_id}#info-${detailsForm?.infoId}`,
-      );
+      navigate(-1);
     });
   };
 
