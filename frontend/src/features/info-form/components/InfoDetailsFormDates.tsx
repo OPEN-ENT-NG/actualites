@@ -39,13 +39,13 @@ export function InfoDetailsFormDates({
     });
   }, [publicationDate, expirationDate]);
 
-  const handleCloseModal = () => {
-    setModalOpen(false);
-  };
-
   const handleUpdateDates = (publicationDate: Date, expirationDate: Date) => {
     setValue('publicationDate', publicationDate);
     setValue('expirationDate', expirationDate);
+    setModalOpen(false);
+  };
+
+  const handleCloseModal = () => {
     setModalOpen(false);
   };
 
