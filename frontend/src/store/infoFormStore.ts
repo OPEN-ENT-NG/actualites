@@ -16,8 +16,8 @@ export interface InfoDetailsFormParams {
   title: string;
   headline: boolean;
   content: string;
-  publicationDate?: string;
-  expirationDate?: string;
+  publicationDate: Date;
+  expirationDate: Date;
 }
 
 export interface InfoDetailsFormState {

@@ -3,6 +3,7 @@ import { QueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { LoaderFunctionArgs } from 'react-router-dom';
 import {
+  INFO_DETAILS_DEFAULT_VALUES,
   InfoDetailsForm,
   InfoFormActionsSkeleton,
   InfoFormHeader,
@@ -41,6 +42,12 @@ export function EditInfo() {
         content: info.content,
         headline: info.headline,
         infoStatus: info.status,
+        publicationDate: info.publicationDate
+          ? new Date(info.publicationDate)
+          : INFO_DETAILS_DEFAULT_VALUES.publicationDate,
+        expirationDate: info.expirationDate
+          ? new Date(info.expirationDate)
+          : INFO_DETAILS_DEFAULT_VALUES.expirationDate,
       };
     }
   }, [infoId, info]);

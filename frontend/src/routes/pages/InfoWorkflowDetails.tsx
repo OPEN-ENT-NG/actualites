@@ -2,7 +2,10 @@ import { QueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 import { LoaderFunctionArgs } from 'react-router-dom';
 import { InfoDetailsCreateFormActions } from '~/features/info-form/components/InfoDetailsCreateFormActions';
-import { InfoDetailsForm } from '~/features/info-form/components/InfoDetailsForm';
+import {
+  INFO_DETAILS_DEFAULT_VALUES,
+  InfoDetailsForm,
+} from '~/features/info-form/components/InfoDetailsForm';
 import { InfoFormActionsSkeleton } from '~/features/info-form/components/InfoFormActionsSkeleton';
 import { InfoFormHeader } from '~/features/info-form/components/InfoFormHeader';
 import { InfoFormHeaderSkeleton } from '~/features/info-form/components/InfoFormHeaderSkeleton';
@@ -17,10 +20,9 @@ import {
 
 export const loader =
   (queryClient: QueryClient) =>
-  async ({ params /*, request*/ }: LoaderFunctionArgs) => {
+  async ({ params }: LoaderFunctionArgs) => {
     if (params.infoId) {
       const queryMessage = infoQueryOptions.getInfoById(Number(params.infoId));
-
       queryClient.ensureQueryData(queryMessage);
     }
 
@@ -48,6 +50,12 @@ export function InfoWorkflowDetails() {
         content: info.content,
         headline: info.headline,
         infoStatus: info.status,
+        publicationDate: info.publicationDate
+          ? new Date(info.publicationDate)
+          : INFO_DETAILS_DEFAULT_VALUES.publicationDate,
+        expirationDate: info.expirationDate
+          ? new Date(info.expirationDate)
+          : INFO_DETAILS_DEFAULT_VALUES.expirationDate,
       };
     }
     return undefined;

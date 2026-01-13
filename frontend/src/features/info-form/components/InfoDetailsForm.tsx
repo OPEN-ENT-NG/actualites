@@ -22,10 +22,10 @@ export const INFO_DETAILS_DEFAULT_VALUES: InfoDetailsFormParams = {
   title: '',
   headline: false,
   content: '',
-  publicationDate: new Date().toISOString(),
+  publicationDate: new Date(),
   expirationDate: new Date(
     new Date().setFullYear(new Date().getFullYear() + 1),
-  ).toISOString(),
+  ),
 };
 
 export function InfoDetailsForm({
@@ -125,7 +125,7 @@ export function InfoDetailsForm({
         content={infoDetails?.content}
         setValue={setValue}
       />
-      <InfoDetailsFormDates getValues={getValues} />
+      <InfoDetailsFormDates getValues={getValues} setValue={setValue} />
     </Flex>
   );
 }
