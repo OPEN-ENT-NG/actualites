@@ -1,5 +1,6 @@
 import { ShareRight, ShareRightActionDisplayName } from '@edifice.io/client';
 import {
+  Alert,
   Button,
   ButtonSkeleton,
   Flex,
@@ -34,7 +35,7 @@ import {
   useInfoById,
   useInfoShares,
 } from '~/services/queries';
-import { CreationStep, useInfoFormStore } from '~/store/infoFormStore';
+import { InfoWorkflowStep, useInfoFormStore } from '~/store/infoFormStore';
 
 interface CreateInfoRightsProps {
   infoId: number;
@@ -57,7 +58,7 @@ export const loader =
     return { infoId };
   };
 
-export function CreateInfoRights() {
+export function InfoWorkflowRights() {
   const { t } = useI18n();
   const navigate = useNavigate();
   const { md } = useBreakpoint();
@@ -68,13 +69,13 @@ export function CreateInfoRights() {
   const shareInfoRef = useRef<ShareResourcesRef>(null);
   const isPublishing = useRef(false);
   const { publishOrSubmit } = useInfoPublishOrSubmit();
-  const setCurrentCreationStep = useInfoFormStore.use.setCurrentCreationStep();
+  const setCurrentCreationStep = useInfoFormStore.use.setCurrentWorkflowStep();
 
   const [isDirty, setIsDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    setCurrentCreationStep(CreationStep.INFO_RIGHTS);
+    setCurrentCreationStep(InfoWorkflowStep.INFO_RIGHTS);
   }, [setCurrentCreationStep]);
 
   useEffect(() => {
@@ -184,6 +185,11 @@ export function CreateInfoRights() {
   return (
     <>
       <InfoFormHeader />
+      <Alert type="info" className="w-100">
+        <div style={{ whiteSpace: 'pre-line' }}>
+          {t('actualites.info.createForm.rights.infoMessage')}
+        </div>
+      </Alert>
       <ShareResources
         ref={shareInfoRef}
         onSuccess={handleShareInfoSubmitSuccess}

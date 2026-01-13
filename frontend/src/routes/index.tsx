@@ -19,10 +19,23 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
     errorElement: <PageError />,
     children: [
       {
-        path: 'create/info',
+        id: 'AdminThreads',
+        path: 'threads/admin',
         async lazy() {
-          const { loader, CreateInfo: Component } =
-            await import('~/routes/pages/CreateInfo');
+          const { loader, AdminThreads: Component } =
+            await import('~/routes/pages/AdminThreads');
+          return {
+            loader: loader(queryClient),
+            Component,
+          };
+        },
+      },
+      {
+        id: 'CreateInfo',
+        path: 'infos/create',
+        async lazy() {
+          const { loader, InfoWorkflow: Component } =
+            await import('~/routes/pages/InfoWorkflow');
           return {
             loader: loader(queryClient),
             Component,
@@ -33,30 +46,8 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
             path: '',
             index: true,
             async lazy() {
-              const { loader, CreateInfoDetails: Component } =
-                await import('~/routes/pages/CreateInfoDetails');
-              return {
-                loader: loader(queryClient),
-                Component,
-              };
-            },
-          },
-          {
-            path: ':infoIdAsString/rights',
-            async lazy() {
-              const { loader, CreateInfoRights: Component } =
-                await import('~/routes/pages/CreateInfoRights');
-              return {
-                loader: loader(queryClient),
-                Component,
-              };
-            },
-          },
-          {
-            path: ':infoIdAsString',
-            async lazy() {
-              const { loader, CreateInfoDetails: Component } =
-                await import('~/routes/pages/CreateInfoDetails');
+              const { loader, InfoWorkflowDetails: Component } =
+                await import('~/routes/pages/InfoWorkflowDetails');
               return {
                 loader: loader(queryClient),
                 Component,
@@ -66,27 +57,94 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
         ],
       },
       {
-        id: 'EditInfo',
-        path: 'threads/:threadIdAsString/infos/:infoIdAsString/edit',
-        async lazy() {
-          const { loader, EditInfo: Component } =
-            await import('~/routes/pages/EditInfo');
-          return {
-            loader: loader(queryClient),
-            Component,
-          };
-        },
-      },
-      {
-        path: 'admin/threads',
-        async lazy() {
-          const { loader, AdminThreads: Component } =
-            await import('~/routes/pages/AdminThreads');
-          return {
-            loader: loader(queryClient),
-            Component,
-          };
-        },
+        path: 'infos/:infoIdAsString',
+        children: [
+          {
+            path: 'create',
+            id: 'CreateInfoFlow',
+            async lazy() {
+              const { loader, InfoWorkflow: Component } =
+                await import('~/routes/pages/InfoWorkflow');
+              return {
+                loader: loader(queryClient),
+                Component,
+              };
+            },
+            children: [
+              {
+                path: '',
+                index: true,
+                async lazy() {
+                  const { loader, InfoWorkflowDetails: Component } =
+                    await import('~/routes/pages/InfoWorkflowDetails');
+                  return {
+                    loader: loader(queryClient),
+                    Component,
+                  };
+                },
+              },
+              {
+                path: 'rights',
+                async lazy() {
+                  const { loader, InfoWorkflowRights: Component } =
+                    await import('~/routes/pages/InfoWorkflowRights');
+                  return {
+                    loader: loader(queryClient),
+                    Component,
+                  };
+                },
+              },
+            ],
+          },
+          {
+            id: 'EditInfo',
+            path: 'edit',
+            async lazy() {
+              const { loader, EditInfo: Component } =
+                await import('~/routes/pages/EditInfo');
+              return {
+                loader: loader(queryClient),
+                Component,
+              };
+            },
+          },
+          {
+            path: 'publish',
+            async lazy() {
+              const { loader, InfoWorkflow: Component } =
+                await import('~/routes/pages/InfoWorkflow');
+              return {
+                loader: loader(queryClient),
+                Component,
+              };
+            },
+            children: [
+              {
+                path: '',
+                index: true,
+                async lazy() {
+                  const { loader, InfoWorkflowDetails: Component } =
+                    await import('~/routes/pages/InfoWorkflowDetails');
+                  return {
+                    loader: loader(queryClient),
+                    Component,
+                  };
+                },
+              },
+              {
+                path: 'rights',
+                async lazy() {
+                  const { loader, InfoWorkflowRights: Component } =
+                    await import('~/routes/pages/InfoWorkflowRights');
+                  return {
+                    loader: loader(queryClient),
+                    Component,
+                  };
+                },
+              },
+            ],
+          },
+        ],
       },
       {
         path: 'infos/:infoIdAsString',
@@ -98,6 +156,7 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
             Component,
           };
         },
+        index: true,
       },
       {
         path: '',

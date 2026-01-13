@@ -35,7 +35,7 @@ export const ThreadListMobile = () => {
   };
 
   const handleManageThreadsClick = () => {
-    navigate('/admin/threads');
+    navigate('/threads/admin');
   };
 
   if (!isFetched) {

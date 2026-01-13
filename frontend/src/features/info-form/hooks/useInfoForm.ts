@@ -2,9 +2,15 @@ import { useMatches } from 'react-router-dom';
 
 export function useInfoForm() {
   const matches = useMatches();
-  const type = matches.find((route) => route.id === 'EditInfo')
+  const type: 'edit' | 'create' | 'publish' = matches.find(
+    (route) => route.id === 'EditInfo',
+  )
     ? 'edit'
-    : 'create';
+    : matches.find(
+          (route) => route.id === 'CreateInfo' || route.id === 'CreateInfoFlow',
+        )
+      ? 'create'
+      : 'publish';
 
   return {
     type,

@@ -52,7 +52,7 @@ export function EditInfo() {
       <Grid.Col sm="4" md="6" lg="6" xl="8">
         {threads && (!infoId || (infoId && infoDetails)) ? (
           <>
-            <InfoFormHeader />
+            <InfoFormHeader className="mb-24" />
             <InfoDetailsForm infoDetails={infoDetails} />
             <InfoDetailsEditFormActions />
           </>

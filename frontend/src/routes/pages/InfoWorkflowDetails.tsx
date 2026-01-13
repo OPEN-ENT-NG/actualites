@@ -10,8 +10,8 @@ import { InfoFormSkeleton } from '~/features/info-form/components/InfoFormSkelet
 import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
 import { infoQueryOptions, useInfoById, useThreads } from '~/services/queries';
 import {
-  CreationStep,
   InfoDetailsFormParams,
+  InfoWorkflowStep,
   useInfoFormStore,
 } from '~/store/infoFormStore';
 
@@ -27,15 +27,15 @@ export const loader =
     return null;
   };
 
-export function CreateInfoDetails() {
+export function InfoWorkflowDetails() {
   const { data: threads } = useThreads();
   const { infoId } = useThreadInfoParams();
 
   const { data: info } = useInfoById(Number(infoId));
-  const setCurrentCreationStep = useInfoFormStore.use.setCurrentCreationStep();
+  const setCurrentCreationStep = useInfoFormStore.use.setCurrentWorkflowStep();
 
   useEffect(() => {
-    setCurrentCreationStep(CreationStep.INFO_DETAILS);
+    setCurrentCreationStep(InfoWorkflowStep.INFO_DETAILS);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

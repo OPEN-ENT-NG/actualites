@@ -1,13 +1,13 @@
 import { Flex } from '@edifice.io/react';
 import { QueryClient } from '@tanstack/react-query';
 import { Outlet } from 'react-router-dom';
-import './CreateInfo.css';
+import './InfoWorkflow.css';
 
 export const loader = (_queryClient: QueryClient) => async () => {
   return null;
 };
 
-export function CreateInfo() {
+export function InfoWorkflow() {
   return (
     <Flex fill className="py-16" justify="center">
       <Flex
@@ -15,7 +15,7 @@ export function CreateInfo() {
         fill
         wrap="nowrap"
         gap="24"
-        className="create-info-container overflow-hidden"
+        className="info-workflow-container overflow-hidden"
       >
         <Outlet />
       </Flex>
