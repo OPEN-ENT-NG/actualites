@@ -117,7 +117,11 @@ export const InfoCardHeader = ({
       {canPublish && (
         <Button
           variant="outline"
-          data-testid={isOwner ? "info-card-header-publish-button" : "info-card-header-submit-button"}
+          data-testid={
+            isOwner
+              ? 'info-card-header-publish-button'
+              : 'info-card-header-submit-button'
+          }
           leftIcon={isOwner ? <IconSend /> : <IconSubmitToValidate />}
           onClick={handleSubmitClick}
           color="secondary"
