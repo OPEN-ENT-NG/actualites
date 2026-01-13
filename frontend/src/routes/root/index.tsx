@@ -7,7 +7,7 @@ import {
   useEdificeClient,
 } from '@edifice.io/react';
 
-import { Outlet, useLoaderData, useLocation } from 'react-router-dom';
+import { Outlet, useLoaderData, useMatches } from 'react-router-dom';
 
 import { IWebApp } from '@edifice.io/client';
 import { existingActions } from '~/config';
@@ -35,9 +35,9 @@ export const Root = () => {
   setRights(actionUserRights);
 
   const { currentApp, init } = useEdificeClient();
-  const location = useLocation();
   const { canContributeOnOneThread } = useThreadsUserRights();
   const { canCreateThread } = useUserRights();
+  const matches = useMatches();
 
   if (!init) return <LoadingScreen position={false} />;
 
@@ -45,9 +45,10 @@ export const Root = () => {
     displayName: 'news',
     icon: 'actualites-large',
   };
-  const pathname = location.pathname;
-  const isAdminThreadPath = pathname.includes('/admin/threads');
-  const isCreateRoute = pathname.includes('/create/info');
+  const isAdminThreadPath = matches.find(
+    (route) => route.id === 'AdminThreads',
+  );
+  const isCreateRoute = matches.find((route) => route.id === 'CreateInfo');
 
   return init ? (
     <Layout>

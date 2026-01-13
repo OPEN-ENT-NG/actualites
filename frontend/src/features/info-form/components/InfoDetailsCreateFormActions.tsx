@@ -13,7 +13,7 @@ export function InfoDetailsCreateFormActions() {
   const { md } = useBreakpoint();
   const navigate = useNavigate();
 
-  const currentCreationStep = useInfoFormStore.use.currentCreationStep();
+  const currentCreationStep = useInfoFormStore.use.currentWorkflowStep();
 
   const { detailsForm, detailsFormState, onSaveDetails, onNextStep, isSaving } =
     useInfoDetailsForm();
