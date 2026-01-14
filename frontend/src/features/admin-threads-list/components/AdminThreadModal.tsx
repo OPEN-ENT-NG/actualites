@@ -175,7 +175,9 @@ export const AdminThreadModal = ({
       onModalClose={handleCloseModal}
     >
       <Modal.Header onModalClose={handleCloseModal}>
-        {t(`actualites.adminThreads.modal.modalTitle`)}
+        {thread?.id
+          ? t(`actualites.adminThreads.editModal.modalTitle`)
+          : t(`actualites.adminThreads.modal.modalTitle`)}
       </Modal.Header>
 
       <Modal.Body>

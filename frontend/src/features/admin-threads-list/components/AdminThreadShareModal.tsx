@@ -101,7 +101,7 @@ export const AdminThreadShareModal = ({
       onModalClose={handleCloseModal}
     >
       <Modal.Header onModalClose={handleCloseModal}>
-        {t(`actualites.adminThreads.modal.modalTitle`)}
+        {t(`actualites.adminThreads.shareModal.modalTitle`)}
       </Modal.Header>
 
       <Modal.Body>
