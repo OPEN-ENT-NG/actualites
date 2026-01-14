@@ -24,7 +24,7 @@ export const manageRedirections = (): string | null => {
     );
     if (isPathWithComment) {
       const { infoId, commentId } = isPathWithComment.params;
-      return `/infos/${infoId}#comment-${commentId}`;
+      return `/?info=${infoId}#comment-${commentId}`;
     }
 
     // Link to an info ?
@@ -33,14 +33,8 @@ export const manageRedirections = (): string | null => {
       hashLocation,
     );
     if (isPathWithInfo) {
-      /* 
-      Redirect to the new format. It should be : 
-        return `/threads/${isPathWithInfo.params.threadId}#info-${isPathWithInfo.params.infoId}`;
-
-      but this 'temporary' route does not display an opened modal showing the full info details.
-      Instead, we redirect to :
-      */
-      return `/infos/${isPathWithInfo.params.infoId}`;
+      const { threadId, infoId } = isPathWithInfo.params;
+      return `/threads/${threadId}?info=${infoId}`;
     }
 
     // Link to an thread ?
