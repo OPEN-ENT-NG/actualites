@@ -74,6 +74,8 @@
   "actualites.adminThreads.threadInfoCount_one": "[[count]] Actu dans le fil",
   "actualites.adminThreads.threadInfoCount_other": "[[count]] Actus dans le fil",
   "actualites.adminThreads.modal.modalTitle": "Nouveau fil",
+  "actualites.adminThreads.editModal.modalTitle": "Modifier le fil",
+  "actualites.adminThreads.shareModal.modalTitle": "Gestion des droits",
   "actualites.adminThreads.modal.details": "Général",
   "actualites.adminThreads.modal.titleValidation": "Titre invalide",
   "actualites.adminThreads.modal.title": "Titre",
