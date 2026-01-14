@@ -639,7 +639,8 @@ public class InfoServiceSqlImpl implements InfoService {
 									"        SELECT id FROM " + GROUPS_TABLE + " WHERE id IN " + 	Sql.listPrepared(groupsAndUserIds.toArray()) +
 									"    	) as u_groups )" +
 									"    SELECT i.id, i.thread_id, i.title, i.content, i.status, i.owner, u.username AS owner_name, " +
-									"        u.deleted as owner_deleted, i.created::text, i.modified::text, i.publication_date::text, i.expiration_date::text, " +
+									"        u.deleted as owner_deleted, TO_CHAR(i.created, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as created, TO_CHAR(i.modified, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as modified, " +
+									" 		 TO_CHAR(i.publication_date, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as publication_date, TO_CHAR(i.expiration_date, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as expiration_date, " +
 									"        i.is_headline, i.number_of_comments," +
 									"        (SELECT array_agg(DISTINCT ish.action) " +
 									"            FROM actualites.info_shares AS ish  " +
@@ -757,8 +758,10 @@ public class InfoServiceSqlImpl implements InfoService {
 					"    	 WHERE tsh.member_id IN (SELECT id FROM user_groups) " +
 					"    	 GROUP BY t.id, tsh.member_id " +
 					"	 ) " +
-					"SELECT i.id, i.title, " + getContentFieldQuery(originalContent) + " as content , i.created::text, i.modified::text, i.is_headline, i.number_of_comments, " + // info data
-					"        i.status, i.publication_date::text, i.expiration_date::text, " + // info publication data
+					"SELECT i.id, i.title, " + getContentFieldQuery(originalContent) + " as content, " +
+					"        TO_CHAR(i.created, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as created, TO_CHAR(i.modified, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as modified, " +
+					"        i.is_headline, i.number_of_comments, " + // info data
+					"        i.status, TO_CHAR(i.publication_date, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as publication_date,  TO_CHAR(i.expiration_date,  'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as expiration_date, " + // info publication data
 					"		 i.owner, u.username AS owner_name, u.deleted AS owner_deleted, " + // info owner data
 					"		 i.thread_id, i.content_version as content_version, t.title AS thread_title, t.icon AS thread_icon, " +
 					"		 t.owner AS thread_owner, ut.username AS thread_owner_name, ut.deleted AS thread_owner_deleted, " + // thread owner data
