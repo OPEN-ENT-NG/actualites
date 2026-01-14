@@ -30,10 +30,12 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+import net.atos.entng.actualites.filters.RightConstants;
 import net.atos.entng.actualites.services.ThreadService;
 import net.atos.entng.actualites.services.impl.mapper.NewsThreadMapper;
 import net.atos.entng.actualites.to.NewsStatus;
 import net.atos.entng.actualites.to.NewsThread;
+import net.atos.entng.actualites.to.Rights;
 import net.atos.entng.actualites.to.Structure;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
@@ -224,7 +226,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
                     if (thread.containsKey("shared")) {
                         JsonArray shared = thread.getJsonArray("shared");
                         for(Object jo : shared){
-                            if(((JsonObject) jo).containsKey("net-atos-entng-actualites-controllers-InfoController|publish")){
+                            if(((JsonObject) jo).containsKey(RightConstants.RIGHT_PUBLISH)){
                                 sharedWithIds.add(jo);
                             }
                         }
