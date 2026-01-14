@@ -54,36 +54,17 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
     @Override
     public void notifyTimeline(HttpServerRequest request, UserInfos user, UserInfos owner, String threadId, String infoId,
                                String title, String eventType, boolean ignoreFlood) {
-        if (eventType.equals(NEWS_SUBMIT_EVENT_TYPE)) {
-            threadService.getPublishSharedWithIds(threadId, true, user, event -> {
-                if (event.isRight()) {
-                    // get all ids
-                    JsonArray shared = event.right().getValue();
-                    extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-submitted", ignoreFlood);
-                }
-            });
-        } else if(eventType.equals(NEWS_UNSUBMIT_EVENT_TYPE)){
-            threadService.getPublishSharedWithIds(threadId, true, user, event -> {
-                if (event.isRight()) {
-                    // get all ids
-                    JsonArray shared = event.right().getValue();
-                    extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-unsubmitted", ignoreFlood);
-                }
-            });
-        } else if(eventType.equals(NEWS_PUBLISH_EVENT_TYPE)){
+        if(eventType.equals(NEWS_PUBLISH_EVENT_TYPE)){
             infoService.getSharedWithIds(infoId, true, event -> {
                 if (event.isRight()) {
                     // get all ids
                     JsonArray shared = event.right().getValue();
-                    extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-published", ignoreFlood);
-                }
-            });
-        } else if(eventType.equals(NEWS_UNPUBLISH_EVENT_TYPE)){
-            infoService.getSharedWithIds(infoId, true, event -> {
-                if (event.isRight()) {
-                    // get all ids
-                    JsonArray shared = event.right().getValue();
-                    extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-unpublished", ignoreFlood);
+                    threadService.getPublishSharedWithIds(threadId, true, user, tEvent -> {
+                        if(tEvent.isRight()) {
+                            shared.addAll(tEvent.right().getValue());
+                            extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-published", ignoreFlood);
+                        }
+                    });
                 }
             });
         } else if (eventType.equals(NEWS_UPDATE_EVENT_TYPE)) {
