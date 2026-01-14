@@ -79,6 +79,7 @@ export const InfoCardHeader = ({
     : { gridTemplateColumns: '1fr', gap: '12px' };
 
   const isOwner = info.owner.id === user?.userId;
+  const isDraft = info.status === InfoStatus.DRAFT;
 
   const canSubmit = info.status === InfoStatus.DRAFT && canContribute;
 
@@ -114,7 +115,7 @@ export const InfoCardHeader = ({
           </Flex>
         </Badge>
       )}
-      {canPublish && (
+      {!isDraft && canPublish && (
         <Button
           variant="outline"
           data-testid={
@@ -258,6 +259,21 @@ export const InfoCardHeader = ({
                   </Dropdown.Item>
                 )}
 
+                {isDraft && canPublish && (
+                  <Dropdown.Item
+                    data-testid={
+                      isOwner
+                        ? 'info-card-header-publish-dd-item'
+                        : 'info-card-header-submit-dd-item'
+                    }
+                    icon={isOwner ? <IconSend /> : <IconSubmitToValidate />}
+                    onClick={handleSubmitClick}
+                  >
+                    {isOwner
+                      ? t('actualites.info.actions.publish')
+                      : t('actualites.info.actions.validateAndPublish')}
+                  </Dropdown.Item>
+                )}
                 {canSubmit && (
                   <Dropdown.Item
                     data-testid="info-card-header-submit-dd-item"
