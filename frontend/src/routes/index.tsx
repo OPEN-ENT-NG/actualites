@@ -147,16 +147,15 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
         ],
       },
       {
-        path: 'infos/:infoIdAsString',
+        path: 'threads/admin',
         async lazy() {
-          const { loader, Infos: Component } =
-            await import('~/routes/pages/Infos');
+          const { loader, AdminThreads: Component } =
+            await import('~/routes/pages/AdminThreads');
           return {
             loader: loader(queryClient),
             Component,
           };
         },
-        index: true,
       },
       {
         path: '',
