@@ -67,6 +67,8 @@ export const Expandable = ({ children, ...props }: ExpandableProps) => {
 
   const handleTransitionEnd = (e: TransitionEvent) => {
     if (e.target === ref.current && e.propertyName === 'grid-template-rows') {
+      // Defer hook callback to the next tick so that all DOM/CSS transition updates
+      // have fully settled before `onTransitionEnd` (and any `onCollapseApplied`) runs.
       setTimeout(onTransitionEnd, 0);
     }
   };
