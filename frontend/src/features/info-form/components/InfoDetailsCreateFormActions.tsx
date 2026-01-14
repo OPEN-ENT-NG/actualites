@@ -34,7 +34,7 @@ export function InfoDetailsCreateFormActions() {
   const handleSaveDraftClick = () => {
     onSaveDetails(() => {
       toast.success(t('actualites.info.createForm.draftSaved'));
-      navigate(`/threads/?status=draft`);
+      navigate(`/?status=draft`);
     });
   };
 

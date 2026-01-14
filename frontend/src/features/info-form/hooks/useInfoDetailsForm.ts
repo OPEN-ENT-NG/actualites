@@ -92,7 +92,7 @@ export function useInfoDetailsForm() {
     if (detailsForm && detailsFormState.isValid) {
       if (detailsFormState.isDirty || !detailsForm?.infoId) {
         createOrUpdateInfo(detailsForm, ({ id }) => {
-          navigate(`/create/info/${id}/rights`, {});
+          navigate(`/infos/${id}/create/rights`, {});
         });
       } else {
         navigate(`./rights`, {

@@ -35,7 +35,7 @@ describe('InfoList Segmented counts', () => {
   it('should display the total count of published infos of all threads', async () => {
     renderWithRouter('/', <InfoList />);
     const publishedCount = await screen.findByText(
-      `actualites.infoList.segmented.published 6`,
+      `actualites.infoList.segmented.published 8`,
     );
     expect(publishedCount).toBeInTheDocument();
   });
@@ -74,7 +74,7 @@ describe('InfoList Segmented rendering', () => {
   });
 
   it('should not display segmented when user has no contribute right on thread', async () => {
-    const threadWithoutContributeRight = mockThreads[1];
+    const threadWithoutContributeRight = mockThreads[2];
     renderWithRouter(
       `/threads/${threadWithoutContributeRight.id}`,
       <InfoList />,
@@ -83,7 +83,7 @@ describe('InfoList Segmented rendering', () => {
 
     await screen.findAllByTestId('info-card'); // Wait for infos to be loaded
 
-    const segmented = screen.queryByTestId('info-list-segmented');
+    const segmented = await screen.queryByTestId('info-list-segmented');
     expect(segmented).not.toBeInTheDocument();
   });
 });
@@ -93,7 +93,7 @@ describe('InfoList Segmented Switch', () => {
     renderWithRouter('/', <InfoList />);
 
     const draftLabel = await screen.findByText(
-      `actualites.infoList.segmented.draft 3`,
+      `actualites.infoList.segmented.draft 4`,
     );
     await fireEvent.click(draftLabel);
 

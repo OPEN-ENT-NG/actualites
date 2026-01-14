@@ -14,7 +14,7 @@ export const NewInfoButton = () => {
 
   const handleClickNewInfo = () => {
     navigate({
-      pathname: '/create/info',
+      pathname: '/infos/create',
       search: threadId ? `?thread-id=${threadId}` : undefined,
     });
   };
