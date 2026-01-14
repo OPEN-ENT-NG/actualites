@@ -41,6 +41,7 @@ export function InfoDetailsFormDatesModal({
   const [maxExpirationDate, setMaxExpirationDate] = useState<Date>(
     getMaxExpirationDate(publicationDate),
   );
+  const minPublicationDate = new Date();
 
   useEffect(() => {
     if (!selectedPublicationDate) return;
@@ -55,9 +56,7 @@ export function InfoDetailsFormDatesModal({
     if (selectedPublicationDate.getTime() >= selectedExpirationDate.getTime()) {
       setSelectedExpirationDate(newMinExpirationDate);
     }
-  }, [selectedPublicationDate]);
-
-  const minPublicationDate = new Date();
+  }, [selectedPublicationDate, selectedExpirationDate]);
 
   const handleUpdate = () => {
     onUpdate(selectedPublicationDate, selectedExpirationDate);

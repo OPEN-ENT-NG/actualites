@@ -25,7 +25,7 @@ export function InfoDetailsFormDates({
 
   const dateString = useMemo(() => {
     if (
-      +INFO_DETAILS_DEFAULT_VALUES.publicationDate.getTime() ===
+      INFO_DETAILS_DEFAULT_VALUES.publicationDate.getTime() ===
         publicationDate.getTime() &&
       INFO_DETAILS_DEFAULT_VALUES.expirationDate.getTime() ===
         expirationDate.getTime()
