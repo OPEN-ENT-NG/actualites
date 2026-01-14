@@ -6,6 +6,7 @@ import {
   Label,
   useBreakpoint,
 } from '@edifice.io/react';
+import { useState } from 'react';
 import { PortalModal } from '~/components/PortalModal';
 import { useI18n } from '~/hooks/useI18n';
 
@@ -13,26 +14,34 @@ interface InfoDetailsFormDatesModalProps {
   isOpen: boolean;
   onClose: () => void;
   publicationDate: Date;
-  setPublicationDate: (date: Date) => void;
   expirationDate: Date;
-  setExpirationDate: (date: Date) => void;
-  onUpdate: () => void;
+  onUpdate: (publicationDate: Date, expirationDate: Date) => void;
 }
 
 export function InfoDetailsFormDatesModal({
   isOpen,
   onClose,
   publicationDate,
-  // setPublicationDate,
   expirationDate,
-  // setExpirationDate,
   onUpdate,
 }: InfoDetailsFormDatesModalProps) {
   const { t } = useI18n();
   const { md } = useBreakpoint();
 
+  const [selectedPublicationDate, setSelectedPublicationDate] = useState<Date>(
+    new Date(publicationDate),
+  );
+  const [selectedExpirationDate, setSelectedExpirationDate] = useState<Date>(
+    new Date(expirationDate),
+  );
+
+  const minPublicationDate = new Date();
   const maxExpirationDate = new Date();
   maxExpirationDate.setFullYear(publicationDate.getFullYear() + 1);
+
+  const handleUpdate = () => {
+    onUpdate(selectedPublicationDate, selectedExpirationDate);
+  };
   return (
     <PortalModal
       id="modal-unpublish"
@@ -45,7 +54,7 @@ export function InfoDetailsFormDatesModal({
           <Button variant="ghost" color="tertiary" onClick={onClose}>
             {t('actualites.info.createForm.dates.modal.cancelButton')}
           </Button>
-          <Button color="primary" onClick={onUpdate}>
+          <Button color="primary" onClick={handleUpdate}>
             {t('actualites.info.createForm.dates.modal.submitButton')}
           </Button>
         </>
@@ -54,7 +63,7 @@ export function InfoDetailsFormDatesModal({
       <Flex direction={'column'} gap="16">
         <Flex
           direction={md ? 'row' : 'column'}
-          gap="16"
+          gap={md ? '24' : '16'}
           align={md ? 'center' : 'stretch'}
           className="col-12"
           wrap="nowrap"
@@ -64,8 +73,12 @@ export function InfoDetailsFormDatesModal({
               {t('actualites.info.createForm.dates.modal.publicationDate')}
             </Label>
             <DatePicker
-              value={publicationDate}
-              // onChange={(date) => setPublicationDate(date)}
+              value={selectedPublicationDate}
+              onChange={(date) => date && setSelectedPublicationDate(date)}
+              minDate={minPublicationDate}
+              dateFormat={t(
+                'actualites.info.createForm.dates.modal.dateFormat',
+              )}
               className="w-100"
             />
           </FormControl>
@@ -74,9 +87,12 @@ export function InfoDetailsFormDatesModal({
               {t('actualites.info.createForm.dates.modal.expirationDate')}
             </Label>
             <DatePicker
-              value={expirationDate}
-              // onChange={(date) => setExpirationDate(date)}
+              value={selectedExpirationDate}
+              onChange={(date) => date && setSelectedExpirationDate(date)}
               maxDate={maxExpirationDate}
+              dateFormat={t(
+                'actualites.info.createForm.dates.modal.dateFormat',
+              )}
               className="w-100"
             />
           </FormControl>

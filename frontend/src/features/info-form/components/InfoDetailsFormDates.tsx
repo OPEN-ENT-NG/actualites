@@ -20,43 +20,32 @@ export function InfoDetailsFormDates({
   const { formatDate } = useDate();
 
   const [isModalOpen, setModalOpen] = useState(false);
-  const publicationDateString = getValues()?.publicationDate;
-  const expirationDateString = getValues()?.expirationDate;
-  const [publicationDate, setPublicationDate] = useState<Date>(
-    new Date(publicationDateString),
-  );
-  const [expirationDate, setExpirationDate] = useState<Date>(
-    new Date(expirationDateString),
-  );
+  const publicationDate = getValues().publicationDate;
+  const expirationDate = getValues().expirationDate;
 
   const dateString = useMemo(() => {
     if (
-      INFO_DETAILS_DEFAULT_VALUES.publicationDate === publicationDateString &&
-      INFO_DETAILS_DEFAULT_VALUES.expirationDate === expirationDateString
+      +INFO_DETAILS_DEFAULT_VALUES.publicationDate.getTime() ===
+        publicationDate.getTime() &&
+      INFO_DETAILS_DEFAULT_VALUES.expirationDate.getTime() ===
+        expirationDate.getTime()
     ) {
       return t('actualites.info.createForm.dates.default');
     }
 
     return t('actualites.info.createForm.dates.customized', {
-      publicationDate: formatDate(publicationDateString.toISOString(), 'long'),
-      expirationDate: formatDate(expirationDateString.toISOString(), 'long'),
+      publicationDate: formatDate(publicationDate.toISOString(), 'long'),
+      expirationDate: formatDate(expirationDate.toISOString(), 'long'),
     });
-    // return `${formatDate(publicationDateString?.toISOString(), 'long')} - ${formatDate(expirationDateString?.toISOString(), 'long')}`;
-  }, [publicationDateString, expirationDateString]);
+  }, [publicationDate, expirationDate]);
 
   const handleCloseModal = () => {
     setModalOpen(false);
   };
 
-  const handleUpdateDates = () => {
-    setValue(
-      'publicationDate',
-      publicationDate || INFO_DETAILS_DEFAULT_VALUES.publicationDate,
-    );
-    setValue(
-      'expirationDate',
-      expirationDate || INFO_DETAILS_DEFAULT_VALUES.expirationDate,
-    );
+  const handleUpdateDates = (publicationDate: Date, expirationDate: Date) => {
+    setValue('publicationDate', publicationDate);
+    setValue('expirationDate', expirationDate);
     setModalOpen(false);
   };
 
@@ -82,9 +71,7 @@ export function InfoDetailsFormDates({
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         publicationDate={publicationDate}
-        setPublicationDate={setPublicationDate}
         expirationDate={expirationDate}
-        setExpirationDate={setExpirationDate}
         onUpdate={handleUpdateDates}
       />
     </>

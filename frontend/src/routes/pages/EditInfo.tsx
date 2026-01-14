@@ -35,6 +35,12 @@ export function EditInfo() {
 
   const infoDetails: InfoDetailsFormParams | undefined = useMemo(() => {
     if (infoId && info) {
+      const publicationDate = info.publicationDate
+        ? new Date(info.publicationDate)
+        : INFO_DETAILS_DEFAULT_VALUES.publicationDate;
+      const expirationDate = info.expirationDate
+        ? new Date(info.expirationDate)
+        : INFO_DETAILS_DEFAULT_VALUES.expirationDate;
       return {
         infoId: info.id,
         thread_id: info.thread?.id,
@@ -42,12 +48,8 @@ export function EditInfo() {
         content: info.content,
         headline: info.headline,
         infoStatus: info.status,
-        publicationDate: info.publicationDate
-          ? new Date(info.publicationDate)
-          : INFO_DETAILS_DEFAULT_VALUES.publicationDate,
-        expirationDate: info.expirationDate
-          ? new Date(info.expirationDate)
-          : INFO_DETAILS_DEFAULT_VALUES.expirationDate,
+        publicationDate: publicationDate,
+        expirationDate: expirationDate,
       };
     }
   }, [infoId, info]);

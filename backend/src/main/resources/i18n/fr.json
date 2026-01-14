@@ -43,7 +43,6 @@
   "actualites.info.createForm.dates.default": "Par défaut, l’actualité sera visible dès sa publication et pendant un an.",
   "actualites.info.createForm.dates.customized": "L’actualité sera visible du [[publicationDate]] au [[expirationDate]].",
   "actualites.info.createForm.dates.updateButton": "Modifier",
-  "actualites.info.createForm.dates.format": "DD MMMM YYYY",
   "actualites.info.createForm.dates.modal.title": "Envoi différé et expiration",
   "actualites.info.createForm.dates.modal.publicationDate": "Date de publication",
   "actualites.info.createForm.dates.modal.expirationDate": "Date d'expiration",
