@@ -62,6 +62,10 @@ export const AdminThreadModal = ({
   const { mutate: createThread } = useCreateThread();
   const { mutate: updateThread } = useUpdateThread();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  // Need to create a state so the button is accessible with keyboard navigation
+  const [isSaveDisabled, setIsSaveDisabled] = useState<boolean>(false);
+
   const {
     ref: mediaLibraryRef,
     libraryMedia,
@@ -92,6 +96,10 @@ export const AdminThreadModal = ({
       icon: undefined,
     },
   });
+
+  useEffect(() => {
+    setIsSaveDisabled(isSubmitting || !isValid);
+  }, [isSubmitting, isValid]);
 
   useEffect(() => {
     if (thread) {
@@ -167,6 +175,8 @@ export const AdminThreadModal = ({
     onCancel();
   };
 
+  console.log(!isValid || isSubmitting);
+
   return createPortal(
     <Modal
       id={`admin-new-thread-modal`}
@@ -187,7 +197,7 @@ export const AdminThreadModal = ({
 
         <form id={formId} onSubmit={handleSubmit(onSubmit)}>
           <div className="d-block d-md-flex gap-16 mb-24">
-            <div>
+            <div data-testid="admin-thread-modal-icon-picker">
               <Controller
                 name="icon"
                 control={control}
@@ -210,7 +220,7 @@ export const AdminThreadModal = ({
                 )}
               />
             </div>
-            <div className="col">
+            <div className="col" data-testid="admin-thread-modal-title-input">
               <FormControl id="title" className="mb-16" isRequired>
                 <Label>{t(`actualites.adminThreads.modal.title`)}</Label>
                 <Input
@@ -288,7 +298,7 @@ export const AdminThreadModal = ({
           color="primary"
           isLoading={isSubmitting}
           variant="filled"
-          disabled={!isValid || isSubmitting}
+          disabled={isSaveDisabled}
         >
           {thread
             ? t('actualites.adminThreads.modal.save')
