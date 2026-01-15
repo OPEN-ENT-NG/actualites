@@ -66,6 +66,8 @@
   "actualites.info.editForm.title": "Édition de l’actualité",
   "actualites.info.editForm.subtitle": "Modifiez le contenu de votre actualité ",
   "actualites.info.editForm.update.success": "L'actualité a bien été modifiée",
+  "actualites.info.shareForm.title": "Modification des lecteurs",
+  "actualites.info.shareForm.save": "Enregistrer",
   "actualites.info.publishForm.details.title": "Validation de l’actualité",
   "actualites.info.publishForm.details.subtitle": "Vérifier le contenu de l’actualité",
   "actualites.info.publishForm.rights.title": "Partager l’actualité",
