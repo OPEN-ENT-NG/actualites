@@ -1,25 +1,7 @@
 import { useMemo } from 'react';
 import { InfoStatus, InfosStats, ThreadInfoStats } from '~/models/info';
 import { ThreadId } from '~/models/thread';
-
-/**
- * Creates default info stats for a thread.
- * @param threadId - Optional thread ID
- * @returns Default thread info stats with all counts set to 0
- */
-function defaultInfoStats(threadId?: ThreadId): ThreadInfoStats {
-  return {
-    id: threadId,
-    status: {
-      [InfoStatus.PUBLISHED]: 0,
-      [InfoStatus.DRAFT]: 0,
-      [InfoStatus.TRASH]: 0,
-      [InfoStatus.PENDING]: 0,
-    },
-    expiredCount: 0,
-    incomingCount: 0,
-  };
-}
+import { defaultThreadInfoStats } from '~/utils/defaultInfoStats';
 
 /**
  * Calculates total stats by aggregating stats from all threads.
@@ -47,8 +29,8 @@ function calculateTotalStats(
         expiredCount: acc.expiredCount + thread.expiredCount,
         incomingCount: acc.incomingCount + thread.incomingCount,
       }),
-      defaultInfoStats(undefined),
-    ) ?? defaultInfoStats(undefined)
+      defaultThreadInfoStats(undefined),
+    ) ?? defaultThreadInfoStats(undefined)
   );
 }
 
@@ -70,6 +52,6 @@ export function useInfoStats(
     const threadInfoStats = infosStats?.threads?.find(
       (thread) => thread.id === threadId,
     );
-    return threadInfoStats ?? defaultInfoStats(threadId);
+    return threadInfoStats ?? defaultThreadInfoStats(threadId);
   }, [infosStats, threadId]);
 }
