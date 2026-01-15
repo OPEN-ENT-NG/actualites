@@ -11,7 +11,6 @@ import {
   InfoFormSkeleton,
 } from '~/features';
 import { InfoDetailsEditFormActions } from '~/features/info-form/components/InfoDetailsEditFormActions';
-import { newDateWithoutTime } from '~/features/info-form/utils/utils';
 import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
 import { infoQueryOptions, useInfoById, useThreads } from '~/services/queries';
 import { InfoDetailsFormParams } from '~/store/infoFormStore';
@@ -37,10 +36,10 @@ export function EditInfo() {
   const infoDetails: InfoDetailsFormParams | undefined = useMemo(() => {
     if (infoId && info) {
       const publicationDate = info.publicationDate
-        ? newDateWithoutTime(info.publicationDate)
+        ? new Date(info.publicationDate)
         : INFO_DETAILS_DEFAULT_VALUES.publicationDate;
       const expirationDate = info.expirationDate
-        ? newDateWithoutTime(info.expirationDate)
+        ? new Date(info.expirationDate)
         : INFO_DETAILS_DEFAULT_VALUES.expirationDate;
       return {
         infoId: info.id,

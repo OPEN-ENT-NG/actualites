@@ -6,11 +6,12 @@ import {
   Label,
   useBreakpoint,
 } from '@edifice.io/react';
+import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { PortalModal } from '~/components/PortalModal';
 import { useI18n } from '~/hooks/useI18n';
-import { newDateWithoutTime } from '../utils/utils';
-
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+dayjs.extend(isSameOrAfter);
 interface InfoDetailsFormDatesModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -30,10 +31,10 @@ export function InfoDetailsFormDatesModal({
   const { md } = useBreakpoint();
 
   const [selectedPublicationDate, setSelectedPublicationDate] = useState<Date>(
-    newDateWithoutTime(publicationDate),
+    new Date(publicationDate),
   );
   const [selectedExpirationDate, setSelectedExpirationDate] = useState<Date>(
-    newDateWithoutTime(expirationDate),
+    new Date(expirationDate),
   );
   const [minExpirationDate, setMinExpirationDate] = useState<Date>(
     getMinExpirationDate(publicationDate),
@@ -50,13 +51,18 @@ export function InfoDetailsFormDatesModal({
     const newMaxExpirationDate = getMaxExpirationDate(selectedPublicationDate);
     setMaxExpirationDate(newMaxExpirationDate);
 
-    if (selectedExpirationDate.getTime() === maxExpirationDate.getTime()) {
+    if (dayjs(selectedExpirationDate).isSame(dayjs(maxExpirationDate), 'day')) {
       setSelectedExpirationDate(newMaxExpirationDate);
     }
-    if (selectedPublicationDate.getTime() >= selectedExpirationDate.getTime()) {
+    if (
+      dayjs(selectedPublicationDate).isSameOrAfter(
+        dayjs(selectedExpirationDate),
+        'day',
+      )
+    ) {
       setSelectedExpirationDate(newMinExpirationDate);
     }
-  }, [selectedPublicationDate, selectedExpirationDate]);
+  }, [selectedPublicationDate]);
 
   const handleUpdate = () => {
     onUpdate(selectedPublicationDate, selectedExpirationDate);
@@ -93,7 +99,9 @@ export function InfoDetailsFormDatesModal({
             </Label>
             <DatePicker
               value={selectedPublicationDate}
-              onChange={(date) => date && setSelectedPublicationDate(date)}
+              onChange={(date) => {
+                return date && setSelectedPublicationDate(date);
+              }}
               minDate={minPublicationDate}
               dateFormat={t(
                 'actualites.info.createForm.dates.modal.dateFormat',
@@ -126,12 +134,12 @@ export function InfoDetailsFormDatesModal({
 }
 
 const getMinExpirationDate = (publicationDate: Date) => {
-  const newMinExpirationDate = newDateWithoutTime(publicationDate);
+  const newMinExpirationDate = new Date(publicationDate);
   newMinExpirationDate.setDate(newMinExpirationDate.getDate() + 1);
   return newMinExpirationDate;
 };
 const getMaxExpirationDate = (publicationDate: Date) => {
-  const newExpirationDate = newDateWithoutTime(publicationDate);
+  const newExpirationDate = new Date(publicationDate);
   newExpirationDate.setFullYear(newExpirationDate.getFullYear() + 1);
   return newExpirationDate;
 };

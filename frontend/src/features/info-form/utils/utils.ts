@@ -13,9 +13,3 @@ export const isInfoDetailsValid = (
     infoDetails.thread_id !== undefined
   );
 };
-
-export const newDateWithoutTime = (date?: number | string | Date) => {
-  const today = date ? new Date(date) : new Date();
-  today.setHours(0, 0, 0, 0);
-  return today;
-};

@@ -10,7 +10,6 @@ import { InfoFormActionsSkeleton } from '~/features/info-form/components/InfoFor
 import { InfoFormHeader } from '~/features/info-form/components/InfoFormHeader';
 import { InfoFormHeaderSkeleton } from '~/features/info-form/components/InfoFormHeaderSkeleton';
 import { InfoFormSkeleton } from '~/features/info-form/components/InfoFormSkeleton';
-import { newDateWithoutTime } from '~/features/info-form/utils/utils';
 import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
 import { infoQueryOptions, useInfoById, useThreads } from '~/services/queries';
 import {
@@ -45,10 +44,10 @@ export function InfoWorkflowDetails() {
   const infoDetails: InfoDetailsFormParams | undefined = useMemo(() => {
     if (infoId && info) {
       const publicationDate = info.publicationDate
-        ? newDateWithoutTime(info.publicationDate)
+        ? new Date(info.publicationDate)
         : INFO_DETAILS_DEFAULT_VALUES.publicationDate;
       const expirationDate = info.expirationDate
-        ? newDateWithoutTime(info.expirationDate)
+        ? new Date(info.expirationDate)
         : INFO_DETAILS_DEFAULT_VALUES.expirationDate;
       return {
         infoId: info.id,

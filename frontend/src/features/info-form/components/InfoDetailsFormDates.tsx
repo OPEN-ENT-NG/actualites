@@ -1,5 +1,6 @@
 import { Button, Flex, useDate } from '@edifice.io/react';
 import { IconEdit } from '@edifice.io/react/icons';
+import dayjs from 'dayjs';
 import { useMemo, useState } from 'react';
 import { UseFormGetValues, UseFormSetValue } from 'react-hook-form';
 import { useI18n } from '~/hooks/useI18n';
@@ -25,10 +26,14 @@ export function InfoDetailsFormDates({
 
   const dateString = useMemo(() => {
     if (
-      INFO_DETAILS_DEFAULT_VALUES.publicationDate.getTime() ===
-        publicationDate.getTime() &&
-      INFO_DETAILS_DEFAULT_VALUES.expirationDate.getTime() ===
-        expirationDate.getTime()
+      dayjs(INFO_DETAILS_DEFAULT_VALUES.publicationDate).isSame(
+        dayjs(publicationDate),
+        'day',
+      ) &&
+      dayjs(INFO_DETAILS_DEFAULT_VALUES.expirationDate).isSame(
+        dayjs(expirationDate),
+        'day',
+      )
     ) {
       return t('actualites.info.createForm.dates.default');
     }
@@ -40,8 +45,14 @@ export function InfoDetailsFormDates({
   }, [publicationDate, expirationDate]);
 
   const handleUpdateDates = (publicationDate: Date, expirationDate: Date) => {
-    setValue('publicationDate', publicationDate);
-    setValue('expirationDate', expirationDate);
+    setValue('publicationDate', publicationDate, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+    setValue('expirationDate', expirationDate, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
     setModalOpen(false);
   };
 
