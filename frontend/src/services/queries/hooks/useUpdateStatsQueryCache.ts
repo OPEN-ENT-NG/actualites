@@ -1,5 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { InfosStats, InfoStatus } from '~/models/info';
+import { defaultThreadInfoStats } from '~/utils/defaultInfoStats';
 import { infoQueryKeys } from '../info';
 
 export const useUpdateStatsQueryCache = () => {
@@ -17,14 +18,9 @@ export const useUpdateStatsQueryCache = () => {
         (thread) => thread.id === threadId,
       );
       if (threadIndex < 0) {
-        // Create blank stats if not found, before updating them.
+        // Create default values of missing stats, before updating them.
         threadIndex = oldData.threads.length;
-        oldData.threads.push({
-          id: threadId,
-          status: { DRAFT: 0, PENDING: 0, PUBLISHED: 0, TRASH: 0 },
-          expiredCount: 0,
-          incomingCount: 0,
-        });
+        oldData.threads.push(defaultThreadInfoStats(threadId));
       }
 
       const targetThread = oldData.threads[threadIndex];
