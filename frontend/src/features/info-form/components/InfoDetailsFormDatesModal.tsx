@@ -118,7 +118,6 @@ export function InfoDetailsFormDatesModal({
           </FormControl>
         </Flex>
         <p className="small">
-          {' '}
           {t('actualites.info.createForm.dates.modal.publicationInfo')}
         </p>
       </Flex>
