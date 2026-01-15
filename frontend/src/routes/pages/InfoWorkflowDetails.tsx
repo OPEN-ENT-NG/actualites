@@ -1,39 +1,29 @@
-import { QueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
-import { LoaderFunctionArgs } from 'react-router-dom';
-import { InfoDetailsCreateFormActions } from '~/features/info-form/components/InfoDetailsCreateFormActions';
 import {
   INFO_DETAILS_DEFAULT_VALUES,
+  InfoDetailsCreateFormActions,
   InfoDetailsForm,
-} from '~/features/info-form/components/InfoDetailsForm';
-import { InfoFormActionsSkeleton } from '~/features/info-form/components/InfoFormActionsSkeleton';
-import { InfoFormHeader } from '~/features/info-form/components/InfoFormHeader';
-import { InfoFormHeaderSkeleton } from '~/features/info-form/components/InfoFormHeaderSkeleton';
-import { InfoFormSkeleton } from '~/features/info-form/components/InfoFormSkeleton';
+  InfoFormActionsSkeleton,
+  InfoFormHeader,
+  InfoFormHeaderSkeleton,
+  InfoFormSkeleton,
+} from '~/features';
+import { InfoDetailsEditFormActions } from '~/features/info-form/components/InfoDetailsEditFormActions';
+import { useInfoForm } from '~/features/info-form/hooks/useInfoForm';
 import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
-import { infoQueryOptions, useInfoById, useThreads } from '~/services/queries';
+import { useInfoById, useThreads } from '~/services/queries';
 import {
   InfoDetailsFormParams,
   InfoWorkflowStep,
   useInfoFormStore,
 } from '~/store/infoFormStore';
 
-export const loader =
-  (queryClient: QueryClient) =>
-  async ({ params }: LoaderFunctionArgs) => {
-    if (params.infoId) {
-      const queryMessage = infoQueryOptions.getInfoById(Number(params.infoId));
-      queryClient.ensureQueryData(queryMessage);
-    }
-
-    return null;
-  };
-
 export function InfoWorkflowDetails() {
   const { data: threads } = useThreads();
   const { infoId } = useThreadInfoParams();
-
   const { data: info } = useInfoById(Number(infoId));
+  const { type } = useInfoForm();
+
   const setCurrentCreationStep = useInfoFormStore.use.setCurrentWorkflowStep();
 
   useEffect(() => {
@@ -60,13 +50,17 @@ export function InfoWorkflowDetails() {
         expirationDate: expirationDate,
       };
     }
-    return undefined;
   }, [infoId, info]);
+
   return threads && (!infoId || (infoId && infoDetails)) ? (
     <>
-      <InfoFormHeader />
+      <InfoFormHeader className="mb-24" />
       <InfoDetailsForm infoDetails={infoDetails} />
-      <InfoDetailsCreateFormActions />
+      {type === 'edit' ? (
+        <InfoDetailsEditFormActions />
+      ) : (
+        <InfoDetailsCreateFormActions />
+      )}
     </>
   ) : (
     <>

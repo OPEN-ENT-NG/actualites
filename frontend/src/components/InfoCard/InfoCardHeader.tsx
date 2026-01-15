@@ -28,7 +28,7 @@ import { InfoExtendedStatus, InfoStatus } from '~/models/info';
 import { InfoCardProps } from './InfoCard';
 import { InfoCardHeaderMenu } from './InfoCardHeaderMenu';
 import { InfoCardThreadHeader } from './InfoCardThreadHeader';
-import { UserInfo } from './UserInfo';
+import { InfoCardHeaderMetadata } from './UserInfo';
 
 export type InfoCardHeaderProps = Pick<InfoCardProps, 'info'> & {
   extendedStatus?: InfoExtendedStatus;
@@ -133,7 +133,7 @@ export const InfoCardHeader = ({
             height={24}
           />
         )}
-        <UserInfo info={info} />
+        <InfoCardHeaderMetadata info={info} />
 
         {info.headline && (
           <Image

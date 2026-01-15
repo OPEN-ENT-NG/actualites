@@ -78,13 +78,15 @@ export function InfoDetailsFormDates({
           {t('actualites.info.createForm.dates.updateButton')}
         </Button>
       </Flex>
-      <InfoDetailsFormDatesModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        publicationDate={publicationDate}
-        expirationDate={expirationDate}
-        onUpdate={handleUpdateDates}
-      />
+      {isModalOpen && (
+        <InfoDetailsFormDatesModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          publicationDate={publicationDate}
+          expirationDate={expirationDate}
+          onUpdate={handleUpdateDates}
+        />
+      )}
     </>
   );
 }
