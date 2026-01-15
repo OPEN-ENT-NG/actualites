@@ -14,6 +14,7 @@ import { useInfoDelete } from '~/hooks/useInfoDelete';
 import { useInfoPublishOrSubmit } from '~/hooks/useInfoPublishOrSubmit';
 import { useInfoUnpublish } from '~/hooks/useInfoUnpublish';
 import { useInfoUnsubmit } from '~/hooks/useInfoUnsubmit';
+import { InfoStatus } from '~/models/info';
 import { PortalModal } from '../PortalModal';
 import { InfoCardProps } from './InfoCard';
 
@@ -61,8 +62,14 @@ export const InfoCardHeaderMenu = ({ info }: InfoCardHeaderMenuProps) => {
 
   const handleSubmitClick = () => {
     if (thread) {
+      publishOrSubmit({ ...info, thread: thread }, InfoStatus.PENDING);
+    }
+  };
+
+  const handlePublishClick = () => {
+    if (thread) {
       if (isOwner) {
-        publishOrSubmit({ ...info, thread: thread }, canPublish);
+        publishOrSubmit({ ...info, thread: thread }, InfoStatus.PUBLISHED);
       } else {
         navigate(`/infos/${info.id}/publish`);
       }
@@ -131,7 +138,7 @@ export const InfoCardHeaderMenu = ({ info }: InfoCardHeaderMenuProps) => {
                 : 'info-card-header-submit-dd-item'
             }
             icon={isOwner ? <IconSend /> : <IconSubmitToValidate />}
-            onClick={handleSubmitClick}
+            onClick={handlePublishClick}
           >
             {isOwner
               ? t('actualites.info.actions.publish')
