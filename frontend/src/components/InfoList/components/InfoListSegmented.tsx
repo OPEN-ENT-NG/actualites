@@ -41,7 +41,7 @@ export const InfoListSegmented = ({
 
     if (threadInfosStats.incomingCount > 0) {
       options.push({
-        label: `${t('actualites.infoList.segmented.incoming')} ${threadInfosStats?.incomingCount}`,
+        label: `${t('actualites.infoList.segmented.incoming')} ${threadInfosStats.incomingCount}`,
         value: InfoExtendedStatus.INCOMING,
       });
     }
