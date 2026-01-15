@@ -9,7 +9,7 @@ import {
 import { useInfoStatus } from '~/hooks/useInfoStatus';
 import { Info } from '~/models/info';
 
-export const UserInfo = ({ info }: { info: Info }) => {
+export const InfoCardHeaderMetadata = ({ info }: { info: Info }) => {
   const { formatDate } = useDate();
 
   const { isDraft } = useInfoStatus(info);
