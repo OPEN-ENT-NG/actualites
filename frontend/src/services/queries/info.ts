@@ -193,6 +193,7 @@ export const useInfos = (
 
 export const useInfoShares = (infoId: InfoId) =>
   useQuery(infoQueryOptions.getShares(infoId));
+
 export const useInfosStats = (options?: { enabled?: boolean }) =>
   useQuery(infoQueryOptions.getStats(options?.enabled));
 
