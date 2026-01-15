@@ -15,7 +15,10 @@ export function useInfoPublishOrSubmit() {
 
   const queryClient = useQueryClient();
 
-  const publishOrSubmit = (info: InfoDetails, canPublish: boolean) => {
+  const publishOrSubmit = (
+    info: InfoDetails,
+    status: InfoStatus.PUBLISHED | InfoStatus.PENDING,
+  ) => {
     if (!info.id) {
       throw new Error('infoId is undefined');
     }
@@ -23,38 +26,36 @@ export function useInfoPublishOrSubmit() {
     updateInfoMutate(
       {
         infoId: info.id,
-        infoStatus: canPublish ? InfoStatus.PUBLISHED : InfoStatus.PENDING,
+        infoStatus: status,
         payload: {},
       },
       {
         onSuccess: () => {
           toast.success(
             t(
-              canPublish
+              status === InfoStatus.PUBLISHED
                 ? 'actualites.info.createForm.publishedSuccess'
                 : 'actualites.info.createForm.pendingSuccess',
               { threadName: info.thread.title },
             ),
           );
-          updateStatsQueryCache(
-            info.thread.id,
-            canPublish ? InfoStatus.PUBLISHED : InfoStatus.PENDING,
-            1,
-          );
-          updateStatsQueryCache(info.thread.id, InfoStatus.DRAFT, -1);
+          updateStatsQueryCache(info.thread.id, status, 1);
+          updateStatsQueryCache(info.thread.id, info.status, -1);
           invalidateQueriesWithFirstPage(queryClient, {
             queryKey: infoQueryKeys.byThread({
               threadId: info.thread.id,
-              status: canPublish ? InfoStatus.PUBLISHED : InfoStatus.PENDING,
+              status,
             }),
           });
           invalidateQueriesWithFirstPage(queryClient, {
             queryKey: infoQueryKeys.byThread({
               threadId: 'all',
-              status: canPublish ? InfoStatus.PUBLISHED : InfoStatus.PENDING,
+              status,
             }),
           });
-          navigate(`/?status=${canPublish ? 'published' : 'pending'}`);
+          navigate(
+            `/?status=${status === InfoStatus.PUBLISHED ? 'published' : 'pending'}`,
+          );
         },
       },
     );

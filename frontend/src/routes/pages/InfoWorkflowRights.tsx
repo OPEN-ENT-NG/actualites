@@ -29,6 +29,7 @@ import { isInfoDetailsValid } from '~/features/info-form/utils/utils';
 import { useI18n } from '~/hooks/useI18n';
 import { useInfoPublishOrSubmit } from '~/hooks/useInfoPublishOrSubmit';
 import { getThreadUserRights } from '~/hooks/utils/threads';
+import { InfoStatus } from '~/models/info';
 import { baseUrlAPI } from '~/services';
 import {
   infoQueryOptions,
@@ -138,7 +139,10 @@ export function InfoWorkflowRights() {
     if (!info) return;
     setIsDirty(false);
     if (isPublishing.current) {
-      publishOrSubmit(info, canPublish);
+      publishOrSubmit(
+        info,
+        canPublish ? InfoStatus.PUBLISHED : InfoStatus.PENDING,
+      );
     } else {
       navigate(`/threads/?status=draft`);
       setIsSaving(false);
@@ -158,7 +162,10 @@ export function InfoWorkflowRights() {
       shareInfoRef.current?.handleShare(false);
     } else {
       // No changes to save, publish immediately
-      publishOrSubmit(info, canPublish);
+      publishOrSubmit(
+        info,
+        canPublish ? InfoStatus.PUBLISHED : InfoStatus.PENDING,
+      );
     }
   };
 
