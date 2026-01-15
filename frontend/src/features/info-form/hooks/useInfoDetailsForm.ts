@@ -29,9 +29,6 @@ export function useInfoDetailsForm() {
     }
 
     setIsSaving(true);
-    const publication_date = new Date();
-    const expiration_date = new Date();
-    expiration_date.setFullYear(expiration_date.getFullYear() + 1);
     if (infoFormValues.infoId) {
       return updateDraftInfo(
         {
@@ -42,8 +39,8 @@ export function useInfoDetailsForm() {
             content: infoFormValues.content,
             title: infoFormValues.title,
             is_headline: infoFormValues.headline,
-            publication_date: publication_date.toISOString(),
-            expiration_date: expiration_date.toISOString(),
+            publication_date: infoFormValues.publicationDate.toISOString(),
+            expiration_date: infoFormValues.expirationDate.toISOString(),
           },
         },
         {
@@ -61,8 +58,8 @@ export function useInfoDetailsForm() {
           content:
             infoFormValues.content !== '' ? infoFormValues.content : '<p></p>',
           thread_id: Number(infoFormValues.thread_id),
-          publication_date: publication_date.toISOString(),
-          expiration_date: expiration_date.toISOString(),
+          publication_date: infoFormValues.publicationDate.toISOString(),
+          expiration_date: infoFormValues.expirationDate.toISOString(),
           is_headline: infoFormValues.headline,
         },
         {

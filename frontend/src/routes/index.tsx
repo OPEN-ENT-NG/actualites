@@ -46,12 +46,9 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
             path: '',
             index: true,
             async lazy() {
-              const { loader, InfoWorkflowDetails: Component } =
+              const { InfoWorkflowDetails: Component } =
                 await import('~/routes/pages/InfoWorkflowDetails');
-              return {
-                loader: loader(queryClient),
-                Component,
-              };
+              return { Component };
             },
           },
         ],
@@ -75,12 +72,9 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
                 path: '',
                 index: true,
                 async lazy() {
-                  const { loader, InfoWorkflowDetails: Component } =
+                  const { InfoWorkflowDetails: Component } =
                     await import('~/routes/pages/InfoWorkflowDetails');
-                  return {
-                    loader: loader(queryClient),
-                    Component,
-                  };
+                  return { Component };
                 },
               },
               {
@@ -97,16 +91,27 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
             ],
           },
           {
-            id: 'EditInfo',
             path: 'edit',
             async lazy() {
-              const { loader, EditInfo: Component } =
-                await import('~/routes/pages/EditInfo');
+              const { loader, InfoWorkflow: Component } =
+                await import('~/routes/pages/InfoWorkflow');
               return {
                 loader: loader(queryClient),
                 Component,
               };
             },
+            children: [
+              {
+                id: 'EditInfo',
+                path: '',
+                index: true,
+                async lazy() {
+                  const { InfoWorkflowDetails: Component } =
+                    await import('~/routes/pages/InfoWorkflowDetails');
+                  return { Component };
+                },
+              },
+            ],
           },
           {
             path: 'publish',
@@ -123,12 +128,9 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
                 path: '',
                 index: true,
                 async lazy() {
-                  const { loader, InfoWorkflowDetails: Component } =
+                  const { InfoWorkflowDetails: Component } =
                     await import('~/routes/pages/InfoWorkflowDetails');
-                  return {
-                    loader: loader(queryClient),
-                    Component,
-                  };
+                  return { Component };
                 },
               },
               {
