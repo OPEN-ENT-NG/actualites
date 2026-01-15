@@ -1,8 +1,8 @@
 import { SegmentedControl } from '@edifice.io/react';
+import { useMemo } from 'react';
 import { useInfoStats } from '~/components/InfoList/hooks/useInfoStats';
 import { useI18n } from '~/hooks/useI18n';
 import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
-import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
 import {
   InfoExtendedStatus,
   InfoSegmentedValue,
@@ -26,53 +26,43 @@ export const InfoListSegmented = ({
   const { threadId } = useThreadInfoParams();
   const { data: infosStats } = useInfosStats();
   const threadInfosStats = useInfoStats(infosStats, threadId);
-  const { threadsWithManageRight, canManageOnOneThread } =
-    useThreadsUserRights();
-  const canManageCurrentThread =
-    (!threadId && canManageOnOneThread) ||
-    !!(
-      threadId &&
-      threadsWithManageRight?.some((thread) => thread.id === threadId)
-    );
 
-  const options: InfoListSegmentedOption[] = [
-    {
-      label: `${t('actualites.infoList.segmented.published')} ${threadInfosStats.status[InfoStatus.PUBLISHED]}`,
-      value: InfoStatus.PUBLISHED,
-    },
-  ];
+  const options = useMemo<InfoListSegmentedOption[]>(() => {
+    const options: InfoListSegmentedOption[] = [
+      {
+        label: `${t('actualites.infoList.segmented.published')} ${threadInfosStats.status[InfoStatus.PUBLISHED]}`,
+        value: InfoStatus.PUBLISHED,
+      },
+      {
+        label: `${t('actualites.infoList.segmented.pending')} ${threadInfosStats.status[InfoStatus.PENDING]}`,
+        value: InfoStatus.PENDING,
+      },
+    ];
 
-  if (canManageCurrentThread) {
+    if (threadInfosStats.incomingCount > 0) {
+      options.push({
+        label: `${t('actualites.infoList.segmented.incoming')} ${threadInfosStats?.incomingCount}`,
+        value: InfoExtendedStatus.INCOMING,
+      });
+    }
+
     options.push({
-      label: `${t('actualites.infoList.segmented.pending')} ${threadInfosStats.status[InfoStatus.PENDING]}`,
-      value: InfoStatus.PENDING,
+      label: `${t('actualites.infoList.segmented.draft')} ${threadInfosStats.status[InfoStatus.DRAFT]}`,
+      value: InfoStatus.DRAFT,
     });
-  }
 
-  if (threadInfosStats.incomingCount > 0) {
-    options.push({
-      label:
-        t('actualites.infoList.segmented.incoming') +
-        ' ' +
-        threadInfosStats?.incomingCount,
-      value: InfoExtendedStatus.INCOMING,
-    });
-  }
-
-  options.push({
-    label: `${t('actualites.infoList.segmented.draft')} ${threadInfosStats.status[InfoStatus.DRAFT]}`,
-    value: InfoStatus.DRAFT,
-  });
-
-  if (threadInfosStats.expiredCount > 0) {
-    options.push({
-      label:
-        t('actualites.infoList.segmented.expired') +
-        ' ' +
-        threadInfosStats.expiredCount,
-      value: InfoExtendedStatus.EXPIRED,
-    });
-  }
+    if (threadInfosStats.expiredCount > 0) {
+      options.push({
+        label: `${t('actualites.infoList.segmented.expired')} ${threadInfosStats.expiredCount}`,
+        value: InfoExtendedStatus.EXPIRED,
+      });
+    }
+    return options;
+  }, [
+    threadInfosStats.status,
+    threadInfosStats.incomingCount,
+    threadInfosStats.expiredCount,
+  ]);
 
   return (
     <SegmentedControl

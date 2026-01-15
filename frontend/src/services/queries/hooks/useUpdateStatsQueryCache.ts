@@ -1,6 +1,6 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { InfosStats, InfoStatus } from '~/models/info';
 import { infoQueryKeys } from '../info';
-import { useQueryClient } from '@tanstack/react-query';
 
 export const useUpdateStatsQueryCache = () => {
   const queryClient = useQueryClient();
