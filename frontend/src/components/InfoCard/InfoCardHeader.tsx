@@ -57,7 +57,7 @@ export const InfoCardHeader = ({
 
   const badgeContent = () => (
     <div style={{ textAlign: 'right' }}>
-      {info.status === 'DRAFT' && (
+      {isDraft && (
         <Badge className="bg-blue-200 text-blue">
           <Flex align="center" gap="8" wrap="nowrap" className="mx-4">
             {t('actualites.info.status.draft')}
