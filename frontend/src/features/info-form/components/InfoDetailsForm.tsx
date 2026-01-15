@@ -4,24 +4,29 @@ import {
   AppIconSize,
   Flex,
   FormControl,
-  Input,
-  Label,
-  OptionsType,
-  Select,
   Switch,
   useBreakpoint,
 } from '@edifice.io/react';
-import { Editor, EditorInstance } from '@edifice.io/react/editor';
-import { IconQuestion } from '@edifice.io/react/icons';
-import { useEffect, useMemo } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { ThreadIcon } from '~/components/ThreadIcon';
-import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
-import { Thread } from '~/models/thread';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { InfoDetailsFormParams } from '~/store/infoFormStore';
 import { useInfoDetailsForm } from '../hooks/useInfoDetailsForm';
-import { isContentValid } from '../utils/utils';
 import './InfoDetailsForm.css';
+import { InfoDetailsFormDates } from './InfoDetailsFormDates';
+import { InfoDetailsFormEditor } from './InfoDetailsFormEditor';
+import { InfoDetailsFormThread } from './InfoDetailsFormThread';
+import { InfoDetailsFormTitle } from './InfoDetailsFormTitle';
+
+export const INFO_DETAILS_DEFAULT_VALUES: InfoDetailsFormParams = {
+  thread_id: undefined,
+  title: '',
+  headline: false,
+  content: '',
+  publicationDate: new Date(),
+  expirationDate: new Date(
+    new Date().setFullYear(new Date().getFullYear() + 1),
+  ),
+};
 
 export function InfoDetailsForm({
   infoDetails,
@@ -30,10 +35,6 @@ export function InfoDetailsForm({
 }) {
   const { t } = useI18n();
 
-  const { threadsWithContributeRight: threads } = useThreadsUserRights();
-  // TODO use thread-id from query params when form will be editable
-  // const search = useLocation().search;
-  // const searchThreadId = new URLSearchParams(search).get('thread-id');
   const { md } = useBreakpoint();
 
   const { setDetailsForm, setResetDetailsForm, setDetailsFormState } =
@@ -41,32 +42,25 @@ export function InfoDetailsForm({
 
   const iconSize: AppIconSize = '24';
 
-  const defaultValues: InfoDetailsFormParams = {
-    thread_id: threads?.length === 1 ? threads[0].id : undefined,
-    title: '',
-    headline: false,
-    content: '',
-  };
-
   const {
     control,
     register,
     setValue,
+    getValues,
     watch,
     formState: { isValid, isDirty, errors },
     reset,
     trigger,
   } = useForm<InfoDetailsFormParams>({
-    defaultValues: infoDetails || defaultValues,
+    defaultValues: infoDetails || INFO_DETAILS_DEFAULT_VALUES,
     mode: 'all',
   });
 
   useEffect(() => {
-    setDetailsForm(infoDetails || defaultValues);
+    setDetailsForm(infoDetails || INFO_DETAILS_DEFAULT_VALUES);
     if (infoDetails) {
       trigger();
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [infoDetails]);
 
@@ -94,31 +88,6 @@ export function InfoDetailsForm({
     });
   }, [setDetailsFormState, isDirty, isValid]);
 
-  if (!threads || threads.length === 0) {
-    return null;
-  }
-
-  const items: OptionsType[] = threads.map((thread: Thread) => ({
-    value: String(thread.id),
-    label: thread.title,
-    icon: <ThreadIcon thread={thread} iconSize={iconSize} />,
-  }));
-
-  const handleEditorChange = ({ editor }: { editor: EditorInstance }) => {
-    setValue('content', editor.isEmpty ? '' : editor.getHTML(), {
-      shouldDirty: true,
-      shouldValidate: true,
-    });
-  };
-
-  const thread = useMemo(() => {
-    if (!infoDetails) return threads[0];
-    return (
-      threads.find((thread) => thread.id === infoDetails.thread_id) ||
-      threads[0]
-    );
-  }, [infoDetails, threads]);
-
   return (
     <Flex direction="column" gap="24">
       <Flex
@@ -128,72 +97,17 @@ export function InfoDetailsForm({
         className="col-12"
         wrap="nowrap"
       >
-        <FormControl
-          id="thread_id"
-          className="col-12 col-md-5"
-          isRequired
-          status={errors.thread_id ? 'invalid' : undefined}
-        >
-          <Label>{t('actualites.info.createForm.selectThreadLabel')}</Label>
-          {items.length > 1 ? (
-            <Controller
-              name="thread_id"
-              control={control}
-              rules={{ required: true }}
-              render={({ field }) => (
-                <Select
-                  options={items}
-                  block={true}
-                  size="md"
-                  onValueChange={(value) => field.onChange(Number(value))}
-                  icon={<IconQuestion />}
-                  defaultValue={String(infoDetails?.thread_id)}
-                  placeholderOption={t(
-                    'actualites.info.createForm.selectThreadPlaceholder',
-                  )}
-                  data-testid="create-info-thread-select"
-                />
-              )}
-            />
-          ) : (
-            <Flex
-              align="center"
-              gap="8"
-              className="border rounded py-4 px-8"
-              style={{ height: '40px' }}
-            >
-              <ThreadIcon thread={thread} iconSize={iconSize} />
-              <span>{thread?.title}</span>
-            </Flex>
-          )}
-        </FormControl>
-        <FormControl
-          id={'title'}
-          className="flex-fill"
-          isRequired
-          status={errors.title ? 'invalid' : undefined}
-        >
-          <Label>{t('actualites.info.createForm.titleLabel')}</Label>
-          <Controller
-            name="title"
-            control={control}
-            rules={{
-              required: true,
-              validate: (value) => value.trim().length > 0,
-            }}
-            render={() => (
-              <Input
-                type="text"
-                size="md"
-                placeholder={t('actualites.info.createForm.titlePlaceholder')}
-                showCounter
-                maxLength={60}
-                data-testid="create-info-title-input"
-                {...register('title', { required: true })}
-              />
-            )}
-          />
-        </FormControl>
+        <InfoDetailsFormThread
+          control={control}
+          errors={errors}
+          iconSize={iconSize}
+          threadId={infoDetails?.thread_id}
+        />
+        <InfoDetailsFormTitle
+          control={control}
+          register={register}
+          errors={errors}
+        />
       </Flex>
       <FormControl id={'headline'}>
         <Flex align="center" gap="8">
@@ -205,29 +119,13 @@ export function InfoDetailsForm({
           />
         </Flex>
       </FormControl>
-      <FormControl
-        id={'content'}
-        isRequired
-        status={errors.content ? 'invalid' : undefined}
-      >
-        <Label>{t('actualites.info.createForm.contentLabel')}</Label>
-        <Controller
-          name="content"
-          control={control}
-          rules={{ required: true, validate: (value) => isContentValid(value) }}
-          render={() => (
-            <Flex wrap="nowrap" className="info-details-form_content">
-              <Editor
-                content={infoDetails?.content || ''}
-                mode="edit"
-                id="info-content"
-                onContentChange={handleEditorChange}
-                data-testid="actualites.info.content.editor"
-              />
-            </Flex>
-          )}
-        />
-      </FormControl>
+      <InfoDetailsFormEditor
+        control={control}
+        errors={errors}
+        content={infoDetails?.content}
+        setValue={setValue}
+      />
+      <InfoDetailsFormDates getValues={getValues} setValue={setValue} />
     </Flex>
   );
 }

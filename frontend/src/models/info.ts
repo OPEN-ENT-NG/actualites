@@ -32,9 +32,9 @@ export interface InfoBase {
   /** Modification date, formatted as 'YYYY-MM-DDTHH:mm:ss' */
   modified: string;
   /** Publication date, formatted as 'YYYY-MM-DDTHH:mm:ss' */
-  publicationDate: string | null;
+  publicationDate?: string;
   /** Expiration date, formatted as 'YYYY-MM-DDTHH:mm:ss' */
-  expirationDate: string | null;
+  expirationDate?: string;
   numberOfComments: number;
   title: string;
   headline: boolean;
