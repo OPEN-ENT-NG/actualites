@@ -24,7 +24,7 @@ import { useI18n } from '~/hooks/useI18n';
 import { useInfoActionDropdown } from '~/hooks/useInfoActionDropdown';
 import { useInfoPublishOrSubmit } from '~/hooks/useInfoPublishOrSubmit';
 import { useInfoStatus } from '~/hooks/useInfoStatus';
-import { InfoExtendedStatus } from '~/models/info';
+import { InfoExtendedStatus, InfoStatus } from '~/models/info';
 import { InfoCardProps } from './InfoCard';
 import { InfoCardHeaderMenu } from './InfoCardHeaderMenu';
 import { InfoCardThreadHeader } from './InfoCardThreadHeader';
@@ -104,7 +104,7 @@ export const InfoCardHeader = ({
   const handleSubmitClick = () => {
     if (thread) {
       if (isOwner) {
-        publishOrSubmit({ ...info, thread: thread }, canPublish);
+        publishOrSubmit({ ...info, thread: thread }, InfoStatus.PUBLISHED);
       } else {
         navigate(`/infos/${info.id}/publish`);
       }
