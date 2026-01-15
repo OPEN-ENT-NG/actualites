@@ -76,7 +76,7 @@ export function InfoShareModal({
 
   return (
     <Modal
-      id={`admin-new-thread-modal`}
+      id={`info-share-modal`}
       size="lg"
       isOpen={isOpen}
       onModalClose={onCancel}
