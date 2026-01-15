@@ -47,6 +47,7 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static net.atos.entng.actualites.to.NewsState.INCOMING;
 import static org.entcore.common.sql.SqlResult.validUniqueResultHandler;
 import static fr.wseduc.webutils.Utils.isEmpty;
 import static net.atos.entng.actualites.Actualites.*;
@@ -632,6 +633,7 @@ public class InfoServiceSqlImpl implements InfoService {
 						promise.complete(Collections.emptyList());
 						return;
 					}
+					String order = states.contains(INCOMING) ? "ASC " : "DESC ";
 					String query = "WITH " +
 									"    user_groups AS MATERIALIZED ( " +
 									"        SELECT id::varchar from ( "	+
@@ -650,11 +652,11 @@ public class InfoServiceSqlImpl implements InfoService {
 									"        COALESCE(( " +
 									"         SELECT MAX(_inf.content_version) FROM " + NEWS_INFO_REVISION_TABLE + " _inf " +
 									"         WHERE _inf.info_id = i.id AND _inf.content_version < i.content_version " +
-									"        ), 1) as previous_content_version " +
+									"        ), 1) as previous_content_version, (CASE WHEN i.publication_date > i.modified THEN i.publication_date ELSE i.modified END) as date " +
 									"    FROM " + NEWS_INFO_TABLE + " AS i " +
 									"        LEFT JOIN " + NEWS_USER_TABLE + " AS u ON i.owner = u.id " +
 									"    WHERE i.id IN " +  Sql.listPrepared(ids.toArray(new Object[0])) +
-									"    ORDER BY i.modified DESC ";
+									"    ORDER BY date " + order;
 
 					JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
 					values.add(user.getUserId());
