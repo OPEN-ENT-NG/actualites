@@ -131,7 +131,10 @@ public class QueryHelperSql {
         if(filterMultiAdmlActivated) {
             filterAdml = " AND thread_shares.adml_group = false ";
         }
+
         String dateFilter = null;
+        String order = "DESC ";
+
         if (states != null && !states.isEmpty()) {
             List<String> stateConditions = new ArrayList<>();
             for (NewsState state : states) {
@@ -141,6 +144,7 @@ public class QueryHelperSql {
                         break;
                     case INCOMING:
                         stateConditions.add("(i.publication_date > LOCALTIMESTAMP)");
+                        order = "ASC ";
                         break;
                     default:
                         log.warn("Unknown NewsState: " + state);
@@ -218,7 +222,7 @@ public class QueryHelperSql {
         }
         queryIds.append(     statusFilter + " AND ");
         queryIds.append("    (i.status <> 3 OR ( " + dateFilter + " ) ) )");
-        queryIds.append("ORDER BY date DESC ");
+        queryIds.append("ORDER BY date " + order);
         if (limit != null) {
             queryIds.append("LIMIT ?");
         }
