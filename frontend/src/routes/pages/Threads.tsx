@@ -62,12 +62,15 @@ export function Threads() {
         info !== undefined && (
           <PortalModal
             id="modal-info"
+            data-testid="modal-news"
             onModalClose={handleModalClose}
             isOpen={isModalOpen}
             size={info ? 'lg' : 'sm'}
             header={info ? <></> : t('actualites.info.unavailable.title')}
             footer={
-              <Button onClick={handleModalClose}>{common_t('close')}</Button>
+              <Button data-testid="modal-news-close" onClick={handleModalClose}>
+                {common_t('close')}
+              </Button>
             }
           >
             {info ? (
