@@ -10,7 +10,6 @@ import { infoService } from '.';
 describe('Info GET Methods', () => {
   test('makes a GET request to get infos', async () => {
     const response = await infoService.getInfos({ page: 0, pageSize: 20 });
-
     expect(response).toBeDefined();
     expect(response).toStrictEqual(mockInfosPublished);
   });
