@@ -748,7 +748,7 @@ public class InfoServiceSqlImpl implements InfoService {
 					"    	 FROM " + NEWS_INFO_TABLE + " AS i " +
 					"        	 JOIN " + NEWS_INFO_SHARE_TABLE + " AS ish ON i.id = ish.resource_id " +
 					"    	 WHERE " +
-					"        	 ish.member_id IN (SELECT id FROM user_groups) " +
+					"        	 ish.member_id IN (SELECT id FROM user_groups) AND i.id = ? " +
 					"    	 GROUP BY i.id " +
 					"	 ), " +
 					"	 thread_for_user AS ( " + // Every thread owned of shared to the user with publish rights
@@ -756,6 +756,7 @@ public class InfoServiceSqlImpl implements InfoService {
 					"    	 FROM " + NEWS_THREAD_TABLE + " AS t " +
 					"        	 INNER JOIN " + NEWS_THREAD_SHARE_TABLE + " AS tsh ON t.id = tsh.resource_id " +
 					"    	 WHERE tsh.member_id IN (SELECT id FROM user_groups) " +
+					"        AND t.id  = (SELECT i.thread_id FROM actualites.info as i WHERE i.id = ? ) " +
 					"    	 GROUP BY t.id, tsh.member_id " +
 					"	 ) " +
 					"SELECT i.id, i.title, " + getContentFieldQuery(originalContent) + " as content, " +
@@ -786,6 +787,8 @@ public class InfoServiceSqlImpl implements InfoService {
 			for(String value : groupsAndUserIds){
 				values.add(value);
 			}
+			values.add(infoId);
+			values.add(infoId);
 			values.add(infoId);
 
 			// 3. Retrieve & parse data
