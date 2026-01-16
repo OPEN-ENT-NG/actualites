@@ -21,7 +21,6 @@ export const createThreadService = () => {
      */
     getThreads(viewHidden = false) {
       const visibilityParam = viewHidden ? '?viewHidden=true' : '';
-      console.log('viewHidden', viewHidden);
       return odeServices
         .http()
         .get<Thread[]>(`${baseUrlAPI}/threads${visibilityParam}`);
