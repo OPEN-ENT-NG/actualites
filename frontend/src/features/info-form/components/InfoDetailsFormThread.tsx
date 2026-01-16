@@ -7,7 +7,7 @@ import {
   Select,
 } from '@edifice.io/react';
 import { IconQuestion } from '@edifice.io/react/icons';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { ThreadIcon } from '~/components/ThreadIcon';
 import { useI18n } from '~/hooks/useI18n';
@@ -15,37 +15,32 @@ import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
 import { Thread } from '~/models/thread';
 import { InfoDetailsFormParams } from '~/store/infoFormStore';
 
-interface InfoDetailsFormThreadProps {
-  threadId?: number;
-}
 const ICON_SIZE: AppIconSize = '24';
 
-export function InfoDetailsFormThread({
-  threadId,
-}: InfoDetailsFormThreadProps) {
+export function InfoDetailsFormThread() {
   const { t } = useI18n();
   const { threadsWithContributeRight: threads } = useThreadsUserRights();
   const {
     control,
     setValue,
+    getValues,
     formState: { errors },
   } = useFormContext<InfoDetailsFormParams>();
 
-  useEffect(() => {
-    if (threads?.length === 1) {
-      setValue('thread_id', threads[0].id);
-    }
-  }, []);
-
   const selectedThread = useMemo(() => {
-    const selectedId = threadId;
+    let selectedId = getValues('thread_id');
+    if (threads?.length === 1) {
+      const currentThreadId = threads[0].id;
+      setValue('thread_id', currentThreadId);
+      selectedId = currentThreadId;
+    }
     if (selectedId) {
       return threads?.find((thread) => thread.id === selectedId);
     } else if (threads && threads.length === 1) {
       return threads[0];
     }
     return undefined;
-  }, [threadId, threads]);
+  }, [threads]);
 
   if (!threads || threads.length === 0) {
     return null;
