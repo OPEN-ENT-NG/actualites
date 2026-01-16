@@ -7,8 +7,8 @@ import {
   Select,
 } from '@edifice.io/react';
 import { IconQuestion } from '@edifice.io/react/icons';
-import { useMemo } from 'react';
-import { Control, Controller, FieldErrors } from 'react-hook-form';
+import { useEffect, useMemo } from 'react';
+import { Controller, useFormContext } from 'react-hook-form';
 import { ThreadIcon } from '~/components/ThreadIcon';
 import { useI18n } from '~/hooks/useI18n';
 import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
@@ -16,20 +16,26 @@ import { Thread } from '~/models/thread';
 import { InfoDetailsFormParams } from '~/store/infoFormStore';
 
 interface InfoDetailsFormThreadProps {
-  control: Control<InfoDetailsFormParams>;
-  errors: FieldErrors<InfoDetailsFormParams>;
-  iconSize: AppIconSize;
   threadId?: number;
 }
+const ICON_SIZE: AppIconSize = '24';
 
 export function InfoDetailsFormThread({
-  control,
-  errors,
-  iconSize,
   threadId,
 }: InfoDetailsFormThreadProps) {
   const { t } = useI18n();
   const { threadsWithContributeRight: threads } = useThreadsUserRights();
+  const {
+    control,
+    setValue,
+    formState: { errors },
+  } = useFormContext<InfoDetailsFormParams>();
+
+  useEffect(() => {
+    if (threads?.length === 1) {
+      setValue('thread_id', threads[0].id);
+    }
+  }, []);
 
   const selectedThread = useMemo(() => {
     const selectedId = threadId;
@@ -48,7 +54,7 @@ export function InfoDetailsFormThread({
   const items: OptionsType[] = threads.map((thread: Thread) => ({
     value: String(thread.id),
     label: thread.title,
-    icon: <ThreadIcon thread={thread} iconSize={iconSize} />,
+    icon: <ThreadIcon thread={thread} iconSize={ICON_SIZE} />,
   }));
 
   return (
@@ -86,7 +92,7 @@ export function InfoDetailsFormThread({
           className="border rounded py-4 px-8"
           style={{ height: '40px' }}
         >
-          <ThreadIcon thread={selectedThread} iconSize={iconSize} />
+          <ThreadIcon thread={selectedThread} iconSize={ICON_SIZE} />
           <span>{selectedThread?.title}</span>
         </Flex>
       )}
