@@ -1,25 +1,15 @@
 import { FormControl, Input, Label } from '@edifice.io/react';
-import {
-  Control,
-  Controller,
-  FieldErrors,
-  UseFormRegister,
-} from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 import { useI18n } from '~/hooks/useI18n';
 import { InfoDetailsFormParams } from '~/store/infoFormStore';
 
-interface InfoDetailsFormTitleProps {
-  control: Control<InfoDetailsFormParams>;
-  register: UseFormRegister<InfoDetailsFormParams>;
-  errors: FieldErrors<InfoDetailsFormParams>;
-}
-
-export function InfoDetailsFormTitle({
-  control,
-  register,
-  errors,
-}: InfoDetailsFormTitleProps) {
+export function InfoDetailsFormTitle() {
   const { t } = useI18n();
+  const {
+    control,
+    register,
+    formState: { errors },
+  } = useFormContext<InfoDetailsFormParams>();
 
   return (
     <FormControl

@@ -1,14 +1,8 @@
 import { useI18n } from '~/hooks/useI18n';
 
-import {
-  AppIconSize,
-  Flex,
-  FormControl,
-  Switch,
-  useBreakpoint,
-} from '@edifice.io/react';
+import { Flex, FormControl, Switch, useBreakpoint } from '@edifice.io/react';
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { InfoDetailsFormParams } from '~/store/infoFormStore';
 import { useInfoDetailsForm } from '../hooks/useInfoDetailsForm';
 import './InfoDetailsForm.css';
@@ -40,21 +34,17 @@ export function InfoDetailsForm({
   const { setDetailsForm, setResetDetailsForm, setDetailsFormState } =
     useInfoDetailsForm();
 
-  const iconSize: AppIconSize = '24';
-
-  const {
-    control,
-    register,
-    setValue,
-    getValues,
-    watch,
-    formState: { isValid, isDirty, errors },
-    reset,
-    trigger,
-  } = useForm<InfoDetailsFormParams>({
+  const form = useForm<InfoDetailsFormParams>({
     defaultValues: infoDetails || INFO_DETAILS_DEFAULT_VALUES,
     mode: 'all',
   });
+  const {
+    register,
+    watch,
+    formState: { isValid, isDirty },
+    reset,
+    trigger,
+  } = form;
 
   useEffect(() => {
     setDetailsForm(infoDetails || INFO_DETAILS_DEFAULT_VALUES);
@@ -77,7 +67,6 @@ export function InfoDetailsForm({
     const subscription = watch((values) => {
       setDetailsForm(values as InfoDetailsFormParams);
     });
-
     return () => subscription.unsubscribe();
   }, [watch, setDetailsForm]);
 
@@ -89,43 +78,31 @@ export function InfoDetailsForm({
   }, [setDetailsFormState, isDirty, isValid]);
 
   return (
-    <Flex direction="column" gap="24">
-      <Flex
-        direction={md ? 'row' : 'column'}
-        gap="24"
-        align={md ? 'center' : 'stretch'}
-        className="col-12"
-        wrap="nowrap"
-      >
-        <InfoDetailsFormThread
-          control={control}
-          errors={errors}
-          iconSize={iconSize}
-          threadId={infoDetails?.thread_id}
-        />
-        <InfoDetailsFormTitle
-          control={control}
-          register={register}
-          errors={errors}
-        />
-      </Flex>
-      <FormControl id={'headline'}>
-        <Flex align="center" gap="8">
-          <Switch
-            {...register('headline')}
-            label={t('actualites.info.createForm.headlineLabel')}
-            data-testid="create-info-headline-checkbox"
-            variant="secondary"
-          />
+    <FormProvider {...form}>
+      <Flex direction="column" gap="24">
+        <Flex
+          direction={md ? 'row' : 'column'}
+          gap="24"
+          align={md ? 'center' : 'stretch'}
+          className="col-12"
+          wrap="nowrap"
+        >
+          <InfoDetailsFormThread threadId={infoDetails?.thread_id} />
+          <InfoDetailsFormTitle />
         </Flex>
-      </FormControl>
-      <InfoDetailsFormEditor
-        control={control}
-        errors={errors}
-        content={infoDetails?.content}
-        setValue={setValue}
-      />
-      <InfoDetailsFormDates getValues={getValues} setValue={setValue} />
-    </Flex>
+        <FormControl id={'headline'}>
+          <Flex align="center" gap="8">
+            <Switch
+              {...register('headline')}
+              label={t('actualites.info.createForm.headlineLabel')}
+              data-testid="create-info-headline-checkbox"
+              variant="secondary"
+            />
+          </Flex>
+        </FormControl>
+        <InfoDetailsFormEditor content={infoDetails?.content} />
+        <InfoDetailsFormDates />
+      </Flex>
+    </FormProvider>
   );
 }
