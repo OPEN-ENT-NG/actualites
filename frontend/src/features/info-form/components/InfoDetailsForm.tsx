@@ -87,7 +87,7 @@ export function InfoDetailsForm({
           className="col-12"
           wrap="nowrap"
         >
-          <InfoDetailsFormThread threadId={infoDetails?.thread_id} />
+          <InfoDetailsFormThread />
           <InfoDetailsFormTitle />
         </Flex>
         <FormControl id={'headline'}>

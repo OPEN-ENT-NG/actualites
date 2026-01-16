@@ -11,7 +11,9 @@ import { useEffect, useState } from 'react';
 import { PortalModal } from '~/components/PortalModal';
 import { useI18n } from '~/hooks/useI18n';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isToday from 'dayjs/plugin/isToday';
 dayjs.extend(isSameOrAfter);
+dayjs.extend(isToday);
 interface InfoDetailsFormDatesModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -65,7 +67,10 @@ export function InfoDetailsFormDatesModal({
   }, [selectedPublicationDate]);
 
   const handleUpdate = () => {
-    onUpdate(selectedPublicationDate, selectedExpirationDate);
+    const publicationDate = dayjs(selectedPublicationDate).isToday()
+      ? new Date()
+      : selectedPublicationDate;
+    onUpdate(publicationDate, selectedExpirationDate);
   };
   return (
     <PortalModal
