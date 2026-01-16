@@ -179,7 +179,7 @@ export const AdminThreadModal = ({
 
   return createPortal(
     <Modal
-      id={`admin-new-thread-modal`}
+      id="admin-new-thread-modal"
       size="lg"
       isOpen={isOpen}
       onModalClose={handleCloseModal}
@@ -220,10 +220,11 @@ export const AdminThreadModal = ({
                 )}
               />
             </div>
-            <div className="col" data-testid="admin-thread-modal-title-input">
+            <div className="col">
               <FormControl id="title" className="mb-16" isRequired>
                 <Label>{t(`actualites.adminThreads.modal.title`)}</Label>
                 <Input
+                  data-testid="admin-thread-modal-title-input"
                   type="text"
                   defaultValue={thread?.title || ''}
                   {...register('title', {
