@@ -41,7 +41,7 @@ export const Root = () => {
 
   const { currentApp, init } = useEdificeClient();
   const { canContributeOnOneThread } = useThreadsUserRights(
-    isAdminThreadPath ? true : false,
+    !!isAdminThreadPath,
   );
   const { canCreateThread } = useUserRights();
 
