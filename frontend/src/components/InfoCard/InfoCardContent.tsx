@@ -8,9 +8,11 @@ import { useInfoStatus } from '~/hooks/useInfoStatus';
 
 export const InfoCardContent = ({
   info,
+  withComments = true,
   collapse = true,
   onCollapseApplied,
 }: Pick<InfoCardProps, 'info'> & {
+  withComments?: boolean;
   collapse?: boolean;
   onCollapseApplied?: () => void;
 }) => {
@@ -44,7 +46,7 @@ export const InfoCardContent = ({
           />
         </div>
 
-        {canShowComments && showFullContent && (
+        {withComments && canShowComments && showFullContent && (
           <div id={`info-${info.id}-comments`}>
             <CommentList info={info} />
           </div>

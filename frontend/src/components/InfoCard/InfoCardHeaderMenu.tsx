@@ -103,12 +103,10 @@ export const InfoCardHeaderMenu = ({ info }: InfoCardHeaderMenuProps) => {
   };
 
   const handlePrintClick = (withComments: boolean) => {
-    if (thread) {
-      window.open(
-        `/infos/${info.id}/print?withComments=${withComments}`,
-        '_blank',
-      );
-    }
+    window.open(
+      `/infos/${info.id}/print${withComments ? '?withComments=true' : ''}`,
+      '_blank',
+    );
     handlePrintAlertClose();
   };
 
