@@ -55,7 +55,7 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
     public void notifyTimeline(HttpServerRequest request, UserInfos user, UserInfos owner, String threadId, String infoId,
                                String title, String eventType, boolean ignoreFlood) {
         if(eventType.equals(NEWS_PUBLISH_EVENT_TYPE)){
-            infoService.getSharedWithIds(infoId, true, event -> {
+            infoService.getSharedWithIds(infoId, false, event -> {
                 if (event.isRight()) {
                     // get all ids
                     JsonArray shared = event.right().getValue();
