@@ -37,6 +37,7 @@
   "actualites.info.actions.publish": "Publier l'actualité",
   "actualites.info.actions.validateAndPublish": "Valider la publication",
   "actualites.info.actions.share": "Modifier les lecteurs",
+  "actualites.info.actions.print": "Imprimer",
   "actualites.info.createForm.required": "Champs requis",
   "actualites.info.createForm.details.title": "Création d’une actualité",
   "actualites.info.createForm.details.subtitle": "Saisir le contenu de votre actualité ",
@@ -138,5 +139,9 @@
   "actualites.info.unsubmit.success": "Actualité déplacée avec succès.",
   "actualites.info.unsubmit.error": "L'actualité n'a pas pu être déplacée.",
   "actualites.info.unavailable.title": "Actualité indisponible",
-  "actualites.info.unavailable.body": "Cette actualité a expiré ou a été supprimée par son auteur. Il est aussi possible que vous n'ayez plus le droit d'y accéder."
+  "actualites.info.unavailable.body": "Cette actualité a expiré ou a été supprimée par son auteur. Il est aussi possible que vous n'ayez plus le droit d'y accéder.",
+  "actualites.info.print.modal.title": "Option d’impression",
+  "actualites.info.print.modal.body": "Cette actualité contient des commentaires. Voulez-vous les inclure dans l'impression ?",
+  "actualites.info.print.modal.action": "Oui",
+  "actualites.info.print.modal.cancel": "Non"
 }
