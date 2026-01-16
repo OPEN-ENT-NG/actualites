@@ -103,10 +103,6 @@ public class ThreadServiceSqlImpl implements ThreadService {
 			if (user.getGroupsIds() != null) {
 				groupsAndUserIds.addAll(user.getGroupsIds());
 			}
-			// Structures which the user is an ADML of.
-			final List<String> admlStructuresIds = user.isADML() 
-				? user.getFunctions().get(ADMIN_LOCAL).getScope() 
-				: Collections.EMPTY_LIST;
 			query = "WITH user_groups AS MATERIALIZED ( " +
 					"  SELECT id::varchar from ( "	+
 					"    SELECT ? as id UNION ALL " +
@@ -121,14 +117,12 @@ public class ThreadServiceSqlImpl implements ThreadService {
 					" LEFT JOIN " + membersTable + " AS m ON (ts.member_id = m.id AND m.group_id IS NOT NULL)" +
 					" WHERE t.id = ? " +
 					" 		AND (ts.member_id IN (SELECT id FROM user_groups)" +
-							( admlStructuresIds.isEmpty() ? "" : " OR t.structure_id IN "+ Sql.listPrepared(admlStructuresIds)) +
 					" 		OR t.owner = ?) " +
 					" GROUP BY t.id, u.username, owner_deleted" +
 					" ORDER BY t.modified DESC";
 			values.add(user.getUserId());
 			groupsAndUserIds.forEach(values::add);
 			values.add(Sql.parseId(id));
-			admlStructuresIds.forEach(values::add);
 			values.add(user.getUserId());
 			Sql.getInstance().prepared(query, values,  (sqlResult) -> {
 				final Either<String, JsonObject> result = SqlResult.validUniqueResult(sqlResult);

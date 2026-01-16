@@ -59,7 +59,7 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
                 if (event.isRight()) {
                     // get all ids
                     JsonArray shared = event.right().getValue();
-                    threadService.getPublishSharedWithIds(threadId, true, user, tEvent -> {
+                    threadService.getPublishSharedWithIds(threadId, false, user, tEvent -> {
                         if(tEvent.isRight()) {
                             shared.addAll(tEvent.right().getValue());
                             extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-published", ignoreFlood);
