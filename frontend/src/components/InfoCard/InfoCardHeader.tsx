@@ -58,7 +58,10 @@ export const InfoCardHeader = ({
   const badgeContent = () => (
     <div style={{ textAlign: 'right' }}>
       {isDraft && (
-        <Badge className="bg-blue-200 text-blue">
+        <Badge
+          data-testid="info-card-badge-draft"
+          className="bg-blue-200 text-blue"
+        >
           <Flex align="center" gap="8" wrap="nowrap" className="mx-4">
             {t('actualites.info.status.draft')}
             <IconSave />
@@ -83,7 +86,10 @@ export const InfoCardHeader = ({
         </Button>
       )}
       {!isExpired && extendedStatus === InfoExtendedStatus.INCOMING && (
-        <Badge className="bg-purple-200 text-purple-500">
+        <Badge
+          data-testid="info-card-badge-soon"
+          className="bg-purple-200 text-purple-500"
+        >
           <Flex align="center" gap="8" wrap="nowrap" className="mx-4">
             {t('actualites.info.status.incoming')}
             <IconClock />
@@ -91,7 +97,10 @@ export const InfoCardHeader = ({
         </Badge>
       )}
       {isExpired && (
-        <Badge className="bg-red-200 text-red-500">
+        <Badge
+          data-testid="info-card-badge-expired"
+          className="bg-red-200 text-red-500"
+        >
           <Flex align="center" gap="8" wrap="nowrap" className="mx-4">
             {t('actualites.info.status.expired')}
             <IconClockAlert />

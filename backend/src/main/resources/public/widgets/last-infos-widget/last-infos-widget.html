@@ -1,7 +1,7 @@
 <div class="widget news">
 	<h1><i18n>actualites.widget.title</i18n></h1>
 	<div class="new">
-		<a class="cell-ellipsis" ng-repeat="info in widget.infos" ng-href="/actualites#/view/thread/[[info.thread.id]]/info/[[info.id]]" >
+		<a data-testid="widget-news-newsline" class="cell-ellipsis" ng-repeat="info in widget.infos" ng-href="/actualites#/view/thread/[[info.thread.id]]/info/[[info.id]]" >
 			<img ng-if="!info.thread.icon" skin-src="/img/illustrations/news.svg" class="new--icon" />
 			<img ng-if="info.thread.icon" ng-src="[[info.thread.icon]]?thumbnail=120x120" class="new--icon" />
 			<span class="new--title" tooltip="[[info.tooltip]]">[[info.title]]</span>

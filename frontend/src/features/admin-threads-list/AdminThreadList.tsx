@@ -158,7 +158,11 @@ export function AdminThreadList() {
               >
                 {t('actualites.adminThreads.modal.cancel')}
               </Button>
-              <Button color="danger" onClick={handleDeleteClick}>
+              <Button
+                data-testid="admin-thread-modal-delete-button"
+                color="danger"
+                onClick={handleDeleteClick}
+              >
                 {t('actualites.adminThreads.modal.delete')}
               </Button>
             </>
