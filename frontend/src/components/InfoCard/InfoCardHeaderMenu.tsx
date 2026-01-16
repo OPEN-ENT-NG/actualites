@@ -4,9 +4,11 @@ import {
   IconEdit,
   IconHide,
   IconSend,
+  IconShare,
   IconSubmitToValidate,
   IconWrite,
 } from '@edifice.io/react/icons';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useI18n } from '~/hooks/useI18n';
 import { useInfoActionDropdown } from '~/hooks/useInfoActionDropdown';
@@ -15,6 +17,7 @@ import { useInfoPublishOrSubmit } from '~/hooks/useInfoPublishOrSubmit';
 import { useInfoUnpublish } from '~/hooks/useInfoUnpublish';
 import { useInfoUnsubmit } from '~/hooks/useInfoUnsubmit';
 import { InfoStatus } from '~/models/info';
+import { InfoShareModal } from '../InfoShareModal/InfoShareModal';
 import { PortalModal } from '../PortalModal';
 import { InfoCardProps } from './InfoCard';
 
@@ -52,6 +55,8 @@ export const InfoCardHeaderMenu = ({ info }: InfoCardHeaderMenuProps) => {
     handleDeleteAlertOpen,
     isDeleteAlertOpen,
   } = useInfoDelete();
+
+  const [isShareInfoModalOpen, setIsShareInfoModalOpen] = useState(false);
 
   const { t, common_t } = useI18n();
   const navigate = useNavigate();
@@ -107,6 +112,16 @@ export const InfoCardHeaderMenu = ({ info }: InfoCardHeaderMenuProps) => {
             onClick={handleEditClick}
           >
             {t('actualites.info.actions.edit')}
+          </Dropdown.Item>
+        )}
+
+        {canEdit && (
+          <Dropdown.Item
+            data-testid="info-card-header-share-dd-item"
+            icon={<IconShare />}
+            onClick={() => setIsShareInfoModalOpen(true)}
+          >
+            {t('actualites.info.actions.share')}
           </Dropdown.Item>
         )}
 
@@ -242,6 +257,14 @@ export const InfoCardHeaderMenu = ({ info }: InfoCardHeaderMenuProps) => {
         >
           {t('actualites.info.delete.modal.body')}
         </PortalModal>
+      )}
+      {isShareInfoModalOpen && (
+        <InfoShareModal
+          info={info}
+          isOpen={isShareInfoModalOpen}
+          onCancel={() => setIsShareInfoModalOpen(false)}
+          onSubmit={() => setIsShareInfoModalOpen(false)}
+        />
       )}
     </>
   );
