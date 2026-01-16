@@ -40,9 +40,8 @@ export const Root = () => {
   const isCreateRoute = matches.find((route) => route.id === 'CreateInfo');
 
   const { currentApp, init } = useEdificeClient();
-  const { canContributeOnOneThread } = useThreadsUserRights(
-    !!isAdminThreadPath,
-  );
+  const { canContributeOnOneThread } =
+    useThreadsUserRights(!!isAdminThreadPath);
   const { canCreateThread } = useUserRights();
 
   if (!init) return <LoadingScreen position={false} />;
