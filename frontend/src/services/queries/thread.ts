@@ -40,7 +40,7 @@ export const threadQueryOptions = {
    */
   getThreads(viewHidden = false) {
     return queryOptions({
-      queryKey: [threadQueryKeys.all(viewHidden)],
+      queryKey: threadQueryKeys.all(viewHidden),
       queryFn: () => threadService.getThreads(viewHidden),
     });
   },
