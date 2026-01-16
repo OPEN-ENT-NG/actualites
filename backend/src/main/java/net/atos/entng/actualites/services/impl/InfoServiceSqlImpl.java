@@ -652,11 +652,11 @@ public class InfoServiceSqlImpl implements InfoService {
 									"        COALESCE(( " +
 									"         SELECT MAX(_inf.content_version) FROM " + NEWS_INFO_REVISION_TABLE + " _inf " +
 									"         WHERE _inf.info_id = i.id AND _inf.content_version < i.content_version " +
-									"        ), 1) as previous_content_version, (CASE WHEN i.publication_date > i.modified THEN i.publication_date ELSE i.modified END) as date " +
+									"        ), 1) as previous_content_version, (CASE WHEN i.publication_date > i.modified THEN i.publication_date ELSE i.modified END) as sorting_date " +
 									"    FROM " + NEWS_INFO_TABLE + " AS i " +
 									"        LEFT JOIN " + NEWS_USER_TABLE + " AS u ON i.owner = u.id " +
 									"    WHERE i.id IN " +  Sql.listPrepared(ids.toArray(new Object[0])) +
-									"    ORDER BY date " + order;
+									"    ORDER BY sorting_date " + order;
 
 					JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
 					values.add(user.getUserId());
