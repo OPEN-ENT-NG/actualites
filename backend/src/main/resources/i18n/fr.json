@@ -32,7 +32,7 @@
   "actualites.info.actions.unpublish": "Dépublier",
   "actualites.info.actions.publish": "Publier l'actualité",
   "actualites.info.actions.validateAndPublish": "Valider la publication",
-  "actualites.info.actions.share": "Partager",
+  "actualites.info.actions.share": "Modifier les lecteurs",
   "actualites.info.createForm.required": "Champs requis",
   "actualites.info.createForm.details.title": "Création d’une actualité",
   "actualites.info.createForm.details.subtitle": "Saisir le contenu de votre actualité ",
