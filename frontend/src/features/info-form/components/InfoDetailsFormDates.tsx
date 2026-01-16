@@ -2,23 +2,16 @@ import { Button, Flex, useDate } from '@edifice.io/react';
 import { IconEdit } from '@edifice.io/react/icons';
 import dayjs from 'dayjs';
 import { useMemo, useState } from 'react';
-import { UseFormGetValues, UseFormSetValue } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import { useI18n } from '~/hooks/useI18n';
 import { InfoDetailsFormParams } from '~/store/infoFormStore';
 import { INFO_DETAILS_DEFAULT_VALUES } from './InfoDetailsForm';
 import { InfoDetailsFormDatesModal } from './InfoDetailsFormDatesModal';
 
-interface InfoDetailsFormDatesProps {
-  getValues: UseFormGetValues<InfoDetailsFormParams>;
-  setValue: UseFormSetValue<InfoDetailsFormParams>;
-}
-
-export function InfoDetailsFormDates({
-  getValues,
-  setValue,
-}: InfoDetailsFormDatesProps) {
+export function InfoDetailsFormDates() {
   const { t } = useI18n();
   const { formatDate } = useDate();
+  const { getValues, setValue } = useFormContext<InfoDetailsFormParams>();
 
   const [isModalOpen, setModalOpen] = useState(false);
   const publicationDate = getValues().publicationDate;

@@ -1,31 +1,22 @@
 import { Flex, FormControl, Label } from '@edifice.io/react';
 import { Editor, EditorInstance } from '@edifice.io/react/editor';
-import {
-  Control,
-  Controller,
-  FieldErrors,
-  UseFormSetValue,
-} from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 import { useI18n } from '~/hooks/useI18n';
 import { InfoDetailsFormParams } from '~/store/infoFormStore';
 import { isContentValid } from '../utils/utils';
 import './InfoDetailsForm.css';
 
 interface InfoDetailsFormEditorProps {
-  control: Control<InfoDetailsFormParams>;
-  errors: FieldErrors<InfoDetailsFormParams>;
   content?: string;
-  setValue: UseFormSetValue<InfoDetailsFormParams>;
 }
 
-export function InfoDetailsFormEditor({
-  control,
-  errors,
-  content,
-  setValue,
-}: InfoDetailsFormEditorProps) {
+export function InfoDetailsFormEditor({ content }: InfoDetailsFormEditorProps) {
   const { t } = useI18n();
-
+  const {
+    control,
+    setValue,
+    formState: { errors },
+  } = useFormContext<InfoDetailsFormParams>();
   const handleEditorChange = ({ editor }: { editor: EditorInstance }) => {
     setValue('content', editor.isEmpty ? '' : editor.getHTML(), {
       shouldDirty: true,
