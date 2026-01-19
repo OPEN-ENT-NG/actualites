@@ -22,7 +22,7 @@ import { getThreadUserRights } from './utils/threads';
  * }
  * ```
  */
-export function useThreadsUserRights(): {
+export function useThreadsUserRights(viewHidden = false): {
   threadsWithContributeRight?: Thread[];
   threadsWithManageRight?: Thread[];
   canContributeOnOneThread?: boolean;
@@ -30,7 +30,7 @@ export function useThreadsUserRights(): {
   isReady: boolean;
   hasContributeRightOnThread?: (threadId?: ThreadId) => boolean;
 } {
-  const { data: threads, isSuccess } = useThreads();
+  const { data: threads, isSuccess } = useThreads(viewHidden);
   const { user } = useUser();
   const { canCreateThread } = useUserRights();
 

@@ -175,8 +175,6 @@ export const AdminThreadModal = ({
     onCancel();
   };
 
-  console.log(!isValid || isSubmitting);
-
   return createPortal(
     <Modal
       id="admin-new-thread-modal"

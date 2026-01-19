@@ -19,8 +19,11 @@ export const createThreadService = () => {
      * Get all threads.
      * @returns an array of Thread objects
      */
-    getThreads() {
-      return odeServices.http().get<Thread[]>(`${baseUrlAPI}/threads`);
+    getThreads(viewHidden = false) {
+      const visibilityParam = viewHidden ? '?viewHidden=true' : '';
+      return odeServices
+        .http()
+        .get<Thread[]>(`${baseUrlAPI}/threads${visibilityParam}`);
     },
 
     /**

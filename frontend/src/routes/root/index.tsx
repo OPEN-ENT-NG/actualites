@@ -33,11 +33,16 @@ export const Root = () => {
   };
   const setRights = useActionUserRights.use.setRights();
   setRights(actionUserRights);
+  const matches = useMatches();
+  const isAdminThreadPath = matches.find(
+    (route) => route.id === 'AdminThreads',
+  );
+  const isCreateRoute = matches.find((route) => route.id === 'CreateInfo');
 
   const { currentApp, init } = useEdificeClient();
-  const { canContributeOnOneThread } = useThreadsUserRights();
+  const { canContributeOnOneThread } =
+    useThreadsUserRights(!!isAdminThreadPath);
   const { canCreateThread } = useUserRights();
-  const matches = useMatches();
 
   if (!init) return <LoadingScreen position={false} />;
 
@@ -45,10 +50,6 @@ export const Root = () => {
     displayName: 'news',
     icon: 'actualites-large',
   };
-  const isAdminThreadPath = matches.find(
-    (route) => route.id === 'AdminThreads',
-  );
-  const isCreateRoute = matches.find((route) => route.id === 'CreateInfo');
 
   return init ? (
     <Layout>

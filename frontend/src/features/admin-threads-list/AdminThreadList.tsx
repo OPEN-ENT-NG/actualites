@@ -15,7 +15,7 @@ import AdminThreadModal from './components/AdminThreadModal';
 import AdminThreadShareModal from './components/AdminThreadShareModal';
 
 export function AdminThreadList() {
-  const { threadsWithManageRight } = useThreadsUserRights();
+  const { threadsWithManageRight } = useThreadsUserRights(true);
   const { t } = useI18n();
   const { data: infosStats } = useInfosStats();
   const { mutate: deleteThread } = useDeleteThread();
