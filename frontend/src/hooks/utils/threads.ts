@@ -6,9 +6,10 @@ import {
 import { Thread } from '~/models/thread';
 
 type ThreadUserRights = {
-  canContribute: boolean;
-  canPublish: boolean;
-  canManage: boolean;
+  isThreadOwner: boolean;
+  canContributeInThread: boolean;
+  canPublishInThread: boolean;
+  canManageThread: boolean;
 };
 
 export function getThreadUserRights(
@@ -16,28 +17,34 @@ export function getThreadUserRights(
   userId?: string,
 ): ThreadUserRights {
   if (!thread || !userId || !thread.sharedRights?.length) {
-    return { canContribute: false, canPublish: false, canManage: false };
+    return {
+      isThreadOwner: false,
+      canContributeInThread: false,
+      canPublishInThread: false,
+      canManageThread: false,
+    };
   }
 
   return thread.sharedRights.reduce(
     (rights, right) => {
       switch (right) {
         case THREAD_MANAGER:
-          rights.canManage = true;
+          rights.canManageThread = true;
           break;
         case THREAD_CONTRIBUTOR:
-          rights.canContribute = true;
+          rights.canContributeInThread = true;
           break;
         case THREAD_PUBLISHER:
-          rights.canPublish = true;
+          rights.canPublishInThread = true;
           break;
       }
       return rights;
     },
     {
-      canContribute: false,
-      canPublish: false,
-      canManage: false,
+      isThreadOwner: thread.owner.id === userId,
+      canContributeInThread: false,
+      canPublishInThread: false,
+      canManageThread: false,
     } as ThreadUserRights,
   );
 }

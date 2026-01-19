@@ -8,9 +8,9 @@ import {
   useDeleteComment,
   useUpdateComment,
 } from '~/services/queries';
+import { useInfoStatus } from './useInfoStatus';
 import { useInfoUserRights } from './useInfoUserRights';
 import { useThreadUserRights } from './useThreadUserRights';
-import { useInfoStatus } from './useInfoStatus';
 
 // Local interface definition
 declare interface CommentOptions {
@@ -44,7 +44,9 @@ declare interface CommentOptions {
  * - comments: Array of comments
  */
 export function useCommentList(info: Info) {
-  const { canContribute, canManage } = useThreadUserRights(info.threadId);
+  const { canContributeInThread, canManageThread } = useThreadUserRights(
+    info.threadId,
+  );
   const { isCreator, canComment } = useInfoUserRights(info);
   const { isExpired } = useInfoStatus(info);
   const { data } = useComments(info.id);
@@ -109,8 +111,8 @@ export function useCommentList(info: Info) {
 
   const rights: Record<RightRole, boolean> = {
     read: true,
-    contrib: canContribute,
-    manager: canManage,
+    contrib: canContributeInThread,
+    manager: canManageThread,
     creator: isCreator,
   };
 

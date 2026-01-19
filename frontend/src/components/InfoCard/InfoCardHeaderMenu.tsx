@@ -14,6 +14,7 @@ import { useI18n } from '~/hooks/useI18n';
 import { useInfoActionDropdown } from '~/hooks/useInfoActionDropdown';
 import { useInfoDelete } from '~/hooks/useInfoDelete';
 import { useInfoPublishOrSubmit } from '~/hooks/useInfoPublishOrSubmit';
+import { useInfoStatus } from '~/hooks/useInfoStatus';
 import { useInfoUnpublish } from '~/hooks/useInfoUnpublish';
 import { useInfoUnsubmit } from '~/hooks/useInfoUnsubmit';
 import { InfoStatus } from '~/models/info';
@@ -24,12 +25,13 @@ import { InfoCardProps } from './InfoCard';
 export type InfoCardHeaderMenuProps = Pick<InfoCardProps, 'info'>;
 
 export const InfoCardHeaderMenu = ({ info }: InfoCardHeaderMenuProps) => {
+  const { isDraft } = useInfoStatus(info);
   const {
     isOwner,
-    isDraft,
     thread,
     canDelete,
     canEdit,
+    canModifyShare,
     canPublish,
     canSubmit,
     canUnpublish,
@@ -115,7 +117,7 @@ export const InfoCardHeaderMenu = ({ info }: InfoCardHeaderMenuProps) => {
           </Dropdown.Item>
         )}
 
-        {canEdit && (
+        {canModifyShare && (
           <Dropdown.Item
             data-testid="info-card-header-share-dd-item"
             icon={<IconShare />}
