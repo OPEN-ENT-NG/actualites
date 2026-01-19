@@ -6,6 +6,10 @@ export function useInfoStatus(info?: InfoBase) {
       isIncoming: false,
       isExpired: false,
       extendedStatus: undefined,
+      isPending: false,
+      isDraft: false,
+      isPublished: false,
+      canShowComments: false,
     };
   }
   const isPending = info.status === InfoStatus.PENDING;

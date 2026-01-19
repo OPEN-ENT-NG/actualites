@@ -39,8 +39,8 @@ export const InfoCardHeader = ({
   extendedStatus,
 }: InfoCardHeaderProps) => {
   const [dropDownVisible, setDropDownVisible] = useState(false);
-  const { isExpired } = useInfoStatus(info);
-  const { isOwner, isDraft, thread, canPublish } = useInfoActionDropdown(info);
+  const { isExpired, isDraft } = useInfoStatus(info);
+  const { isOwner, thread, canPublish } = useInfoActionDropdown(info);
 
   const { publishOrSubmit } = useInfoPublishOrSubmit();
 
