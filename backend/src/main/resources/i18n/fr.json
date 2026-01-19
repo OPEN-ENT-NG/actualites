@@ -61,7 +61,7 @@
   "actualites.info.createForm.previousStep": "Précédent",
   "actualites.info.createForm.rights.title": "Création d’une actualité",
   "actualites.info.createForm.rights.subtitle": "Définissez qui pourra lire et commenter l’actualité.",
-  "actualites.info.createForm.rights.infoMessage": "L’actualité sera visible une fois publiée. \nPour rappel, les contributeurs et gestionnaires du fil pourront aussi voir l’actualité.",
+  "actualites.info.createForm.rights.infoMessage": "L’actualité sera visible une fois publiée. \nPour rappel, les contributeurs, valideurs et gestionnaires du fil pourront aussi voir l’actualité.",
   "actualites.info.createForm.publish": "Publier",
   "actualites.info.createForm.submit": "Soumettre",
   "actualites.info.createForm.saveDraft": "Brouillon",
