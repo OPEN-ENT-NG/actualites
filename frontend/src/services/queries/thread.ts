@@ -20,7 +20,8 @@ interface OnMutateResult {
 }
 
 export const threadQueryKeys = {
-  all: () => ['threads'],
+  all: (viewHidden = false) =>
+    viewHidden ? ['threads', 'viewHidden'] : ['threads'],
   thread: (threadId?: ThreadId) =>
     threadId ? [...threadQueryKeys.all(), threadId] : threadQueryKeys.all(),
   share: (threadId: ThreadId) => [
@@ -37,10 +38,10 @@ export const threadQueryOptions = {
   /**
    * @returns Query options for fetching the threads.
    */
-  getThreads() {
+  getThreads(viewHidden = false) {
     return queryOptions({
-      queryKey: threadQueryKeys.all(),
-      queryFn: () => threadService.getThreads(),
+      queryKey: threadQueryKeys.all(viewHidden),
+      queryFn: () => threadService.getThreads(viewHidden),
     });
   },
 
@@ -58,7 +59,9 @@ export const threadQueryOptions = {
   },
 };
 
-export const useThreads = () => useQuery(threadQueryOptions.getThreads());
+export const useThreads = (viewHidden = false) =>
+  useQuery(threadQueryOptions.getThreads(viewHidden));
+
 export const useThreadShares = (threadId: ThreadId) =>
   useQuery(threadQueryOptions.getShares(threadId));
 
