@@ -49,6 +49,12 @@ export function InfoPrint() {
   }, [infoDetail]);
   const id = `info-print-${infoId}`;
 
+  useEffect(() => {
+    const timeoutId = setTimeout(() => window.print(), 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, []);
+
   return (
     <article id={id} className="overflow-hidden m-32" data-testid="info-card">
       {info && (
