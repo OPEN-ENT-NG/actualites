@@ -45,7 +45,8 @@ export function useThreadsUserRights(viewHidden = false): {
     }
 
     const threadsWithContributeRight = threads.filter(
-      (thread) => getThreadUserRights(thread, user.userId)?.canContribute,
+      (thread) =>
+        getThreadUserRights(thread, user.userId)?.canContributeInThread,
     );
     const canContributeOnOneThread: boolean =
       threadsWithContributeRight.length > 0;
@@ -59,7 +60,7 @@ export function useThreadsUserRights(viewHidden = false): {
     };
 
     const threadsWithManageRight = threads.filter(
-      (thread) => getThreadUserRights(thread, user.userId)?.canManage,
+      (thread) => getThreadUserRights(thread, user.userId)?.canManageThread,
     );
 
     return {

@@ -125,7 +125,7 @@ export function InfoWorkflowRights() {
   const canPublish = getThreadUserRights(
     info?.thread,
     user?.userId || '',
-  ).canPublish;
+  ).canPublishInThread;
 
   const handleShareInfoSubmit = (isSubmitting: boolean) => {
     setIsSaving(isSubmitting);

@@ -17,6 +17,12 @@ export enum ThreadTypes {
   LATEST = 0,
 }
 
+export type ThreadOwner = {
+  id: string;
+  displayName: string;
+  deleted?: boolean;
+};
+
 export type ThreadId = number;
 
 export interface Thread {
@@ -39,10 +45,8 @@ export interface Thread {
   } | null;
   /** ID of the structure this thread is attached to. */
   structureId?: string | null;
-  /** ID of the user who created this thread. */
-  owner: string;
-  /** Name of the user who created this thread. */
-  username: string;
+  /** User who created this thread. */
+  owner: ThreadOwner;
   /** 
     Shared rights for the thread.
     Example: [
