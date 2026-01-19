@@ -2,6 +2,7 @@ import { EmptyScreen, Flex } from '@edifice.io/react';
 // import { useTranslation } from 'react-i18next';
 
 import illuEmptyCreate from '@images/emptyscreen/illu-blog.svg';
+import illuSearch from '@images/emptyscreen/illu-search.svg';
 import illuEmpty from '@images/emptyscreen/illu-timelinegenerator.svg';
 // import illuEmptyDraft from '@images/emptyscreen/illu-search.svg';
 import { useI18n } from '~/hooks/useI18n';
@@ -26,6 +27,22 @@ export function InfoListEmpty({ type }: { type: EmptyScreenType }) {
           imageAlt={t('actualites.infoList.empty.createInfo.title')}
           title={t('actualites.infoList.empty.createInfo.title')}
           text={t('actualites.infoList.empty.createInfo.description')}
+        />
+      )}
+      {type === 'pending' && (
+        <EmptyScreen
+          imageSrc={illuSearch}
+          imageAlt={t('actualites.infoList.empty.pending.title')}
+          title={t('actualites.infoList.empty.pending.title')}
+          text={t('actualites.infoList.empty.pending.description')}
+        />
+      )}
+      {type === 'draft' && (
+        <EmptyScreen
+          imageSrc={illuSearch}
+          imageAlt={t('actualites.infoList.empty.draft.title')}
+          title={t('actualites.infoList.empty.draft.title')}
+          text={t('actualites.infoList.empty.draft.description')}
         />
       )}
       {type === 'default' && (
