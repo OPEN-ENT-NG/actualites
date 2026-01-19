@@ -1,5 +1,6 @@
 import { useEdificeClient } from '@edifice.io/react';
-import { Info, InfoStatus } from '~/models/info';
+import { Info } from '~/models/info';
+import { useInfoStatus } from './useInfoStatus';
 import { useThread } from './useThread';
 import { getThreadUserRights } from './utils/threads';
 
@@ -7,46 +8,49 @@ export function useInfoActionDropdown(info: Info) {
   const { user } = useEdificeClient();
   const thread = useThread(info.threadId);
   const {
-    canContribute,
-    canPublish: canPublishInThread,
-    canManage,
+    isThreadOwner,
+    canContributeInThread,
+    canPublishInThread,
+    canManageThread,
   } = getThreadUserRights(thread, user?.userId || '');
+  const { isDraft, isPending, isPublished, isExpired } = useInfoStatus(info);
 
+  const isThreadOwnerOrPublisherOrAdmin =
+    isThreadOwner || canPublishInThread || canManageThread;
   const isOwner = info.owner.id === user?.userId;
-  const isDraft = info.status === InfoStatus.DRAFT;
 
-  const canSubmit = isDraft && canContribute;
+  const canPrint = isPublished;
 
-  const canPublish =
-    (isDraft || info.status === InfoStatus.PENDING) && canPublishInThread;
+  const canModifyShare = (isPublished && !isExpired) || isOwner;
 
   const canEdit =
-    (isDraft && info.owner.id === user?.userId) ||
-    (info.status === InfoStatus.PENDING &&
-      (info.owner.id === user?.userId || canPublish || canManage)) ||
-    (info.status === InfoStatus.PUBLISHED && (canPublish || canManage));
+    (isDraft && isOwner) ||
+    (isPending && (isThreadOwnerOrPublisherOrAdmin || isOwner)) ||
+    (isPublished && isThreadOwnerOrPublisherOrAdmin);
+
+  const canSubmit = isDraft && (canContributeInThread || isOwner);
+
+  const canPublish = (isDraft || isPending) && isThreadOwnerOrPublisherOrAdmin;
+
+  const canUnsubmit = isPending && isOwner;
 
   const canUnpublish =
-    info.status === InfoStatus.PUBLISHED &&
-    ((canContribute && info.owner.id === user?.userId) ||
-      canPublish ||
-      canManage);
+    isPublished && (isThreadOwnerOrPublisherOrAdmin || isOwner);
 
-  const canDelete = info.owner.id === user?.userId || canManage || canPublish;
-
-  const canUnsubmit = isOwner && info.status === InfoStatus.PENDING;
+  const canDelete = isThreadOwnerOrPublisherOrAdmin || isOwner;
 
   return {
     user,
     thread,
     isOwner,
-    isDraft,
-    canContribute,
-    canDelete,
-    canEdit,
-    canManage,
-    canPublish,
+    canContributeInThread,
+    canManageThread,
     canPublishInThread,
+    canPrint,
+    canDelete,
+    canModifyShare,
+    canEdit,
+    canPublish,
     canSubmit,
     canUnpublish,
     canUnsubmit,
