@@ -28,7 +28,7 @@ export function useInfoActionDropdown(info: Info) {
     (isPending && (isThreadOwnerOrPublisherOrAdmin || isOwner)) ||
     (isPublished && isThreadOwnerOrPublisherOrAdmin);
 
-  const canSubmit = isDraft && (isThreadOwnerOrPublisherOrAdmin || isOwner);
+  const canSubmit = isDraft && (canContributeInThread || isOwner);
 
   const canPublish = (isDraft || isPending) && isThreadOwnerOrPublisherOrAdmin;
 
