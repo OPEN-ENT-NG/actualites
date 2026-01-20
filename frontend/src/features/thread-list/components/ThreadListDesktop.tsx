@@ -36,7 +36,7 @@ export const ThreadListDesktop = () => {
     <Flex
       direction="column"
       fill
-      gap="60"
+      gap="6"
       className="overflow-auto pt-16 pe-16 h-100"
     >
       {!isFetched ? (
