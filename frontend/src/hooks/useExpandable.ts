@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ExpandableProps } from '~/components/Expandable';
 
 export const useExpandable = ({
@@ -10,7 +10,8 @@ export const useExpandable = ({
   ExpandableProps,
   'collapse' | 'onCollapseApplied' | 'hasPreview' | 'onTogglePreview'
 >) => {
-  const [expanded, setExpanded] = useState(!collapse || hasPreview);
+  const [expanded, setExpanded] = useState(!collapse || hasPreview); // true
+  const collapseRef = useRef(collapse);
 
   // When CSS transition ends
   const onTransitionEnd = useCallback(() => {
@@ -28,20 +29,24 @@ export const useExpandable = ({
       }
       return shouldBeExpanded;
     });
-  }, [collapse, onCollapseApplied, onTogglePreview]);
+  }, [collapse, onCollapseApplied, onTogglePreview, hasPreview]);
 
   // When `collapse` changes
   useEffect(() => {
-    setExpanded((isExpanded) => {
-      if (isExpanded) {
-        // Close previously expanded content, and finish rendering in `onTransitionEnd`
-        return false;
-      } else {
-        return !collapse || hasPreview;
-      }
-    });
-  }, [collapse]);
+    if (collapseRef.current !== collapse) {
+      collapseRef.current = collapse;
+      setExpanded((isExpanded) => {
+        if (isExpanded) {
+          // Close previously expanded content, and finish rendering in `onTransitionEnd`
+          return false;
+        } else {
+          return !collapse || hasPreview;
+        }
+      });
+    }
+  }, [collapse, hasPreview]);
 
+  console.log('>>>> useExpandable', { collapse, hasPreview, expanded });
   return {
     onTransitionEnd,
     className: `expandable ${expanded ? 'expanded' : ''}`,
