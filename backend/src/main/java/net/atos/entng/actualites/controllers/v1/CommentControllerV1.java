@@ -83,20 +83,22 @@ public class CommentControllerV1 extends ControllerHelper {
 				final int infoIdFromBody = resource.getInteger(FIELD_INFO_ID, -1);
 				if(infoIdFromBody == Integer.parseInt(infoId)) {
 					final String commentText = resource.getString(FIELD_COMMENT);
-					final String title = resource.getString(FIELD_TITLE);
 					resource.remove(FIELD_TITLE);
-					Handler<Either<String, JsonObject>> handler = event -> {
-						if (event.isRight()) {
-							JsonObject comment = event.right().getValue();
-							String commentId = comment.getLong("id").toString();
-							notifyTimeline(request, user, infoId, commentId, title, commentText, NEWS_COMMENT_EVENT_TYPE);
-							renderJson(request, event.right().getValue(), 200);
-						} else {
-							JsonObject error = new JsonObject().put("error", event.left().getValue());
-							renderJson(request, error, 400);
-						}
-					};
-					crudService.create(resource, user, handler);
+					infoService.retrieve(infoId, false,  infoResult -> {
+						Handler<Either<String, JsonObject>> handler = event -> {
+							if (event.isRight()) {
+								JsonObject comment = event.right().getValue();
+								JsonObject info = infoResult.right().getValue();
+								String commentId = comment.getLong("id").toString();
+								notifyTimeline(request, user, infoId, commentId, info.getString("title"), commentText, NEWS_COMMENT_EVENT_TYPE);
+								renderJson(request, event.right().getValue(), 200);
+							} else {
+								JsonObject error = new JsonObject().put("error", event.left().getValue());
+								renderJson(request, error, 400);
+							}
+						};
+						crudService.create(resource, user, handler);
+					});
 				} else {
 					log.warn(String.format("User %s tried to post a comment for info %s by using a different id %s", user.getLogin(), infoIdFromBody, infoId));
 					forbidden(request);
