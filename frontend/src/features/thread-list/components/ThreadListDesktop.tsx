@@ -33,7 +33,12 @@ export const ThreadListDesktop = () => {
   };
 
   return (
-    <Flex direction="column" fill gap="6" className="overflow-auto py-16 pe-16">
+    <Flex
+      direction="column"
+      fill
+      gap="60"
+      className="overflow-auto pt-16 pe-16 h-100"
+    >
       {!isFetched ? (
         <ButtonSkeleton size="lg" className="col-12" />
       ) : (
@@ -54,8 +59,9 @@ export const ThreadListDesktop = () => {
               <ThreadListDesktopThread thread={thread} key={thread.id} />
             ))}
           </Menu>
+
           {canManageOnOneThread && (
-            <div className="border-top pt-16">
+            <div className="border-top py-16 bg-white sticky-bottom">
               <Button
                 data-testid="manage-threads-button"
                 color="secondary"

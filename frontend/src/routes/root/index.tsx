@@ -4,6 +4,7 @@ import {
   Flex,
   Layout,
   LoadingScreen,
+  useBreakpoint,
   useEdificeClient,
 } from '@edifice.io/react';
 
@@ -18,6 +19,7 @@ import { queryClient } from '~/providers';
 import { actionsQueryOptions } from '~/services/queries/actions';
 import { useActionUserRights } from '~/store';
 import { NewInfoButton } from './components/NewInfoButton';
+import clsx from 'clsx';
 
 /** Check old format URL and redirect if needed */
 export const loader = async () => {
@@ -43,6 +45,7 @@ export const Root = () => {
   const { canContributeOnOneThread } =
     useThreadsUserRights(!!isAdminThreadPath);
   const { canCreateThread } = useUserRights();
+  const { lg } = useBreakpoint();
 
   if (!init) return <LoadingScreen position={false} />;
 
@@ -52,19 +55,21 @@ export const Root = () => {
   };
 
   return init ? (
-    <Layout>
-      <AppHeader>
-        <Breadcrumb app={(currentApp as IWebApp) ?? displayApp} />
-        {!isCreateRoute && (
-          <Flex fill align="center" justify="end">
-            {isAdminThreadPath
-              ? canCreateThread && <AdminNewThreadButton />
-              : canContributeOnOneThread && <NewInfoButton />}
-          </Flex>
-        )}
-      </AppHeader>
-      <Outlet />
-    </Layout>
+    <div className={clsx({ 'd-flex flex-column vh-100': lg })}>
+      <Layout>
+        <AppHeader>
+          <Breadcrumb app={(currentApp as IWebApp) ?? displayApp} />
+          {!isCreateRoute && (
+            <Flex fill align="center" justify="end">
+              {isAdminThreadPath
+                ? canCreateThread && <AdminNewThreadButton />
+                : canContributeOnOneThread && <NewInfoButton />}
+            </Flex>
+          )}
+        </AppHeader>
+        <Outlet />
+      </Layout>
+    </div>
   ) : null;
 };
 

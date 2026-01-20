@@ -40,43 +40,41 @@ export const InfoList = () => {
   });
 
   return (
-    <>
-      <Flex
-        direction="column"
-        fill
-        className="me-n16 me-md-0  me-lg-32 p-16 ps-0 ps-lg-32 pe-md-0"
-        gap="16"
-      >
-        {isSegmentedVisible && (
-          <header className="align-self-center">
-            {isInfosStatsLoading ? (
-              <InfoListSegmentedSkeleton />
-            ) : (
-              <InfoListSegmented
-                value={value}
-                onChange={(value) => {
-                  updateParams({ value });
-                }}
-              />
-            )}
-          </header>
-        )}
-        {!isLoading && infos.length === 0 && emptyScreenIsReady && (
-          <InfoListEmpty type={emptyScreenType} />
-        )}
-        {infos.map((info) => (
-          <InfoCard id={`info-${info.id}`} key={info.id} info={info} />
-        ))}
-        {isLoading ? (
-          <>
-            <InfoCardSkeleton />
-            <InfoCardSkeleton />
-            <InfoCardSkeleton />
-          </>
-        ) : (
-          hasNextPage && <InfoCardSkeleton ref={loadNextRef} />
-        )}
-      </Flex>
-    </>
+    <Flex
+      direction="column"
+      fill
+      className="me-n16 me-md-0  me-lg-32 p-16 ps-0 ps-lg-32 pe-md-0"
+      gap="16"
+    >
+      {isSegmentedVisible && (
+        <header className="align-self-center">
+          {isInfosStatsLoading ? (
+            <InfoListSegmentedSkeleton />
+          ) : (
+            <InfoListSegmented
+              value={value}
+              onChange={(value) => {
+                updateParams({ value });
+              }}
+            />
+          )}
+        </header>
+      )}
+      {!isLoading && infos.length === 0 && emptyScreenIsReady && (
+        <InfoListEmpty type={emptyScreenType} />
+      )}
+      {infos.map((info) => (
+        <InfoCard id={`info-${info.id}`} key={info.id} info={info} />
+      ))}
+      {isLoading ? (
+        <>
+          <InfoCardSkeleton />
+          <InfoCardSkeleton />
+          <InfoCardSkeleton />
+        </>
+      ) : (
+        hasNextPage && <InfoCardSkeleton ref={loadNextRef} />
+      )}
+    </Flex>
   );
 };
