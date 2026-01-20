@@ -10,7 +10,7 @@ export const useExpandable = ({
   ExpandableProps,
   'collapse' | 'onCollapseApplied' | 'hasPreview' | 'onTogglePreview'
 >) => {
-  const [expanded, setExpanded] = useState(!collapse || hasPreview); // true
+  const [expanded, setExpanded] = useState(!collapse || hasPreview);
   const collapseRef = useRef(collapse);
 
   // When CSS transition ends
@@ -46,7 +46,6 @@ export const useExpandable = ({
     }
   }, [collapse, hasPreview]);
 
-  console.log('>>>> useExpandable', { collapse, hasPreview, expanded });
   return {
     onTransitionEnd,
     className: `expandable ${expanded ? 'expanded' : ''}`,
