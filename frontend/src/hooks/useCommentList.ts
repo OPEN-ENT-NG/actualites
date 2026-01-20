@@ -44,9 +44,12 @@ declare interface CommentOptions {
  * - comments: Array of comments
  */
 export function useCommentList(info: Info) {
-  const { canContributeInThread, canManageThread } = useThreadUserRights(
-    info.threadId,
-  );
+  const {
+    canContributeInThread,
+    canManageThread,
+    canPublishInThread,
+    isThreadOwner,
+  } = useThreadUserRights(info.threadId);
   const { isCreator, canComment } = useInfoUserRights(info);
   const { isExpired } = useInfoStatus(info);
   const { data } = useComments(info.id);
@@ -112,7 +115,7 @@ export function useCommentList(info: Info) {
   const rights: Record<RightRole, boolean> = {
     read: true,
     contrib: canContributeInThread,
-    manager: canManageThread,
+    manager: canManageThread || canPublishInThread || isThreadOwner,
     creator: isCreator,
   };
 
