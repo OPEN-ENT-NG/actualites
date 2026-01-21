@@ -36,19 +36,21 @@
 .info-card.info-card-expired {
   --edifice-info-card-state-color: var(--edifice-red-300);
   --edifice-info-card-divider-color: var(--edifice-danger);
-  --edifice-info-card-border-color: var(--edifice-white);
 }
 
 .info-card.info-card-headline {
   --edifice-info-card-state-color: var(--edifice-yellow-300);
   --edifice-info-card-divider-color: var(--edifice-yellow);
+  --edifice-info-card-border-color: transparent;
+}
+
+.info-card.info-card-headline:hover {
   --edifice-info-card-border-color: var(--edifice-info-card-state-color);
 }
 
 .info-card.info-card-headline.info-card-expired {
   --edifice-info-card-state-color: var(--edifice-red-300);
   --edifice-info-card-divider-color: var(--edifice-yellow);
-  --edifice-info-card-border-color: var(--edifice-white);
 }
 
 .info-card::before {
@@ -65,6 +67,7 @@
   border-bottom-right-radius: 2.4rem;
   box-shadow: inset -4px -3px 6px 0px #00000033;
   transition: height var(--edifice-info-animation-duration) ease-in-out;
+  border-right: solid 1px var(--edifice-white);
 }
 
 .info-card.info-card-full-content::before {
@@ -91,7 +94,6 @@
 }
 
 /* Show the header action button only on hover/focus/expanded */
-
 .infocard-header-dropdown-button {
   opacity: 0;
   pointer-events: none;
@@ -99,7 +101,6 @@
 }
 
 .info-card:hover .infocard-header-dropdown-button {
-  opacity: 1;
   pointer-events: auto;
 }
 
