@@ -67,10 +67,7 @@ public class ThreadFilter implements ResourcesProvider {
 			if (user.getGroupsIds() != null) {
 				groupsAndUserIds.addAll(user.getGroupsIds());
 			}
-			// Structures which the user is an ADML of.
-			final List<String> admlStructuresIds = user.isADML() 
-				? user.getFunctions().get(ADMIN_LOCAL).getScope() 
-				: Collections.EMPTY_LIST;
+
 			// Query
 			StringBuilder query = new StringBuilder();
 			JsonArray values = new JsonArray();
@@ -87,16 +84,13 @@ public class ThreadFilter implements ResourcesProvider {
 				.append(" AND (")
 				.append("   (ts.member_id IN (SELECT id FROM user_groups) AND ts.action = ?)")
 				.append("   OR t.owner = ?");
-			if(!admlStructuresIds.isEmpty()) {
-				query.append("   OR t.structure_id IN "+ Sql.listPrepared(admlStructuresIds));
-			}
+
 			query.append(" )");
 			values.add(user.getUserId());
 			groupsAndUserIds.forEach(values::add);
 			values.add(Sql.parseId(id));
 			values.add(sharedMethod);
 			values.add(user.getUserId());
-			admlStructuresIds.forEach(values::add);
 
 			// Execute
 			Sql.getInstance().prepared(query.toString(), values, message -> {

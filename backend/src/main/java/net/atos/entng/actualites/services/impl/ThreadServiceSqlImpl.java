@@ -40,6 +40,7 @@ import net.atos.entng.actualites.to.Structure;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
 import org.entcore.common.sql.SqlStatementsBuilder;
+import org.entcore.common.user.DefaultFunctions;
 import org.entcore.common.user.UserInfos;
 
 import java.util.*;
@@ -256,7 +257,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 		if (user == null) {
 			promise.fail("user not provided");
 		} else {
-			boolean filterMultiAdmlActivated = user.isADML() && user.getStructures().size() > 1;
+			boolean filterMultiAdmlActivated = user.isADML() && user.getFunctions().get(ADMIN_LOCAL).getScope().size() > 1;
 			String filterAdml = "";
 			if(filterMultiAdmlActivated && !viewHidden) {
 				filterAdml = " AND tsh.adml_group = false ";

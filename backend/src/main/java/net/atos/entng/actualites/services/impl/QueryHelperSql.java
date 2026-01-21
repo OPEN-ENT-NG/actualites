@@ -14,8 +14,8 @@ import net.atos.entng.actualites.to.NewsState;
 import net.atos.entng.actualites.to.NewsStatus;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
+import org.entcore.common.user.DefaultFunctions;
 import org.entcore.common.user.UserInfos;
-import org.entcore.common.utils.StopWatch;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,7 +26,7 @@ public class QueryHelperSql {
 
     public void fetchInfos(final UserInfos user, final boolean optimized, final Handler<Either<String, JsonArray>> handler){
         if(optimized){
-            fetchInfosOptimzed(user, handler);
+            fetchInfosOptimized(user, handler);
         } else{
             fetchInfosNotOptimzed(user, handler);
         }
@@ -126,7 +126,7 @@ public class QueryHelperSql {
             groupsAndUserIds.addAll(user.getGroupsIds());
         }
         final String memberIds = Sql.listPrepared(groupsAndUserIds.toArray());
-        boolean filterMultiAdmlActivated = user.isADML() && user.getStructures().size() > 1;
+        boolean filterMultiAdmlActivated = user.isADML() && user.getFunctions().get(DefaultFunctions.ADMIN_LOCAL).getScope().size() > 1;
         String filterAdml = "";
         if(filterMultiAdmlActivated) {
             filterAdml = " AND thread_shares.adml_group = false ";
@@ -266,7 +266,7 @@ public class QueryHelperSql {
         return promise.future();
     }
 
-    private void fetchInfosOptimzed(final UserInfos user, final Handler<Either<String, JsonArray>> handler){
+    private void fetchInfosOptimized(final UserInfos user, final Handler<Either<String, JsonArray>> handler){
         getInfosIdsByUnion(user, null, 0, Lists.newArrayList(NewsStatus.PUBLISHED), null, null).onComplete(resIds -> {
             if(resIds.failed()){
                 handler.handle(new Either.Left<>(resIds.cause().getMessage()));
