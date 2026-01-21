@@ -8,9 +8,10 @@ import {
   useEdificeClient,
 } from '@edifice.io/react';
 
-import { Outlet, useLoaderData, useLocation } from 'react-router-dom';
+import { Outlet, useLoaderData, useMatches } from 'react-router-dom';
 
 import { IWebApp } from '@edifice.io/client';
+import clsx from 'clsx';
 import { existingActions } from '~/config';
 import { AdminNewThreadButton } from '~/features';
 import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
@@ -19,7 +20,6 @@ import { queryClient } from '~/providers';
 import { actionsQueryOptions } from '~/services/queries/actions';
 import { useActionUserRights } from '~/store';
 import { NewInfoButton } from './components/NewInfoButton';
-import clsx from 'clsx';
 
 /** Check old format URL and redirect if needed */
 export const loader = async () => {
@@ -35,11 +35,12 @@ export const Root = () => {
   };
   const setRights = useActionUserRights.use.setRights();
   setRights(actionUserRights);
-  const { pathname } = useLocation();
-  const isAdminThreadPath = pathname.includes('/threads/admin');
-  const isCreateRoute = pathname.includes('/infos/create');
-  const isThreadsListPage =
-    pathname === '/' || pathname.startsWith('/threads/');
+  const matches = useMatches();
+  const isAdminThreadPath = !!matches.find(
+    (route) => route.id === 'AdminThreads',
+  );
+  const isCreateRoute = !!matches.find((route) => route.id === 'CreateInfo');
+  const isThreadsListPage = !!matches.find((route) => route.id === 'Threads');
 
   const { currentApp, init } = useEdificeClient();
   const { canContributeOnOneThread } =
