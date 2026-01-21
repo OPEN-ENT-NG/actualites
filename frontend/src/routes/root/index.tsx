@@ -39,7 +39,8 @@ export const Root = () => {
   const isAdminThreadPath = matches.find(
     (route) => route.id === 'AdminThreads',
   );
-  const isCreateRoute = matches.find((route) => route.id === 'CreateInfo');
+  const isCreateRoute = !!matches.find((route) => route.id === 'CreateInfo');
+  const isThreadsListPage = !!matches.find((route) => route.id === 'Threads');
 
   const { currentApp, init } = useEdificeClient();
   const { canContributeOnOneThread } =
@@ -55,7 +56,9 @@ export const Root = () => {
   };
 
   return init ? (
-    <div className={clsx({ 'd-flex flex-column vh-100': lg })}>
+    <div
+      className={clsx({ 'd-flex flex-column vh-100': lg && isThreadsListPage })}
+    >
       <Layout>
         <AppHeader>
           <Breadcrumb app={(currentApp as IWebApp) ?? displayApp} />
