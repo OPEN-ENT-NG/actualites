@@ -8,7 +8,7 @@ import {
   useEdificeClient,
 } from '@edifice.io/react';
 
-import { Outlet, useLoaderData, useMatches } from 'react-router-dom';
+import { Outlet, useLoaderData, useLocation } from 'react-router-dom';
 
 import { IWebApp } from '@edifice.io/client';
 import { existingActions } from '~/config';
@@ -35,12 +35,11 @@ export const Root = () => {
   };
   const setRights = useActionUserRights.use.setRights();
   setRights(actionUserRights);
-  const matches = useMatches();
-  const isAdminThreadPath = matches.find(
-    (route) => route.id === 'AdminThreads',
-  );
-  const isCreateRoute = !!matches.find((route) => route.id === 'CreateInfo');
-  const isThreadsListPage = !!matches.find((route) => route.id === 'Threads');
+  const { pathname } = useLocation();
+  const isAdminThreadPath = pathname.includes('/threads/admin');
+  const isCreateRoute = pathname.includes('/infos/create');
+  const isThreadsListPage =
+    pathname === '/' || pathname.startsWith('/threads/');
 
   const { currentApp, init } = useEdificeClient();
   const { canContributeOnOneThread } =
