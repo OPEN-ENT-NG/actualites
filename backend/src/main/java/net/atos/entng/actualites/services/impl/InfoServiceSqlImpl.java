@@ -35,6 +35,7 @@ import net.atos.entng.actualites.services.InfoService;
 import net.atos.entng.actualites.to.*;
 import net.atos.entng.actualites.utils.DateUtils;
 import net.atos.entng.actualites.utils.Events;
+import net.atos.entng.actualites.utils.UserUtils;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
 import org.entcore.common.sql.SqlStatementsBuilder;
@@ -879,7 +880,7 @@ public class InfoServiceSqlImpl implements InfoService {
 			}
 
 			// Filter for multi-ADML users to hide automatically shared threads
-			boolean filterMultiAdmlActivated = user.isADML() && user.getFunctions().get(DefaultFunctions.ADMIN_LOCAL).getScope().size() > 1;
+			boolean filterMultiAdmlActivated = UserUtils.isUserMultiADML(user);
 
 			String filterAdml = "";
 			if (filterMultiAdmlActivated && !viewHidden) {

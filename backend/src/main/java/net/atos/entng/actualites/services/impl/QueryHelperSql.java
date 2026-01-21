@@ -12,12 +12,14 @@ import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import net.atos.entng.actualites.to.NewsState;
 import net.atos.entng.actualites.to.NewsStatus;
+import net.atos.entng.actualites.utils.UserUtils;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
-import org.entcore.common.user.DefaultFunctions;
 import org.entcore.common.user.UserInfos;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class QueryHelperSql {
@@ -126,7 +128,7 @@ public class QueryHelperSql {
             groupsAndUserIds.addAll(user.getGroupsIds());
         }
         final String memberIds = Sql.listPrepared(groupsAndUserIds.toArray());
-        boolean filterMultiAdmlActivated = user.isADML() && user.getFunctions().get(DefaultFunctions.ADMIN_LOCAL).getScope().size() > 1;
+        boolean filterMultiAdmlActivated = UserUtils.isUserMultiADML(user);
         String filterAdml = "";
         if(filterMultiAdmlActivated) {
             filterAdml = " AND thread_shares.adml_group = false ";
