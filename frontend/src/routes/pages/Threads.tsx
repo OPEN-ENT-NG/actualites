@@ -1,5 +1,6 @@
-import { Button, Grid } from '@edifice.io/react';
+import { Button, Grid, useBreakpoint } from '@edifice.io/react';
 import { QueryClient } from '@tanstack/react-query';
+import clsx from 'clsx';
 import { useState } from 'react';
 import { useLoaderData } from 'react-router-dom';
 import { InfoList } from '~/components';
@@ -40,7 +41,7 @@ export function Threads() {
     info: InfoDetails | false | undefined;
   };
   const { removeHash } = useHashScrolling();
-
+  const { lg } = useBreakpoint();
   const [isModalOpen, setModalOpen] = useState(true);
 
   const handleModalClose = () => {
@@ -50,9 +51,14 @@ export function Threads() {
 
   return (
     <>
-      <Grid className="gap-0">
+      <Grid className={clsx('gap-0', { 'overflow-x-hidden': lg })}>
         <ThreadList />
-        <Grid.Col sm="12" lg="6" xl="9">
+        <Grid.Col
+          sm="12"
+          lg="6"
+          xl="9"
+          className={clsx({ 'overflow-x-hidden': lg })}
+        >
           <InfoList />
         </Grid.Col>
       </Grid>

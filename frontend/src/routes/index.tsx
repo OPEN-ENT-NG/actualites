@@ -161,6 +161,7 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
       },
       {
         path: '',
+        id: 'Threads',
         async lazy() {
           const { loader, Threads: Component } =
             await import('~/routes/pages/Threads');
