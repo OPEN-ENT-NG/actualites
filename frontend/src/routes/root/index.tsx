@@ -4,12 +4,14 @@ import {
   Flex,
   Layout,
   LoadingScreen,
+  useBreakpoint,
   useEdificeClient,
 } from '@edifice.io/react';
 
 import { Outlet, useLoaderData, useMatches } from 'react-router-dom';
 
 import { IWebApp } from '@edifice.io/client';
+import clsx from 'clsx';
 import { existingActions } from '~/config';
 import { AdminNewThreadButton } from '~/features';
 import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
@@ -34,15 +36,17 @@ export const Root = () => {
   const setRights = useActionUserRights.use.setRights();
   setRights(actionUserRights);
   const matches = useMatches();
-  const isAdminThreadPath = matches.find(
+  const isAdminThreadPath = !!matches.find(
     (route) => route.id === 'AdminThreads',
   );
-  const isCreateRoute = matches.find((route) => route.id === 'CreateInfo');
+  const isCreateRoute = !!matches.find((route) => route.id === 'CreateInfo');
+  const isThreadsListPage = !!matches.find((route) => route.id === 'Threads');
 
   const { currentApp, init } = useEdificeClient();
   const { canContributeOnOneThread } =
     useThreadsUserRights(!!isAdminThreadPath);
   const { canCreateThread } = useUserRights();
+  const { lg } = useBreakpoint();
 
   if (!init) return <LoadingScreen position={false} />;
 
@@ -52,19 +56,23 @@ export const Root = () => {
   };
 
   return init ? (
-    <Layout>
-      <AppHeader>
-        <Breadcrumb app={(currentApp as IWebApp) ?? displayApp} />
-        {!isCreateRoute && (
-          <Flex fill align="center" justify="end">
-            {isAdminThreadPath
-              ? canCreateThread && <AdminNewThreadButton />
-              : canContributeOnOneThread && <NewInfoButton />}
-          </Flex>
-        )}
-      </AppHeader>
-      <Outlet />
-    </Layout>
+    <div
+      className={clsx({ 'd-flex flex-column vh-100': lg && isThreadsListPage })}
+    >
+      <Layout>
+        <AppHeader>
+          <Breadcrumb app={(currentApp as IWebApp) ?? displayApp} />
+          {!isCreateRoute && (
+            <Flex fill align="center" justify="end">
+              {isAdminThreadPath
+                ? canCreateThread && <AdminNewThreadButton />
+                : canContributeOnOneThread && <NewInfoButton />}
+            </Flex>
+          )}
+        </AppHeader>
+        <Outlet />
+      </Layout>
+    </div>
   ) : null;
 };
 
