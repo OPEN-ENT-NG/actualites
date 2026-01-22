@@ -47,10 +47,6 @@ public class CreateInfoFilter implements ResourcesProvider {
                 if (user.getGroupsIds() != null) {
                     groupsAndUserIds.addAll(user.getGroupsIds());
                 }
-                // Structures which the user is an ADML of.
-                final List<String> admlStructuresIds = user.isADML()
-                        ? user.getFunctions().get(ADMIN_LOCAL).getScope()
-                        : Collections.EMPTY_LIST;
                 // Query
                 StringBuilder query = new StringBuilder();
                 JsonArray values = new JsonArray();
@@ -61,9 +57,6 @@ public class CreateInfoFilter implements ResourcesProvider {
                         .append(" AND (")
                         .append("   (ts.member_id IN " + Sql.listPrepared(groupsAndUserIds) + " AND ts.action = ?)")
                         .append("   OR t.owner = ?");
-                if (!admlStructuresIds.isEmpty()) {
-                    query.append("   OR t.structure_id IN " + Sql.listPrepared(admlStructuresIds));
-                }
                 query.append(" )");
                 values.add(Sql.parseId(id));
                 for (String value : groupsAndUserIds) {
@@ -71,10 +64,6 @@ public class CreateInfoFilter implements ResourcesProvider {
                 }
                 values.add(sharedMethod);
                 values.add(user.getUserId());
-                for (String value : admlStructuresIds) {
-                    values.add(value);
-                }
-
                 // Execute
                 Sql.getInstance().prepared(query.toString(), values, message -> {
                     Long count = SqlResult.countResult(message);
