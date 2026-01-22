@@ -29,10 +29,6 @@
   --edifice-info-card-divider-color: var(--edifice-purple);
 }
 
-.info-card.info-card-headline::before {
-  left: -1.6rem;
-}
-
 .info-card.info-card-expired {
   --edifice-info-card-state-color: var(--edifice-red-300);
   --edifice-info-card-divider-color: var(--edifice-danger);
@@ -41,7 +37,6 @@
 .info-card.info-card-headline {
   --edifice-info-card-state-color: var(--edifice-yellow-300);
   --edifice-info-card-divider-color: var(--edifice-yellow);
-  --edifice-info-card-border-color: transparent;
 }
 
 .info-card.info-card-headline:hover {
@@ -67,11 +62,14 @@
   border-bottom-right-radius: 2.4rem;
   box-shadow: inset -4px -3px 6px 0px #00000033;
   transition: height var(--edifice-info-animation-duration) ease-in-out;
-  border-right: solid 1px var(--edifice-white);
 }
 
 .info-card.info-card-full-content::before {
   transition-delay: var(--edifice-info-animation-duration);
+  height: 50px;
+}
+
+.info-card.info-card-full-content::after {
   height: 50px;
 }
 
@@ -81,7 +79,7 @@
   left: -0.8rem;
   bottom: -1px;
   width: 0.9rem;
-  height: 24px;
+  height: calc(100% - 80px);
   z-index: 0;
   background-color: var(--edifice-info-card-background);
   border-top-left-radius: 2.4rem;
