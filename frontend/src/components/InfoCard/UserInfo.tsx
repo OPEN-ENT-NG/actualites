@@ -38,12 +38,16 @@ export const InfoCardHeaderMetadata = ({ info }: { info: Info }) => {
       <Flex align="center" className="fs-6 text-gray-700" wrap="nowrap">
         <div data-testid="info-owner-name">{info.owner.displayName}</div>
         <Divider vertical className="border-gray-700" />
-        <div data-testid="info-date" title={formatDate(infoDate, 'LLL')}>{formatDate(infoDate, 'long')}</div>
+        <div data-testid="info-date" title={formatDate(infoDate, 'LLL')}>
+          {formatDate(infoDate, 'long')}
+        </div>
       </Flex>
     ) : (
       <Flex direction="column" className="fs-6 text-gray-700" wrap="nowrap">
         <div data-testid="info-owner-name">{info.owner.displayName}</div>
-        <div data-testid="info-date" title={formatDate(infoDate, 'LLL')}>{formatDate(infoDate, 'long')}</div>
+        <div data-testid="info-date" title={formatDate(infoDate, 'LLL')}>
+          {formatDate(infoDate, 'long')}
+        </div>
       </Flex>
     );
 

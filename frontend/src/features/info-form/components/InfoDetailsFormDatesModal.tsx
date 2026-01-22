@@ -70,6 +70,9 @@ export function InfoDetailsFormDatesModal({
     const publicationDate = dayjs(selectedPublicationDate).isToday()
       ? new Date()
       : selectedPublicationDate;
+    publicationDate.setHours(6, 0, 0, 0);
+    const expirationDate = new Date(selectedExpirationDate);
+    expirationDate.setHours(6, 0, 0, 0);
     onUpdate(publicationDate, selectedExpirationDate);
   };
   return (

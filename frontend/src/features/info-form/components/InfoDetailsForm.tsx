@@ -16,10 +16,21 @@ export const INFO_DETAILS_DEFAULT_VALUES: InfoDetailsFormParams = {
   title: '',
   headline: false,
   content: '',
+  publicationDate: undefined,
+  expirationDate: undefined,
+};
+
+export const INFO_DATES_RESET_VALUES: {
+  publicationDate: Date;
+  expirationDate: Date;
+} = {
   publicationDate: new Date(),
-  expirationDate: new Date(
-    new Date().setFullYear(new Date().getFullYear() + 1),
-  ),
+  expirationDate: (() => {
+    const date = new Date();
+    date.setFullYear(date.getFullYear() + 1);
+    date.setHours(6, 0, 0, 0);
+    return date;
+  })(),
 };
 
 export function InfoDetailsForm({

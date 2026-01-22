@@ -5,7 +5,10 @@ import { useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useI18n } from '~/hooks/useI18n';
 import { InfoDetailsFormParams } from '~/store/infoFormStore';
-import { INFO_DETAILS_DEFAULT_VALUES } from './InfoDetailsForm';
+import {
+  INFO_DATES_RESET_VALUES,
+  INFO_DETAILS_DEFAULT_VALUES,
+} from './InfoDetailsForm';
 import { InfoDetailsFormDatesModal } from './InfoDetailsFormDatesModal';
 
 export function InfoDetailsFormDates() {
@@ -18,7 +21,7 @@ export function InfoDetailsFormDates() {
   const expirationDate = getValues().expirationDate;
 
   const dateString = useMemo(() => {
-    if (
+    const areNotDefinedDates =
       dayjs(INFO_DETAILS_DEFAULT_VALUES.publicationDate).isSame(
         dayjs(publicationDate),
         'day',
@@ -26,8 +29,8 @@ export function InfoDetailsFormDates() {
       dayjs(INFO_DETAILS_DEFAULT_VALUES.expirationDate).isSame(
         dayjs(expirationDate),
         'day',
-      )
-    ) {
+      );
+    if (areNotDefinedDates || !publicationDate || !expirationDate) {
       return t('actualites.info.createForm.dates.default');
     }
 
@@ -75,8 +78,12 @@ export function InfoDetailsFormDates() {
         <InfoDetailsFormDatesModal
           isOpen={isModalOpen}
           onClose={handleCloseModal}
-          publicationDate={publicationDate}
-          expirationDate={expirationDate}
+          publicationDate={
+            publicationDate ?? INFO_DATES_RESET_VALUES.publicationDate
+          }
+          expirationDate={
+            expirationDate ?? INFO_DATES_RESET_VALUES.expirationDate
+          }
           onUpdate={handleUpdateDates}
         />
       )}
