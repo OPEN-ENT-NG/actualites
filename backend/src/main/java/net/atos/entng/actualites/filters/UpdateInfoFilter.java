@@ -74,11 +74,6 @@ public class UpdateInfoFilter implements ResourcesProvider {
             groupsAndUserIds.addAll(user.getGroupsIds());
         }
 
-        // Structures which the user is an ADML of.
-        final List<String> admlStructuresIds = user.isADML()
-                ? user.getFunctions().get(ADMIN_LOCAL).getScope()
-                : Collections.EMPTY_LIST;
-
         StringBuilder query = new StringBuilder(
                 "SELECT count(*) FROM actualites.info AS i \n" +
                 "    LEFT JOIN actualites.info_shares AS ios ON i.id = ios.resource_id \n" +
@@ -87,10 +82,6 @@ public class UpdateInfoFilter implements ResourcesProvider {
                 "    WHERE i.id = ?  AND ");
         JsonArray values = new JsonArray();
         values.add(idInfo);
-        if (!admlStructuresIds.isEmpty()) {
-            query.append(" ( t.structure_id IN " + Sql.listPrepared(admlStructuresIds)).append(" OR \n");
-            admlStructuresIds.forEach(values::add);
-        }
 
         if(targetStatus == 3) { //publish actu
             /**
@@ -146,9 +137,6 @@ public class UpdateInfoFilter implements ResourcesProvider {
             values.add(user.getUserId());
             values.add(user.getUserId());
             groupsAndUserIds.forEach(values::add);
-        }
-        if (!admlStructuresIds.isEmpty()) {
-            query.append(")");
         }
         // Execute
         Sql.getInstance().prepared(query.toString(), values, SqlResult.validUniqueResultHandler(res -> {
