@@ -4,12 +4,10 @@ import {
   useLoaderData,
   useSearchParams,
 } from 'react-router-dom';
-import { InfoCardContent } from '~/components';
+import { InfoCardContent, InfoCardHeader } from '~/components';
 import { infoQueryOptions, useInfoById } from '~/services/queries';
 import { Info } from '~/models/info';
 import { useEffect, useState } from 'react';
-import { InfoCardHeaderPrint } from '~/components/InfoCard/InfoCardHeaderPrint';
-import { useThread } from '~/hooks/useThread';
 
 interface PrintInfoProps {
   infoId: number;
@@ -37,7 +35,6 @@ export function InfoPrint() {
   const { data: infoDetail } = useInfoById(infoId);
   const [info, setInfo] = useState<Info | null>(null);
   const [searchParams] = useSearchParams();
-  const thread = useThread(info?.threadId);
 
   const withComments =
     searchParams.get('withComments') === 'true' ? true : false;
@@ -59,7 +56,7 @@ export function InfoPrint() {
     <article id={id} className="overflow-hidden m-32" data-testid="info-card">
       {info && (
         <>
-          <InfoCardHeaderPrint info={info} thread={thread} />
+          <InfoCardHeader info={info} variant="print" />
           <InfoCardContent
             info={info}
             collapse={false}
