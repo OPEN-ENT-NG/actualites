@@ -36,6 +36,7 @@ import net.atos.entng.actualites.controllers.ThreadController;
 import net.atos.entng.actualites.controllers.v1.CommentControllerV1;
 import net.atos.entng.actualites.controllers.v1.InfosControllerV1;
 import net.atos.entng.actualites.controllers.v1.ThreadControllerV1;
+import net.atos.entng.actualites.controllers.v1.UserPreferenceController;
 import net.atos.entng.actualites.cron.PublicationCron;
 import net.atos.entng.actualites.cron.ExpiredNewsCleanupCron;
 import net.atos.entng.actualites.services.*;
@@ -146,8 +147,10 @@ public class Actualites extends BaseServer {
 		threadController.setShareService(threadShareService);
 		addController(threadController);
 
+		ThreadService threadService = new ThreadServiceSqlImpl().setEventBus(eb);
+
 		ThreadControllerV1 threadControllerV1 = new ThreadControllerV1();
-		threadControllerV1.setThreadService(new ThreadServiceSqlImpl().setEventBus(eb));
+		threadControllerV1.setThreadService(threadService);
 		threadControllerV1.setThreadMigrationService(threadMigrationService);
 		final EventStore eventStoreThread = EventStoreFactory.getFactory().getEventStore(Actualites.class.getSimpleName());
 		threadControllerV1.setEventHelper(new EventHelper(eventStoreThread));
@@ -202,6 +205,9 @@ public class Actualites extends BaseServer {
 		commentControllerV1.setInfoService(infoService);
 		commentControllerV1.setCrudService(commentSqlCrudService);
 		addController(commentControllerV1);
+
+		//user preferences
+		addController(new UserPreferenceController(new UserPreferenceServiceImpl(threadService)));
 
 		// News publication cron task
 		String publicationCronConf = config.getString("news-publication-cron");

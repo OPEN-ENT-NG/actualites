@@ -21,8 +21,17 @@ public class NewsThread {
     private final ResourceOwner owner;
     private final Rights sharedRights;
     private Structure structure;
+    private boolean visible;
 
-    public NewsThread(int id, String title, String icon, String created, String modified, String structure_id, ResourceOwner owner, Rights sharedRights) {
+    public NewsThread(int id,
+                      String title,
+                      String icon,
+                      String created,
+                      String modified,
+                      String structure_id,
+                      ResourceOwner owner,
+                      Rights sharedRights,
+                      boolean visible) {
         this.id = id;
         this.title = title;
         this.icon = icon;
@@ -31,6 +40,7 @@ public class NewsThread {
         this.structure_id = structure_id;
         this.owner = owner;
         this.sharedRights = sharedRights;
+        this.visible = visible;
     }
 
     public String getTitle() {
@@ -77,5 +87,14 @@ public class NewsThread {
 
     public void setStructure(Structure structure) {
         this.structure = structure;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public NewsThread setVisible(boolean visible) {
+        this.visible = visible;
+        return this;
     }
 }
