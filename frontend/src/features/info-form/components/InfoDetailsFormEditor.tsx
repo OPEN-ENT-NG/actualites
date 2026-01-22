@@ -1,4 +1,4 @@
-import { Flex, FormControl, Label } from '@edifice.io/react';
+import { FormControl, Label } from '@edifice.io/react';
 import { Editor, EditorInstance } from '@edifice.io/react/editor';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useI18n } from '~/hooks/useI18n';
@@ -36,7 +36,7 @@ export function InfoDetailsFormEditor({ content }: InfoDetailsFormEditorProps) {
         control={control}
         rules={{ required: true, validate: (value) => isContentValid(value) }}
         render={() => (
-          <Flex wrap="nowrap" className="info-details-form_content">
+          <div className="info-details-form_content">
             <Editor
               content={content || ''}
               mode="edit"
@@ -44,7 +44,7 @@ export function InfoDetailsFormEditor({ content }: InfoDetailsFormEditorProps) {
               onContentChange={handleEditorChange}
               data-testid="actualites.info.content.editor"
             />
-          </Flex>
+          </div>
         )}
       />
     </FormControl>
