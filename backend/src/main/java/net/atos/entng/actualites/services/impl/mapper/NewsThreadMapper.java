@@ -33,7 +33,8 @@ public class NewsThreadMapper {
                 row.getString("modified"),
                 row.getString("structure_id"),
                 owner,
-                Rights.fromRawRights(securedActions, rawRights, isOwner, Rights.ResourceType.THREAD)
+                Rights.fromRawRights(securedActions, rawRights, isOwner, Rights.ResourceType.THREAD),
+                true
         );
     }
 
