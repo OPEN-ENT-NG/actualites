@@ -449,7 +449,7 @@ public class InfoServiceSqlImpl implements InfoService {
 				" LEFT JOIN "+NEWS_MEMBER_TABLE+" AS m ON (ios.member_id = m.id AND m.group_id IS NOT NULL)" +
 				" WHERE ((ios.member_id IN " + Sql.listPrepared(groupsAndUserIds.toArray()) + "AND ios.action = ?) OR i.owner = ?)" +
 				" AND i.status = 3" +
-					" AND (i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) AND (i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL)" +
+					" AND (i.publication_date <= NOW() OR i.publication_date IS NULL) AND (i.expiration_date > NOW() OR i.expiration_date IS NULL)" +
 				" GROUP BY i.id, u.username, t.id" +
 				" ORDER BY date DESC" +
 				" LIMIT ?";
@@ -491,8 +491,8 @@ public class InfoServiceSqlImpl implements InfoService {
 					subquery.append("INNER JOIN "+NEWS_USER_TABLE+" ON (info.owner = users.id) ");
 					subquery.append("WHERE info.id IN ").append(infoIds).append(" ");
 					subquery.append("AND info.status = 3 ");
-					subquery.append("AND (info.publication_date <= LOCALTIMESTAMP OR info.publication_date IS NULL) ");
-					subquery.append("AND (info.expiration_date > LOCALTIMESTAMP OR info.expiration_date IS NULL) ");
+					subquery.append("AND (info.publication_date <= NOW() OR info.publication_date IS NULL) ");
+					subquery.append("AND (info.expiration_date > NOW() OR info.expiration_date IS NULL) ");
 					subquery.append("GROUP BY info.id, users.username, thread.id ORDER BY date DESC;");
 
 					final JsonArray subValues = new JsonArray().addAll(jsonIds);
@@ -643,8 +643,8 @@ public class InfoServiceSqlImpl implements InfoService {
 									"        SELECT id FROM " + GROUPS_TABLE + " WHERE id IN " + 	Sql.listPrepared(groupsAndUserIds.toArray()) +
 									"    	) as u_groups )" +
 									"    SELECT i.id, i.thread_id, i.title, i.content, i.status, i.owner, u.username AS owner_name, " +
-									"        u.deleted as owner_deleted, TO_CHAR(i.created, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as created, TO_CHAR(i.modified, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as modified, " +
-									" 		 TO_CHAR(i.publication_date, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as publication_date, TO_CHAR(i.expiration_date, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as expiration_date, " +
+									"        u.deleted as owner_deleted, TO_CHAR(i.created AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as created, TO_CHAR(i.modified AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as modified, " +
+									" 		 TO_CHAR(i.publication_date AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as publication_date, TO_CHAR(i.expiration_date AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as expiration_date, " +
 									"        i.is_headline, i.number_of_comments," +
 									"        (SELECT array_agg(DISTINCT ish.action) " +
 									"            FROM actualites.info_shares AS ish  " +
@@ -764,9 +764,9 @@ public class InfoServiceSqlImpl implements InfoService {
 					"    	 GROUP BY t.id, tsh.member_id " +
 					"	 ) " +
 					"SELECT i.id, i.title, " + getContentFieldQuery(originalContent) + " as content, " +
-					"        TO_CHAR(i.created, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as created, TO_CHAR(i.modified, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as modified, " +
+					"        TO_CHAR(i.created AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as created, TO_CHAR(i.modified AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as modified, " +
 					"        i.is_headline, i.number_of_comments, " + // info data
-					"        i.status, TO_CHAR(i.publication_date, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as publication_date,  TO_CHAR(i.expiration_date,  'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as expiration_date, " + // info publication data
+					"        i.status, TO_CHAR(i.publication_date AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as publication_date,  TO_CHAR(i.expiration_date AT TIME ZONE 'UTC',  'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as expiration_date, " + // info publication data
 					"		 i.owner, u.username AS owner_name, u.deleted AS owner_deleted, " + // info owner data
 					"		 i.thread_id, i.content_version as content_version, t.title AS thread_title, t.icon AS thread_icon, " +
 					"		 t.owner AS thread_owner, ut.username AS thread_owner_name, ut.deleted AS thread_owner_deleted, " + // thread owner data
@@ -898,7 +898,7 @@ public class InfoServiceSqlImpl implements InfoService {
 				statusAggregation.append("'").append(statuses[i].name()).append("', ");
 				if (statuses[i] == NewsStatus.PUBLISHED) {
 					statusAggregation.append("COUNT(*) FILTER (WHERE i.status = ").append(statuses[i].getValue())
-						.append(" AND (i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) AND (i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL))");
+						.append(" AND (i.publication_date <= NOW() OR i.publication_date IS NULL) AND (i.expiration_date > NOW() OR i.expiration_date IS NULL))");
 				} else {
 					statusAggregation.append("COUNT(*) FILTER (WHERE i.status = ").append(statuses[i].getValue()).append(")");
 				}
@@ -928,8 +928,8 @@ public class InfoServiceSqlImpl implements InfoService {
 					"SELECT t.id, " +
 					"       COUNT(i.id) AS infos_count, " +
 					"       " + statusAggregation + "::text AS status, " +
-					"       COUNT(*) FILTER (WHERE i.status = " + NewsStatus.PUBLISHED.getValue() + " AND i.expiration_date < LOCALTIMESTAMP) AS expired_count, " +
-					"       COUNT(*) FILTER (WHERE i.status = " + NewsStatus.PUBLISHED.getValue() + " AND i.publication_date > LOCALTIMESTAMP) AS incoming_count " +
+					"       COUNT(*) FILTER (WHERE i.status = " + NewsStatus.PUBLISHED.getValue() + " AND i.expiration_date < NOW()) AS expired_count, " +
+					"       COUNT(*) FILTER (WHERE i.status = " + NewsStatus.PUBLISHED.getValue() + " AND i.publication_date > NOW()) AS incoming_count " +
 					"FROM " + NEWS_THREAD_TABLE + " AS t " +
 					"    LEFT JOIN " + NEWS_INFO_TABLE + " AS i ON t.id = i.thread_id " +
 					"    LEFT JOIN info_for_user ON info_for_user.id = i.id " +
