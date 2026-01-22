@@ -78,7 +78,16 @@ export function useCommentList(info: Info) {
   const updateCommentMutation = useUpdateComment();
   const deleteCommentMutation = useDeleteComment();
 
-  const type: 'read' | 'edit' = canComment && !isExpired ? 'edit' : 'read';
+  const canManageComments =
+    canManageThread || canPublishInThread || isThreadOwner;
+  /*
+  CommentProvider must be in edit mode if :
+  - the user has been granted the right to comment AND this info is not expired,
+  OR
+  - the user has management rights on this info.
+  */
+  const type: 'read' | 'edit' =
+    (canComment && !isExpired) || canManageComments ? 'edit' : 'read';
   const callbacks = {
     post: async (comment: string) => {
       createCommentMutation.mutate({
@@ -114,8 +123,8 @@ export function useCommentList(info: Info) {
 
   const rights: Record<RightRole, boolean> = {
     read: true,
-    contrib: canContributeInThread,
-    manager: canManageThread || canPublishInThread || isThreadOwner,
+    contrib: canContributeInThread, // seems useless
+    manager: canManageComments,
     creator: isCreator,
   };
 
