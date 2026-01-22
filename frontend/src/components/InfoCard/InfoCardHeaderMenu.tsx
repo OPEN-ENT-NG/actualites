@@ -54,8 +54,12 @@ export const InfoCardHeaderMenu = ({ info }: InfoCardHeaderMenuProps) => {
     isUnsubmitAlertOpen,
   } = useInfoUnsubmit();
 
-  const { handlePrintAlertOpen, handlePrintAlertClose, isPrintAlertOpen } =
-    useInfoPrint();
+  const {
+    print,
+    handlePrintAlertOpen,
+    handlePrintAlertClose,
+    isPrintAlertOpen,
+  } = useInfoPrint();
   const {
     trash,
     handleDeleteAlertClose,
@@ -103,6 +107,7 @@ export const InfoCardHeaderMenu = ({ info }: InfoCardHeaderMenuProps) => {
   };
 
   const handlePrintClick = (withComments: boolean) => {
+    print(info, withComments);
     window.open(
       `/infos/${info.id}/print${withComments ? '?withComments=true' : ''}`,
       '_blank',
@@ -270,10 +275,10 @@ export const InfoCardHeaderMenu = ({ info }: InfoCardHeaderMenuProps) => {
                 color="primary"
                 onClick={() => handlePrintClick(false)}
               >
-                {t('actualites.info.print.modal.cancel')}
+                {t('actualites.info.print.modal.without.comments')}
               </Button>
               <Button color="primary" onClick={() => handlePrintClick(true)}>
-                {t('actualites.info.print.modal.action')}
+                {t('actualites.info.print.modal.with.comments')}
               </Button>
             </>
           }

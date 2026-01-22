@@ -142,6 +142,6 @@
   "actualites.info.unavailable.body": "Cette actualité a expiré ou a été supprimée par son auteur. Il est aussi possible que vous n'ayez plus le droit d'y accéder.",
   "actualites.info.print.modal.title": "Option d’impression",
   "actualites.info.print.modal.body": "Cette actualité contient des commentaires. Voulez-vous les inclure dans l'impression ?",
-  "actualites.info.print.modal.action": "Oui",
-  "actualites.info.print.modal.cancel": "Non"
+  "actualites.info.print.modal.with.comments": "Oui",
+  "actualites.info.print.modal.without.comments": "Non"
 }
