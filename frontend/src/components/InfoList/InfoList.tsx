@@ -43,8 +43,8 @@ export const InfoList = () => {
     <Flex
       direction="column"
       fill
-      className="me-n16 me-md-0  me-lg-32 p-16 ps-0 ps-lg-32 pe-md-0"
-      gap="16"
+      className="me-n16 me-md-0 me-lg-32 p-16 ps-0 ps-lg-32 pe-md-0"
+      gap="24"
     >
       {isSegmentedVisible && (
         <header className="align-self-center">
