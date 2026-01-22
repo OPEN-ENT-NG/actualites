@@ -48,8 +48,8 @@ export const InfoCardHeader = ({
   const navigate = useNavigate();
   const { md, lg } = useBreakpoint();
   const styles = lg
-    ? { gridTemplateColumns: '1fr auto 1fr', gap: '12px' }
-    : { gridTemplateColumns: '1fr', gap: '12px' };
+    ? { gridTemplateColumns: '1fr auto 1fr' }
+    : { gridTemplateColumns: '1fr' };
 
   const classes = clsx({
     'text-center': md,
@@ -122,7 +122,7 @@ export const InfoCardHeader = ({
 
   return (
     <header key={info.id} className="mb-12">
-      <div className="d-grid" style={styles}>
+      <div className="d-grid gap-12" style={styles}>
         <Flex align="center" justify="between">
           <InfoCardThreadHeader thread={thread} />
           {!lg && badgeContent()}
