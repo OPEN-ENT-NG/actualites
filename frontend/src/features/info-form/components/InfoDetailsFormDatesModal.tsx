@@ -73,7 +73,7 @@ export function InfoDetailsFormDatesModal({
     publicationDate.setHours(6, 0, 0, 0);
     const expirationDate = new Date(selectedExpirationDate);
     expirationDate.setHours(6, 0, 0, 0);
-    onUpdate(publicationDate, selectedExpirationDate);
+    onUpdate(publicationDate, expirationDate);
   };
   return (
     <PortalModal
