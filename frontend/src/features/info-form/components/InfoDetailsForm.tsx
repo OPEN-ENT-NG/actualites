@@ -20,6 +20,8 @@ export const INFO_DETAILS_DEFAULT_VALUES: InfoDetailsFormParams = {
   expirationDate: undefined,
 };
 
+export const INFO_HOURS_DATE_DEFAULT = 6;
+
 export const INFO_DATES_RESET_VALUES: {
   publicationDate: Date;
   expirationDate: Date;
@@ -28,7 +30,7 @@ export const INFO_DATES_RESET_VALUES: {
   expirationDate: (() => {
     const date = new Date();
     date.setFullYear(date.getFullYear() + 1);
-    date.setHours(6, 0, 0, 0);
+    date.setHours(INFO_HOURS_DATE_DEFAULT, 0, 0, 0);
     return date;
   })(),
 };

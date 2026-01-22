@@ -66,7 +66,6 @@ export function InfoDetailsFormDates() {
           variant="ghost"
           size="sm"
           leftIcon={<IconEdit />}
-          className="btn-icon"
           onClick={() => {
             setModalOpen(true);
           }}

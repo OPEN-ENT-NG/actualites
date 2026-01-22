@@ -12,6 +12,7 @@ import { PortalModal } from '~/components/PortalModal';
 import { useI18n } from '~/hooks/useI18n';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isToday from 'dayjs/plugin/isToday';
+import { INFO_HOURS_DATE_DEFAULT } from './InfoDetailsForm';
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isToday);
 interface InfoDetailsFormDatesModalProps {
@@ -70,9 +71,9 @@ export function InfoDetailsFormDatesModal({
     const publicationDate = dayjs(selectedPublicationDate).isToday()
       ? new Date()
       : selectedPublicationDate;
-    publicationDate.setHours(6, 0, 0, 0);
+    publicationDate.setHours(INFO_HOURS_DATE_DEFAULT, 0, 0, 0);
     const expirationDate = new Date(selectedExpirationDate);
-    expirationDate.setHours(6, 0, 0, 0);
+    expirationDate.setHours(INFO_HOURS_DATE_DEFAULT, 0, 0, 0);
     onUpdate(publicationDate, expirationDate);
   };
   return (
