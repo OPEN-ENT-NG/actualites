@@ -64,7 +64,7 @@ export const InfoCardHeader = ({
     if (isPrint) return null;
 
     return (
-      <div style={{ textAlign: 'right' }}>
+      <div className="text-end">
         {isDraft && (
           <Badge
             data-testid="info-card-badge-draft"
