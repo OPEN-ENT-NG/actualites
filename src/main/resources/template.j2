@@ -22,6 +22,9 @@
       "share": {
         "overrideDefaultActions": ["info.read"]
       },
+    {% endif %},
+    {% if inventory_hostname_short == 'jobs' %}
+      "news-publication-cron": "{{ actualitesNewsPublicationCron|default('0 0 * * * ? *') }}",
     {% endif %}
     "entcore.port": 8009
   }
