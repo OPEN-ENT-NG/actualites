@@ -59,7 +59,7 @@ public class CommentControllerV1 extends ControllerHelper {
     @Get("/api/v1/infos/:" + Actualites.INFO_RESOURCE_ID + "/comments")
     @ApiDoc("Comment : Get info's comments")
     @ResourceFilter(InfoFilter.class)
-    @SecuredAction(value = "info.read", type = ActionType.RESOURCE, right = InfosControllerV1.ROOT_RIGHT + "|getInfoComments")
+    @SecuredAction(value = "info.read", type = ActionType.RESOURCE, right = InfosControllerV1.ROOT_RIGHT + "|getInfo")
     public void getInfoComments(final HttpServerRequest request) {
 		final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
 		Long id;
