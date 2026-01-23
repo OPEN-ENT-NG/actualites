@@ -9,8 +9,9 @@ export function InfoDetailsFormTitle() {
     control,
     register,
     formState: { errors },
+    getValues,
   } = useFormContext<InfoDetailsFormParams>();
-
+  const defaultTitle = getValues('title');
   return (
     <FormControl
       id={'title'}
@@ -34,6 +35,7 @@ export function InfoDetailsFormTitle() {
             showCounter
             maxLength={60}
             data-testid="create-info-title-input"
+            defaultValue={defaultTitle}
             {...register('title', { required: true })}
           />
         )}
