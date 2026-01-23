@@ -35,7 +35,7 @@ export function InfoWorkflowDetails() {
     if (infoId && info) {
       const publicationDate = info.publicationDate
         ? new Date(info.publicationDate)
-        : INFO_DETAILS_DEFAULT_VALUES.publicationDate;
+        : undefined;
       const expirationDate = info.expirationDate
         ? new Date(info.expirationDate)
         : INFO_DETAILS_DEFAULT_VALUES.expirationDate;
@@ -46,8 +46,8 @@ export function InfoWorkflowDetails() {
         content: info.content,
         headline: info.headline,
         infoStatus: info.status,
-        publicationDate: publicationDate,
-        expirationDate: expirationDate,
+        publicationDate,
+        expirationDate,
       };
     }
   }, [infoId, info]);

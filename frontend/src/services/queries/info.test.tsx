@@ -8,9 +8,6 @@ import {
   useDeleteInfo,
   useInfos,
   useInfoShares,
-  usePublishInfo,
-  useSubmitInfo,
-  useUnsubmitInfo,
   useUpdateInfo,
 } from './info';
 
@@ -114,88 +111,6 @@ describe('Info Queries', () => {
 
     await waitFor(() => {
       expect(serviceSpy).toHaveBeenCalledWith(variables.infoId);
-    });
-  });
-
-  test('useSubmitInfo hook to submit an info', async () => {
-    const { result } = renderHook(() => useSubmitInfo(), {
-      wrapper,
-    });
-
-    const serviceSpy = vi.spyOn(infoService, 'submit');
-
-    const variables = {
-      threadId: 1,
-      infoId: 123,
-      payload: {
-        title: 'Changement de titre',
-      },
-    };
-
-    act(() => {
-      result.current.mutate(variables);
-    });
-
-    await waitFor(() => {
-      expect(serviceSpy).toHaveBeenCalledWith(
-        variables.threadId,
-        variables.infoId,
-        variables.payload,
-      );
-    });
-  });
-
-  test('useUnsubmitInfo hook to unsubmit an info', async () => {
-    const { result } = renderHook(() => useUnsubmitInfo(), {
-      wrapper,
-    });
-
-    const serviceSpy = vi.spyOn(infoService, 'unsubmit');
-
-    const variables = {
-      threadId: 1,
-      infoId: 123,
-    };
-
-    act(() => {
-      result.current.mutate(variables);
-    });
-
-    await waitFor(() => {
-      expect(serviceSpy).toHaveBeenCalledWith(
-        variables.threadId,
-        variables.infoId,
-      );
-    });
-  });
-
-  test('usePublishInfo hook to submit an info', async () => {
-    const { result } = renderHook(() => usePublishInfo(), {
-      wrapper,
-    });
-
-    const serviceSpy = vi.spyOn(infoService, 'publish');
-
-    const variables = {
-      threadId: 1,
-      infoId: 123,
-      payload: {
-        title: 'Changement de titre',
-        owner: 'owner',
-        username: 'username',
-      },
-    };
-
-    act(() => {
-      result.current.mutate(variables);
-    });
-
-    await waitFor(() => {
-      expect(serviceSpy).toHaveBeenCalledWith(
-        variables.threadId,
-        variables.infoId,
-        variables.payload,
-      );
     });
   });
 });
