@@ -1,6 +1,7 @@
 import { invalidateQueriesWithFirstPage, useToast } from '@edifice.io/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { INFO_DATES_RESET_VALUES } from '~/features';
 import { useI18n } from '~/hooks/useI18n';
 import { InfoDetails, InfoStatus } from '~/models/info';
 import { infoQueryKeys, useUpdateInfo } from '~/services/queries';
@@ -23,6 +24,12 @@ export function useInfoPublishOrSubmit() {
       throw new Error('infoId is undefined');
     }
 
+    if (!info.publicationDate) {
+      info.publicationDate =
+        INFO_DATES_RESET_VALUES.publicationDate.toISOString();
+      info.expirationDate =
+        INFO_DATES_RESET_VALUES.expirationDate.toISOString();
+    }
     updateInfoMutate(
       {
         infoId: info.id,

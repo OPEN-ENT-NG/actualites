@@ -1,4 +1,3 @@
-import { ShareRight } from '@edifice.io/client';
 import { invalidateQueriesWithFirstPage } from '@edifice.io/react';
 import {
   infiniteQueryOptions,
@@ -212,8 +211,8 @@ export const useCreateDraftInfo = () => {
       title: string;
       content: string;
       thread_id: number;
-      publication_date: string;
-      expiration_date: string;
+      publication_date?: string;
+      expiration_date?: string;
       is_headline?: boolean;
     }) => infoService.createDraft(payload),
     onMutate: async (payload) => {
@@ -264,70 +263,6 @@ export const useUpdateInfo = () => {
     },
   });
 };
-
-export const useSharesInfo = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({
-      resourceId,
-      rights,
-    }: {
-      resourceId: InfoId;
-      rights: ShareRight[];
-    }) => infoService.putShares(resourceId, rights),
-    onSuccess: (_, { resourceId }) => {
-      queryClient.invalidateQueries({
-        queryKey: infoQueryKeys.share({ infoId: resourceId }),
-      });
-    },
-  });
-};
-
-export const useSubmitInfo = () =>
-  useMutation({
-    mutationFn: ({
-      threadId,
-      infoId,
-      payload,
-    }: {
-      threadId: ThreadId;
-      infoId: InfoId;
-      payload: {
-        title: string;
-      };
-    }) => infoService.submit(threadId, infoId, payload),
-    // TODO optimistic update
-  });
-
-export const useUnsubmitInfo = () =>
-  useMutation({
-    mutationFn: ({
-      threadId,
-      infoId,
-    }: {
-      threadId: ThreadId;
-      infoId: InfoId;
-    }) => infoService.unsubmit(threadId, infoId),
-    // TODO optimistic update
-  });
-
-export const usePublishInfo = () =>
-  useMutation({
-    mutationFn: ({
-      threadId,
-      infoId,
-      payload,
-    }: {
-      threadId: ThreadId;
-      infoId: InfoId;
-      payload: {
-        title: string;
-        owner: string; // ID of the owner, for timeline notification.
-        username: string; // name of the owner, for timeline notification.
-      };
-    }) => infoService.publish(threadId, infoId, payload),
-    // TODO optimistic update
-  });
 
 export const useDeleteInfo = () =>
   useMutation({
