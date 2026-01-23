@@ -55,7 +55,7 @@ export function InfoDetailsFormDates() {
   const handleCloseModal = () => {
     setModalOpen(false);
   };
-  
+
   return (
     <>
       <Flex align="center" gap="8" justify="end">

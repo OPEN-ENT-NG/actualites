@@ -43,7 +43,7 @@ export function InfoDetailsFormDatesModal({
     expirationDate,
     onUpdate,
   });
-  
+
   return (
     <PortalModal
       id="modal-unpublish"
@@ -56,7 +56,11 @@ export function InfoDetailsFormDatesModal({
           <Button variant="ghost" color="tertiary" onClick={onClose}>
             {t('actualites.info.createForm.dates.modal.cancelButton')}
           </Button>
-          <Button color="primary" onClick={handleUpdate} disabled={!formIsDirty}>
+          <Button
+            color="primary"
+            onClick={handleUpdate}
+            disabled={!formIsDirty}
+          >
             {t('actualites.info.createForm.dates.modal.submitButton')}
           </Button>
         </>

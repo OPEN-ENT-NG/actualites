@@ -34,8 +34,8 @@ export function InfoWorkflowDetails() {
   const infoDetails: InfoDetailsFormParams | undefined = useMemo(() => {
     if (infoId && info) {
       const publicationDate = info.publicationDate
-      ? new Date(info.publicationDate)
-      : undefined;
+        ? new Date(info.publicationDate)
+        : undefined;
       const expirationDate = info.expirationDate
         ? new Date(info.expirationDate)
         : INFO_DETAILS_DEFAULT_VALUES.expirationDate;

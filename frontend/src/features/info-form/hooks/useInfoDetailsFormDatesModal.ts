@@ -97,7 +97,10 @@ export function useInfoDetailsFormDatesModal({
   };
 
   const publicationDateIsDirty = useMemo(() => {
-    return !dayjs(selectedPublicationDate).isSame(dayjs(publicationDate), 'day');
+    return !dayjs(selectedPublicationDate).isSame(
+      dayjs(publicationDate),
+      'day',
+    );
   }, [selectedPublicationDate, publicationDate]);
   const expirationDateIsDirty = useMemo(() => {
     return !dayjs(selectedExpirationDate).isSame(dayjs(expirationDate), 'day');
