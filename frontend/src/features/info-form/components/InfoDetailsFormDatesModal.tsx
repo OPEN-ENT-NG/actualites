@@ -6,21 +6,16 @@ import {
   Label,
   useBreakpoint,
 } from '@edifice.io/react';
-import dayjs from 'dayjs';
-import { useEffect, useState } from 'react';
 import { PortalModal } from '~/components/PortalModal';
 import { useI18n } from '~/hooks/useI18n';
-import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
-import isToday from 'dayjs/plugin/isToday';
-import { INFO_HOURS_DATE_DEFAULT } from './InfoDetailsForm';
-dayjs.extend(isSameOrAfter);
-dayjs.extend(isToday);
+import { useInfoDetailsFormDatesModal } from '../hooks/useInfoDetailsFormDatesModal';
+
 interface InfoDetailsFormDatesModalProps {
   isOpen: boolean;
   onClose: () => void;
   publicationDate: Date;
   expirationDate: Date;
-  onUpdate: (publicationDate: Date, expirationDate: Date) => void;
+  onUpdate: (publicationDate?: Date, expirationDate?: Date) => void;
 }
 
 export function InfoDetailsFormDatesModal({
@@ -33,49 +28,22 @@ export function InfoDetailsFormDatesModal({
   const { t } = useI18n();
   const { md } = useBreakpoint();
 
-  const [selectedPublicationDate, setSelectedPublicationDate] = useState<Date>(
-    new Date(publicationDate),
-  );
-  const [selectedExpirationDate, setSelectedExpirationDate] = useState<Date>(
-    new Date(expirationDate),
-  );
-  const [minExpirationDate, setMinExpirationDate] = useState<Date>(
-    getMinExpirationDate(publicationDate),
-  );
-  const [maxExpirationDate, setMaxExpirationDate] = useState<Date>(
-    getMaxExpirationDate(publicationDate),
-  );
-  const minPublicationDate = new Date();
-
-  useEffect(() => {
-    if (!selectedPublicationDate) return;
-    const newMinExpirationDate = getMinExpirationDate(selectedPublicationDate);
-    setMinExpirationDate(newMinExpirationDate);
-    const newMaxExpirationDate = getMaxExpirationDate(selectedPublicationDate);
-    setMaxExpirationDate(newMaxExpirationDate);
-
-    if (dayjs(selectedExpirationDate).isSame(dayjs(maxExpirationDate), 'day')) {
-      setSelectedExpirationDate(newMaxExpirationDate);
-    }
-    if (
-      dayjs(selectedPublicationDate).isSameOrAfter(
-        dayjs(selectedExpirationDate),
-        'day',
-      )
-    ) {
-      setSelectedExpirationDate(newMinExpirationDate);
-    }
-  }, [selectedPublicationDate]);
-
-  const handleUpdate = () => {
-    const publicationDate = dayjs(selectedPublicationDate).isToday()
-      ? new Date()
-      : selectedPublicationDate;
-    publicationDate.setHours(INFO_HOURS_DATE_DEFAULT, 0, 0, 0);
-    const expirationDate = new Date(selectedExpirationDate);
-    expirationDate.setHours(INFO_HOURS_DATE_DEFAULT, 0, 0, 0);
-    onUpdate(publicationDate, expirationDate);
-  };
+  const {
+    selectedPublicationDate,
+    selectedExpirationDate,
+    minExpirationDate,
+    maxExpirationDate,
+    minPublicationDate,
+    handlePublicationDateChange,
+    handleExpirationDateChange,
+    handleUpdate,
+    formIsDirty,
+  } = useInfoDetailsFormDatesModal({
+    publicationDate,
+    expirationDate,
+    onUpdate,
+  });
+  
   return (
     <PortalModal
       id="modal-unpublish"
@@ -88,7 +56,7 @@ export function InfoDetailsFormDatesModal({
           <Button variant="ghost" color="tertiary" onClick={onClose}>
             {t('actualites.info.createForm.dates.modal.cancelButton')}
           </Button>
-          <Button color="primary" onClick={handleUpdate}>
+          <Button color="primary" onClick={handleUpdate} disabled={!formIsDirty}>
             {t('actualites.info.createForm.dates.modal.submitButton')}
           </Button>
         </>
@@ -108,9 +76,7 @@ export function InfoDetailsFormDatesModal({
             </Label>
             <DatePicker
               value={selectedPublicationDate}
-              onChange={(date) => {
-                return date && setSelectedPublicationDate(date);
-              }}
+              onChange={handlePublicationDateChange}
               minDate={minPublicationDate}
               dateFormat={t(
                 'actualites.info.createForm.dates.modal.dateFormat',
@@ -124,7 +90,7 @@ export function InfoDetailsFormDatesModal({
             </Label>
             <DatePicker
               value={selectedExpirationDate}
-              onChange={(date) => date && setSelectedExpirationDate(date)}
+              onChange={handleExpirationDateChange}
               minDate={minExpirationDate}
               maxDate={maxExpirationDate}
               dateFormat={t(
@@ -141,14 +107,3 @@ export function InfoDetailsFormDatesModal({
     </PortalModal>
   );
 }
-
-const getMinExpirationDate = (publicationDate: Date) => {
-  const newMinExpirationDate = new Date(publicationDate);
-  newMinExpirationDate.setDate(newMinExpirationDate.getDate() + 1);
-  return newMinExpirationDate;
-};
-const getMaxExpirationDate = (publicationDate: Date) => {
-  const newExpirationDate = new Date(publicationDate);
-  newExpirationDate.setFullYear(newExpirationDate.getFullYear() + 1);
-  return newExpirationDate;
-};

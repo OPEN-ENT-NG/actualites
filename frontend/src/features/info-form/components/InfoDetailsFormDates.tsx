@@ -1,5 +1,5 @@
 import { Button, Flex, useDate } from '@edifice.io/react';
-import { IconEdit } from '@edifice.io/react/icons';
+import { IconCalendarEdit } from '@edifice.io/react/icons';
 import dayjs from 'dayjs';
 import { useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
@@ -40,7 +40,7 @@ export function InfoDetailsFormDates() {
     });
   }, [publicationDate, expirationDate]);
 
-  const handleUpdateDates = (publicationDate: Date, expirationDate: Date) => {
+  const handleUpdateDates = (publicationDate?: Date, expirationDate?: Date) => {
     setValue('publicationDate', publicationDate, {
       shouldDirty: true,
       shouldValidate: true,
@@ -55,7 +55,7 @@ export function InfoDetailsFormDates() {
   const handleCloseModal = () => {
     setModalOpen(false);
   };
-
+  
   return (
     <>
       <Flex align="center" gap="8" justify="end">
@@ -65,7 +65,7 @@ export function InfoDetailsFormDates() {
           color="tertiary"
           variant="ghost"
           size="sm"
-          leftIcon={<IconEdit />}
+          leftIcon={<IconCalendarEdit />}
           onClick={() => {
             setModalOpen(true);
           }}
