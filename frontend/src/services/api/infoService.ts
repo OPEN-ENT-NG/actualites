@@ -82,8 +82,8 @@ export const createInfoService = () => {
       title: string;
       content: string;
       thread_id: ThreadId;
-      publication_date: string;
-      expiration_date: string;
+      publication_date?: string;
+      expiration_date?: string;
       is_headline?: boolean;
     }) {
       return odeServices.http().post<{

@@ -61,7 +61,7 @@ export const ThreadListDesktop = () => {
           </Menu>
 
           {canManageOnOneThread && (
-            <div className="border-top py-16 bg-white sticky-bottom">
+            <div className="border-top py-16 bg-white sticky-bottom z-1">
               <Button
                 data-testid="manage-threads-button"
                 color="secondary"

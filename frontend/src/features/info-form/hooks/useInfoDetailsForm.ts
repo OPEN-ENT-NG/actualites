@@ -39,8 +39,8 @@ export function useInfoDetailsForm() {
             content: infoFormValues.content,
             title: infoFormValues.title,
             is_headline: infoFormValues.headline,
-            publication_date: infoFormValues.publicationDate.toISOString(),
-            expiration_date: infoFormValues.expirationDate.toISOString(),
+            publication_date: infoFormValues.publicationDate?.toISOString(),
+            expiration_date: infoFormValues.expirationDate?.toISOString(),
           },
         },
         {
@@ -58,8 +58,8 @@ export function useInfoDetailsForm() {
           content:
             infoFormValues.content !== '' ? infoFormValues.content : '<p></p>',
           thread_id: Number(infoFormValues.thread_id),
-          publication_date: infoFormValues.publicationDate.toISOString(),
-          expiration_date: infoFormValues.expirationDate.toISOString(),
+          publication_date: infoFormValues.publicationDate?.toISOString(),
+          expiration_date: infoFormValues.expirationDate?.toISOString(),
           is_headline: infoFormValues.headline,
         },
         {
