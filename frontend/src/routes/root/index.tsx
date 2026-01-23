@@ -39,7 +39,9 @@ export const Root = () => {
   const isAdminThreadPath = !!matches.find(
     (route) => route.id === 'AdminThreads',
   );
-  const isCreateRoute = !!matches.find((route) => route.id === 'CreateInfo');
+  const isCreateRoute = !!matches.find(
+    (route) => route.id === 'CreateInfo' || route.id === 'CreateInfoFlow',
+  );
   const isThreadsListPage = !!matches.find((route) => route.id === 'Threads');
 
   const { currentApp, init } = useEdificeClient();
