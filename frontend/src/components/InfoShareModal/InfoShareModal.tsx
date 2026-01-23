@@ -39,6 +39,7 @@ export function InfoShareModal({
     return {
       resourceCreatorId: infoShares?.owner || '',
       resourceId: String(info.id),
+      resourceCreatorDisplayName: info.owner.displayName,
       resourceRights: infoShares?.rights || [],
       shareUrls: {
         getResourceRights: `${baseUrlAPI}/infos/${String(info.id)}/shares`,

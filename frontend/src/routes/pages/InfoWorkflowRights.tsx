@@ -105,6 +105,7 @@ export function InfoWorkflowRights() {
   const shareOptions = useMemo<ShareOptions>(() => {
     return {
       resourceCreatorId: infoShares?.owner || '',
+      resourceCreatorDisplayName: info?.owner.displayName, // can be undefined, it's OK
       resourceId: String(infoId),
       resourceRights: infoShares?.rights || [],
       shareUrls: {
