@@ -7,6 +7,7 @@ import {
   IconShare,
   IconSubmitToValidate,
   IconWrite,
+  IconPrint,
 } from '@edifice.io/react/icons';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -21,6 +22,7 @@ import { InfoStatus } from '~/models/info';
 import { InfoShareModal } from '../InfoShareModal/InfoShareModal';
 import { PortalModal } from '../PortalModal';
 import { InfoCardProps } from './InfoCard';
+import useInfoPrint from '~/hooks/useInfoPrint';
 
 export type InfoCardHeaderMenuProps = Pick<InfoCardProps, 'info'>;
 
@@ -51,6 +53,13 @@ export const InfoCardHeaderMenu = ({ info }: InfoCardHeaderMenuProps) => {
     handleUnsubmitAlertOpen,
     isUnsubmitAlertOpen,
   } = useInfoUnsubmit();
+
+  const {
+    print,
+    handlePrintAlertOpen,
+    handlePrintAlertClose,
+    isPrintAlertOpen,
+  } = useInfoPrint();
   const {
     trash,
     handleDeleteAlertClose,
@@ -95,6 +104,11 @@ export const InfoCardHeaderMenu = ({ info }: InfoCardHeaderMenuProps) => {
       unpublish({ ...info, thread: thread });
     }
     handleUnpublishAlertClose();
+  };
+
+  const handlePrintClick = (withComments: boolean) => {
+    print(info, withComments);
+    handlePrintAlertClose();
   };
 
   const handleDeleteClick = () => {
@@ -172,6 +186,14 @@ export const InfoCardHeaderMenu = ({ info }: InfoCardHeaderMenuProps) => {
           </Dropdown.Item>
         )}
 
+        <Dropdown.Item
+          data-testid="info-card-header-print-dd-item"
+          icon={<IconPrint />}
+          onClick={handlePrintAlertOpen}
+        >
+          {t('actualites.info.actions.print')}
+        </Dropdown.Item>
+
         {canDelete && (
           <Dropdown.Item
             data-testid="info-card-header-delete-dd-item"
@@ -232,6 +254,32 @@ export const InfoCardHeaderMenu = ({ info }: InfoCardHeaderMenuProps) => {
           }
         >
           {t('actualites.info.unpublish.modal.body')}
+        </PortalModal>
+      )}
+
+      {isPrintAlertOpen && (
+        <PortalModal
+          id="modal-print"
+          onModalClose={handlePrintAlertClose}
+          isOpen={isPrintAlertOpen}
+          size={'sm'}
+          header={t('actualites.info.print.modal.title')}
+          footer={
+            <>
+              <Button
+                variant="outline"
+                color="primary"
+                onClick={() => handlePrintClick(false)}
+              >
+                {t('actualites.info.print.modal.without.comments')}
+              </Button>
+              <Button color="primary" onClick={() => handlePrintClick(true)}>
+                {t('actualites.info.print.modal.with.comments')}
+              </Button>
+            </>
+          }
+        >
+          {t('actualites.info.print.modal.body')}
         </PortalModal>
       )}
 
