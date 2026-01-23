@@ -197,6 +197,18 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
       },
     ],
   },
+  {
+    path: '/infos/:infoIdAsString/print',
+    index: true,
+    async lazy() {
+      const { loader, InfoPrint: Component } =
+        await import('~/routes/pages/InfoPrint.tsx');
+      return {
+        loader: loader(queryClient),
+        Component,
+      };
+    },
+  },
   /* Display an info using previous format. */
   {
     path: 'oldformat/:threadIdAsString/:infoIdAsString',
