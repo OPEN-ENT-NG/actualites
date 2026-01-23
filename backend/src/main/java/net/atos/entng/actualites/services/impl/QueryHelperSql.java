@@ -68,8 +68,8 @@ public class QueryHelperSql {
             queryIds.append("INNER JOIN actualites.info ON (info.id = info_shares.resource_id) ");
             queryIds.append("WHERE info_shares.member_id IN ").append(memberIds);
             queryIds.append(" AND info.status > 2 ");
-            queryIds.append(" AND (info.publication_date <= LOCALTIMESTAMP OR info.publication_date IS NULL)");
-            queryIds.append(" AND (info.expiration_date > LOCALTIMESTAMP OR info.expiration_date IS NULL) ");
+            queryIds.append(" AND (info.publication_date <= NOW() OR info.publication_date IS NULL)");
+            queryIds.append(" AND (info.expiration_date > NOW() OR info.expiration_date IS NULL) ");
             final JsonArray values = new JsonArray().addAll(new JsonArray(groupsAndUserIds));
             Sql.getInstance().prepared(queryIds.toString(), values, SqlResult.validResultHandler(resIds -> {
                 try{
@@ -142,10 +142,10 @@ public class QueryHelperSql {
             for (NewsState state : states) {
                 switch (state) {
                     case EXPIRED:
-                        stateConditions.add("(i.expiration_date < LOCALTIMESTAMP)");
+                        stateConditions.add("(i.expiration_date < NOW())");
                         break;
                     case INCOMING:
-                        stateConditions.add("(i.publication_date > LOCALTIMESTAMP)");
+                        stateConditions.add("(i.publication_date > NOW())");
                         order = "ASC ";
                         break;
                     default:
@@ -159,8 +159,8 @@ public class QueryHelperSql {
         }
 
         if (states == null || states.isEmpty()) {
-            dateFilter = "(i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) " +
-                    "AND (i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL)";
+            dateFilter = "(i.publication_date <= NOW() OR i.publication_date IS NULL) " +
+                    "AND (i.expiration_date > NOW() OR i.expiration_date IS NULL)";
         }
 
         String threadFilter = "";
@@ -344,8 +344,8 @@ public class QueryHelperSql {
                 "INNER JOIN actualites.info ON (info.id = info_shares.resource_id) " +
                 "WHERE info_shares.member_id IN " + Sql.listPrepared(groupsAndUserIds.toArray()) +
                 " AND info.status > 2 " +
-                "AND (info.publication_date <= LOCALTIMESTAMP OR info.publication_date IS NULL) " +
-                "AND (info.expiration_date > LOCALTIMESTAMP OR info.expiration_date IS NULL) " +
+                "AND (info.publication_date <= NOW() OR info.publication_date IS NULL) " +
+                "AND (info.expiration_date > NOW() OR info.expiration_date IS NULL) " +
                 "UNION " +
                 "SELECT info.id as id " +
                 "FROM actualites.thread_shares " +

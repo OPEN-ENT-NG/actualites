@@ -292,9 +292,9 @@ public class ThreadServiceSqlImpl implements ThreadService {
 					"			 ish.member_id IN   (SELECT id FROM user_groups) " +
 					"		 ) " +
 					"		 AND " +
-					"		 (i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) " + // Publish date crossed
+					"		 (i.publication_date <= NOW() OR i.publication_date IS NULL) " + // Publish date crossed
 					"		 AND " +
-					"		 (i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL) " + // Expiration date not crossed
+					"		 (i.expiration_date > NOW() OR i.expiration_date IS NULL) " + // Expiration date not crossed
 					"		 AND " +
 					"		 (i.status = " + NewsStatus.PUBLISHED.ordinal() + ") " + // PUBLISHED
 					"    UNION ALL " +
@@ -306,9 +306,9 @@ public class ThreadServiceSqlImpl implements ThreadService {
 					"			 i.owner = ? " +
 					"		 ) " +
 					"		 AND " +
-					"		 (i.publication_date <= LOCALTIMESTAMP OR i.publication_date IS NULL) " + // Publish date crossed
+					"		 (i.publication_date <= NOW() OR i.publication_date IS NULL) " + // Publish date crossed
 					"		 AND " +
-					"		 (i.expiration_date > LOCALTIMESTAMP OR i.expiration_date IS NULL) " + // Expiration date not crossed
+					"		 (i.expiration_date > NOW() OR i.expiration_date IS NULL) " + // Expiration date not crossed
 					"		 AND " +
 					"		 (i.status = " + NewsStatus.PUBLISHED.ordinal() + ") " + // PUBLISHED
 					"), thread_for_user AS ( " +
