@@ -230,7 +230,9 @@ export const createInfoService = () => {
 
     /** Get views counters of several infos. */
     getViewsCounters(infoIds: InfoId[]) {
-      return checkHttpError(viewService.getCounters([...String(infoIds)]));
+      return checkHttpError(
+        viewService.getCounters(infoIds.map((infoId) => String(infoId))),
+      );
     },
 
     /** Get the details of the views of an info. */

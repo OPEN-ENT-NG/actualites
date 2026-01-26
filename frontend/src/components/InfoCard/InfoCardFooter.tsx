@@ -1,12 +1,14 @@
 import { Button, Divider, Flex } from '@edifice.io/react';
 import { ViewsCounter } from '@edifice.io/react/audience';
 import { IconRafterDown, IconRafterUp } from '@edifice.io/react/icons';
+import { lazy, Suspense } from 'react';
 import { useAudienceModal } from '~/hooks/useAudienceModal';
 import { useI18n } from '~/hooks/useI18n';
 import { useInfoStatus } from '~/hooks/useInfoStatus';
 import CommentsCounter from '../comments-counter/CommentsCounter';
-import { AudienceModal } from './AudienceModal';
 import { InfoCardProps } from './InfoCard';
+
+const AudienceModal = lazy(() => import('./AudienceModal'));
 
 export const InfoCardFooter = ({
   info,
@@ -63,7 +65,9 @@ export const InfoCardFooter = ({
       </Flex>
 
       {isAudienceOpen && (
-        <AudienceModal infoId={info.id} onModalClose={handleModalClose} />
+        <Suspense fallback={<>{/*TODO skeleton*/}</>}>
+          <AudienceModal infoId={info.id} onModalClose={handleModalClose} />
+        </Suspense>
       )}
     </footer>
   );

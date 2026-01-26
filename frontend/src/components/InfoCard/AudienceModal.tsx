@@ -19,3 +19,5 @@ export const AudienceModal = ({
     <ViewsModal {...otherProps} isOpen viewsDetails={data} />
   ) : null;
 };
+
+export default AudienceModal;

@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { Info } from '~/models/info';
 import { useIncrementInfoViews } from '~/services/queries';
+import { useInfoAudienceStore } from '~/store/audienceStore';
 import { useThreadUserRights } from './useThreadUserRights';
 
 export const useAudienceModal = (info: Info) => {
   const [isAudienceOpen, setIsAudienceOpen] = useState(false);
   const { mutate: incrementViewsMutation } = useIncrementInfoViews(info.id);
+  const { viewsCounterByInfoId } = useInfoAudienceStore();
+
   const {
     isThreadOwner,
     canContributeInThread,
@@ -26,7 +29,7 @@ export const useAudienceModal = (info: Info) => {
   };
 
   return {
-    viewsCounter: 12,
+    viewsCounter: viewsCounterByInfoId?.[info.id] ?? 0,
     incrementViewsMutation,
     isAudienceOpen,
     handleViewsCounterClick,
