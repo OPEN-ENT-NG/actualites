@@ -28,7 +28,7 @@ export function InfoDetailsCreateFormActions() {
   }, [currentCreationStep, detailsForm, detailsFormState]);
 
   const handleCancelClick = () => {
-    window.history.back();
+    navigate('/');
   };
 
   const handleSaveDraftClick = () => {
