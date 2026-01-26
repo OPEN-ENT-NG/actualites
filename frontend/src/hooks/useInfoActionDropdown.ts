@@ -21,7 +21,8 @@ export function useInfoActionDropdown(info: Info) {
 
   const canPrint = isPublished;
 
-  const canModifyShare = (isPublished && !isExpired) || isOwner;
+  const canModifyShare =
+    (isPublished && !isExpired && isThreadOwnerOrPublisherOrAdmin) || isOwner;
 
   const canEdit =
     (isDraft && isOwner) ||
