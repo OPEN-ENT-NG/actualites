@@ -41,7 +41,6 @@ import net.atos.entng.actualites.utils.UserUtils;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
 import org.entcore.common.sql.SqlStatementsBuilder;
-import org.entcore.common.user.DefaultFunctions;
 import org.entcore.common.user.UserInfos;
 
 import java.util.*;
@@ -49,6 +48,7 @@ import java.util.*;
 import static fr.wseduc.webutils.Utils.handlerToAsyncHandler;
 import static fr.wseduc.webutils.Utils.isNotEmpty;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static org.entcore.common.user.DefaultFunctions.ADMIN_LOCAL;
 
 
@@ -354,7 +354,13 @@ public class ThreadServiceSqlImpl implements ThreadService {
 									pojo.forEach(thread -> h.stream().filter(s -> s.getId().equals(thread.getStructureId()))
                                             .findFirst()
                                             .ifPresent(thread::setStructure));
-									promise.complete(pojo);
+									// for multi adml we ignore adml share group for testing vsiibility but if finally the thread is still visible, we need
+									// to set the proper rights => query a second tim to verify the presences of an adml share on visibles threads
+									if(!filterMultiAdmlActivated) {
+										promise.complete(pojo);
+									} else {
+										handleMultiAdmlThreadRights(promise, pojo, user, securedActions);
+									}
 								})
 								.onFailure(promise::fail);
 					} catch (Exception e) {
@@ -365,6 +371,35 @@ public class ThreadServiceSqlImpl implements ThreadService {
 			});
 		}
 		return promise.future();
+	}
+
+	private void handleMultiAdmlThreadRights(Promise<List<NewsThread>> promise, List<NewsThread> threads,
+											 UserInfos user, Map<String, SecuredAction> securedActions) {
+
+		Map<Integer, NewsThread> threadIdToThread = threads.stream().collect(toMap(NewsThread::getId, t -> t));
+
+		Rights adminRights = Rights.fromRawRights(securedActions, Collections.EMPTY_LIST, true, Rights.ResourceType.THREAD);
+
+		String query = " SELECT DISTINCT tsh.resource_id as id, tsh.member_id as group_id FROM " + threadsSharesTable + " as tsh " +
+					   "    WHERE tsh.resource_id IN " + Sql.listPrepared(Lists.newArrayList(threadIdToThread.keySet())) +
+					   "        AND tsh.action = '" + RightConstants.RIGHT_PUBLISH + "' " +
+	    			   "        AND tsh.adml_group = true ";
+		JsonArray values = new JsonArray();
+		threadIdToThread.keySet().forEach(values::add);
+		Sql.getInstance().prepared(query, values, (sqlResult) -> {
+			final Either<String, JsonArray> result = SqlResult.validResult(sqlResult);
+			if (result.isLeft()) {
+				promise.fail(result.left().getValue());
+			} else {
+				result.right().getValue().stream()
+						.filter(row -> row instanceof JsonObject)
+						.map(JsonObject.class::cast)
+						.filter( row -> threadIdToThread.containsKey(Integer.parseInt(row.getString("id"))))
+						.filter(row -> user.getGroupsIds().contains(row.getString("group_id")))
+						.forEach(row -> threadIdToThread.get(Integer.parseInt(row.getString("id"))).setSharedRights(adminRights));
+				promise.complete(threads);
+			}
+		});
 	}
 
 	@Override

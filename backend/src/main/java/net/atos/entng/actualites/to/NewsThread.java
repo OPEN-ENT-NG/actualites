@@ -19,7 +19,7 @@ public class NewsThread {
 
     private final String structure_id;
     private final ResourceOwner owner;
-    private final Rights sharedRights;
+    private Rights sharedRights;
     private Structure structure;
     private boolean visible;
 
@@ -74,6 +74,10 @@ public class NewsThread {
     @JsonIgnore
     public Rights getSharedRights() {
         return sharedRights;
+    }
+
+    public void setSharedRights(Rights rights) {
+        this.sharedRights = rights;
     }
 
     @JsonProperty("sharedRights")
