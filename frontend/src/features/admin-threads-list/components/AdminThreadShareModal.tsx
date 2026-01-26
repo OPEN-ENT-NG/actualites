@@ -44,6 +44,7 @@ export const AdminThreadShareModal = ({
   const shareOptions = useMemo<ShareOptions>(() => {
     return {
       resourceCreatorId: threadShares?.owner || '',
+      resourceCreatorDisplayName: thread.owner.displayName,
       resourceId: String(thread.id),
       resourceRights: threadShares?.rights || [],
       shareUrls: {
