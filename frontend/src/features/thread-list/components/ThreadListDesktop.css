@@ -2,3 +2,11 @@
   width: inherit;
   height: inherit;
 }
+
+.threadlist-container > :last-child {
+  margin-top: -0.4rem;
+}
+
+.threadlist-container ul {
+  margin-bottom: 1.6rem;
+}

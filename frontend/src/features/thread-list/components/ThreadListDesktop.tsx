@@ -36,8 +36,8 @@ export const ThreadListDesktop = () => {
     <Flex
       direction="column"
       fill
-      gap="6"
-      className="overflow-auto pt-16 pe-16 h-100"
+      gap="4"
+      className="threadlist-container overflow-auto pt-16 pe-16 h-100"
     >
       {!isFetched ? (
         <ButtonSkeleton size="lg" className="col-12" />
