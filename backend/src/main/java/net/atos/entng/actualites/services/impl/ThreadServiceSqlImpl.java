@@ -185,7 +185,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 			// Structures which the user is an ADML of.
 			final List<String> admlStructuresIds = user.isADML() 
 				? user.getFunctions().get(ADMIN_LOCAL).getScope() 
-				: Collections.EMPTY_LIST;
+				: Collections.emptyList();
 			final Object[] groupsAndUserIds = gu.toArray();
 			query = "SELECT t.id as _id, t.title, t.icon, t.mode, t.created::text, t.modified::text, t.structure_id, t.owner, u.username" +
 				", json_agg(row_to_json(row(ts.member_id, ts.action)::actualites.share_tuple)) as shared" +
