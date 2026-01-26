@@ -146,8 +146,15 @@ public class ThreadControllerV1 extends ControllerHelper {
                                     }
                                     resource.remove("structure");
                                     resource.put("structure_id", structureId);
+                                    resource.put("migrated", false);
+
+                                    crudService.update(threadId, resource, user, res -> {
+                                        threadMigrationService.addAdmlShare(threadId);
+                                        notEmptyResponseHandler(request).handle(res);
+                                    });
+                                } else {
+                                    crudService.update(threadId, resource, user, notEmptyResponseHandler(request));
                                 }
-                                crudService.update(threadId, resource, user, notEmptyResponseHandler(request));
                             })
                             .onFailure(ex -> renderError(request));
                 }));
