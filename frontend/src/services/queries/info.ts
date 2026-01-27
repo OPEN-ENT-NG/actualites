@@ -9,6 +9,7 @@ import {
 } from '@tanstack/react-query';
 import { Info, InfoExtendedStatus, InfoId, InfoStatus } from '~/models/info';
 import { ThreadId } from '~/models/thread';
+import { useInfoAudienceStore } from '~/store/audienceStore';
 import { infoService } from '../api';
 import { useUpdateStatsQueryCache } from './hooks/useUpdateStatsQueryCache';
 
@@ -300,9 +301,14 @@ export const useDeleteInfo = () =>
 
 export const useIncrementInfoViews = (infoId: InfoId) => {
   const queryClient = useQueryClient();
+  const { updateViewsCounterByInfoId, viewsCounterByInfoId } =
+    useInfoAudienceStore();
   return useMutation({
     mutationFn: () => infoService.incrementViews(infoId),
     onSuccess: () => {
+      const newCounter = (viewsCounterByInfoId?.[infoId] ?? 0) + 1;
+      updateViewsCounterByInfoId({ [infoId]: newCounter });
+
       queryClient.invalidateQueries({
         queryKey: infoQueryKeys.viewsDetails({ infoId }),
       });

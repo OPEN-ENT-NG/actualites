@@ -2,7 +2,7 @@ import { Button, Divider, Flex } from '@edifice.io/react';
 import { ViewsCounter } from '@edifice.io/react/audience';
 import { IconRafterDown, IconRafterUp } from '@edifice.io/react/icons';
 import { lazy, Suspense } from 'react';
-import { useAudienceModal } from '~/hooks/useAudienceModal';
+import { useAudience } from '~/hooks/useAudience';
 import { useI18n } from '~/hooks/useI18n';
 import { useInfoStatus } from '~/hooks/useInfoStatus';
 import CommentsCounter from '../comments-counter/CommentsCounter';
@@ -27,7 +27,7 @@ export const InfoCardFooter = ({
     isAudienceOpen,
     handleViewsCounterClick,
     handleModalClose,
-  } = useAudienceModal(info);
+  } = useAudience(info);
 
   return (
     <footer className="mt-12">
@@ -65,7 +65,7 @@ export const InfoCardFooter = ({
       </Flex>
 
       {isAudienceOpen && (
-        <Suspense fallback={<>{/*TODO skeleton*/}</>}>
+        <Suspense fallback={<>{/*TODO modal skeleton*/}</>}>
           <AudienceModal infoId={info.id} onModalClose={handleModalClose} />
         </Suspense>
       )}
