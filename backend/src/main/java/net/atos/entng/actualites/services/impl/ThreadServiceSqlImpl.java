@@ -48,6 +48,7 @@ import java.util.function.Function;
 
 import static fr.wseduc.webutils.Utils.handlerToAsyncHandler;
 import static fr.wseduc.webutils.Utils.isNotEmpty;
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.entcore.common.user.DefaultFunctions.ADMIN_LOCAL;
@@ -186,7 +187,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 			// Structures which the user is an ADML of.
 			final List<String> admlStructuresIds = user.isADML() 
 				? user.getFunctions().get(ADMIN_LOCAL).getScope() 
-				: Collections.emptyList();
+				: emptyList();
 			final Object[] groupsAndUserIds = gu.toArray();
 			query = "SELECT t.id as _id, t.title, t.icon, t.mode, t.created::text, t.modified::text, t.structure_id, t.owner, u.username" +
 				", json_agg(row_to_json(row(ts.member_id, ts.action)::actualites.share_tuple)) as shared" +
@@ -362,7 +363,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 									} else {
 										handleMultiAdmlThreadRights(pojo, user, securedActions)
 												.onComplete(promise)
-												.onFailure(promise::fail);
+												.onFailure( t -> promise.fail(t.getMessage()));
 									}
 								})
 								.onFailure(promise::fail);
@@ -382,7 +383,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 		Promise<List<NewsThread>> promise = Promise.promise();
 		Map<Integer, NewsThread> threadIdToThread = threads.stream().collect(toMap(NewsThread::getId, Function.identity()));
 
-		Rights adminRights = Rights.fromRawRights(securedActions, Collections.emptyList(), true, Rights.ResourceType.THREAD);
+		Rights adminRights = Rights.fromRawRights(securedActions, emptyList(), true, Rights.ResourceType.THREAD);
 
 		String query = " SELECT DISTINCT tsh.resource_id as id, tsh.member_id as group_id FROM " + threadsSharesTable + " as tsh " +
 					   "    WHERE tsh.resource_id IN " + Sql.listPrepared(Lists.newArrayList(threadIdToThread.keySet())) +
@@ -505,7 +506,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 	private Future<List<Structure>> getStructureFromIds(List<String> ids) {
 		Promise<List<Structure>> promise = Promise.promise();
 		if(ids==null || ids.isEmpty()) {
-			promise.complete(Collections.emptyList());
+			promise.complete(emptyList());
 		} else {
 			JsonObject action = new JsonObject()
 					.put("action", "list-structures")
