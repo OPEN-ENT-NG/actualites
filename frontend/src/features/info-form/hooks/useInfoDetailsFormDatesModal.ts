@@ -1,11 +1,7 @@
-import dayjs from 'dayjs';
 import { useEffect, useMemo, useState } from 'react';
-import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
-import isToday from 'dayjs/plugin/isToday';
-import { INFO_HOURS_DATE_DEFAULT } from '../components/InfoDetailsForm';
 
-dayjs.extend(isSameOrAfter);
-dayjs.extend(isToday);
+import { INFO_HOURS_DATE_DEFAULT } from '../components/InfoDetailsForm';
+import { useDate } from '@edifice.io/react';
 
 interface UseInfoDetailsFormDatesModalProps {
   publicationDate: Date;
@@ -30,6 +26,7 @@ export function useInfoDetailsFormDatesModal({
   expirationDate,
   onUpdate,
 }: UseInfoDetailsFormDatesModalProps) {
+  const { dateIsSame, dateIsSameOrAfter, dateIsToday } = useDate();
   const [selectedPublicationDate, setSelectedPublicationDate] = useState<Date>(
     new Date(publicationDate),
   );
@@ -52,15 +49,10 @@ export function useInfoDetailsFormDatesModal({
     const newMaxExpirationDate = getMaxExpirationDate(selectedPublicationDate);
     setMaxExpirationDate(newMaxExpirationDate);
 
-    if (dayjs(selectedExpirationDate).isSame(dayjs(maxExpirationDate), 'day')) {
+    if (dateIsSame(selectedExpirationDate, maxExpirationDate)) {
       setSelectedExpirationDate(newMaxExpirationDate);
     }
-    if (
-      dayjs(selectedPublicationDate).isSameOrAfter(
-        dayjs(selectedExpirationDate),
-        'day',
-      )
-    ) {
+    if (dateIsSameOrAfter(selectedPublicationDate, selectedExpirationDate, 'day')) {
       setSelectedExpirationDate(newMinExpirationDate);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -79,7 +71,7 @@ export function useInfoDetailsFormDatesModal({
   };
 
   const handleUpdate = () => {
-    const publicationDate = dayjs(selectedPublicationDate).isToday()
+    const publicationDate = dateIsToday(selectedPublicationDate)
       ? undefined
       : selectedPublicationDate;
     let expirationDate = undefined;
@@ -88,7 +80,7 @@ export function useInfoDetailsFormDatesModal({
     }
     if (
       publicationDate ||
-      !dayjs(selectedExpirationDate).isSame(dayjs(maxExpirationDate), 'day')
+      !dateIsSame(selectedExpirationDate, maxExpirationDate)
     ) {
       expirationDate = new Date(selectedExpirationDate);
       expirationDate.setHours(INFO_HOURS_DATE_DEFAULT, 0, 0, 0);
@@ -97,13 +89,10 @@ export function useInfoDetailsFormDatesModal({
   };
 
   const publicationDateIsDirty = useMemo(() => {
-    return !dayjs(selectedPublicationDate).isSame(
-      dayjs(publicationDate),
-      'day',
-    );
+    return !dateIsSame(selectedPublicationDate, publicationDate);
   }, [selectedPublicationDate, publicationDate]);
   const expirationDateIsDirty = useMemo(() => {
-    return !dayjs(selectedExpirationDate).isSame(dayjs(expirationDate), 'day');
+    return !dateIsSame(selectedExpirationDate, expirationDate);
   }, [selectedExpirationDate, expirationDate]);
   const formIsDirty = useMemo(() => {
     return publicationDateIsDirty || expirationDateIsDirty;
