@@ -44,6 +44,7 @@ import org.entcore.common.sql.SqlStatementsBuilder;
 import org.entcore.common.user.UserInfos;
 
 import java.util.*;
+import java.util.function.Function;
 
 import static fr.wseduc.webutils.Utils.handlerToAsyncHandler;
 import static fr.wseduc.webutils.Utils.isNotEmpty;
@@ -359,7 +360,9 @@ public class ThreadServiceSqlImpl implements ThreadService {
 									if(!filterMultiAdmlActivated) {
 										promise.complete(pojo);
 									} else {
-										handleMultiAdmlThreadRights(promise, pojo, user, securedActions);
+										handleMultiAdmlThreadRights(pojo, user, securedActions)
+												.onComplete(promise)
+												.onFailure( t -> promise.fail(t.getMessage()));
 									}
 								})
 								.onFailure(promise::fail);
@@ -373,10 +376,11 @@ public class ThreadServiceSqlImpl implements ThreadService {
 		return promise.future();
 	}
 
-	private void handleMultiAdmlThreadRights(Promise<List<NewsThread>> promise, List<NewsThread> threads,
+	private Future<List<NewsThread>> handleMultiAdmlThreadRights(List<NewsThread> threads,
 											 UserInfos user, Map<String, SecuredAction> securedActions) {
 
-		Map<Integer, NewsThread> threadIdToThread = threads.stream().collect(toMap(NewsThread::getId, t -> t));
+		Promise<List<NewsThread>> promise = Promise.promise();
+		Map<Integer, NewsThread> threadIdToThread = threads.stream().collect(toMap(NewsThread::getId, Function.identity()));
 
 		Rights adminRights = Rights.fromRawRights(securedActions, Collections.EMPTY_LIST, true, Rights.ResourceType.THREAD);
 
@@ -394,12 +398,13 @@ public class ThreadServiceSqlImpl implements ThreadService {
 				result.right().getValue().stream()
 						.filter(row -> row instanceof JsonObject)
 						.map(JsonObject.class::cast)
-						.filter( row -> threadIdToThread.containsKey(Integer.parseInt(row.getString("id"))))
-						.filter(row -> user.getGroupsIds().contains(row.getString("group_id")))
+						.filter( row -> threadIdToThread.containsKey(Integer.parseInt(row.getString("id"))) &&
+													user.getGroupsIds().contains(row.getString("group_id")))
 						.forEach(row -> threadIdToThread.get(Integer.parseInt(row.getString("id"))).setSharedRights(adminRights));
 				promise.complete(threads);
 			}
 		});
+		return promise.future();
 	}
 
 	@Override
