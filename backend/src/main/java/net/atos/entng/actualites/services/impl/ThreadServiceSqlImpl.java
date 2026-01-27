@@ -362,7 +362,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 									} else {
 										handleMultiAdmlThreadRights(pojo, user, securedActions)
 												.onComplete(promise)
-												.onFailure( t -> promise.fail(t.getMessage()));
+												.onFailure(promise::fail);
 									}
 								})
 								.onFailure(promise::fail);
