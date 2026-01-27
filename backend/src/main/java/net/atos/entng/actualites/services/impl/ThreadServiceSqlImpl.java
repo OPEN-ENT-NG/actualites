@@ -382,7 +382,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 		Promise<List<NewsThread>> promise = Promise.promise();
 		Map<Integer, NewsThread> threadIdToThread = threads.stream().collect(toMap(NewsThread::getId, Function.identity()));
 
-		Rights adminRights = Rights.fromRawRights(securedActions, Collections.EMPTY_LIST, true, Rights.ResourceType.THREAD);
+		Rights adminRights = Rights.fromRawRights(securedActions, Collections.emptyList(), true, Rights.ResourceType.THREAD);
 
 		String query = " SELECT DISTINCT tsh.resource_id as id, tsh.member_id as group_id FROM " + threadsSharesTable + " as tsh " +
 					   "    WHERE tsh.resource_id IN " + Sql.listPrepared(Lists.newArrayList(threadIdToThread.keySet())) +
