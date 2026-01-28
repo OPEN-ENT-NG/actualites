@@ -36,7 +36,7 @@ public class PublicationCron implements Handler<Long> {
                       " JOIN actualites.users u_owner ON u_owner.id = i.owner " +
                       " JOIN actualites.users u_publisher ON u_publisher.id = i.publisher_id " +
                       " WHERE i.published = false AND i.status = 3 AND " +
-                      " (i.publication_date IS NOT NULL AND i.publication_date <  now() at time zone 'utc') ", new JsonArray(), validResultHandler( this::publishNews));
+                      " (i.publication_date IS NOT NULL AND i.publication_date <  now()') ", new JsonArray(), validResultHandler( this::publishNews));
     }
 
     private void publishNews(Either<String, JsonArray> result) {
