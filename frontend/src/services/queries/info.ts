@@ -176,13 +176,6 @@ export const infoQueryOptions = {
     });
   },
 
-  getViewsCounters(infoIds: InfoId[]) {
-    return queryOptions({
-      queryKey: infoQueryKeys.viewsDetails({ infoId: -1 }), // TODO store counters
-      queryFn: () => infoService.getViewsCounters(infoIds),
-    });
-  },
-
   getViewsDetails(infoId: InfoId) {
     return queryOptions({
       queryKey: infoQueryKeys.viewsDetails({ infoId }),
