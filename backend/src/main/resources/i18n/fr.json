@@ -52,7 +52,7 @@
   "actualites.info.createForm.dates.modal.title": "Envoi différé et expiration",
   "actualites.info.createForm.dates.modal.publicationDate": "Date de publication",
   "actualites.info.createForm.dates.modal.expirationDate": "Date d'expiration",
-  "actualites.info.createForm.dates.modal.dateFormat": "DD MMMM YYYY",
+  "actualites.info.createForm.dates.modal.dateFormat": "DD / MM / YYYY",
   "actualites.info.createForm.dates.modal.publicationInfo": "L’actualité sera publiée à 6h00, à la date choisie.",
   "actualites.info.createForm.dates.modal.cancelButton": "Annuler",
   "actualites.info.createForm.dates.modal.submitButton": "Enregistrer",
