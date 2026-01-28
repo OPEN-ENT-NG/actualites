@@ -52,7 +52,9 @@ export function useInfoDetailsFormDatesModal({
     if (dateIsSame(selectedExpirationDate, maxExpirationDate)) {
       setSelectedExpirationDate(newMaxExpirationDate);
     }
-    if (dateIsSameOrAfter(selectedPublicationDate, selectedExpirationDate, 'day')) {
+    if (
+      dateIsSameOrAfter(selectedPublicationDate, selectedExpirationDate, 'day')
+    ) {
       setSelectedExpirationDate(newMinExpirationDate);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
