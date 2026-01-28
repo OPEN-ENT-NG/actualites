@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Info } from '~/models/info';
 import { useIncrementInfoViews } from '~/services/queries';
 import { useInfoAudienceStore } from '~/store/audienceStore';
@@ -28,7 +28,10 @@ export const useAudience = (info: Info) => {
     }
   };
 
-  const incrementViewsCounter = () => incrementViewsMutation();
+  const incrementViewsCounter = useCallback(
+    () => incrementViewsMutation(),
+    [incrementViewsMutation],
+  );
 
   return {
     viewsCounter: viewsCounterByInfoId?.[info.id] ?? 0,

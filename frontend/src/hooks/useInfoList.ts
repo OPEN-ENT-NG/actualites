@@ -43,7 +43,7 @@ export function useInfoList() {
     }
 
     load();
-  }, [data]);
+  }, [data, updateViewsCounterByInfoId]);
 
   // Required for optimistic-update to work
   const infos = useMemo(() => data?.pages.flat() || [], [data]);

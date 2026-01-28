@@ -38,7 +38,6 @@ export const renderWithRouter = (
         <EdificeThemeProvider>
           <RouterProvider router={router} />
         </EdificeThemeProvider>
-        ,
       </>,
     ),
   };
