@@ -30,8 +30,12 @@ export const createInfoService = () => {
      * Get the stats of all infos.
      * @returns The stats of all infos.
      */
-    getStats() {
-      return odeServices.http().get<InfosStats>(`${baseUrlAPI}/infos/stats`);
+    getStats(viewHidden = false) {
+      return odeServices
+        .http()
+        .get<InfosStats>(
+          `${baseUrlAPI}/infos/stats${viewHidden ? '?viewHidden=true' : ''}`,
+        );
     },
     /**
      * Get a page of Infos results.
@@ -197,9 +201,10 @@ export const createInfoService = () => {
     },
 
     getShares(infoId: InfoId) {
+      // Use cache service which is use inside ShareRessources component to optimise requests
       return odeServices
-        .http()
-        .get<Share>(`${baseUrlAPI}/infos/${infoId}/shares`);
+        .cache()
+        .httpGetJson<Share>(`${baseUrlAPI}/infos/${infoId}/shares?search=`);
     },
 
     async putShares(infoId: InfoId, rights: ShareRight[]) {
