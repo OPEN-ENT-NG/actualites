@@ -1,14 +1,10 @@
 import { Button, Flex, useDate } from '@edifice.io/react';
 import { IconCalendarEdit } from '@edifice.io/react/icons';
-import dayjs from 'dayjs';
 import { useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useI18n } from '~/hooks/useI18n';
 import { InfoDetailsFormParams } from '~/store/infoFormStore';
-import {
-  INFO_DATES_RESET_VALUES,
-  INFO_DETAILS_DEFAULT_VALUES,
-} from './InfoDetailsForm';
+import { INFO_DATES_RESET_VALUES } from './InfoDetailsForm';
 import { InfoDetailsFormDatesModal } from './InfoDetailsFormDatesModal';
 
 export function InfoDetailsFormDates() {
@@ -21,16 +17,7 @@ export function InfoDetailsFormDates() {
   const expirationDate = getValues().expirationDate;
 
   const dateString = useMemo(() => {
-    const areNotDefinedDates =
-      dayjs(INFO_DETAILS_DEFAULT_VALUES.publicationDate).isSame(
-        dayjs(publicationDate),
-        'day',
-      ) &&
-      dayjs(INFO_DETAILS_DEFAULT_VALUES.expirationDate).isSame(
-        dayjs(expirationDate),
-        'day',
-      );
-    if (areNotDefinedDates || !publicationDate || !expirationDate) {
+    if (!publicationDate || !expirationDate) {
       return t('actualites.info.createForm.dates.default');
     }
 
