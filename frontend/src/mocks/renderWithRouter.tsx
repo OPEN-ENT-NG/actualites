@@ -1,3 +1,4 @@
+import { EdificeThemeProvider } from '@edifice.io/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { render } from './setup';
 
@@ -30,6 +31,15 @@ export const renderWithRouter = (
     /**
      * We use our customRender fn to wrap Router with our Providers
      */
-    ...render(<RouterProvider router={router} />),
+    ...render(
+      <>
+        <link rel="stylesheet" id="theme" href="" />
+        <link rel="icon" id="favicon" href="" />
+        <EdificeThemeProvider>
+          <RouterProvider router={router} />
+        </EdificeThemeProvider>
+        ,
+      </>,
+    ),
   };
 };
