@@ -10,6 +10,7 @@ import {
 } from '@edifice.io/react';
 import { IconSave } from '@edifice.io/react/icons';
 import { useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useI18n } from '~/hooks/useI18n';
 import { Info } from '~/models/info';
 import { baseUrlAPI } from '~/services';
@@ -75,7 +76,7 @@ export function InfoShareModal({
     setIsSaving(true);
   };
 
-  return (
+  return createPortal(
     <Modal
       id={`info-share-modal`}
       size="lg"
@@ -124,6 +125,7 @@ export function InfoShareModal({
           {t('actualites.info.shareForm.save')}
         </Button>
       </Modal.Footer>
-    </Modal>
+    </Modal>,
+    document.getElementById('portal') as HTMLElement,
   );
 }
