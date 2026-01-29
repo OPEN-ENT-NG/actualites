@@ -19,18 +19,6 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
     errorElement: <PageError />,
     children: [
       {
-        id: 'AdminThreads',
-        path: 'threads/admin',
-        async lazy() {
-          const { loader, AdminThreads: Component } =
-            await import('~/routes/pages/AdminThreads');
-          return {
-            loader: loader(queryClient),
-            Component,
-          };
-        },
-      },
-      {
         id: 'CreateInfo',
         path: 'infos/create',
         async lazy() {
@@ -149,15 +137,33 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
         ],
       },
       {
-        path: 'threads/admin',
-        async lazy() {
-          const { loader, AdminThreads: Component } =
-            await import('~/routes/pages/AdminThreads');
-          return {
-            loader: loader(queryClient),
-            Component,
-          };
-        },
+        path: 'threads',
+        children: [
+          {
+            path: 'admin',
+            id: 'AdminThreads',
+            async lazy() {
+              const { loader, AdminThreads: Component } =
+                await import('~/routes/pages/AdminThreads');
+              return {
+                loader: loader(queryClient),
+                Component,
+              };
+            },
+          },
+          {
+            path: 'settings',
+            id: 'ThreadsSetting',
+            async lazy() {
+              const { loader, ThreadsSetting: Component } =
+                await import('~/routes/pages/ThreadsSetting');
+              return {
+                loader: loader(queryClient),
+                Component,
+              };
+            },
+          },
+        ],
       },
       {
         path: '',

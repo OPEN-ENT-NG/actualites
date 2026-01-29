@@ -1,7 +1,12 @@
 import { odeServices } from '@edifice.io/client';
 import { baseUrlAPI } from '.';
 import { Share } from '../../models/share';
-import { Thread, ThreadId, ThreadPayload } from '../../models/thread';
+import {
+  Thread,
+  ThreadId,
+  ThreadPayload,
+  ThreadPreferences,
+} from '../../models/thread';
 
 /**
  * Creates a thread service that provides methods for managing threads.
@@ -66,6 +71,17 @@ export const createThreadService = () => {
       return odeServices
         .cache()
         .httpGetJson<Share>(`${baseUrlAPI}/threads/${threadId}/shares?search=`);
+    },
+
+    /**
+     * Update thread preferences for the current user.
+     * @param threadPreferences - The thread preferences to update.
+     * @returns A promise that resolves when the preferences are updated.
+     */
+    updateThreadPreferences(threadPreferences: ThreadPreferences) {
+      return odeServices
+        .http()
+        .put<void>(`${baseUrlAPI}/me/thread-preferences`, threadPreferences);
     },
   };
 };

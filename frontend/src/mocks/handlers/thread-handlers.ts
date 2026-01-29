@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import { ThreadMode } from '~/models/thread';
+import { ThreadMode, ThreadPreferences } from '~/models/thread';
 import { baseUrlAPI } from '~/services';
 import { mockThreads, mockThreadShare } from '../datas/threads';
 
@@ -67,5 +67,16 @@ export const threadHandlers = [
     }
   >(`${baseUrlAPI}/threads/:threadId/shares`, async () =>
     HttpResponse.json(mockThreadShare, { status: 200 }),
+  ),
+  // PUT thread preferences
+  http.put<object, ThreadPreferences>(
+    `${baseUrlAPI}/me/thread-preferences`,
+    async ({ request }) => {
+      const payload = await request.json();
+      if (!payload) {
+        return HttpResponse.text('Bad Request', { status: 400 });
+      }
+      return HttpResponse.json(undefined, { status: 200 });
+    },
   ),
 ];

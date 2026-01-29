@@ -6,7 +6,11 @@ import {
   Flex,
   useBreakpoint,
 } from '@edifice.io/react';
-import { IconBulletList, IconSettings } from '@edifice.io/react/icons';
+import {
+  IconAdjustSettings,
+  IconBulletList,
+  IconSettings,
+} from '@edifice.io/react/icons';
 import { clsx } from 'clsx';
 import { useNavigate } from 'react-router-dom';
 import { ThreadIcon } from '~/components/ThreadIcon';
@@ -15,6 +19,7 @@ import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
 import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
 import { Thread } from '~/models/thread';
 import { useThreads } from '~/services/queries';
+import { useUserRights } from '~/store/rights/resource';
 
 export const ThreadListMobile = () => {
   const { t } = useI18n();
@@ -24,6 +29,7 @@ export const ThreadListMobile = () => {
   const threadSelected = threads?.find((t) => t.id === threadId);
   const navigate = useNavigate();
   const { canManageOnOneThread } = useThreadsUserRights();
+  const { canParamThreads } = useUserRights();
   const { md } = useBreakpoint();
 
   const handleAllThreadsClick = () => {
@@ -36,6 +42,10 @@ export const ThreadListMobile = () => {
 
   const handleManageThreadsClick = () => {
     navigate('/threads/admin');
+  };
+
+  const handleParamThreadsClick = () => {
+    navigate('/threads/settings');
   };
 
   if (!isFetched) {
@@ -89,19 +99,33 @@ export const ThreadListMobile = () => {
           </Dropdown.Menu>
         </Dropdown>
       </Flex>
-      {canManageOnOneThread && (
+      {(canManageOnOneThread || canParamThreads) && (
         <>
           {!md && <Divider className="my-16" />}
-          <Button
-            color="secondary"
-            size="sm"
-            leftIcon={<IconSettings />}
-            variant="outline"
-            onClick={handleManageThreadsClick}
-            className="mx-16 mx-md-0"
-          >
-            {t('actualites.threadList.manageThreads')}
-          </Button>
+          {canParamThreads && (
+            <Button
+              data-testid="param-threads-button"
+              color="secondary"
+              leftIcon={<IconAdjustSettings />}
+              variant="ghost"
+              onClick={handleParamThreadsClick}
+              className="w-100"
+            >
+              {t('actualites.threadList.threadSettings')}
+            </Button>
+          )}
+          {canManageOnOneThread && (
+            <Button
+              color="secondary"
+              size="sm"
+              leftIcon={<IconSettings />}
+              variant="outline"
+              onClick={handleManageThreadsClick}
+              className="mx-16 mx-md-0"
+            >
+              {t('actualites.threadList.manageThreads')}
+            </Button>
+          )}
         </>
       )}
     </Flex>

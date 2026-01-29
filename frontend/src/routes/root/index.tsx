@@ -8,12 +8,13 @@ import {
   useEdificeClient,
 } from '@edifice.io/react';
 
-import { Outlet, useLoaderData, useMatches } from 'react-router-dom';
+import { Outlet, useLoaderData } from 'react-router-dom';
 
 import { IWebApp } from '@edifice.io/client';
 import clsx from 'clsx';
 import { existingActions } from '~/config';
 import { AdminNewThreadButton } from '~/features';
+import { useThreadRoute } from '~/hooks/useThreadRoute';
 import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
 import { useUserRights } from '~/hooks/useUserRights';
 import { queryClient } from '~/providers';
@@ -35,18 +36,12 @@ export const Root = () => {
   };
   const setRights = useActionUserRights.use.setRights();
   setRights(actionUserRights);
-  const matches = useMatches();
-  const isAdminThreadPath = !!matches.find(
-    (route) => route.id === 'AdminThreads',
-  );
-  const isCreateRoute = !!matches.find(
-    (route) => route.id === 'CreateInfo' || route.id === 'CreateInfoFlow',
-  );
-  const isThreadsListPage = !!matches.find((route) => route.id === 'Threads');
+  const { type: routeType } = useThreadRoute();
 
   const { currentApp, init } = useEdificeClient();
-  const { canContributeOnOneThread } =
-    useThreadsUserRights(!!isAdminThreadPath);
+  const { canContributeOnOneThread } = useThreadsUserRights(
+    routeType === 'admin',
+  );
   const { canCreateThread } = useUserRights();
   const { lg } = useBreakpoint();
 
@@ -59,16 +54,19 @@ export const Root = () => {
 
   return init ? (
     <div
-      className={clsx({ 'd-flex flex-column vh-100': lg && isThreadsListPage })}
+      className={clsx({
+        'd-flex flex-column vh-100': lg && routeType === 'list',
+      })}
     >
       <Layout>
         <AppHeader>
           <Breadcrumb app={(currentApp as IWebApp) ?? displayApp} />
-          {!isCreateRoute && (
+          {routeType !== 'create' && (
             <Flex fill align="center" justify="end">
-              {isAdminThreadPath
+              {routeType === 'admin'
                 ? canCreateThread && <AdminNewThreadButton />
-                : canContributeOnOneThread && <NewInfoButton />}
+                : routeType !== 'param' &&
+                  canContributeOnOneThread && <NewInfoButton />}
             </Flex>
           )}
         </AppHeader>
