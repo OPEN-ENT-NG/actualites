@@ -16,7 +16,11 @@ importers:
         version: 2.5.8-develop-b2school.20260128153514
       '@edifice.io/react':
         specifier: develop-b2school
+<<<<<<< Updated upstream
         version: 2.5.8-develop-b2school.20260128153514(hg7xxtzg5wtgmacfemjwtz4nnu)
+=======
+        version: 2.5.8-develop-b2school.20260128153514(dyj4peq73k4ihiqyhxyq2mylmy)
+>>>>>>> Stashed changes
       '@edifice.io/utilities':
         specifier: develop-b2school
         version: 2.5.8-develop-b2school.20260128153514
@@ -4465,7 +4469,11 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
+<<<<<<< Updated upstream
   '@edifice.io/react@2.5.8-develop-b2school.20260128153514(hg7xxtzg5wtgmacfemjwtz4nnu)':
+=======
+  '@edifice.io/react@2.5.8-develop-b2school.20260128153514(dyj4peq73k4ihiqyhxyq2mylmy)':
+>>>>>>> Stashed changes
     dependencies:
       '@ant-design/icons': 5.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@dnd-kit/core': 6.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -7288,7 +7296,11 @@ snapshots:
       '@dnd-kit/modifiers': 7.0.0(@dnd-kit/core@6.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       '@edifice.io/bootstrap': 2.5.8-develop-b2school.20260128153514
       '@edifice.io/client': 2.5.8-develop-b2school.20260128153514
+<<<<<<< Updated upstream
       '@edifice.io/react': 2.5.8-develop-b2school.20260128153514(hg7xxtzg5wtgmacfemjwtz4nnu)
+=======
+      '@edifice.io/react': 2.5.8-develop-b2school.20260128153514(dyj4peq73k4ihiqyhxyq2mylmy)
+>>>>>>> Stashed changes
       '@react-spring/web': 9.7.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/react-query': 5.62.7(react@18.3.1)
       clsx: 2.1.1

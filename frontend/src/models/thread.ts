@@ -56,6 +56,8 @@ export interface Thread {
         ]
     */
   sharedRights?: Array<string>;
+  /** Visibility of the thread. */
+  visible: boolean;
 }
 
 export interface ThreadPayload {
@@ -72,4 +74,13 @@ export interface ThreadQueryPayload extends ThreadPayload {
     id: string;
     name: string;
   };
+}
+
+export interface ThreadPreference {
+  threadId: number;
+  visible: boolean;
+}
+
+export interface ThreadPreferences {
+  threads: ThreadPreference[];
 }

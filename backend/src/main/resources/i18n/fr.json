@@ -80,6 +80,7 @@
   "actualites.info.publishForm.rights.subtitle": "Vérifier les partages de l’actualité",
   "actualites.threadList.allThreads": "Tous les fils d’actus",
   "actualites.threadList.manageThreads": "Gérer les fils",
+  "actualites.threadList.threadSettings": "Personnaliser mon affichage",
   "actualites.adminThreads.accessDenied": "Vous n’avez pas les droits pour accéder à cette page.",
   "actualites.adminThreads.goBack": "Retour aux actualités",
   "actualites.adminThreads.newThread": "Nouveau fil",
@@ -143,5 +144,15 @@
   "actualites.info.print.modal.title": "Option d’impression",
   "actualites.info.print.modal.body": "Cette actualité contient des commentaires. Voulez-vous les inclure dans l'impression ?",
   "actualites.info.print.modal.with.comments": "Oui",
-  "actualites.info.print.modal.without.comments": "Non"
+  "actualites.info.print.modal.without.comments": "Non",
+  "actualites.threadsSetting.saveButton": "Enregistrer mes préférences",
+  "actualites.threadsSetting.displayThread": "Afficher le fils",
+  "actualites.threadsSetting.displayThreadAll": "Afficher tous",
+  "actualites.threadsSetting.segmented.all": "Tous les fils [[count]]",
+  "actualites.threadsSetting.segmented.displayed": "Fils affichés [[count]]",
+  "actualites.threadsSetting.segmented.hidden": "Fils masqués [[count]]",
+  "actualites.threadsSetting.info.title": "Vous suivez beaucoup de fils différents et les actualités se mélangent ?",
+  "actualites.threadsSetting.info.description": "Vous pouvez afficher ou masquer les fils afin d'y voir plus clair sur la page d'accueil d'Actualités ! Les fils sont masqués uniquement pour vous, et vous ne recevrez plus les notifications liées aux fils que vous avez masqués.",
+  "actualites.threadsSetting.success": "Vos préférences ont été enregistrées avec succès.",
+  "actualites.threadsSetting.error": "Une erreur est survenue lors de l'enregistrement de vos préférences. Veuillez réessayer."
 }

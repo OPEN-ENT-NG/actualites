@@ -3,7 +3,7 @@ import {
   THREAD_MANAGER,
   THREAD_PUBLISHER,
 } from '~/config/rights';
-import { Thread, ThreadMode } from '~/models/thread';
+import { Thread, ThreadMode, ThreadPreferences } from '~/models/thread';
 import { mockUserCatherine, mockUserLogged } from './users';
 
 //---------------------------------------
@@ -24,6 +24,7 @@ export const mockThreadAsOwner = {
   structureId: 'de8743c1-97f0-408c-b5ec-ec735ad65fd8',
   owner: { id: mockUserLogged.id, displayName: mockUserLogged.displayName },
   sharedRights: [THREAD_MANAGER, THREAD_CONTRIBUTOR, THREAD_PUBLISHER],
+  visible: true,
 };
 
 export const mockThreadAsOwnerWithNoStructure = {
@@ -35,6 +36,7 @@ export const mockThreadAsOwnerWithNoStructure = {
   modified: '2025-08-07T16:33:54.698',
   owner: { id: mockUserLogged.id, displayName: mockUserLogged.displayName },
   sharedRights: [THREAD_MANAGER, THREAD_CONTRIBUTOR, THREAD_PUBLISHER],
+  visible: true,
 };
 
 export const mockThreadAsCatherine = {
@@ -54,6 +56,7 @@ export const mockThreadAsCatherine = {
     displayName: mockUserCatherine.displayName,
   },
   sharedRights: [],
+  visible: true,
 };
 
 export const mockThreadAsCatherineWithContributeRight = {
@@ -73,6 +76,7 @@ export const mockThreadAsCatherineWithContributeRight = {
     displayName: mockUserCatherine.displayName,
   },
   sharedRights: [THREAD_CONTRIBUTOR],
+  visible: true,
 };
 
 // TODO Clean this mock
@@ -159,4 +163,13 @@ export const mockThreadShare = {
       ],
     },
   },
+};
+
+export const mockThreadPreferences: ThreadPreferences = {
+  threads: [
+    { threadId: mockThreadAsOwner.id, visible: true },
+    { threadId: mockThreadAsOwnerWithNoStructure.id, visible: false },
+    { threadId: mockThreadAsCatherine.id, visible: true },
+    { threadId: mockThreadAsCatherineWithContributeRight.id, visible: false },
+  ],
 };

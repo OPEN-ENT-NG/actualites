@@ -10,6 +10,7 @@ import {
   Thread,
   ThreadId,
   ThreadPayload,
+  ThreadPreferences,
   ThreadQueryPayload,
 } from '~/models/thread';
 import { threadService } from '../api';
@@ -177,6 +178,44 @@ export const useDeleteThread = () => {
       toast.error(t('actualites.adminThreads.modal.delete.error'));
     },
     onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: threadQueryKeys.all() });
+    },
+  });
+};
+
+export const useUpdateThreadPreferences = () => {
+  const queryClient = useQueryClient();
+  const { t } = useI18n();
+  const toast = useToast();
+
+  return useMutation({
+    mutationFn: (threadPreferences: ThreadPreferences) =>
+      threadService.updateThreadPreferences(threadPreferences),
+    onSuccess: () => {
+      toast.success(t('actualites.threadsSetting.success'));
+    },
+    onError: () => {
+      toast.error(t('actualites.threadsSetting.error'));
+    },
+    onSettled: (_data, error, threadPreferences: ThreadPreferences) => {
+      if (error) return;
+      queryClient.setQueryData(
+        threadQueryKeys.all(true),
+        (oldData: Thread[]) => {
+          if (!oldData || !threadPreferences) return oldData;
+          const updatedThreads = oldData.map((thread) => {
+            return {
+              ...thread,
+              visible:
+                threadPreferences.threads.find(
+                  (pref) => pref.threadId === thread.id,
+                )?.visible || true,
+            };
+          });
+          return updatedThreads;
+        },
+      );
+
       queryClient.invalidateQueries({ queryKey: threadQueryKeys.all() });
     },
   });
