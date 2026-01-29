@@ -26,6 +26,7 @@ import fr.wseduc.transformer.IContentTransformerClient;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.constants.Field;
@@ -41,6 +42,7 @@ import net.atos.entng.actualites.cron.PublicationCron;
 import net.atos.entng.actualites.cron.ExpiredNewsCleanupCron;
 import net.atos.entng.actualites.services.*;
 import net.atos.entng.actualites.services.impl.*;
+import org.entcore.common.audience.AudienceHelper;
 import org.entcore.common.editor.ContentTransformerConfig;
 import org.entcore.common.editor.ContentTransformerEventRecorderFactory;
 import org.entcore.common.editor.IContentTransformerEventRecorder;
@@ -84,6 +86,7 @@ public class Actualites extends BaseServer {
 
 	private JsonObject rights;
 	private ThreadMigrationService threadMigrationService;
+	private MessageConsumer<Object> audienceRightChecker;
 
 	@Override
 	public void start(Promise<Void> startPromise) throws Exception {
@@ -116,6 +119,9 @@ public class Actualites extends BaseServer {
 		final JsonObject contentTransformerConfig = ContentTransformerConfig.getContentTransformerConfig(vertx).orElse(null);
 		final IContentTransformerClient contentTransformerClient = ContentTransformerFactoryProvider.getFactory("actualites", contentTransformerConfig).create();
 		final IContentTransformerEventRecorder contentEventRecorder = new ContentTransformerEventRecorderFactory("actualites", contentTransformerConfig).create();
+
+		final AudienceHelper audienceHelper = new AudienceHelper(vertx);
+		audienceRightChecker = audienceHelper.listenForRightsCheck("actualites", "info", new InfoRightsCheckerImpl());
 
 		addController(new DisplayController());
 
@@ -182,7 +188,7 @@ public class Actualites extends BaseServer {
 		infoController.setShareService(infoShareService);
 		addController(infoController);
 
-		InfosControllerV1 infosControllerV1 = new InfosControllerV1(notificationTimelineService, rights);
+		InfosControllerV1 infosControllerV1 = new InfosControllerV1(notificationTimelineService, rights, audienceHelper);
 		infosControllerV1.setInfoService(infoService);
 		infosControllerV1.setTimelineMongo(new TimelineMongoImpl(Field.TIMELINE_COLLECTION, MongoDb.getInstance()));
 		infosControllerV1.setCrudService(infoSqlCrudService);
