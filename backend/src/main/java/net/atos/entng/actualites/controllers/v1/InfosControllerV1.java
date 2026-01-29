@@ -7,6 +7,7 @@ import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.I18n;
 import fr.wseduc.webutils.request.RequestUtils;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
@@ -18,37 +19,30 @@ import net.atos.entng.actualites.filters.InfoFilter;
 import net.atos.entng.actualites.filters.UpdateInfoFilter;
 import net.atos.entng.actualites.services.InfoService;
 import net.atos.entng.actualites.services.NotificationTimelineService;
+import net.atos.entng.actualites.services.TimelineMongo;
 import net.atos.entng.actualites.to.NewsState;
 import net.atos.entng.actualites.to.NewsStatus;
 import net.atos.entng.actualites.utils.DateUtils;
 import net.atos.entng.actualites.utils.Events;
 import org.apache.commons.lang3.StringUtils;
+import org.entcore.common.audience.AudienceHelper;
 import org.entcore.common.controller.ControllerHelper;
 import org.entcore.common.events.EventHelper;
 import org.entcore.common.events.EventStore;
 import org.entcore.common.events.EventStoreFactory;
 import org.entcore.common.http.filter.ResourceFilter;
+import org.entcore.common.notification.NotificationUtils;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.user.UserUtils;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-
-import io.vertx.core.Promise;
-import net.atos.entng.actualites.services.TimelineMongo;
-import org.entcore.common.notification.NotificationUtils;
 
 import static net.atos.entng.actualites.Actualites.INFO_RESOURCE_ID;
 import static org.entcore.common.http.response.DefaultResponseHandler.*;
@@ -77,17 +71,19 @@ public class InfosControllerV1 extends ControllerHelper {
 	protected TimelineMongo timelineMongo;
 
 	private JsonObject rights;
+	private final AudienceHelper audienceHelper;
 	private final NotificationTimelineService notificationTimelineService;
 	private final EventHelper eventHelper;
 	public static final String ROOT_RIGHT = "net.atos.entng.actualites.controllers.InfoController";
 	private static final Logger LOGGER = LoggerFactory.getLogger(InfosControllerV1.class);
 
 
-    public InfosControllerV1(NotificationTimelineService notificationTimelineService, JsonObject rights) {
+    public InfosControllerV1(NotificationTimelineService notificationTimelineService, JsonObject rights, AudienceHelper audienceHelper) {
         this.notificationTimelineService = notificationTimelineService;
         final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(Actualites.class.getSimpleName());
 		eventHelper = new EventHelper(eventStore);
 		this.rights = rights;
+		this.audienceHelper = audienceHelper;
     }
 
 	@Override
@@ -176,7 +172,7 @@ public class InfosControllerV1 extends ControllerHelper {
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
 				infoService.listPaginated(securedActions, user, page, pageSize, threadIds, statuses, states)
-					.onSuccess(news -> render(request, news))
+					.onSuccess(news ->render(request, news))
 					.onFailure(ex -> renderError(request));
 			} else {
 				unauthorized(request);
@@ -254,6 +250,7 @@ public class InfosControllerV1 extends ControllerHelper {
 			})
 			.compose(result -> timelineMongo.getNotification(threadId, infoId))
 			.compose(timelineMongo::deleteNotification)
+			.compose((o) -> audienceHelper.notifyResourcesDeletion("actualites", "info", Collections.singleton(infoId)))
 			.onSuccess(success -> ok(request))
 			.onFailure(failure -> {
 				String message = String.format("[ACTUALITES@%s::deleteInfo] Failed to delete info : %s",
@@ -438,7 +435,7 @@ public class InfosControllerV1 extends ControllerHelper {
 				initExpirationDate(resource);
 				String publicationDate = resource.getString("publication_date");
 				boolean shouldPublishNow = publicationDate == null || DateUtils.utcFromString(publicationDate).isBefore(Instant.now().atZone(ZoneId.of("UTC")).toInstant());
-						
+
 				if (shouldPublishNow) {
 					//immediate publication => we notify
 					resource.put("published", true);
