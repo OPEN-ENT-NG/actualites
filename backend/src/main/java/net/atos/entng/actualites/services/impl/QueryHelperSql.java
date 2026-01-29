@@ -203,7 +203,7 @@ public class QueryHelperSql {
         queryIds.append("  (SELECT i.id as id, (CASE WHEN i.publication_date > i.modified THEN i.publication_date ELSE i.modified END) as date ");
         queryIds.append("    FROM actualites.thread ");
         queryIds.append("    INNER JOIN actualites.info AS i ON (i.thread_id = thread.id) ");
-        queryIds.append("    WHERE thread.owner = ? ");
+        queryIds.append("    WHERE thread.owner = ? AND i.status > 1 ");
         if (!threadFilter.isEmpty()) {
             queryIds.append("    AND " + threadFilter + " ");
         }
@@ -379,5 +379,59 @@ public class QueryHelperSql {
                 .add(user.getUserId())
                 .addAll(new JsonArray(groupsAndUserIds));
         Sql.getInstance().prepared(query, values, SqlResult.parseShared(handler));
+    }
+
+    public Future<Boolean> checkRights(String userId, Set<String> userGroups, Set<String> resourceIds) {
+
+        final List<String> groupsAndUserIds = new ArrayList<>(userGroups);
+        groupsAndUserIds.add(userId);
+        final String memberIds = Sql.listPrepared(groupsAndUserIds.toArray());
+
+        //get infos ids
+        final StringBuilder queryIds = new StringBuilder();
+        queryIds.append("WITH user_groups AS MATERIALIZED ( ");
+        queryIds.append("  SELECT id::varchar FROM ( ");
+        queryIds.append("    SELECT ? as id UNION ");
+        queryIds.append("    SELECT id FROM actualites.groups WHERE id IN ").append(memberIds);
+        queryIds.append("  ) as u_groups) ");
+        queryIds.append("(SELECT i.id, (CASE WHEN i.publication_date > i.modified THEN i.publication_date ELSE i.modified END) as date ");
+        queryIds.append("  FROM actualites.info AS i WHERE i.owner = ? )");
+        queryIds.append("UNION ");
+        queryIds.append("  (SELECT i.id, (CASE WHEN i.publication_date > i.modified THEN i.publication_date ELSE i.modified END) as date ");
+        queryIds.append("    FROM actualites.info_shares ");
+        queryIds.append("    INNER JOIN actualites.info AS i ON i.id = info_shares.resource_id AND i.status = 3  ");
+        queryIds.append("    WHERE info_shares.member_id IN (SELECT id FROM user_groups) )");
+        queryIds.append("UNION ");
+        queryIds.append("  (SELECT i.id as id, (CASE WHEN i.publication_date > i.modified THEN i.publication_date ELSE i.modified END) as date ");
+        queryIds.append("    FROM actualites.thread ");
+        queryIds.append("    INNER JOIN actualites.info AS i ON (i.thread_id = thread.id) ");
+        queryIds.append("    WHERE thread.owner = ? AND i.status > 1 )");
+        queryIds.append("UNION ");
+        queryIds.append("  (SELECT i.id as id, (CASE WHEN i.publication_date > i.modified THEN i.publication_date ELSE i.modified END) as date ");
+        queryIds.append("    FROM actualites.thread_shares ");
+        queryIds.append("    INNER JOIN actualites.thread ON (thread.id = thread_shares.resource_id) ");
+        queryIds.append("    INNER JOIN actualites.info AS i ON (i.thread_id = thread.id) ");
+        queryIds.append("    WHERE (thread_shares.member_id IN (SELECT id FROM user_groups)");
+        queryIds.append("    AND thread_shares.action = '" + THREAD_PUBLISH + "' ");
+        queryIds.append("    AND i.status > 1) )");
+        queryIds.append("ORDER BY date DESC ");
+
+        final JsonArray values = new JsonArray()
+                .add(userId)
+                .addAll(new JsonArray(groupsAndUserIds))
+                .add(userId)
+                .add(userId);
+
+        final Promise<Boolean> promise = Promise.promise();
+        Sql.getInstance().prepared(queryIds.toString(), values, SqlResult.validResultHandler(resIds -> {
+            if(resIds.isLeft()){
+                promise.fail(resIds.left().getValue());
+            }else{
+                final JsonArray resultIds = resIds.right().getValue();
+                final Set<String> ids = resultIds.stream().map(e-> ((JsonObject)e).getString("id")).collect(Collectors.toSet());
+                promise.complete(ids.containsAll(resourceIds));
+            }
+        }));
+        return promise.future();
     }
 }
