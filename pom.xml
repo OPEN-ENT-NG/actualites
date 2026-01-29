@@ -87,14 +87,14 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>mod-mongo-persistor</artifactId>
-            <version>4.1-zookeeper-SNAPSHOT</version>
+            <version>${modMongoVersion}</version>
             <scope>runtime</scope>
             <classifier>fat</classifier>
         </dependency>
         <dependency>
             <groupId>fr.wseduc</groupId>
             <artifactId>mod-postgresql</artifactId>
-            <version>2.0-zookeeper-SNAPSHOT</version>
+            <version>${modPostgresVersion}</version>
             <scope>runtime</scope>
             <classifier>fat</classifier>
         </dependency>
@@ -102,7 +102,7 @@
         <dependency>
             <groupId>org.entcore</groupId>
             <artifactId>workspace</artifactId>
-            <version>6.8-zookeeper-SNAPSHOT</version>
+            <version>${entCoreVersion}</version>
             <scope>runtime</scope>
             <classifier>fat</classifier>
         </dependency>
