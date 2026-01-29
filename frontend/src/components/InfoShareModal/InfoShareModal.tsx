@@ -3,18 +3,17 @@ import {
   Alert,
   Button,
   Flex,
-  Modal,
   ShareOptions,
   ShareResources,
   ShareResourcesRef,
 } from '@edifice.io/react';
 import { IconSave } from '@edifice.io/react/icons';
 import { useMemo, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
 import { useI18n } from '~/hooks/useI18n';
 import { Info } from '~/models/info';
 import { baseUrlAPI } from '~/services';
 import { useInfoShares } from '~/services/queries';
+import { PortalModal } from '~/components/PortalModal';
 
 export function InfoShareModal({
   info,
@@ -76,56 +75,53 @@ export function InfoShareModal({
     setIsSaving(true);
   };
 
-  return createPortal(
-    <Modal
-      id={`info-share-modal`}
+  return (
+    <PortalModal
+      id="info-share-modal"
       size="lg"
       isOpen={isOpen}
       onModalClose={onCancel}
+      header={t('actualites.info.shareForm.title')}
+      footer={
+        <>
+          <Button
+            color="primary"
+            variant="ghost"
+            onClick={onCancel}
+            data-testid="info-share-modal-cancel-button"
+            disabled={isSaving}
+          >
+            {t('actualites.info.createForm.cancel')}
+          </Button>
+          <Button
+            color="primary"
+            variant="outline"
+            type="submit"
+            leftIcon={<IconSave />}
+            onClick={handleInfoSharesSave}
+            disabled={!isDirty || isSaving}
+            isLoading={isSaving}
+            data-testid="info-share-modal-save-button"
+          >
+            {t('actualites.info.shareForm.save')}
+          </Button>
+        </>
+      }
     >
-      <Modal.Header onModalClose={onCancel}>
-        {t(`actualites.info.shareForm.title`)}
-      </Modal.Header>
-      <Modal.Body>
-        <Flex gap={'24'} direction="column">
-          <Alert type="info" className="w-100">
-            <div style={{ whiteSpace: 'pre-line' }}>
-              {t('actualites.info.createForm.rights.infoMessage')}
-            </div>
-          </Alert>
-          <ShareResources
-            ref={shareInfoRef}
-            onSuccess={handleShareInfoSubmitSuccess}
-            onChange={handleShareInfoChange}
-            onSubmit={handleShareInfoSubmit}
-            shareOptions={shareOptions}
-          />
-        </Flex>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button
-          color="primary"
-          variant="ghost"
-          onClick={onCancel}
-          data-testid="info-share-modal-cancel-button"
-          disabled={isSaving}
-        >
-          {t('actualites.info.createForm.cancel')}
-        </Button>
-        <Button
-          color="primary"
-          variant="outline"
-          type="submit"
-          leftIcon={<IconSave />}
-          onClick={handleInfoSharesSave}
-          disabled={!isDirty || isSaving}
-          isLoading={isSaving}
-          data-testid="info-share-modal-save-button"
-        >
-          {t('actualites.info.shareForm.save')}
-        </Button>
-      </Modal.Footer>
-    </Modal>,
-    document.getElementById('portal') as HTMLElement,
+      <Flex gap={'24'} direction="column">
+        <Alert type="info" className="w-100">
+          <div style={{ whiteSpace: 'pre-line' }}>
+            {t('actualites.info.createForm.rights.infoMessage')}
+          </div>
+        </Alert>
+        <ShareResources
+          ref={shareInfoRef}
+          onSuccess={handleShareInfoSubmitSuccess}
+          onChange={handleShareInfoChange}
+          onSubmit={handleShareInfoSubmit}
+          shareOptions={shareOptions}
+        />
+      </Flex>
+    </PortalModal>
   );
 }
