@@ -170,30 +170,17 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
             Component,
           };
         },
-        children: [
-          {
-            path: 'threads',
-            children: [
-              {
-                path: ':threadIdAsString',
-                children: [
-                  {
-                    path: '',
-                    index: true,
-                    async lazy() {
-                      const { loader, Threads: Component } =
-                        await import('~/routes/pages/Threads');
-                      return {
-                        loader: loader(queryClient),
-                        Component,
-                      };
-                    },
-                  },
-                ],
-              },
-            ],
-          },
-        ],
+      },
+      {
+        path: 'threads/:threadIdAsString',
+        async lazy() {
+          const { loader, Threads: Component } =
+            await import('~/routes/pages/Threads');
+          return {
+            loader: loader(queryClient),
+            Component,
+          };
+        },
       },
     ],
   },
