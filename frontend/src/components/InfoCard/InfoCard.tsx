@@ -1,6 +1,7 @@
 import { Alert, Card, useDate } from '@edifice.io/react';
 import clsx from 'clsx';
 import { useCallback, useState } from 'react';
+import { useAudience } from '~/hooks/useAudience';
 import { useHashScrolling } from '~/hooks/useHashScrolling';
 import { useI18n } from '~/hooks/useI18n';
 import { useInfoStatus } from '~/hooks/useInfoStatus';
@@ -24,6 +25,7 @@ export const InfoCard = ({ info, id }: InfoCardProps) => {
   const [collapse, setCollapse] = useState(hash !== id);
   const [scrollTo, setScrollTo] = useState<string>();
   const { formatDate } = useDate();
+  const { incrementViewsCounter } = useAudience(info);
 
   const className = clsx(
     'px-16 px-md-24 py-16 info-card position-relative border-none overflow-visible',
@@ -42,6 +44,9 @@ export const InfoCard = ({ info, id }: InfoCardProps) => {
       if (!collapse) {
         // Scroll to top of the card when collapsing
         id && setScrollTo(id);
+      } else {
+        // COCO-4432, trigger a view
+        incrementViewsCounter();
       }
       return !collapse;
     });
@@ -55,6 +60,8 @@ export const InfoCard = ({ info, id }: InfoCardProps) => {
       } else {
         // Scroll to top comment when expanding
         id && setScrollTo(id + '-comments');
+        // COCO-4432, trigger a view
+        incrementViewsCounter();
       }
       return !collapse;
     });

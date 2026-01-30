@@ -9,6 +9,7 @@ import {
 } from '@tanstack/react-query';
 import { Info, InfoExtendedStatus, InfoId, InfoStatus } from '~/models/info';
 import { ThreadId } from '~/models/thread';
+import { useInfoAudienceStore } from '~/store/audienceStore';
 import { infoService } from '../api';
 import { useUpdateStatsQueryCache } from './hooks/useUpdateStatsQueryCache';
 
@@ -66,6 +67,11 @@ export const infoQueryKeys = {
   originalFormat: (options: { threadId?: ThreadId; infoId?: InfoId }) => [
     ...infoQueryKeys.info(options),
     'originalFormat',
+  ],
+
+  viewsDetails: (options: { infoId: InfoId }) => [
+    ...infoQueryKeys.info(options),
+    'viewsDetails',
   ],
 };
 
@@ -169,6 +175,13 @@ export const infoQueryOptions = {
       enabled: !!threadId && !!infoId,
     });
   },
+
+  getViewsDetails(infoId: InfoId) {
+    return queryOptions({
+      queryKey: infoQueryKeys.viewsDetails({ infoId }),
+      queryFn: () => infoService.getViewsDetails(infoId),
+    });
+  },
 };
 
 //*******************************************************************************
@@ -201,6 +214,9 @@ export const useInfoRevisions = (infoId: InfoId) =>
 
 export const useInfoOriginalFormat = (threadId: ThreadId, infoId: InfoId) =>
   useQuery(infoQueryOptions.getOriginalFormat(threadId, infoId));
+
+export const useInfoViewsDetails = (infoId: InfoId) =>
+  useQuery(infoQueryOptions.getViewsDetails(infoId));
 
 export const useCreateDraftInfo = () => {
   const queryClient = useQueryClient();
@@ -275,3 +291,26 @@ export const useDeleteInfo = () =>
     }) => infoService.delete(threadId, infoId),
     // TODO optimistic update
   });
+
+export const useIncrementInfoViews = (infoId: InfoId) => {
+  const queryClient = useQueryClient();
+  const { updateViewsCounterByInfoId, viewsCounterByInfoId } =
+    useInfoAudienceStore();
+
+  const oldCounter = viewsCounterByInfoId?.[infoId] ?? 0;
+
+  return useMutation({
+    mutationFn: () => infoService.incrementViews(infoId),
+    onMutate: () => {
+      updateViewsCounterByInfoId({ [infoId]: oldCounter + 1 });
+    },
+    onError: () => {
+      updateViewsCounterByInfoId({ [infoId]: oldCounter - 1 });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: infoQueryKeys.viewsDetails({ infoId }),
+      });
+    },
+  });
+};

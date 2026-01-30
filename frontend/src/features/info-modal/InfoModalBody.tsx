@@ -1,4 +1,6 @@
 import { Editor } from '@edifice.io/react/editor';
+import { useEffect } from 'react';
+import { useAudience } from '~/hooks/useAudience';
 import { useInfoStatus } from '~/hooks/useInfoStatus';
 import { Info, InfoDetails } from '~/models/info';
 import { CommentList } from '../../components/comment-list/CommentList';
@@ -10,6 +12,10 @@ export type InfoModalBodyProps = {
 
 export const InfoModalBody = ({ info }: InfoModalBodyProps) => {
   const { extendedStatus } = useInfoStatus(info);
+  const { incrementViewsCounter } = useAudience(info);
+
+  useEffect(incrementViewsCounter, []);
+
   return (
     <>
       <InfoCardHeader info={info} extendedStatus={extendedStatus} />
