@@ -17,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-package net.atos.entng.actualites.controllers;
+package net.atos.entng.actualites.controllers.v1;
 
 import fr.wseduc.rs.ApiDoc;
 import fr.wseduc.rs.Post;
@@ -27,6 +27,7 @@ import fr.wseduc.webutils.http.Renders;
 import fr.wseduc.webutils.request.RequestUtils;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonObject;
+import net.atos.entng.actualites.Actualites;
 import net.atos.entng.actualites.services.GenAiService;
 import org.entcore.common.controller.ControllerHelper;
 import org.entcore.common.user.UserUtils;
@@ -42,9 +43,9 @@ public class FalcController extends ControllerHelper {
         this.genAiService = genAiService;
     }
 
-    @Post("/falc")
+    @Post("/api/v1/falc")
     @ApiDoc("Apply FALC transformation to simplify content")
-    @SecuredAction(value = "actualites.genai.falc", type = ActionType.AUTHENTICATED)
+    @SecuredAction(value = Actualites.GENAI_FALC_RIGHT, type = ActionType.WORKFLOW)
     public void applyFalc(final HttpServerRequest request) {
         if (!genAiService.isConfigured()) {
             Renders.badRequest(request, "genai.not.configured");
