@@ -296,12 +296,18 @@ export const useIncrementInfoViews = (infoId: InfoId) => {
   const queryClient = useQueryClient();
   const { updateViewsCounterByInfoId, viewsCounterByInfoId } =
     useInfoAudienceStore();
+
+  const oldCounter = viewsCounterByInfoId?.[infoId] ?? 0;
+
   return useMutation({
     mutationFn: () => infoService.incrementViews(infoId),
+    onMutate: () => {
+      updateViewsCounterByInfoId({ [infoId]: oldCounter + 1 });
+    },
+    onError: () => {
+      updateViewsCounterByInfoId({ [infoId]: oldCounter - 1 });
+    },
     onSuccess: () => {
-      const newCounter = (viewsCounterByInfoId?.[infoId] ?? 0) + 1;
-      updateViewsCounterByInfoId({ [infoId]: newCounter });
-
       queryClient.invalidateQueries({
         queryKey: infoQueryKeys.viewsDetails({ infoId }),
       });

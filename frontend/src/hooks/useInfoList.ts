@@ -21,7 +21,12 @@ export function useInfoList() {
     ? (value as InfoExtendedStatus)
     : undefined;
 
-  const { data, hasNextPage, fetchNextPage, isLoading } = useInfos(threadId, {
+  const {
+    data: paging,
+    hasNextPage,
+    fetchNextPage,
+    isLoading,
+  } = useInfos(threadId, {
     status,
     state,
   });
@@ -29,8 +34,8 @@ export function useInfoList() {
   useEffect(() => {
     // Load views counters of the latest page, and update the views store
     async function load() {
-      if (data && data.pages.length > 0) {
-        const latestPage = data.pages[data.pages.length - 1];
+      if (paging && paging.pages.length > 0) {
+        const latestPage = paging.pages[paging.pages.length - 1];
         try {
           const viewsCounters = await infoService.getViewsCounters(
             latestPage.map((info) => info.id),
@@ -43,10 +48,10 @@ export function useInfoList() {
     }
 
     load();
-  }, [data, updateViewsCounterByInfoId]);
+  }, [paging, updateViewsCounterByInfoId]);
 
   // Required for optimistic-update to work
-  const infos = useMemo(() => data?.pages.flat() || [], [data]);
+  const infos = useMemo(() => paging?.pages.flat() || [], [paging]);
 
   return {
     infos,
