@@ -131,13 +131,13 @@ export function s1CreateThread(data: InitData) {
     pushResponseMetrics(resPersonnel, user);
     sleep(baseDelay / 1000);
 
-    // Search for enseignant groups
+    // Search for teacher groups
     const resEnseignant = http.get(
-      `${rootUrl}/actualites/api/v1/threads/${threadId.id}/shares?search=enseignant`,
-      { headers: getHeaders(), tags: {type: 'search_enseignant'} }
+      `${rootUrl}/actualites/api/v1/threads/${threadId.id}/shares?search=teacher`,
+      { headers: getHeaders(), tags: {type: 'search_teacher'} }
     );
     check(resEnseignant, {
-      "Search enseignant should succeed": (r) => r.status === 200,
+      "Search teacher should succeed": (r) => r.status === 200,
     });
     pushResponseMetrics(resEnseignant, user);
     sleep(baseDelay / 1000);
