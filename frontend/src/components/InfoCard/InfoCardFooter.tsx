@@ -1,9 +1,14 @@
-import { Button, Flex } from '@edifice.io/react';
+import { Button, Divider, Flex } from '@edifice.io/react';
+import { ViewsCounter } from '@edifice.io/react/audience';
 import { IconRafterDown, IconRafterUp } from '@edifice.io/react/icons';
+import { lazy, Suspense } from 'react';
+import { useAudience } from '~/hooks/useAudience';
 import { useI18n } from '~/hooks/useI18n';
 import { useInfoStatus } from '~/hooks/useInfoStatus';
 import CommentsCounter from '../comments-counter/CommentsCounter';
 import { InfoCardProps } from './InfoCard';
+
+const AudienceModal = lazy(() => import('./AudienceModal'));
 
 export const InfoCardFooter = ({
   info,
@@ -17,24 +22,31 @@ export const InfoCardFooter = ({
 }) => {
   const { t } = useI18n();
   const { canShowComments } = useInfoStatus(info);
+  const {
+    viewsCounter,
+    isAudienceOpen,
+    handleViewsCounterClick,
+    handleModalClose,
+  } = useAudience(info);
 
   return (
     <footer className="mt-12">
       <Flex align="center" justify="between">
         <Flex align="center">
-          {/* To be implemented later 
-          <ViewsCounter viewsCounter={0} /> */}
-          <>
-            {/* <Divider vertical /> */}
-            {canShowComments && (
-              <CommentsCounter
-                commentsCounter={info.numberOfComments}
-                aria-controls={`info-${info.id}-comments`}
-                aria-expanded={!collapse}
-                onClick={handleCommentsClick}
-              />
-            )}
-          </>
+          <ViewsCounter
+            data-testid="info-view-views-counter-button"
+            viewsCounter={viewsCounter}
+            onClick={handleViewsCounterClick}
+          />
+          {canShowComments && <Divider vertical className="border-gray-700" />}
+          {canShowComments && (
+            <CommentsCounter
+              commentsCounter={info.numberOfComments}
+              aria-controls={`info-${info.id}-comments`}
+              aria-expanded={!collapse}
+              onClick={handleCommentsClick}
+            />
+          )}
         </Flex>
         <Button
           data-testid={
@@ -52,6 +64,12 @@ export const InfoCardFooter = ({
           {t(collapse ? 'actualites.read.more' : 'actualites.read.less')}
         </Button>
       </Flex>
+
+      {isAudienceOpen && (
+        <Suspense fallback={<>{/*TODO modal skeleton*/}</>}>
+          <AudienceModal infoId={info.id} onModalClose={handleModalClose} />
+        </Suspense>
+      )}
     </footer>
   );
 };
