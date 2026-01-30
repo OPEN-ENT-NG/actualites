@@ -1,4 +1,5 @@
 import { odeServices, ShareRight } from '@edifice.io/client';
+import { checkHttpError } from '~/utils/checkHttpError';
 import { baseUrl, baseUrlAPI } from '.';
 import {
   Info,
@@ -14,6 +15,8 @@ import { Share } from '../../models/share';
 import { ThreadId } from '../../models/thread';
 
 export const createInfoService = () => {
+  const viewService = odeServices.audience('actualites', 'info').views;
+
   return {
     /**
      * Get an Info by its ID.
@@ -228,6 +231,23 @@ export const createInfoService = () => {
         .get<OriginalInfo>(
           `${baseUrl}/thread/${threadId}/info/${infoId}?originalFormat=true`,
         );
+    },
+
+    /** Get views counters of several infos. */
+    getViewsCounters(infoIds: InfoId[]) {
+      return checkHttpError(
+        viewService.getCounters(infoIds.map((infoId) => String(infoId))),
+      );
+    },
+
+    /** Get the details of the views of an info. */
+    getViewsDetails(infoId: InfoId) {
+      return checkHttpError(viewService.getDetails(String(infoId)));
+    },
+
+    /** Add a view to an info's views counter.  */
+    incrementViews(infoId: InfoId) {
+      return checkHttpError(viewService.trigger(String(infoId)));
     },
   };
 };
