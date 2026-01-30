@@ -95,6 +95,16 @@ export function s2CreateInfo(data: InitData) {
     pushResponseMetrics(resInfo, user);
     sleep(baseDelay / 1000);
 
+    const resGetInfo = http.get(
+      `${rootUrl}/actualites/api/v1/infos/${infoId.id}`,
+      { headers: getHeaders(), tags: {type: 'get_info'} }
+    );
+    check(resGetInfo, {
+      "Get info should succeed": (r) => r.status === 200,
+    });
+    pushResponseMetrics(resGetInfo, user);
+    sleep(baseDelay / 5000);
+
     // 2. share workflow
     // get rights mapping
     const resRightsMapping = http.get(
@@ -106,7 +116,7 @@ export function s2CreateInfo(data: InitData) {
 
     // get current shares for the info
     const resGetShares = http.get(
-      `${rootUrl}/actualites/api/v1/infos/${infoId.id}/shares`,
+      `${rootUrl}/actualites/api/v1/infos/${infoId.id}/shares?search=`,
       { headers: getHeaders(), tags: {type: 'get_info_shares'} }
     );
     pushResponseMetrics(resGetShares, user);
@@ -131,6 +141,14 @@ export function s2CreateInfo(data: InitData) {
     });
     sleep(baseDelay / 1000);
 
+    // reload info after share update
+    const resGetInfoAfterShare = http.get(
+      `${rootUrl}/actualites/api/v1/infos/${infoId.id}`,
+      { headers: getHeaders(), tags: {type: 'get_info'} }
+    );
+    pushResponseMetrics(resGetInfoAfterShare, user);
+    sleep(baseDelay / 5000);
+
     // 3. publish or Submit info
     // CONTRIBUTOR -> status 2 (PENDING), PUBLISHER -> status 3 (PUBLISHED)
     const targetStatus = user.role === 'PUBLISHER' ? 3 : 2;
@@ -146,5 +164,13 @@ export function s2CreateInfo(data: InitData) {
     });
     pushResponseMetrics(resPublish, user);
     sleep(baseDelay / 1000);
+
+    // reload info after publish/submit
+    const resGetInfoAfterPublish = http.get(
+      `${rootUrl}/actualites/api/v1/infos/${infoId.id}`,
+      { headers: getHeaders(), tags: {type: 'get_info'} }
+    );
+    pushResponseMetrics(resGetInfoAfterPublish, user);
+    sleep(baseDelay / 5000);
   });
 }

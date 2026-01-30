@@ -146,7 +146,7 @@ export function getRightsMappingOrFail(): RightsMapping {
  */
 export function getInfoShares(infoId: string): RefinedResponse<any> {
   return http.get(
-    `${rootUrl}/actualites/api/v1/infos/${infoId}/shares`,
+    `${rootUrl}/actualites/api/v1/infos/${infoId}/shares?search=`,
     { headers: getHeaders() }
   );
 }
@@ -169,7 +169,7 @@ export function getInfoSharesOrFail(infoId: string): ShareResponse {
  */
 export function getThreadShares(threadId: string): RefinedResponse<any> {
   return http.get(
-    `${rootUrl}/actualites/api/v1/threads/${threadId}/shares`,
+    `${rootUrl}/actualites/api/v1/threads/${threadId}/shares?search=`,
     { headers: getHeaders() }
   );
 }

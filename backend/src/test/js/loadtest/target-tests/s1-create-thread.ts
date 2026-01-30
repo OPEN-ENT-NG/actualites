@@ -76,6 +76,13 @@ export function s1CreateThread(data: InitData) {
     pushResponseMetrics(resStats, user);
     sleep(baseDelay / 5000);
 
+    //access admin thread list
+    const listAdminThreadUrl = `${rootUrl}/actualites/api/v1/threads?viewHidden=true`;
+    const resListAdminThread = http.get(listAdminThreadUrl,
+      { headers: getHeaders(), tags: {type : 'list_admin_thread'} });
+    pushResponseMetrics(resListAdminThread, user);
+    sleep(baseDelay / 5000);
+
     //retreive user info
     const userInfoUrl = `${rootUrl}/auth/oauth2/userinfo`;
     const resUserInfo =  http.get(userInfoUrl,
@@ -99,6 +106,12 @@ export function s1CreateThread(data: InitData) {
     pushResponseMetrics(resThread, user);
     sleep(baseDelay / 1000);
 
+    //refresh admin thread list
+    const resRefreshAdminThread = http.get(listAdminThreadUrl,
+      { headers: getHeaders(), tags: {type : 'list_admin_thread'} });
+    pushResponseMetrics(resRefreshAdminThread, user);
+    sleep(baseDelay / 5000);
+
     // Get rights mapping (cached by frontend, but we simulate the call)
     const resRightsMapping = http.get(
       `${rootUrl}/actualites/api/v1/rights/sharing`,
@@ -109,7 +122,7 @@ export function s1CreateThread(data: InitData) {
 
     // Get current shares for the thread
     const resGetShares = http.get(
-      `${rootUrl}/actualites/api/v1/threads/${threadId.id}/shares`,
+      `${rootUrl}/actualites/api/v1/threads/${threadId.id}/shares?search=`,
       { headers: getHeaders(), tags: {type: 'get_thread_shares'} }
     );
     pushResponseMetrics(resGetShares, user);
@@ -126,7 +139,7 @@ export function s1CreateThread(data: InitData) {
     const sharePayload = buildSharePayloadFromGroups(shareResult, groupSuffixes, threadAllRights);
 
     // Update shares
-    const shareResponse = shareThreads(threadId.id, sharePayload);
+    const shareResponse = shareThreads(threadId.id.toString(), sharePayload);
     pushResponseMetrics(shareResponse, user);
 
     check(shareResponse, {
