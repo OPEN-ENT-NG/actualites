@@ -320,10 +320,11 @@ public class ThreadServiceSqlImpl implements ThreadService {
 					"    WHERE tsh.member_id IN  (SELECT id FROM user_groups) " + filterAdml +
 					"    GROUP BY t.id, tsh.member_id " +
 					") SELECT t.id, t.owner, u.username AS owner_name, u.deleted as owner_deleted, t.title, t.icon," +
-					"    t.created::text, t.modified::text, t.structure_id, max(thread_for_user.rights) as rights " + // note : we can use max() here only because the rights are inclusive of each other
+					"    t.created::text, t.modified::text, t.structure_id, array_agg(DISTINCT r) as rights " +
 					"    FROM " + threadsTable + " AS t " +
-					"        LEFT JOIN thread_for_user ON thread_for_user.id = t.id " +
+					"        LEFT JOIN thread_for_user as tfu ON tfu.id = t.id " +
 					"        LEFT JOIN " + usersTable + " AS u ON t.owner = u.id " +
+					"        LEFT JOIN LATERAL unnest(tfu.rights) AS r ON TRUE " +
 					"    WHERE t.owner = ? " +
 					"       OR t.id IN (SELECT id from thread_with_info_for_user) " +
 					"       OR t.id IN (SELECT id from thread_for_user) " +
