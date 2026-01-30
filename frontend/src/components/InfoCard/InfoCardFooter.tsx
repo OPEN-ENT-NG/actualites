@@ -34,6 +34,7 @@ export const InfoCardFooter = ({
       <Flex align="center" justify="between">
         <Flex align="center">
           <ViewsCounter
+            data-testid="info-view-views-counter-button"
             viewsCounter={viewsCounter}
             onClick={handleViewsCounterClick}
           />
