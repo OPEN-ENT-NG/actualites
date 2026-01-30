@@ -32,7 +32,7 @@ import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.constants.Field;
 import net.atos.entng.actualites.controllers.CommentController;
 import net.atos.entng.actualites.controllers.DisplayController;
-import net.atos.entng.actualites.controllers.FalcController;
+import net.atos.entng.actualites.controllers.v1.FalcController;
 import net.atos.entng.actualites.controllers.InfoController;
 import net.atos.entng.actualites.controllers.ThreadController;
 import net.atos.entng.actualites.controllers.v1.CommentControllerV1;
@@ -81,6 +81,8 @@ public class Actualites extends BaseServer {
 	public final static String GROUP_TABLE = "groups";
 	public final static String MEMBER_TABLE = "members";
 	public final static String COMMENT_TABLE = "comment";
+
+	public final static String GENAI_FALC_RIGHT = "actualites.genai.falc";
 
 	public final static String MANAGE_RIGHT_ACTION = "net-atos-entng-actualites-controllers-ThreadController|updateThread";
 
