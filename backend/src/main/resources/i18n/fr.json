@@ -170,7 +170,7 @@
   "actualites.textsimplifier.error.timeOut.body": "Merci de réessayer dans quelques instants.",
   "actualites.textsimplifier.error.timeOut.button": "Relancer la génération",
   "actualites.threadsSetting.saveButton": "Enregistrer mes préférences",
-  "actualites.threadsSetting.displayThread": "Afficher le fils",
+  "actualites.threadsSetting.displayThread": "Afficher le fil",
   "actualites.threadsSetting.displayThreadAll": "Afficher tous",
   "actualites.threadsSetting.segmented.all": "Tous les fils [[count]]",
   "actualites.threadsSetting.segmented.displayed": "Fils affichés [[count]]",
