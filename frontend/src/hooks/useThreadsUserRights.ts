@@ -2,8 +2,8 @@ import { useUser } from '@edifice.io/react';
 import { useMemo } from 'react';
 import { Thread, ThreadId } from '~/models/thread';
 import { useThreads } from '~/services/queries';
+import { getThreadUserRights } from '../utils/getThreadUserRights';
 import { useUserRights } from './useUserRights';
-import { getThreadUserRights } from './utils/threads';
 
 /**
  * Custom hook that filters threads based on the user's contribute rights.
