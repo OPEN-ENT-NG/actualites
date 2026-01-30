@@ -112,8 +112,8 @@ export const TextSimplifier = forwardRef(
                 onClick={handleVisibilityClick}
               >
                 {isVisible
-                  ? t('pocediteur.textsimplifier.button.hide')
-                  : t('pocediteur.textsimplifier.button.show')}
+                  ? t('actualites.textsimplifier.button.hide')
+                  : t('actualites.textsimplifier.button.show')}
               </Button>
             )}
 
@@ -163,7 +163,7 @@ export const TextSimplifier = forwardRef(
                     leftIcon={<IconCopy />}
                     onClick={handleCopyClick}
                   >
-                    {t('pocediteur.textsimplifier.button.copy')}
+                    {t('actualites.textsimplifier.button.copy')}
                   </Button>
                 </Flex>
               </Flex>
@@ -174,9 +174,9 @@ export const TextSimplifier = forwardRef(
                 {t(
                   simplifiedContent
                     ? contentChanged
-                      ? 'pocediteur.textsimplifier.label.warn'
-                      : 'pocediteur.textsimplifier.label.modify'
-                    : 'pocediteur.textsimplifier.label.write',
+                      ? 'actualites.textsimplifier.label.warn'
+                      : 'actualites.textsimplifier.label.modify'
+                    : 'actualites.textsimplifier.label.write',
                 )}
               </i>
 
@@ -186,7 +186,7 @@ export const TextSimplifier = forwardRef(
                 onClick={handleGenerateClick}
               >
                 {!isGenerating &&
-                  t('pocediteur.textsimplifier.button.generate')}
+                  t('actualites.textsimplifier.button.generate')}
               </AiButton>
             </Flex>
           </div>

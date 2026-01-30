@@ -1,5 +1,5 @@
 import { odeServices } from '@edifice.io/client';
-import { baseUrl } from '.';
+import { baseUrlAPI } from '.';
 
 export const createFalcService = () => {
   return {
@@ -7,9 +7,12 @@ export const createFalcService = () => {
       const http = odeServices.http();
 
       try {
-        const result = await http.post<{ content: string }>(`${baseUrl}/falc`, {
-          content,
-        });
+        const result = await http.post<{ content: string }>(
+          `${baseUrlAPI}/falc`,
+          {
+            content,
+          },
+        );
         return result;
       } catch {
         if (http.isResponseError()) {
