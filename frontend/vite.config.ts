@@ -53,6 +53,7 @@ export default ({ mode }: { mode: string }) => {
     '^/(?=auth|appregistry|cas|userbook|directory|communication|conversation|portal|session|timeline|workspace|infra)':
       proxyObj,
     '/explorer': proxyObj,
+    '/audience': proxyObj,
   };
 
   // In mock mode, don't proxy /actualites and /i18n - MSW will handle them
