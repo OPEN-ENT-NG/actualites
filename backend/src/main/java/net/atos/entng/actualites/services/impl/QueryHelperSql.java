@@ -198,7 +198,8 @@ public class QueryHelperSql {
             queryIds.append("    AND " + threadFilter + " ");
         }
         queryIds.append("    AND " + statusFilter);
-        queryIds.append("    AND ( " + dateFilter + " ) )");
+        queryIds.append("    AND ( " + dateFilter +" AND (i.publication_date <= NOW() OR i.publication_date IS NULL) " +
+                        "    AND (i.expiration_date > NOW() OR i.expiration_date IS NULL) ) )");
         queryIds.append("UNION ");
         queryIds.append("  (SELECT i.id as id, (CASE WHEN i.publication_date > i.modified THEN i.publication_date ELSE i.modified END) as date ");
         queryIds.append("    FROM actualites.thread ");
