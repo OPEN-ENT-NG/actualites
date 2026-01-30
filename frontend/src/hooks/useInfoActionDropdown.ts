@@ -1,8 +1,8 @@
 import { useEdificeClient } from '@edifice.io/react';
 import { Info } from '~/models/info';
+import { getThreadUserRights } from '~/utils/getThreadUserRights';
 import { useInfoStatus } from './useInfoStatus';
 import { useThread } from './useThread';
-import { getThreadUserRights } from './utils/threads';
 
 export function useInfoActionDropdown(info: Info) {
   const { user } = useEdificeClient();
