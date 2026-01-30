@@ -26,7 +26,7 @@ import io.vertx.core.json.JsonObject;
  */
 public class GenAiConfig {
 
-    private static final int DEFAULT_FALC_MIN_LENGTH = 100;
+    private static final int DEFAULT_FALC_MIN_LENGTH = 200;
     private static final int DEFAULT_FALC_TIMEOUT_MS = 30000;
 
     private final String uri;
