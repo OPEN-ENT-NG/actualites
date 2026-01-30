@@ -1,10 +1,4 @@
-import {
-  Button,
-  ButtonSkeleton,
-  Divider,
-  Flex,
-  ModalSkeleton,
-} from '@edifice.io/react';
+import { Button, Divider, Flex } from '@edifice.io/react';
 import { ViewsCounter } from '@edifice.io/react/audience';
 import { IconRafterDown, IconRafterUp } from '@edifice.io/react/icons';
 import { lazy, Suspense } from 'react';
@@ -72,14 +66,7 @@ export const InfoCardFooter = ({
       </Flex>
 
       {isAudienceOpen && (
-        <Suspense
-          fallback={
-            <ModalSkeleton
-              size="lg"
-              footer={<ButtonSkeleton color="primary" />}
-            />
-          }
-        >
+        <Suspense fallback={<>{/*TODO modal skeleton*/}</>}>
           <AudienceModal infoId={info.id} onModalClose={handleModalClose} />
         </Suspense>
       )}
