@@ -120,23 +120,51 @@ export function s1CreateThread(data: InitData) {
     pushResponseMetrics(resRightsMapping, user);
     sleep(baseDelay / 5000);
 
-    // Get current shares for the thread
-    const resGetShares = http.get(
-      `${rootUrl}/actualites/api/v1/threads/${threadId.id}/shares?search=`,
-      { headers: getHeaders(), tags: {type: 'get_thread_shares'} }
+    // Search for personnel groups
+    const resPersonnel = http.get(
+      `${rootUrl}/actualites/api/v1/threads/${threadId.id}/shares?search=personnel`,
+      { headers: getHeaders(), tags: {type: 'search_personnel'} }
     );
-    pushResponseMetrics(resGetShares, user);
-
-    check(resGetShares, {
-      "Get thread shares should succeed": (r) => r.status === 200,
+    check(resPersonnel, {
+      "Search personnel should succeed": (r) => r.status === 200,
     });
-
-    const shareResult = JSON.parse(resGetShares.body as string);
+    pushResponseMetrics(resPersonnel, user);
     sleep(baseDelay / 1000);
 
-    // Build share payload from available groups
-    const groupSuffixes = ['Relative', 'Personnel', 'Teacher'];
-    const sharePayload = buildSharePayloadFromGroups(shareResult, groupSuffixes, threadAllRights);
+    // Search for enseignant groups
+    const resEnseignant = http.get(
+      `${rootUrl}/actualites/api/v1/threads/${threadId.id}/shares?search=enseignant`,
+      { headers: getHeaders(), tags: {type: 'search_enseignant'} }
+    );
+    check(resEnseignant, {
+      "Search enseignant should succeed": (r) => r.status === 200,
+    });
+    pushResponseMetrics(resEnseignant, user);
+    sleep(baseDelay / 1000);
+
+    // Parse both results
+    const shareResultPersonnel = JSON.parse(resPersonnel.body as string);
+    const shareResultEnseignant = JSON.parse(resEnseignant.body as string);
+
+    // Merge results and remove duplicates
+    const mergedShareResult: any = {
+      groups: {
+        visibles: []
+      }
+    };
+
+    const seenIds = new Set<string>();
+    for (const group of [...(shareResultPersonnel.groups?.visibles || []),
+                        ...(shareResultEnseignant.groups?.visibles || [])]) {
+      if (!seenIds.has(group.id)) {
+        seenIds.add(group.id);
+        mergedShareResult.groups.visibles.push(group);
+      }
+    }
+
+    // Build share payload from merged results
+    const groupSuffixes = ['Personnel', 'Teacher'];
+    const sharePayload = buildSharePayloadFromGroups(mergedShareResult, groupSuffixes, threadAllRights);
 
     // Update shares
     const shareResponse = shareThreads(threadId.id.toString(), sharePayload);

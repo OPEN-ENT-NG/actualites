@@ -114,23 +114,51 @@ export function s2CreateInfo(data: InitData) {
     pushResponseMetrics(resRightsMapping, user);
     sleep(baseDelay / 5000);
 
-    // get current shares for the info
-    const resGetShares = http.get(
-      `${rootUrl}/actualites/api/v1/infos/${infoId.id}/shares?search=`,
-      { headers: getHeaders(), tags: {type: 'get_info_shares'} }
+    // Search for personnel groups
+    const resPersonnel = http.get(
+      `${rootUrl}/actualites/api/v1/infos/${infoId.id}/shares?search=personnel`,
+      { headers: getHeaders(), tags: {type: 'search_personnel'} }
     );
-    pushResponseMetrics(resGetShares, user);
-
-    check(resGetShares, {
-      "Get info shares should succeed": (r) => r.status === 200,
+    check(resPersonnel, {
+      "Search personnel should succeed": (r) => r.status === 200,
     });
-
-    const shareResponse = JSON.parse(resGetShares.body as string);
+    pushResponseMetrics(resPersonnel, user);
     sleep(baseDelay / 1000);
 
-    // build share payload from available groups
-    const groupSuffixes = ['Relative', 'Student', 'Personnel', 'Teacher'];
-    const sharePayload = buildSharePayloadFromGroups(shareResponse, groupSuffixes, infoFullRights);
+    // Search for enseignant groups
+    const resEnseignant = http.get(
+      `${rootUrl}/actualites/api/v1/infos/${infoId.id}/shares?search=enseignant`,
+      { headers: getHeaders(), tags: {type: 'search_enseignant'} }
+    );
+    check(resEnseignant, {
+      "Search enseignant should succeed": (r) => r.status === 200,
+    });
+    pushResponseMetrics(resEnseignant, user);
+    sleep(baseDelay / 1000);
+
+    // Parse both results
+    const shareResultPersonnel = JSON.parse(resPersonnel.body as string);
+    const shareResultEnseignant = JSON.parse(resEnseignant.body as string);
+
+    // Merge results and remove duplicates
+    const mergedShareResult: any = {
+      groups: {
+        visibles: []
+      }
+    };
+
+    const seenIds = new Set<string>();
+    for (const group of [...(shareResultPersonnel.groups?.visibles || []),
+                        ...(shareResultEnseignant.groups?.visibles || [])]) {
+      if (!seenIds.has(group.id)) {
+        seenIds.add(group.id);
+        mergedShareResult.groups.visibles.push(group);
+      }
+    }
+
+    // build share payload from merged results
+    const groupSuffixes = ['Personnel', 'Teacher'];
+    const sharePayload = buildSharePayloadFromGroups(mergedShareResult, groupSuffixes, infoFullRights);
 
     // Update shares
     const resUpdateShares = shareInfos(infoId.id.toString(), sharePayload);
