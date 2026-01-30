@@ -173,7 +173,6 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
       },
       {
         path: 'threads/:threadIdAsString',
-        index: true,
         async lazy() {
           const { loader, Threads: Component } =
             await import('~/routes/pages/Threads');
