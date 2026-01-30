@@ -194,14 +194,7 @@ export const useUpdateThreadPreferences = () => {
   return useMutation({
     mutationFn: (threadPreferences: ThreadPreferences) =>
       threadService.updateThreadPreferences(threadPreferences),
-    onSuccess: () => {
-      toast.success(t('actualites.threadsSetting.success'));
-    },
-    onError: () => {
-      toast.error(t('actualites.threadsSetting.error'));
-    },
-    onSettled: (_data, error, threadPreferences: ThreadPreferences) => {
-      if (error) return;
+    onMutate: (threadPreferences: ThreadPreferences) => {
       queryClient.setQueryData(
         threadQueryKeys.all(true),
         (oldData: Thread[]) => {
@@ -218,6 +211,15 @@ export const useUpdateThreadPreferences = () => {
           return updatedThreads;
         },
       );
+    },
+    onSuccess: () => {
+      toast.success(t('actualites.threadsSetting.success'));
+    },
+    onError: () => {
+      toast.error(t('actualites.threadsSetting.error'));
+    },
+    onSettled: (_data, error) => {
+      if (error) return;
 
       queryClient.invalidateQueries({ queryKey: threadQueryKeys.all() });
     },
