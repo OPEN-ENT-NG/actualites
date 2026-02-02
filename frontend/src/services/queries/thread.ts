@@ -67,6 +67,8 @@ export const useThreadShares = (threadId: ThreadId) =>
 
 export const useCreateThread = () => {
   const queryClient = useQueryClient();
+  const { t } = useI18n();
+  const toast = useToast();
 
   return useMutation({
     mutationFn: (queryPayload: ThreadQueryPayload) => {
@@ -79,6 +81,7 @@ export const useCreateThread = () => {
       return threadService.create(payload);
     },
     onSuccess: () => {
+      toast.success(t('actualites.adminThreads.modal.createSuccess'));
       queryClient.invalidateQueries({ queryKey: threadQueryKeys.all() });
     },
   });
