@@ -1,5 +1,7 @@
+import { useToast } from '@edifice.io/react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useI18n } from '~/hooks/useI18n';
 import { InfoId, InfoStatus } from '~/models/info';
 import { useCreateDraftInfo, useUpdateInfo } from '~/services/queries';
 import { InfoDetailsFormParams, useInfoFormStore } from '~/store/infoFormStore';
@@ -12,6 +14,8 @@ export function useInfoDetailsForm() {
   const setResetDetailsForm = useInfoFormStore.use.setResetInfoDetailsForm();
   const setDetailsFormState = useInfoFormStore.use.setInfoDetailsFormState();
   const navigate = useNavigate();
+  const { t } = useI18n();
+  const toast = useToast();
   const { mutate: createDraftInfo } = useCreateDraftInfo();
   const { mutate: updateDraftInfo } = useUpdateInfo();
   const [isSaving, setIsSaving] = useState(false);
@@ -89,6 +93,7 @@ export function useInfoDetailsForm() {
     if (detailsForm && detailsFormState.isValid) {
       if (detailsFormState.isDirty || !detailsForm?.infoId) {
         createOrUpdateInfo(detailsForm, ({ id }) => {
+          toast.success(t('actualites.info.createForm.draftSaved'));
           navigate(`/infos/${id}/create/rights`, {});
         });
       } else {
