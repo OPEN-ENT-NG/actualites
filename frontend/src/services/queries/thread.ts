@@ -202,7 +202,7 @@ export const useUpdateThreadPreferences = () => {
               visible:
                 threadPreferences.threads.find(
                   (pref) => pref.threadId === thread.id,
-                )?.visible || true,
+                )?.visible ?? thread.visible,
             };
           });
           return updatedThreads;

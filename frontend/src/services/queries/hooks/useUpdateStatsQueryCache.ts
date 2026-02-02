@@ -10,8 +10,9 @@ export const useUpdateStatsQueryCache = () => {
     threadId: number,
     status: InfoStatus,
     countDelta: number,
+    viewHidden = false,
   ) => {
-    const queryKey = infoQueryKeys.stats();
+    const queryKey = infoQueryKeys.stats(viewHidden);
     if (!queryClient.getQueryData(queryKey)) return;
     queryClient.setQueryData(queryKey, (oldData: InfosStats): InfosStats => {
       let threadIndex = oldData.threads.findIndex(
