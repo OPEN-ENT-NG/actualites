@@ -15,6 +15,8 @@ import org.entcore.common.notification.NotificationUtils;
 import org.entcore.common.notification.TimelineHelper;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.user.UserUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -26,6 +28,7 @@ import static net.atos.entng.actualites.controllers.InfoController.*;
 
 public class NotificationTimelineServiceImpl implements NotificationTimelineService {
 
+    private static final Logger log = LoggerFactory.getLogger(NotificationTimelineServiceImpl.class);
     private final TimelineHelper notification;
     private final InfoService infoService;
     private final ThreadService threadService;
@@ -59,12 +62,9 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
                 if (event.isRight()) {
                     // get all ids
                     JsonArray shared = event.right().getValue();
-                    threadService.getPublishSharedWithIds(threadId, false, user, tEvent -> {
-                        if(tEvent.isRight()) {
-                            shared.addAll(tEvent.right().getValue());
-                            extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-published", ignoreFlood);
-                        }
-                    });
+                    extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-published", ignoreFlood);
+                } else {
+                    log.error("Unable to retrieve shared right for info {} error : {}", infoId, event.left());
                 }
             });
         } else if (eventType.equals(NEWS_UPDATE_EVENT_TYPE)) {
