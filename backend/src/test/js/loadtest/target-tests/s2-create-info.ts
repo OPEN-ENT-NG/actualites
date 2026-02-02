@@ -13,7 +13,7 @@ import { pushResponseMetrics } from "../scenarios/_metrics-utils.ts";
 import { Counter } from "k6/metrics";
 import {InfoUser} from "../scenarios/_init-test-utils.ts";
 import { Identifier, infoFullRights } from "../../utils/_info-utils.ts";
-import { addGroupSharesInfos, Shares } from "../../utils/_shares_utils.ts";
+import { getInfoSharesOrFail, getRightsMappingOrFail, buildSharePayloadFromGroups, shareInfos } from "../../utils/_shares_utils.ts";
 
 const rootUrl = __ENV.ROOT_URL;
 const baseDelay = (__ENV.DELAY_BETWEEN_PAGE_IN_MS ? Number(__ENV.DELAY_BETWEEN_PAGE_IN_MS) : 1000) ;
@@ -74,93 +74,131 @@ export function s2CreateInfo(data: InitData) {
     pushResponseMetrics(resStats, user);
     sleep(baseDelay / 5000);
 
-    //create info
-    const resInfo =  http.post(
-      `${rootUrl}/actualites/api/v1/infos/published`,
+    // 1. create draft info
+    const resInfo = http.post(
+      `${rootUrl}/actualites/api/v1/infos`,
       JSON.stringify({
         title: `Incoming info ${exec.scenario.iterationInInstance}`,
         content: `Incoming content`,
         thread_id: parseInt(user.threadId as string),
-        status: 3,
-        publication_date: "2020-01-01T00:00:00Z"
-      } ),
-      { headers: getHeaders(), tags: {type: 'create_info'} });
+        status: 1,
+        publication_date: new Date().toISOString()
+      }),
+      { headers: getHeaders(), tags: {type: 'create_draft'} }
+    );
 
-    const infoId : Identifier = JSON.parse(resInfo.body as string);
+    check(resInfo, {
+      "Create draft info should succeed": (r) => r.status === 200,
+    });
+
+    const infoId: Identifier = JSON.parse(resInfo.body as string);
     pushResponseMetrics(resInfo, user);
     sleep(baseDelay / 1000);
 
-    const searchShareUrl = `${rootUrl}/actualites/api/v1/infos/${infoId.id}/shares?search=`;
-
-    let shares: any[] = [];
-
-    //search parent group
-    let resSearchParent = http.get(searchShareUrl + 'relative', {
-      headers: getHeaders(),
-      tags: {type : 'list_info_shares'}
+    const resGetInfo = http.get(
+      `${rootUrl}/actualites/api/v1/infos/${infoId.id}`,
+      { headers: getHeaders(), tags: {type: 'get_info'} }
+    );
+    check(resGetInfo, {
+      "Get info should succeed": (r) => r.status === 200,
     });
-    pushResponseMetrics(resSearchParent, user);
+    pushResponseMetrics(resGetInfo, user);
+    sleep(baseDelay / 5000);
 
-    let shareResult: Shares = JSON.parse(resSearchParent.body as string);
-    let groups  = shareResult.groups.visibles.filter(g => !g.structureName && g.name.endsWith('Relative'));
+    // 2. share workflow
+    // get rights mapping
+    const resRightsMapping = http.get(
+      `${rootUrl}/actualites/api/v1/rights/sharing`,
+      { headers: getHeaders(), tags: {type: 'get_rights_mapping'} }
+    );
+    pushResponseMetrics(resRightsMapping, user);
+    sleep(baseDelay / 5000);
 
-    for(let group of groups) {
-      shares.push(group);
-    }
-    sleep(baseDelay / 1000);
-    //search student group
-    resSearchParent = http.get(searchShareUrl + 'student', {
-      headers: getHeaders(),
-      tags: {type : 'list_info_shares'}
+    // Search for personnel groups
+    const resPersonnel = http.get(
+      `${rootUrl}/actualites/api/v1/infos/${infoId.id}/shares?search=personnel`,
+      { headers: getHeaders(), tags: {type: 'search_personnel'} }
+    );
+    check(resPersonnel, {
+      "Search personnel should succeed": (r) => r.status === 200,
     });
-    pushResponseMetrics(resSearchParent, user);
-    sleep(baseDelay / 1000);
-
-    shareResult = JSON.parse(resSearchParent.body as string);
-    groups =  shareResult.groups.visibles.filter(g => !g.structureName && g.name.endsWith('Student'));
-    for(let group of groups) {
-      shares.push(group);
-    }
-    //search personnel group
-    resSearchParent = http.get(searchShareUrl + 'personnel', {
-      headers: getHeaders(),
-      tags: {type : 'list_info_shares'}
-    });
-    pushResponseMetrics(resSearchParent, user);
-
-    shareResult = JSON.parse(resSearchParent.body as string);
-    groups = shareResult.groups.visibles.filter(g => !g.structureName && g.name.endsWith('Personnel'));
-    for(let group of groups) {
-      shares.push(group);
-    }
-
+    pushResponseMetrics(resPersonnel, user);
     sleep(baseDelay / 1000);
 
-    //search teacher group
-    resSearchParent = http.get(searchShareUrl + 'teacher', {
-      headers: getHeaders(),
-      tags: {type : 'list_info_shares'}
+    // Search for teacher groups
+    const resEnseignant = http.get(
+      `${rootUrl}/actualites/api/v1/infos/${infoId.id}/shares?search=teacher`,
+      { headers: getHeaders(), tags: {type: 'search_teacher'} }
+    );
+    check(resEnseignant, {
+      "Search teacher should succeed": (r) => r.status === 200,
     });
-    pushResponseMetrics(resSearchParent, user);
-
-    shareResult = JSON.parse(resSearchParent.body as string);
-    groups  = shareResult.groups.visibles.filter(g => !g.structureName && g.name.endsWith('Teacher'));
-    for(let group of groups) {
-      shares.push(group);
-    }
+    pushResponseMetrics(resEnseignant, user);
     sleep(baseDelay / 1000);
-    //search for sharing
 
-    let groupsShare: Shares = {users: {}, groups: {}, sharedBookmarks: {}};
+    // Parse both results
+    const shareResultPersonnel = JSON.parse(resPersonnel.body as string);
+    const shareResultEnseignant = JSON.parse(resEnseignant.body as string);
 
-    for(let g of shares) {
-      groupsShare = addGroupSharesInfos(groupsShare, g.id, infoFullRights);
+    // Merge results and remove duplicates
+    const mergedShareResult: any = {
+      groups: {
+        visibles: []
+      }
+    };
+
+    const seenIds = new Set<string>();
+    for (const group of [...(shareResultPersonnel.groups?.visibles || []),
+                        ...(shareResultEnseignant.groups?.visibles || [])]) {
+      if (!seenIds.has(group.id)) {
+        seenIds.add(group.id);
+        mergedShareResult.groups.visibles.push(group);
+      }
     }
-    //share info
-    const shareResponse = http.put(`${rootUrl}/actualites/api/v1/infos/${infoId.id}/shares`,
-      JSON.stringify(groupsShare),
-      { headers: getHeaders(), tags: {type: 'update_info_shares'} });
-    pushResponseMetrics(shareResponse, user);
-    sleep(baseDelay / 1000);
+
+    // build share payload from merged results
+    const groupSuffixes = ['Personnel', 'Teacher'];
+    const sharePayload = buildSharePayloadFromGroups(mergedShareResult, groupSuffixes, infoFullRights);
+
+    // Update shares
+    const resUpdateShares = shareInfos(infoId.id.toString(), sharePayload);
+    pushResponseMetrics(resUpdateShares, user);
+
+    check(resUpdateShares, {
+      "Update info shares should succeed": (r) => r.status === 200,
     });
+    sleep(baseDelay / 1000);
+
+    // reload info after share update
+    const resGetInfoAfterShare = http.get(
+      `${rootUrl}/actualites/api/v1/infos/${infoId.id}`,
+      { headers: getHeaders(), tags: {type: 'get_info'} }
+    );
+    pushResponseMetrics(resGetInfoAfterShare, user);
+    sleep(baseDelay / 5000);
+
+    // 3. publish or Submit info
+    // CONTRIBUTOR -> status 2 (PENDING), PUBLISHER -> status 3 (PUBLISHED)
+    const targetStatus = user.role === 'PUBLISHER' ? 3 : 2;
+
+    const resPublish = http.put(
+      `${rootUrl}/actualites/api/v1/infos/${infoId.id}`,
+      JSON.stringify({ status: targetStatus }),
+      { headers: getHeaders(), tags: {type: targetStatus === 3 ? 'publish_info' : 'submit_info'} }
+    );
+
+    check(resPublish, {
+      "Publish/Submit info should succeed": (r) => r.status === 200,
+    });
+    pushResponseMetrics(resPublish, user);
+    sleep(baseDelay / 1000);
+
+    // reload info after publish/submit
+    const resGetInfoAfterPublish = http.get(
+      `${rootUrl}/actualites/api/v1/infos/${infoId.id}`,
+      { headers: getHeaders(), tags: {type: 'get_info'} }
+    );
+    pushResponseMetrics(resGetInfoAfterPublish, user);
+    sleep(baseDelay / 5000);
+  });
 }
