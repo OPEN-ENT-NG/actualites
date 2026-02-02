@@ -112,11 +112,12 @@ export function updateInfoOrFail(infoId: number, info: Info): Identifier {
 
 
 /**
- * Create a published info directly
- * @param info The info object to create (status will be automatically set to 3)
- * @returns HTTP response
+ * @deprecated Use createDraftAndPublish instead.
+ * This endpoint does not exist in the current backend.
+ * The correct workflow is: createInfo (draft) -> updateInfo (publish)
  */
 export function createPublishedInfo(info: Omit<Info, 'status'>): RefinedResponse<any> {
+  console.warn('DEPRECATED: createPublishedInfo uses a non-existent endpoint. Use createDraftAndPublish instead.');
   return http.post(
     `${rootUrl}/actualites/api/v1/infos/published`,
     JSON.stringify(info),
@@ -125,16 +126,60 @@ export function createPublishedInfo(info: Omit<Info, 'status'>): RefinedResponse
 }
 
 /**
- * Create a published info directly and fail if status is not 200
- * @param info The info object to create (status will be automatically set to 3)
- * @returns The created info identifier
+ * @deprecated Use createDraftAndPublishOrFail instead.
+ * This endpoint does not exist in the current backend.
  */
 export function createPublishedInfoOrFail(info: Omit<Info, 'status'>): Identifier {
+  console.warn('DEPRECATED: createPublishedInfoOrFail uses a non-existent endpoint. Use createDraftAndPublishOrFail instead.');
   const res = createPublishedInfo(info);
   check(res, {
     "Creating published info should be ok": (r) => r.status == 200,
   });
   return JSON.parse(res.body as string);
+}
+
+/**
+ * Create a draft info and then publish/submit it.
+ * This follows the correct frontend workflow.
+ * @param info The info object to create
+ * @param targetStatus The target status: 2 for PENDING (submit), 3 for PUBLISHED (publish)
+ * @returns HTTP response from the update call
+ */
+export function createDraftAndPublish(
+  info: Omit<Info, 'status'>,
+  targetStatus: 2 | 3 = 3
+): { createResponse: RefinedResponse<any>; publishResponse: RefinedResponse<any>; id: number } {
+  // Step 1: Create draft
+  const createRes = createInfo({ ...info, status: 1 });
+  if (createRes.status !== 200) {
+    return { createResponse: createRes, publishResponse: createRes, id: 0 };
+  }
+  const { id } = JSON.parse(createRes.body as string) as Identifier;
+
+  // Step 2: Publish or submit
+  const publishRes = updateInfo(id, { ...info, status: targetStatus });
+
+  return { createResponse: createRes, publishResponse: publishRes, id };
+}
+
+/**
+ * Create a draft info and then publish/submit it, failing if any step fails.
+ * @param info The info object to create
+ * @param targetStatus The target status: 2 for PENDING (submit), 3 for PUBLISHED (publish)
+ * @returns The created info identifier
+ */
+export function createDraftAndPublishOrFail(
+  info: Omit<Info, 'status'>,
+  targetStatus: 2 | 3 = 3
+): Identifier {
+  const { createResponse, publishResponse, id } = createDraftAndPublish(info, targetStatus);
+  check(createResponse, {
+    "Creating draft info should be ok": (r) => r.status == 200,
+  });
+  check(publishResponse, {
+    "Publishing info should be ok": (r) => r.status == 200,
+  });
+  return { id };
 }
 
 /**
