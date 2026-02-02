@@ -1,11 +1,14 @@
 package net.atos.entng.actualites.services.impl;
 
 import com.google.common.collect.Lists;
-import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.Server;
-import io.vertx.core.*;
+import io.vertx.core.Future;
+import io.vertx.core.Promise;
+import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.impl.logging.Logger;
+import io.vertx.core.impl.logging.LoggerFactory;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.services.InfoService;
@@ -20,12 +23,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static net.atos.entng.actualites.controllers.InfoController.*;
 
 public class NotificationTimelineServiceImpl implements NotificationTimelineService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationTimelineServiceImpl.class);
     private final TimelineHelper notification;
     private final InfoService infoService;
     private final ThreadService threadService;
@@ -59,12 +62,9 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
                 if (event.isRight()) {
                     // get all ids
                     JsonArray shared = event.right().getValue();
-                    threadService.getPublishSharedWithIds(threadId, false, user, tEvent -> {
-                        if(tEvent.isRight()) {
-                            shared.addAll(tEvent.right().getValue());
-                            extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-published", ignoreFlood);
-                        }
-                    });
+                    extractUserIds(request, shared, user, owner, threadId, infoId, title, "news.news-published", ignoreFlood);
+                } else {
+                    LOGGER.error(String.format("Unable to retrieve shared right for info %s error : %s", infoId, event.left()));
                 }
             });
         } else if (eventType.equals(NEWS_UPDATE_EVENT_TYPE)) {
