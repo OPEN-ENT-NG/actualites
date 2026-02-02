@@ -43,7 +43,13 @@ export function AdminThread({
       fill
     >
       <ThreadIcon thread={thread} iconSize="80" />
-      <Flex direction="column" gap="4" fill className="overflow-hidden">
+      <Flex
+        direction="column"
+        gap="4"
+        fill
+        className="overflow-hidden"
+        style={{ minWidth: '300px' }}
+      >
         <strong className="text-truncate">{thread.title}</strong>
 
         <Flex
