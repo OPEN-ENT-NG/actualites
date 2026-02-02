@@ -770,14 +770,16 @@ public class InfoServiceSqlImpl implements InfoService {
 					"		 i.owner, u.username AS owner_name, u.deleted AS owner_deleted, " + // info owner data
 					"		 i.thread_id, i.content_version as content_version, t.title AS thread_title, t.icon AS thread_icon, " +
 					"		 t.owner AS thread_owner, ut.username AS thread_owner_name, ut.deleted AS thread_owner_deleted, " + // thread owner data
-					"		 max(info_for_user.rights) AS rights, " + // info rights
-					"		 max(thread_for_user.rights) AS thread_rights " + // thread rights
+					"		 array_agg(DISTINCT info_right) AS rights, " + // info rights
+					"		 array_agg(DISTINCT thread_right) AS thread_rights " + // thread rights
 					"    FROM " + NEWS_INFO_TABLE + " AS i " +
-					"        LEFT JOIN info_for_user ON info_for_user.id = i.id " +
-					" 		 LEFT JOIN thread_for_user ON thread_for_user.id = i.thread_id " +
+					"        LEFT JOIN info_for_user AS ish ON ish.id = i.id " +
+					" 		 LEFT JOIN thread_for_user as tfu ON tfu.id = i.thread_id " +
 					"        LEFT JOIN " + NEWS_USER_TABLE + " AS u ON i.owner = u.id " +
 					" 		 LEFT JOIN " + NEWS_THREAD_TABLE + " AS t ON t.id = i.thread_id " +
 					"        LEFT JOIN " + NEWS_USER_TABLE + " AS ut ON t.owner = ut.id " +
+					"        LEFT JOIN LATERAL unnest(tfu.rights) AS thread_right ON TRUE " +
+					"        LEFT JOIN LATERAL unnest(ish.rights) AS info_right ON TRUE " +
 					"    WHERE " +
 					"		 i.id = ? " + // get info from id
 					"    GROUP BY i.id, i.title, content, i.created, i.modified, i.is_headline, i.number_of_comments, " +
