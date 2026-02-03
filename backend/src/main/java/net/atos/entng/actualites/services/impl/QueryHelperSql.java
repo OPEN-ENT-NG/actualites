@@ -182,7 +182,7 @@ public class QueryHelperSql {
         queryIds.append("    SELECT ? as id UNION ");
         queryIds.append("    SELECT id FROM actualites.groups WHERE id IN ").append(memberIds);
         queryIds.append("  ) as u_groups) ");
-        queryIds.append("(SELECT i.id, (CASE WHEN i.publication_date > i.modified THEN i.publication_date ELSE i.modified END) as date ");
+        queryIds.append("(SELECT i.id, COALESCE(i.publication_date, i.modified) as date ");
         queryIds.append("  FROM actualites.info AS i WHERE i.owner = ? AND ");
         if (!threadFilter.isEmpty()) {
             queryIds.append(threadFilter).append(" AND ");
@@ -190,7 +190,7 @@ public class QueryHelperSql {
         queryIds.append(        statusFilter ).append(" AND ");
         queryIds.append("       (i.status <> 3 OR ( " + dateFilter + " ) ) )");
         queryIds.append("UNION ");
-        queryIds.append("  (SELECT i.id, (CASE WHEN i.publication_date > i.modified THEN i.publication_date ELSE i.modified END) as date ");
+        queryIds.append("  (SELECT i.id, COALESCE(i.publication_date, i.modified) as date ");
         queryIds.append("    FROM actualites.info_shares ");
         queryIds.append("    INNER JOIN actualites.info AS i ON i.id = info_shares.resource_id AND i.status = 3  ");
         queryIds.append("    WHERE info_shares.member_id IN (SELECT id FROM user_groups)");
@@ -201,7 +201,7 @@ public class QueryHelperSql {
         queryIds.append("    AND ( " + dateFilter +" AND (i.publication_date <= NOW() OR i.publication_date IS NULL) " +
                         "    AND (i.expiration_date > NOW() OR i.expiration_date IS NULL) ) )");
         queryIds.append("UNION ");
-        queryIds.append("  (SELECT i.id as id, (CASE WHEN i.publication_date > i.modified THEN i.publication_date ELSE i.modified END) as date ");
+        queryIds.append("  (SELECT i.id as id, COALESCE(i.publication_date, i.modified) as date ");
         queryIds.append("    FROM actualites.thread ");
         queryIds.append("    INNER JOIN actualites.info AS i ON (i.thread_id = thread.id) ");
         queryIds.append("    WHERE thread.owner = ? AND i.status > 1 ");
@@ -212,7 +212,7 @@ public class QueryHelperSql {
         // in pending or published in the date range specified
         queryIds.append("    AND (i.status = 2 OR i.status = 3 AND ( " + dateFilter + " ) ) )");
         queryIds.append("UNION ");
-        queryIds.append("  (SELECT i.id as id, (CASE WHEN i.publication_date > i.modified THEN i.publication_date ELSE i.modified END) as date ");
+        queryIds.append("  (SELECT i.id as id, COALESCE(i.publication_date, i.modified) as date ");
         queryIds.append("    FROM actualites.thread_shares ");
         queryIds.append("    INNER JOIN actualites.thread ON (thread.id = thread_shares.resource_id) ");
         queryIds.append("    INNER JOIN actualites.info AS i ON (i.thread_id = thread.id) ");
@@ -290,7 +290,7 @@ public class QueryHelperSql {
                     subquery.append("INNER JOIN actualites.thread ON (info.thread_id = thread.id) ");
                     subquery.append("INNER JOIN actualites.users ON (info.owner = users.id) ");
                     subquery.append("WHERE info.id IN ").append(infoIds).append(" ");
-                    subquery.append("GROUP BY info.id, users.username, thread.id ORDER BY info.modified DESC;");
+                    subquery.append("GROUP BY info.id, users.username, thread.id ORDER BY COALESCE(info.publication_date, info.modified) DESC;");
                     final JsonArray subValues = new JsonArray().addAll(jsonIds);
                     Sql.getInstance().prepared(subquery.toString(), subValues, SqlResult.validResultHandler(handler));
                 }

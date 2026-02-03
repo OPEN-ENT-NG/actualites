@@ -436,10 +436,7 @@ public class InfoServiceSqlImpl implements InfoService {
 				groupsAndUserIds.addAll(user.getGroupsIds());
 			}
 			query = "SELECT i.id as _id, i.title, u.username, t.id AS thread_id, t.title AS thread_title , t.icon AS thread_icon, " +
-				" CASE WHEN i.publication_date > i.modified" +
-					" THEN i.publication_date::text" +
-					" ELSE i.modified::text" +
-					" END as date" +
+				" COALESCE(i.publication_date, i.modified)::text as date" +
 				", json_agg(row_to_json(row(ios.member_id, ios.action)::actualites.share_tuple)) as shared" +
 				", array_to_json(array_agg(group_id)) as groups" +
 				" FROM "+NEWS_INFO_TABLE+" AS i" +
@@ -484,8 +481,7 @@ public class InfoServiceSqlImpl implements InfoService {
 				{
 					final StringBuilder subquery = new StringBuilder();
 					subquery.append("SELECT info.id as _id, info.title, users.username, thread.id AS thread_id, thread.title AS thread_title, ");
-					subquery.append("thread.icon AS thread_icon, CASE WHEN info.publication_date > info.modified THEN info.publication_date::text ");
-					subquery.append("ELSE info.modified::text END AS date ");
+					subquery.append("thread.icon AS thread_icon, COALESCE(info.publication_date, info.modified)::text AS date ");
 					subquery.append("FROM "+NEWS_INFO_TABLE+" ");
 					subquery.append("INNER JOIN "+NEWS_THREAD_TABLE+" ON (info.thread_id = thread.id) ");
 					subquery.append("INNER JOIN "+NEWS_USER_TABLE+" ON (info.owner = users.id) ");
@@ -654,7 +650,7 @@ public class InfoServiceSqlImpl implements InfoService {
 									"        COALESCE(( " +
 									"         SELECT MAX(_inf.content_version) FROM " + NEWS_INFO_REVISION_TABLE + " _inf " +
 									"         WHERE _inf.info_id = i.id AND _inf.content_version < i.content_version " +
-									"        ), 1) as previous_content_version, (CASE WHEN i.publication_date > i.modified THEN i.publication_date ELSE i.modified END) as sorting_date " +
+									"        ), 1) as previous_content_version, COALESCE(i.publication_date, i.modified) as sorting_date " +
 									"    FROM " + NEWS_INFO_TABLE + " AS i " +
 									"        LEFT JOIN " + NEWS_USER_TABLE + " AS u ON i.owner = u.id " +
 									"    WHERE i.id IN " +  Sql.listPrepared(ids.toArray(new Object[0])) +
