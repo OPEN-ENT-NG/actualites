@@ -884,7 +884,7 @@ public class InfoServiceSqlImpl implements InfoService {
 
 			String filterAdml = "";
 			if (filterMultiAdmlActivated && !viewHidden) {
-				filterAdml = " AND tsh.adml_group = false ";
+				filterAdml = " AND ( tsh.adml_group = false AND prefs.visible IS NULL OR prefs.visible = true  ) ";
 			}
 
 			final String ids = Sql.listPrepared(groupsAndUserIds.toArray());
@@ -921,8 +921,10 @@ public class InfoServiceSqlImpl implements InfoService {
 					"	 thread_for_user AS ( " +
 					"	 	 SELECT tsh.resource_id AS id" +
 					"    	 FROM " + NEWS_THREAD_SHARE_TABLE + " AS tsh " +
+					"  		 LEFT JOIN actualites.thread_user_preferences prefs ON prefs.thread_id = tsh.resource_id  AND prefs.user_id = ? " +
 					"    	 WHERE tsh.member_id IN (SELECT id FROM user_groups)" +
 					"              AND tsh.action = 'net-atos-entng-actualites-controllers-InfoController|publish' " + filterAdml +
+					"              AND  ( prefs.visible IS NULL OR prefs.visible = true ) " +
 					"    	 GROUP BY tsh.resource_id " +
 					"	 ) " +
 					"SELECT t.id, " +
@@ -934,18 +936,22 @@ public class InfoServiceSqlImpl implements InfoService {
 					"    LEFT JOIN " + NEWS_INFO_TABLE + " AS i ON t.id = i.thread_id " +
 					"    LEFT JOIN info_for_user ON info_for_user.id = i.id " +
 					" 	 LEFT JOIN thread_for_user ON thread_for_user.id = i.thread_id " +
-					"WHERE (t.owner = ?  AND i.status >= 2  " +
-					"      OR t.id IN ( SELECT id  FROM thread_for_user ) AND i.status >= 2  " +
-					"      OR i.id IN ( SELECT id FROM info_for_user ) AND i.status >= 3" +
-					"      OR i.owner = ?) " +
+					"  	 LEFT JOIN actualites.thread_user_preferences prefs ON prefs.thread_id = t.id  AND prefs.user_id = ? " +
+					"WHERE ( t.owner = ?  AND i.status >= 2  " +
+					"        OR t.id IN ( SELECT id  FROM thread_for_user ) AND i.status >= 2  " +
+					"        OR i.id IN ( SELECT id FROM info_for_user ) AND i.status >= 3" +
+					"        OR i.owner = ?) " +
+					"      AND  ( prefs.visible IS NULL OR prefs.visible = true ) " +
 					"GROUP BY t.id " +
 					"ORDER BY t.id";
 
 			JsonArray params = new JsonArray();
 			params.add(user.getUserId());	// user groups => owner
 			groupsAndUserIds.forEach(params::add);	// user groups => clause in
+			params.add(user.getUserId());           // pref => thread_for_user
 			params.add(user.getUserId());			// t.owner
 			params.add(user.getUserId());			// info owner
+			params.add(user.getUserId());           // pref => info
 
 			Sql.getInstance().prepared(query, params, SqlResult.validResultHandler(result -> {
 				if (result.isLeft()) {

@@ -2,11 +2,14 @@ package net.atos.entng.actualites.services.impl;
 
 import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.security.SecuredAction;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.json.JsonArray;
 import net.atos.entng.actualites.services.ThreadService;
 import net.atos.entng.actualites.services.UserPreferenceService;
 import net.atos.entng.actualites.to.Preferences;
+import net.atos.entng.actualites.to.ThreadInclude;
 import net.atos.entng.actualites.to.ThreadPreference;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlStatementsBuilder;
@@ -29,7 +32,7 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
     public void updateUserPreference(Preferences preferences, UserInfos user, Map<String, SecuredAction> securedActions,
                                      Handler<Either<String, Void>> handler) {
         //filter thread visible by the user
-        threadService.list(securedActions, user, true)
+        threadService.list(securedActions, user, ThreadInclude.ALL)
                 .onSuccess(threads -> {
                     SqlStatementsBuilder stbuilder = new SqlStatementsBuilder();
 
@@ -69,5 +72,18 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
                 .onFailure(throwable -> {
                     handler.handle(new Either.Left<>(throwable.getMessage()));
                 });
+    }
+
+    @Override
+    public Future<Boolean> hasThreadPreference(UserInfos userInfo) {
+        Promise<Boolean> promise = Promise.promise();
+        Sql.getInstance().prepared("SELECT count(*) as count FROM " + PREFERENCE_TABLE + " WHERE user_id = ?", new JsonArray().add(userInfo.getUserId()), result -> {
+            if ("ok".equals(result.body().getString("status"))) {
+                promise.complete(result.body().getJsonArray("results").getJsonArray(0).getLong(0) > 0 );
+            } else {
+                promise.fail(result.body().getString("message"));
+            }
+        });
+        return promise.future();
     }
 }
