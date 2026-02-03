@@ -1,11 +1,14 @@
 # À propos de l'application Actualités
 
 * Licence : AGPLv3
-* Développeur(s) : Edifice
+* Développeur principal : Edifice
+* Développeurs historiques : Atos, CGI
 * Financeur(s) : 
 	* Edifice
-	* Contributions de la Région Hauts-de-France, du Département de l'Essonne, de la Région Nouvelle-Aquitaine et du Département de la Seine-et-Marne
-
+	* Région Hauts-de-France
+	* Département de l'Essonne
+	* Région Nouvelle-Aquitaine
+	* Département de la Seine-et-Marne
 * Description : cette appplication permet de créer et diffuser des actualités, organisées en fils d'actualités. Un widget permet de visualiser les dernières actualités publiées depuis le fil de nouveauté de la solution.
 
 # Documentation technique
