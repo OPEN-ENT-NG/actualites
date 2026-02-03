@@ -2,7 +2,9 @@ package net.atos.entng.actualites.services.impl;
 
 import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.security.SecuredAction;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.json.JsonArray;
 import net.atos.entng.actualites.services.ThreadService;
 import net.atos.entng.actualites.services.UserPreferenceService;
@@ -69,5 +71,18 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
                 .onFailure(throwable -> {
                     handler.handle(new Either.Left<>(throwable.getMessage()));
                 });
+    }
+
+    @Override
+    public Future<Boolean> hasThreadPreference(UserInfos userInfo) {
+        Promise<Boolean> promise = Promise.promise();
+        Sql.getInstance().prepared("SELECT count(*) as count FROM " + PREFERENCE_TABLE + " WHERE user_id = ?", new JsonArray().add(userInfo.getUserId()), result -> {
+            if ("ok".equals(result.body().getString("status"))) {
+                promise.complete(result.body().getLong("count") > 0 );
+            } else {
+                promise.fail(result.body().getString("message"));
+            }
+        });
+        return promise.future();
     }
 }
