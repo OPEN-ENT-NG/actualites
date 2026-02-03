@@ -36,6 +36,7 @@ import net.atos.entng.actualites.services.ThreadMigrationService;
 import net.atos.entng.actualites.services.ThreadService;
 import net.atos.entng.actualites.services.impl.ThreadServiceSqlImpl;
 
+import net.atos.entng.actualites.to.ThreadFilterEnum;
 import org.entcore.common.controller.ControllerHelper;
 import org.entcore.common.events.EventHelper;
 import org.entcore.common.events.EventStore;
@@ -302,7 +303,7 @@ public class ThreadController extends ControllerHelper {
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
 				Boolean viewHidden = Boolean.parseBoolean(request.getParam("viewHidden", "false"));
-				threadService.list(securedActions, user, viewHidden)
+				threadService.list(securedActions, user, ThreadFilterEnum.DEFAULT)
 					.onSuccess(threads -> render(request, threads))
 					.onFailure(ex -> renderError(request));
 			} else {
