@@ -23,6 +23,9 @@ importers:
       '@react-spring/web':
         specifier: 9.7.5
         version: 9.7.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@screeb/sdk-react':
+        specifier: ^0.6.0
+        version: 0.6.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/react-query':
         specifier: 5.62.7
         version: 5.62.7(react@18.3.1)
@@ -95,7 +98,7 @@ importers:
         version: 4.7.0(vite@5.4.21(@types/node@18.19.130))
       '@vitest/coverage-v8':
         specifier: ^2.1.3
-        version: 2.1.9(vitest@2.1.9)
+        version: 2.1.9(vitest@2.1.9(@types/node@18.19.130)(@vitest/ui@2.1.9)(jsdom@25.0.1)(msw@2.12.7(@types/node@18.19.130)(typescript@5.9.3)))
       '@vitest/ui':
         specifier: ^2.1.3
         version: 2.1.9(vitest@2.1.9)
@@ -1261,6 +1264,15 @@ packages:
 
   '@rushstack/ts-command-line@5.1.5':
     resolution: {integrity: sha512-YmrFTFUdHXblYSa+Xc9OO9FsL/XFcckZy0ycQ6q7VSBsVs5P0uD9vcges5Q9vctGlVdu27w+Ct6IuJ458V0cTQ==}
+
+  '@screeb/sdk-browser@0.5.0':
+    resolution: {integrity: sha512-jCM7wOmj0dMl3J1zCrfo5IJs+oGmo42LBl1gh9cEm5UAkNYFHRNarAcE+2rjIvslTibOYQiI4bL3zHNsnOrYLg==}
+
+  '@screeb/sdk-react@0.6.0':
+    resolution: {integrity: sha512-yJuB2612x8xqMKKeYl9eLwmCeLKgeAZnrK/TJOeohNurIQcCr4jVCdxxsFg5aDAuDbcdXoezHSLlE4sNQW0QKg==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
 
   '@sinclair/typebox@0.27.8':
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
@@ -5416,6 +5428,14 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
 
+  '@screeb/sdk-browser@0.5.0': {}
+
+  '@screeb/sdk-react@0.6.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@screeb/sdk-browser': 0.5.0
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
   '@sinclair/typebox@0.27.8': {}
 
   '@tanstack/query-core@5.62.7': {}
@@ -5898,7 +5918,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vitest/coverage-v8@2.1.9(vitest@2.1.9)':
+  '@vitest/coverage-v8@2.1.9(vitest@2.1.9(@types/node@18.19.130)(@vitest/ui@2.1.9)(jsdom@25.0.1)(msw@2.12.7(@types/node@18.19.130)(typescript@5.9.3)))':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@bcoe/v8-coverage': 0.2.3
