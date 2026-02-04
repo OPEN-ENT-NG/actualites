@@ -14,6 +14,7 @@ import { IWebApp } from '@edifice.io/client';
 import clsx from 'clsx';
 import { existingActions } from '~/config';
 import { AdminNewThreadButton } from '~/features';
+import useScreebIdentity from '~/hooks/useScreebIdentity';
 import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
 import { useUserRights } from '~/hooks/useUserRights';
 import { queryClient } from '~/providers';
@@ -44,11 +45,12 @@ export const Root = () => {
   );
   const isThreadsListPage = !!matches.find((route) => route.id === 'Threads');
 
-  const { currentApp, init } = useEdificeClient();
+  const { currentApp, init, user } = useEdificeClient();
   const { canContributeOnOneThread } =
     useThreadsUserRights(!!isAdminThreadPath);
   const { canCreateThread } = useUserRights();
   const { lg } = useBreakpoint();
+  useScreebIdentity(user);
 
   if (!init) return <LoadingScreen position={false} />;
 
