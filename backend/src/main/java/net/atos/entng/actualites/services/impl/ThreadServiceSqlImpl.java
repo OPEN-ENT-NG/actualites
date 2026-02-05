@@ -33,10 +33,7 @@ import io.vertx.core.logging.LoggerFactory;
 import net.atos.entng.actualites.filters.RightConstants;
 import net.atos.entng.actualites.services.ThreadService;
 import net.atos.entng.actualites.services.impl.mapper.NewsThreadMapper;
-import net.atos.entng.actualites.to.NewsStatus;
-import net.atos.entng.actualites.to.NewsThread;
-import net.atos.entng.actualites.to.Rights;
-import net.atos.entng.actualites.to.Structure;
+import net.atos.entng.actualites.to.*;
 import net.atos.entng.actualites.utils.UserUtils;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
@@ -250,20 +247,30 @@ public class ThreadServiceSqlImpl implements ThreadService {
 	 * - threads created by the user
 	 * - threads shared to the user or with one of its groups
 	 * - threads containing news that are shared to the user or one of its groups
-	 * @param viewHidden show hidden thread (hidden by default for adml group automatically added)
+	 * @param filter show all thread  or show those are manageable or default behaviour (hidden by default for adml group automatically added)
 	 * @param user info about the user (needed for groups)
 	 * @return the list of the threads visible by the user
 	 */
 	@Override
-	public Future<List<NewsThread>> list(Map<String, SecuredAction> securedActions, UserInfos user, Boolean viewHidden) {
+	public Future<List<NewsThread>> list(Map<String, SecuredAction> securedActions, UserInfos user, ThreadInclude filter) {
 		final Promise<List<NewsThread>> promise = Promise.promise();
 		if (user == null) {
 			promise.fail("user not provided");
 		} else {
+			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
 			boolean filterMultiAdmlActivated = UserUtils.isUserMultiADML(user);
+
 			String filterAdml = "";
-			if(filterMultiAdmlActivated && !viewHidden) {
-				filterAdml = " AND tsh.adml_group = false ";
+			String filterManageable = "";
+
+			if(filterMultiAdmlActivated && filter == ThreadInclude.DEFAULT) {
+				filterAdml = " AND (visible IS NULL AND tsh.adml_group = false OR visible = true) ";
+			}
+
+			if (filter == ThreadInclude.MANAGEABLE) {
+				filterManageable = " WHERE (rights @> ARRAY['" + RightConstants.RIGHT_MANAGE  + "']::varchar[] or owner = ?) AND visible IS TRUE ";
+			} else if (filter == ThreadInclude.DEFAULT) {
+				filterManageable = " WHERE visible IS TRUE ";
 			}
 
 			// 1. Get all ids corresponding to the user
@@ -279,57 +286,67 @@ public class ThreadServiceSqlImpl implements ThreadService {
 			final String ids = Sql.listPrepared(groupsAndUserIds.toArray());
 			String query =
 					"WITH user_groups AS MATERIALIZED (" +
-					" SELECT id::varchar FROM ( " +
-					"    SELECT ? as id " +
-					"    UNION ALL " +
-					"    SELECT id FROM " + groupsTable +
-					"        WHERE id IN " + ids +
-					" ) as u_groups ), " +
-					"thread_with_info_for_user AS ( " +
-					"    SELECT DISTINCT i.thread_id AS id " +
-					"    FROM " + infosTable + " AS i " +
-					"        LEFT JOIN " + infosSharesTable + " AS ish ON i.id = ish.resource_id " +
-					"    WHERE " +
-					"		 ( " +
-					"			 ish.member_id IN   (SELECT id FROM user_groups) " +
-					"		 ) " +
-					"		 AND " +
-					"		 (i.publication_date <= NOW() OR i.publication_date IS NULL) " + // Publish date crossed
-					"		 AND " +
-					"		 (i.expiration_date > NOW() OR i.expiration_date IS NULL) " + // Expiration date not crossed
-					"		 AND " +
-					"		 (i.status = " + NewsStatus.PUBLISHED.ordinal() + ") " + // PUBLISHED
-					"    UNION ALL " +
-					"    SELECT DISTINCT i.thread_id AS id " +
-					"    FROM " + infosTable + " AS i " +
-					"        LEFT JOIN " + infosSharesTable + " AS ish ON i.id = ish.resource_id " +
-					"    WHERE " +
-					"		 ( " +
-					"			 i.owner = ? " +
-					"		 ) " +
-					"		 AND " +
-					"		 (i.publication_date <= NOW() OR i.publication_date IS NULL) " + // Publish date crossed
-					"		 AND " +
-					"		 (i.expiration_date > NOW() OR i.expiration_date IS NULL) " + // Expiration date not crossed
-					"		 AND " +
-					"		 (i.status = " + NewsStatus.PUBLISHED.ordinal() + ") " + // PUBLISHED
-					"), thread_for_user AS ( " +
-					"    SELECT t.id, array_agg(DISTINCT tsh.action) AS rights " +
-					"    FROM " + threadsTable + " AS t " +
-					"        INNER JOIN " + threadsSharesTable + " AS tsh ON t.id = tsh.resource_id " +
-					"    WHERE tsh.member_id IN  (SELECT id FROM user_groups) " + filterAdml +
-					"    GROUP BY t.id, tsh.member_id " +
-					") SELECT t.id, t.owner, u.username AS owner_name, u.deleted as owner_deleted, t.title, t.icon," +
-					"    t.created::text, t.modified::text, t.structure_id, max(thread_for_user.rights) as rights " + // note : we can use max() here only because the rights are inclusive of each other
-					"    FROM " + threadsTable + " AS t " +
-					"        LEFT JOIN thread_for_user ON thread_for_user.id = t.id " +
-					"        LEFT JOIN " + usersTable + " AS u ON t.owner = u.id " +
-					"    WHERE t.owner = ? " +
-					"       OR t.id IN (SELECT id from thread_with_info_for_user) " +
-					"       OR t.id IN (SELECT id from thread_for_user) " +
-					"	 GROUP BY t.id, t.owner, owner_name, owner_deleted, t.title, t.icon, t.created, t.modified, t.structure_id " +
-					"    ORDER BY t.title";
-			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
+							" SELECT id::varchar FROM ( " +
+							"    SELECT ? as id " +
+							"    UNION ALL " +
+							"    SELECT id FROM " + groupsTable +
+							"        WHERE id IN " + ids +
+							" ) as u_groups ), " +
+							"thread_with_info_for_user AS ( " +
+							"    SELECT DISTINCT i.thread_id AS id " +
+							"    FROM " + infosTable + " AS i " +
+							"        LEFT JOIN " + infosSharesTable + " AS ish ON i.id = ish.resource_id " +
+							"    WHERE " +
+							"		 ( " +
+							"			 ish.member_id IN   (SELECT id FROM user_groups) " +
+							"		 ) " +
+							"		 AND " +
+							"		 (i.publication_date <= NOW() OR i.publication_date IS NULL) " + // Publish date crossed
+							"		 AND " +
+							"		 (i.expiration_date > NOW() OR i.expiration_date IS NULL) " + // Expiration date not crossed
+							"		 AND " +
+							"		 (i.status = " + NewsStatus.PUBLISHED.ordinal() + ") " + // PUBLISHED
+							"    UNION ALL " +
+							"    SELECT DISTINCT i.thread_id AS id " +
+							"    FROM " + infosTable + " AS i " +
+							"        LEFT JOIN " + infosSharesTable + " AS ish ON i.id = ish.resource_id " +
+							"    WHERE " +
+							"		 ( " +
+							"			 i.owner = ? " +
+							"		 ) " +
+							"		 AND " +
+							"		 (i.publication_date <= NOW() OR i.publication_date IS NULL) " + // Publish date crossed
+							"		 AND " +
+							"		 (i.expiration_date > NOW() OR i.expiration_date IS NULL) " + // Expiration date not crossed
+							"		 AND " +
+							"		 (i.status = " + NewsStatus.PUBLISHED.ordinal() + ") " + // PUBLISHED
+							"), thread_for_user AS ( " +
+							"    SELECT t.id, array_agg(DISTINCT tsh.action) AS rights,  " +
+							"                 array_agg(DISTINCT tsh.action) FILTER (WHERE tsh.adml_group = false) AS without_adml_rights " +
+							"    FROM " + threadsTable + " AS t " +
+							"        INNER JOIN " + threadsSharesTable + " AS tsh ON t.id = tsh.resource_id " +
+							"        LEFT JOIN actualites.thread_user_preferences prefs ON prefs.thread_id = t.id  AND prefs.user_id = ? " +
+							"    WHERE tsh.member_id IN  (SELECT id FROM user_groups) " + filterAdml +
+							"    GROUP BY t.id, tsh.member_id " +
+							"), threads_with_visibility AS (SELECT t.id, t.owner, u.username AS owner_name, u.deleted as owner_deleted, t.title, t.icon," +
+							"    t.created::text, t.modified::text, t.structure_id, array_agg(DISTINCT r) as rights, " + // note : we can use max() here only because the rights are inclusive of each other
+							"   COALESCE(prefs.visible, " + (filterMultiAdmlActivated ? "false" : "true") +  " OR t.owner = ? OR  t.id IN (SELECT id from thread_with_info_for_user) " +
+							" 							 OR t.id IN (SELECT id from thread_for_user) AND COUNT(DISTINCT rwa) > 0) as visible "+
+							"    FROM " + threadsTable + " AS t " +
+							"        LEFT JOIN thread_for_user as tfu ON tfu.id = t.id " +
+							"        LEFT JOIN " + usersTable + " AS u ON t.owner = u.id " +
+							"        LEFT JOIN LATERAL unnest(tfu.rights) AS r ON TRUE " +
+							"        LEFT JOIN LATERAL unnest(tfu.without_adml_rights) AS rwa ON TRUE " +
+							"        LEFT JOIN actualites.thread_user_preferences prefs ON prefs.thread_id = t.id  AND prefs.user_id = ? " +
+							"    WHERE (t.owner = ? " +
+							"       OR t.id IN (SELECT id from thread_with_info_for_user) " +
+							"       OR t.id IN (SELECT id from thread_for_user)) " +
+							"	 GROUP BY t.id, t.owner, owner_name, owner_deleted, t.title, t.icon, t.created, t.modified, t.structure_id, visible ) " +
+							"    SELECT * from threads_with_visibility " +
+							filterManageable +
+							"    ORDER BY title ";
+
+
 			values.add(user.getUserId());
 
 			for(String value : groupsAndUserIds){
@@ -337,6 +354,13 @@ public class ThreadServiceSqlImpl implements ThreadService {
 			}
 			values.add(user.getUserId());
 			values.add(user.getUserId());
+			values.add(user.getUserId());
+			values.add(user.getUserId());
+			values.add(user.getUserId());
+
+			if (filter == ThreadInclude.MANAGEABLE) {
+				values.add(user.getUserId());
+			}
 
 			// 3. Retrieve & parse data
 

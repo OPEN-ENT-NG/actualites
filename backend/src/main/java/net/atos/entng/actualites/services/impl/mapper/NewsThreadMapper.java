@@ -34,7 +34,7 @@ public class NewsThreadMapper {
                 row.getString("structure_id"),
                 owner,
                 Rights.fromRawRights(securedActions, rawRights, isOwner, Rights.ResourceType.THREAD),
-                true
+                row.getBoolean("visible") == Boolean.TRUE
         );
     }
 
