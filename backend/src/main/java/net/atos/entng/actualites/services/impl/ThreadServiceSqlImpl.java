@@ -39,7 +39,6 @@ import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
 import org.entcore.common.sql.SqlStatementsBuilder;
 import org.entcore.common.user.UserInfos;
-import org.entcore.common.utils.StringUtils;
 
 import java.util.*;
 import java.util.function.Function;
@@ -253,7 +252,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 	 * @return the list of the threads visible by the user
 	 */
 	@Override
-	public Future<List<NewsThread>> list(Map<String, SecuredAction> securedActions, UserInfos user, ThreadFilterEnum filter) {
+	public Future<List<NewsThread>> list(Map<String, SecuredAction> securedActions, UserInfos user, ThreadInclude filter) {
 		final Promise<List<NewsThread>> promise = Promise.promise();
 		if (user == null) {
 			promise.fail("user not provided");
@@ -264,13 +263,13 @@ public class ThreadServiceSqlImpl implements ThreadService {
 			String filterAdml = "";
 			String filterManageable = "";
 
-			if(filterMultiAdmlActivated && filter == ThreadFilterEnum.DEFAULT) {
+			if(filterMultiAdmlActivated && filter == ThreadInclude.DEFAULT) {
 				filterAdml = " AND (visible IS NULL AND tsh.adml_group = false OR visible = true) ";
 			}
 
-			if (filter == ThreadFilterEnum.MANAGEABLE) {
+			if (filter == ThreadInclude.MANAGEABLE) {
 				filterManageable = " WHERE (rights @> ARRAY['" + RightConstants.RIGHT_MANAGE  + "']::varchar[] or owner = ?) AND visible IS TRUE ";
-			} else if (filter == ThreadFilterEnum.DEFAULT) {
+			} else if (filter == ThreadInclude.DEFAULT) {
 				filterManageable = " WHERE visible IS TRUE ";
 			}
 
@@ -359,7 +358,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 			values.add(user.getUserId());
 			values.add(user.getUserId());
 
-			if (filter == ThreadFilterEnum.MANAGEABLE) {
+			if (filter == ThreadInclude.MANAGEABLE) {
 				values.add(user.getUserId());
 			}
 

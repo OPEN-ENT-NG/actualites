@@ -9,7 +9,7 @@ import io.vertx.core.json.JsonArray;
 import net.atos.entng.actualites.services.ThreadService;
 import net.atos.entng.actualites.services.UserPreferenceService;
 import net.atos.entng.actualites.to.Preferences;
-import net.atos.entng.actualites.to.ThreadFilterEnum;
+import net.atos.entng.actualites.to.ThreadInclude;
 import net.atos.entng.actualites.to.ThreadPreference;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlStatementsBuilder;
@@ -32,7 +32,7 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
     public void updateUserPreference(Preferences preferences, UserInfos user, Map<String, SecuredAction> securedActions,
                                      Handler<Either<String, Void>> handler) {
         //filter thread visible by the user
-        threadService.list(securedActions, user, ThreadFilterEnum.ALL)
+        threadService.list(securedActions, user, ThreadInclude.ALL)
                 .onSuccess(threads -> {
                     SqlStatementsBuilder stbuilder = new SqlStatementsBuilder();
 

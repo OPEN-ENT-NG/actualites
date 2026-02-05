@@ -2,13 +2,13 @@ package net.atos.entng.actualites.to;
 
 import org.entcore.common.utils.StringUtils;
 
-public enum ThreadFilterEnum {
+public enum ThreadInclude {
 
     DEFAULT,
     ALL,
     MANAGEABLE;
 
-    public static ThreadFilterEnum fromString(String value) {
+    public static ThreadInclude fromString(String value) {
         if(StringUtils.isEmpty(value)) {
             return DEFAULT;
         }

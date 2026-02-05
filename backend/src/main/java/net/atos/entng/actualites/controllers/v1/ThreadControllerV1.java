@@ -16,7 +16,7 @@ import net.atos.entng.actualites.cron.PublicationCron;
 import net.atos.entng.actualites.filters.ThreadFilter;
 import net.atos.entng.actualites.services.ThreadMigrationService;
 import net.atos.entng.actualites.services.ThreadService;
-import net.atos.entng.actualites.to.ThreadFilterEnum;
+import net.atos.entng.actualites.to.ThreadInclude;
 import org.entcore.common.controller.ControllerHelper;
 import org.entcore.common.events.EventHelper;
 import org.entcore.common.http.filter.ResourceFilter;
@@ -80,8 +80,8 @@ public class ThreadControllerV1 extends ControllerHelper {
     public void getThreads(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
-				String filter = request.getParam("filter", "");
-				threadService.list(securedActions, user, ThreadFilterEnum.fromString(filter))
+				String include = request.getParam("include", "");
+				threadService.list(securedActions, user, ThreadInclude.fromString(include))
 					.onSuccess(threads -> render(request, threads))
 					.onFailure(ex -> renderError(request));
 			} else {
