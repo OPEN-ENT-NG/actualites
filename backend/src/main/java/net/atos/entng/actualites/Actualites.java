@@ -60,6 +60,7 @@ import org.entcore.common.sql.SqlConf;
 import org.entcore.common.sql.SqlConfs;
 import org.entcore.common.utils.StringUtils;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -218,14 +219,22 @@ public class Actualites extends BaseServer {
 		// News publication cron task
 		String publicationCronConf = config.getString("news-publication-cron");
 		if (!StringUtils.isEmpty(publicationCronConf)) {
-            new CronTrigger(vertx, publicationCronConf).schedule(publicationCron);
+            try {
+                new CronTrigger(vertx, publicationCronConf).schedule(publicationCron);
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
         }
         // News cleanup cron task
         String cronExpression = config.getString("NewsCleanupCron");
 		if (!StringUtils.isEmpty(cronExpression)) {
 			InfoCleanupService cleanupService = new InfoCleanupServiceImpl();
             ExpiredNewsCleanupCron cleanupCron = new ExpiredNewsCleanupCron(cleanupService, config);
-            new CronTrigger(vertx, cronExpression).schedule(cleanupCron);
+            try {
+                new CronTrigger(vertx, cronExpression).schedule(cleanupCron);
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
             log.info("News cleanup cron enabled with expression: " + cronExpression + " (threshold: " + config.getInteger("NewsCleanupMonthsThreshold", 24) + " months)");
         }
 		return Future.succeededFuture();
