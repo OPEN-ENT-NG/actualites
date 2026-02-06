@@ -23,10 +23,11 @@ pipeline {
           sh 'rm -rf ../frontend/dist'
         }
       }
-      stage('Build image') {
-          steps {
-              sh 'edifice image --archs=linux/amd64 --force'
-          }
+    }
+
+    stage('Build image') {
+      steps {
+          sh 'edifice image --archs=linux/amd64 --force'
       }
     }
   }
