@@ -6,16 +6,17 @@ import { useConfig } from '~/services/queries/config';
 
 const ScreebInitializer = () => {
   const { data: config } = useConfig();
+  const { init } = useScreeb();
   const { user } = useEdificeClient();
-  const screeb = useScreeb();
-  useScreebIdentity(user);
+  const { setIdentity } = useScreebIdentity();
 
   useEffect(() => {
-    if (config?.screebAppID) {
-      screeb.init(config?.screebAppID);
+    if (user && config?.['screeb-app-id']) {
+      init(config?.['screeb-app-id']).then(() => {
+        setIdentity(user);
+      });
     }
-  }, [config?.screebAppID]);
-
+  }, [config?.['screeb-app-id'], setIdentity, init]);
   return null;
 };
 
