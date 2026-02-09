@@ -1,7 +1,23 @@
-import { ScreebProvider } from '@screeb/sdk-react';
-import { ReactNode } from 'react';
+import { useEdificeClient } from '@edifice.io/react';
+import { ScreebProvider, useScreeb } from '@screeb/sdk-react';
+import { ReactNode, useEffect } from 'react';
+import { useScreebIdentity } from '~/hooks/useScreebIdentity';
+import { useConfig } from '~/services/queries/config';
 
-const SCREEB_APP_ID = '55edb49f-f5ac-4519-8d20-71e16929d626';
+const ScreebInitializer = () => {
+  const { data: config } = useConfig();
+  const { user } = useEdificeClient();
+  const screeb = useScreeb();
+  useScreebIdentity(user);
+
+  useEffect(() => {
+    if (config?.screebAppID) {
+      screeb.init(config?.screebAppID);
+    }
+  }, [config?.screebAppID]);
+
+  return null;
+};
 
 export const EdificeScreebProvider = ({
   children,
@@ -9,7 +25,8 @@ export const EdificeScreebProvider = ({
   children: ReactNode;
 }) => {
   return (
-    <ScreebProvider autoInit websiteId={SCREEB_APP_ID}>
+    <ScreebProvider>
+      <ScreebInitializer />
       {children}
     </ScreebProvider>
   );
