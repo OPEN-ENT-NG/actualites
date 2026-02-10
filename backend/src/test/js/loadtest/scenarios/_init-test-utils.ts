@@ -171,7 +171,7 @@ export function initLocal(schoolName: string): InitData {
         thread_id: parseInt(thread.id as string),
         status: 3,
         publication_date: "2020-01-01T00:00:00Z",
-        expiration_date: futureExpirationDate.toUTCString(),
+        expiration_date: futureExpirationDate.toISOString(),
       } as any);
     }
 
@@ -185,7 +185,7 @@ export function initLocal(schoolName: string): InitData {
         thread_id: parseInt(thread.id as string),
         status: 1,
         publication_date:  "2020-01-01T00:00:00Z",
-        expiration_date: futureExpirationDate.toUTCString(),
+        expiration_date: futureExpirationDate.toISOString(),
       } as any);
     }
 
@@ -199,7 +199,7 @@ export function initLocal(schoolName: string): InitData {
         thread_id: parseInt(thread.id as string),
         status: 2,
         publication_date:  "2020-01-01T00:00:00Z",
-        expiration_date: futureExpirationDate.toUTCString(),
+        expiration_date: futureExpirationDate.toISOString(),
       } as any);
     }
 
