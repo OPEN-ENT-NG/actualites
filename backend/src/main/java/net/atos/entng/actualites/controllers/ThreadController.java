@@ -29,19 +29,18 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import fr.wseduc.webutils.http.Renders;
-import io.vertx.core.Promise;
 import net.atos.entng.actualites.Actualites;
 import net.atos.entng.actualites.filters.ThreadFilter;
 import net.atos.entng.actualites.services.ThreadMigrationService;
 import net.atos.entng.actualites.services.ThreadService;
 import net.atos.entng.actualites.services.impl.ThreadServiceSqlImpl;
 
+import net.atos.entng.actualites.to.ThreadInclude;
 import org.entcore.common.controller.ControllerHelper;
 import org.entcore.common.events.EventHelper;
 import org.entcore.common.events.EventStore;
 import org.entcore.common.events.EventStoreFactory;
 import org.entcore.common.http.filter.ResourceFilter;
-import org.entcore.common.http.filter.SuperAdminFilter;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.user.UserUtils;
 
@@ -302,7 +301,7 @@ public class ThreadController extends ControllerHelper {
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
 				Boolean viewHidden = Boolean.parseBoolean(request.getParam("viewHidden", "false"));
-				threadService.list(securedActions, user, viewHidden)
+				threadService.list(securedActions, user, ThreadInclude.DEFAULT)
 					.onSuccess(threads -> render(request, threads))
 					.onFailure(ex -> renderError(request));
 			} else {
