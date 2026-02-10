@@ -131,7 +131,7 @@ public class QueryHelperSql {
         boolean filterMultiAdmlActivated = UserUtils.isUserMultiADML(user);
         String filterAdml = "";
         if(filterMultiAdmlActivated) {
-            filterAdml = " AND thread_shares.adml_group = false ";
+            filterAdml = " AND ( thread_shares.adml_group = false AND prefs.visible IS NULL OR prefs.visible = true  ) ";
         }
 
         String dateFilter = null;
@@ -183,7 +183,10 @@ public class QueryHelperSql {
         queryIds.append("    SELECT id FROM actualites.groups WHERE id IN ").append(memberIds);
         queryIds.append("  ) as u_groups) ");
         queryIds.append("(SELECT i.id, COALESCE(i.publication_date, i.modified) as date ");
-        queryIds.append("  FROM actualites.info AS i WHERE i.owner = ? AND ");
+        queryIds.append("  FROM actualites.info AS i ");
+        queryIds.append("  LEFT JOIN actualites.thread_user_preferences prefs ON prefs.thread_id = i.thread_id  AND prefs.user_id = ? ");
+        queryIds.append("    WHERE i.owner = ? AND ");
+        queryIds.append("    ( prefs.visible IS NULL OR prefs.visible = true ) AND ");
         if (!threadFilter.isEmpty()) {
             queryIds.append(threadFilter).append(" AND ");
         }
@@ -193,7 +196,9 @@ public class QueryHelperSql {
         queryIds.append("  (SELECT i.id, COALESCE(i.publication_date, i.modified) as date ");
         queryIds.append("    FROM actualites.info_shares ");
         queryIds.append("    INNER JOIN actualites.info AS i ON i.id = info_shares.resource_id AND i.status = 3  ");
+        queryIds.append("    LEFT JOIN actualites.thread_user_preferences prefs ON prefs.thread_id = i.thread_id  AND prefs.user_id = ? ");
         queryIds.append("    WHERE info_shares.member_id IN (SELECT id FROM user_groups)");
+        queryIds.append("       AND ( prefs.visible IS NULL OR prefs.visible = true ) ");
         if (!threadFilter.isEmpty()) {
             queryIds.append("    AND " + threadFilter + " ");
         }
@@ -204,7 +209,9 @@ public class QueryHelperSql {
         queryIds.append("  (SELECT i.id as id, COALESCE(i.publication_date, i.modified) as date ");
         queryIds.append("    FROM actualites.thread ");
         queryIds.append("    INNER JOIN actualites.info AS i ON (i.thread_id = thread.id) ");
+        queryIds.append("    LEFT JOIN actualites.thread_user_preferences prefs ON prefs.thread_id = thread.id  AND prefs.user_id = ? ");
         queryIds.append("    WHERE thread.owner = ? AND i.status > 1 ");
+        queryIds.append("       AND ( prefs.visible IS NULL OR prefs.visible = true ) ");
         if (!threadFilter.isEmpty()) {
             queryIds.append("    AND " + threadFilter + " ");
         }
@@ -216,9 +223,11 @@ public class QueryHelperSql {
         queryIds.append("    FROM actualites.thread_shares ");
         queryIds.append("    INNER JOIN actualites.thread ON (thread.id = thread_shares.resource_id) ");
         queryIds.append("    INNER JOIN actualites.info AS i ON (i.thread_id = thread.id) ");
+        queryIds.append("    LEFT JOIN actualites.thread_user_preferences prefs ON prefs.thread_id = thread.id  AND prefs.user_id = ? ");
         queryIds.append("    WHERE (thread_shares.member_id IN (SELECT id FROM user_groups)");
         queryIds.append("    AND thread_shares.action = '" + THREAD_PUBLISH + "' ");
         queryIds.append(     filterAdml);
+        queryIds.append("    AND ( prefs.visible IS NULL OR prefs.visible = true ) ");
         queryIds.append("    AND i.status > 1) AND ");
         if (!threadFilter.isEmpty()) {
             queryIds.append(threadFilter + " AND ");
@@ -233,20 +242,24 @@ public class QueryHelperSql {
         final JsonArray values = new JsonArray()
                 .add(user.getUserId())
                 .addAll(new JsonArray(groupsAndUserIds))
+                .add(user.getUserId())
                 .add(user.getUserId());
-        if (addThreadFilter) {
-            threadIds.forEach(values::add);
-        }
-        statusValues.forEach(values::add);
         if (addThreadFilter) {
             threadIds.forEach(values::add);
         }
         statusValues.forEach(values::add);
         values.add(user.getUserId());
         if (addThreadFilter) {
-           threadIds.forEach(values::add);
+            threadIds.forEach(values::add);
         }
         statusValues.forEach(values::add);
+        values.add(user.getUserId());
+        values.add(user.getUserId());
+        if (addThreadFilter) {
+            threadIds.forEach(values::add);
+        }
+        statusValues.forEach(values::add);
+        values.add(user.getUserId());
         if (addThreadFilter) {
             threadIds.forEach(values::add);
         }
