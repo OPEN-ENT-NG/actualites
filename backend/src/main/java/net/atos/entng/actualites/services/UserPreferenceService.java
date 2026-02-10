@@ -2,6 +2,7 @@ package net.atos.entng.actualites.services;
 
 import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.security.SecuredAction;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import net.atos.entng.actualites.to.Preferences;
 import org.entcore.common.user.UserInfos;
@@ -18,4 +19,6 @@ public interface UserPreferenceService {
     void updateUserPreference(Preferences preferences, UserInfos userInfo, Map<String, SecuredAction> securedActions,
                               Handler<Either<String, Void>> handler);
 
+
+    Future<Boolean> hasThreadPreference(UserInfos userInfo);
 }
