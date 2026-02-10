@@ -38,7 +38,6 @@ public class ThreadControllerV1 extends ControllerHelper {
 	private static final String SCHEMA_THREAD_UPDATE = "updateThread";
 	private static final String RESOURCE_NAME = "thread";
 	private static final String ADMC_TASK = "admcTask";
-	private static final String TASK_ATTACH = "autoAttachToStructures";
     private static final String TASK_PUBLISH = "publishNews";
 
 	protected ThreadService threadService;
@@ -254,13 +253,6 @@ public class ThreadControllerV1 extends ControllerHelper {
     public void launchTask(final HttpServerRequest request) {
 		RequestUtils.bodyToJson(request, pathPrefix + ADMC_TASK, (JsonObject resource) -> {
 			switch(resource.getString("task")) {
-                case TASK_ATTACH :
-                    this.threadService.attachThreadsWithNullStructureToDefault()
-                        .onSuccess(Void -> ok(request))
-                        .onFailure(throwable -> {
-                            renderError(request, null, 500, throwable.getMessage());
-                        });
-                    break;
                 case TASK_PUBLISH :
                     publicationCron.handle(1L);
                     ok(request);

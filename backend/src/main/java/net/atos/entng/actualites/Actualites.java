@@ -223,12 +223,4 @@ public class Actualites extends BaseServer {
         }
     }
 
-    @Override
-	protected Future<Void> postSqlScripts() {
-		final ThreadService threadService = new ThreadServiceSqlImpl().setEventBus(getEventBus(vertx));
-		return super.postSqlScripts()
-				.compose(Void -> threadService.attachThreadsWithNullStructureToDefault())
-				.compose(Void -> threadMigrationService.addAdminLocalToThreads());
-	}
-
 }
