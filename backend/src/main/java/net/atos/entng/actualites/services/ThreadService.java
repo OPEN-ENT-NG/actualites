@@ -26,6 +26,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.to.NewsThread;
+import net.atos.entng.actualites.to.ThreadInclude;
 import org.entcore.common.user.UserInfos;
 
 import java.util.List;
@@ -43,7 +44,7 @@ public interface ThreadService {
 
 	public void getPublishSharedWithIds(String threadId, Boolean filterAdmlGroup, UserInfos user, Handler<Either<String, JsonArray>> handler);
 
-	Future<List<NewsThread>> list(Map<String, SecuredAction> securedActions, UserInfos user, Boolean viewHidden);
+	Future<List<NewsThread>> list(Map<String, SecuredAction> securedActions, UserInfos user, ThreadInclude filter);
 
 	/** Utility method to attach threads without a structure to their owner's structure, when a single one exists. */
 	Future<Void> attachThreadsWithNullStructureToDefault();
