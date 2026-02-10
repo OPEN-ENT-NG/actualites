@@ -15,8 +15,8 @@
     <version>2.2-SNAPSHOT</version>
     <properties>
         <jacksonDatabindVersion>2.15.2</jacksonDatabindVersion>
-        <entCoreVersion>6.13-develop-b2school-SNAPSHOT</entCoreVersion>
-        <vertxCronTimerVersion>3.0-develop-b2school-SNAPSHOT</vertxCronTimerVersion>
+        <entCoreVersion>6.13-SNAPSHOT</entCoreVersion>
+        <vertxCronTimerVersion>3.0-SNAPSHOT</vertxCronTimerVersion>
         <gatlingHighchartsVersion>2.3.1</gatlingHighchartsVersion>
         <junitVersion>4.13.2</junitVersion>
         <modMongoVersion>4.1-SNAPSHOT</modMongoVersion>
