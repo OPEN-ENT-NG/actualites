@@ -111,13 +111,7 @@ export function updateInfoOrFail(infoId: number, info: Info): Identifier {
 }
 
 
-/**
- * @deprecated Use createDraftAndPublish instead.
- * This endpoint does not exist in the current backend.
- * The correct workflow is: createInfo (draft) -> updateInfo (publish)
- */
 export function createPublishedInfo(info: Omit<Info, 'status'>): RefinedResponse<any> {
-  console.warn('DEPRECATED: createPublishedInfo uses a non-existent endpoint. Use createDraftAndPublish instead.');
   return http.post(
     `${rootUrl}/actualites/api/v1/infos/published`,
     JSON.stringify(info),
@@ -125,12 +119,8 @@ export function createPublishedInfo(info: Omit<Info, 'status'>): RefinedResponse
   );
 }
 
-/**
- * @deprecated Use createDraftAndPublishOrFail instead.
- * This endpoint does not exist in the current backend.
- */
+
 export function createPublishedInfoOrFail(info: Omit<Info, 'status'>): Identifier {
-  console.warn('DEPRECATED: createPublishedInfoOrFail uses a non-existent endpoint. Use createDraftAndPublishOrFail instead.');
   const res = createPublishedInfo(info);
   check(res, {
     "Creating published info should be ok": (r) => r.status == 200,

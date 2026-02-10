@@ -48,7 +48,7 @@ public class InfoTransformerServiceImpl implements InfoService {
 
         if( StringUtils.isEmpty(data.getString("content"))) {
             infoService.create(data, user, eventStatus, serverRequest, handler);
-            return;
+            return;a
         }
         applyTransformation(user, data, handler, (response) -> {
                     data.put("content", response.getCleanHtml());

@@ -90,7 +90,7 @@ export function s2CreateInfo(data: InitData) {
     check(resInfo, {
       "Create draft info should succeed": (r) => r.status === 200,
     });
-
+    console.log(resInfo);
     const infoId: Identifier = JSON.parse(resInfo.body as string);
     pushResponseMetrics(resInfo, user);
     sleep(baseDelay / 1000);
@@ -161,7 +161,10 @@ export function s2CreateInfo(data: InitData) {
     const sharePayload = buildSharePayloadFromGroups(mergedShareResult, groupSuffixes, infoFullRights);
 
     // Update shares
-    const resUpdateShares = shareInfos(infoId.id.toString(), sharePayload);
+    const resUpdateShares = http.put(`${rootUrl}/actualites/api/v1/infos/${infoId.id}/shares`,
+      JSON.stringify(sharePayload),
+      { headers: getHeaders(), tags: {type: 'update_info_shares'} })
+
     pushResponseMetrics(resUpdateShares, user);
 
     check(resUpdateShares, {
@@ -199,6 +202,6 @@ export function s2CreateInfo(data: InitData) {
       { headers: getHeaders(), tags: {type: 'get_info'} }
     );
     pushResponseMetrics(resGetInfoAfterPublish, user);
-    sleep(baseDelay / 5000);
+    sleep(50 * 1000);
   });
 }
