@@ -58,7 +58,11 @@ export const InfoListSegmented = ({
       });
     }
     return options;
-  }, [threadInfosStats]);
+  }, [
+    threadInfosStats.status,
+    threadInfosStats.incomingCount,
+    threadInfosStats.expiredCount,
+  ]);
 
   return (
     <SegmentedControl

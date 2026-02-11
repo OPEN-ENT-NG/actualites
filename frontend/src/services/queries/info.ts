@@ -273,7 +273,6 @@ export const useUpdateInfo = () => {
       };
     }) => infoService.update(infoId, infoStatus, payload),
     onSuccess: async () => {
-      console.log('infoQueryKeys.stats():', infoQueryKeys.stats());
       //TODO update the cache manually to avoid the eventual fetch of the stats (cf useInfoDelete)
       invalidateQueriesWithFirstPage(queryClient, {
         queryKey: infoQueryKeys.byThread({ threadId: 'all' }),

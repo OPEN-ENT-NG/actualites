@@ -31,9 +31,7 @@ export const useUpdateStatsQueryCache = () => {
             ? 'incomingCount'
             : 'expiredCount';
         const oldStatusCount = targetThread[stateString] ?? 0;
-        console.log('oldStatusCount:', oldStatusCount);
         const newStatusCount = Math.max(0, oldStatusCount + countDelta); // countDelta may be negative, but final counter cannot.
-        console.log('newStatusCount:', newStatusCount);
 
         updatedThreads = oldData.threads.map((thread) => {
           if (thread.id !== threadId) {
