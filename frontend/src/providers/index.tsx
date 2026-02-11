@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ReactNode } from 'react';
+import { EdificeScreebProvider } from './EdificeScreebProvider';
 
 export const queryClient = new QueryClient({
   queryCache: new QueryCache({
@@ -34,7 +35,7 @@ export const Providers = ({ children }: { children: ReactNode }) => {
           app: 'actualites',
         }}
       >
-        {children}
+        <EdificeScreebProvider>{children}</EdificeScreebProvider>
       </EdificeClientProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
