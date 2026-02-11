@@ -32,6 +32,20 @@ export function s9Widget(data: InitData) {
     const res = http.get(url,
       { headers: getHeaders(), tags:{ type: 'widget_access'} });
 
+    try {
+      let infos = JSON.parse(res.body as string);
+
+      if (!infos || infos.length === 0) {
+        console.error('user in dataset not correct', user);
+        return;
+      }
+    } catch(e) {
+      console.error('user in dataset not correct', user);
+      console.error(res);
+      console.error('Exception:', e);
+      return;
+    }
+
     pushResponseMetrics(res, user);
     sleep(baseDelay / 1000);
   });
