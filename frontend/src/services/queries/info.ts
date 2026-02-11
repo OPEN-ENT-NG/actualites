@@ -19,6 +19,12 @@ export const DEFAULT_PAGE_SIZE = 20;
  * Info Query Keys always follow this format :
  * ['threads', threadId|undefined, 'infos', infoId|undefined, ...other_parameters]
  */
+
+export type InfoQueryKeysParams = {
+  threadId: ThreadId | 'all';
+  status?: InfoStatus;
+  state?: InfoExtendedStatus;
+};
 export const infoQueryKeys = {
   // ['infos']
   all: () => ['infos'],
@@ -29,13 +35,7 @@ export const infoQueryKeys = {
   // List
   // ['infos', 'thread', 'all', 'expired']
   // ['infos', 'thread', 134, 'expired']
-  byThread: ({
-    ...options
-  }: {
-    threadId: ThreadId | 'all';
-    status?: InfoStatus;
-    state?: InfoExtendedStatus;
-  }) => {
+  byThread: (options: InfoQueryKeysParams) => {
     const queryKey: any = [...infoQueryKeys.all(), 'thread', options.threadId];
     if (options.status) queryKey.push(options.status);
     if (options.state) queryKey.push(options.state);
@@ -276,12 +276,24 @@ export const useUpdateInfo = () => {
       invalidateQueriesWithFirstPage(queryClient, {
         queryKey: infoQueryKeys.all(),
       });
+      console.log('invalidate all');
+      // invalidateQueriesWithFirstPage(queryClient, {
+      //   queryKey: infoQueryKeys.byThread({ threadId: 'all' }),
+      // });
+      // console.log('infoQueryKeys.stats');
+      // setTimeout(() => {
+
+      // }, 5000);
+      // console.log('ok');
+      queryClient.invalidateQueries({
+        queryKey: infoQueryKeys.stats(),
+      });
     },
   });
 };
 
-export const useDeleteInfo = () =>
-  useMutation({
+export const useDeleteInfo = () => {
+  return useMutation({
     mutationFn: ({
       threadId,
       infoId,
@@ -289,9 +301,8 @@ export const useDeleteInfo = () =>
       threadId: ThreadId;
       infoId: InfoId;
     }) => infoService.delete(threadId, infoId),
-    // TODO optimistic update
   });
-
+};
 export const useIncrementInfoViews = (infoId: InfoId) => {
   const queryClient = useQueryClient();
   const { updateViewsCounterByInfoId, viewsCounterByInfoId } =

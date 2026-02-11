@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { InfosStats, InfoStatus } from '~/models/info';
+import { InfoExtendedStatus, InfosStats, InfoStatus } from '~/models/info';
 import { defaultThreadInfoStats } from '~/utils/defaultInfoStats';
 import { infoQueryKeys } from '../info';
 
@@ -10,6 +10,7 @@ export const useUpdateStatsQueryCache = () => {
     threadId: number,
     status: InfoStatus,
     countDelta: number,
+    state?: InfoExtendedStatus,
   ) => {
     const queryKey = infoQueryKeys.stats();
     if (!queryClient.getQueryData(queryKey)) return;
@@ -18,28 +19,48 @@ export const useUpdateStatsQueryCache = () => {
         (thread) => thread.id === threadId,
       );
       if (threadIndex < 0) {
-        // Create default values of missing stats, before updating them.
         threadIndex = oldData.threads.length;
         oldData.threads.push(defaultThreadInfoStats(threadId));
       }
 
       const targetThread = oldData.threads[threadIndex];
+      let updatedThreads = oldData.threads;
+      if (state) {
+        const stateString =
+          state === InfoExtendedStatus.INCOMING
+            ? 'incomingCount'
+            : 'expiredCount';
+        const oldStatusCount = targetThread[stateString] ?? 0;
+        console.log('oldStatusCount:', oldStatusCount);
+        const newStatusCount = Math.max(0, oldStatusCount + countDelta); // countDelta may be negative, but final counter cannot.
+        console.log('newStatusCount:', newStatusCount);
 
-      const oldStatusCount = targetThread.status[status] ?? 0;
-      const newStatusCount = Math.max(0, oldStatusCount + countDelta); // countDelta may be negative, but final counter cannot.
+        updatedThreads = oldData.threads.map((thread) => {
+          if (thread.id !== threadId) {
+            return thread;
+          }
+          return {
+            ...thread,
+            [stateString]: newStatusCount,
+          };
+        });
+      } else {
+        const oldStatusCount = targetThread.status[status] ?? 0;
+        const newStatusCount = Math.max(0, oldStatusCount + countDelta); // countDelta may be negative, but final counter cannot.
 
-      const updatedThreads = oldData.threads.map((thread) => {
-        if (thread.id !== threadId) {
-          return thread;
-        }
-        return {
-          ...thread,
-          status: {
-            ...thread.status,
-            [status]: newStatusCount,
-          },
-        };
-      });
+        updatedThreads = oldData.threads.map((thread) => {
+          if (thread.id !== threadId) {
+            return thread;
+          }
+          return {
+            ...thread,
+            status: {
+              ...thread.status,
+              [status]: newStatusCount,
+            },
+          };
+        });
+      }
 
       return {
         threads: updatedThreads,

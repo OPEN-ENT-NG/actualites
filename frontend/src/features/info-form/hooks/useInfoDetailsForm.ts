@@ -17,7 +17,7 @@ export function useInfoDetailsForm() {
   const { t } = useI18n();
   const toast = useToast();
   const { mutate: createDraftInfo } = useCreateDraftInfo();
-  const { mutate: updateDraftInfo } = useUpdateInfo();
+  const { mutate: updateInfo } = useUpdateInfo();
   const [isSaving, setIsSaving] = useState(false);
 
   const createOrUpdateInfo = (
@@ -34,7 +34,7 @@ export function useInfoDetailsForm() {
 
     setIsSaving(true);
     if (infoFormValues.infoId) {
-      return updateDraftInfo(
+      return updateInfo(
         {
           infoId: infoFormValues.infoId,
           infoStatus: infoFormValues.infoStatus,
