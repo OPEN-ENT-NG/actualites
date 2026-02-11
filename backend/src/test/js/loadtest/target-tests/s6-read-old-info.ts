@@ -36,10 +36,18 @@ export function s6ReadOldInfo(data: InitData) {
     pushResponseMetrics(res, user);
 
     sleep(baseDelay / 1000);
+    let infos: { id: any }[] = [];
+    try {
+      infos = JSON.parse(res.body as string);
 
-    const infos = JSON.parse(res.body as string);
-    if(!infos || infos.length === 0) {
+      if (!infos || infos.length === 0) {
+        console.error('user in dataset not correct', user);
+        return;
+      }
+    } catch(e) {
       console.error('user in dataset not correct', user);
+      console.error(res);
+      console.error('Exception:', e);
       return;
     }
     const infoIds = infos.map((info: Identifier) => info.id);

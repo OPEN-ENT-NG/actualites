@@ -44,9 +44,17 @@ export function s1CreateThread(data: InitData) {
 
     sleep(baseDelay / 1000);
 
-    const infos = JSON.parse(res.body as string);
-    if(!infos || infos.length === 0) {
+    try {
+      let infos = JSON.parse(res.body as string);
+
+      if (!infos || infos.length === 0) {
+        console.error('user in dataset not correct', user);
+        return;
+      }
+    } catch(e) {
       console.error('user in dataset not correct', user);
+      console.error(res);
+      console.error('Exception:', e);
       return;
     }
     //display interface actualites
