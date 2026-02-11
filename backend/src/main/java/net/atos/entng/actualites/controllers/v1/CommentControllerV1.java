@@ -154,7 +154,7 @@ public class CommentControllerV1 extends ControllerHelper {
 					// get all ids
 					JsonObject info = event.right().getValue();
 					String infoOwner = info.getString(FIELD_OWNER);
-					if (infoOwner != null) {
+					if (infoOwner != null && !infoOwner.equals(user.getUserId())) {
 						sendNotify(request, Collections.singletonList(infoOwner), user, infoId, commentId, title, commentText, "news.news-comment");
 					}
 				}
