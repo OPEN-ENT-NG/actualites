@@ -17,6 +17,10 @@ export const ThreadIcon = ({
 }) => {
   const { appCode } = useEdificeClient();
 
+  const iconResized = thread?.icon?.includes('thumbnail')
+    ? thread.icon
+    : `${thread?.icon}?thumbnail=100x100`;
+
   return (
     <>
       {thread?.icon ? (
@@ -28,7 +32,7 @@ export const ThreadIcon = ({
           className="overflow-hidden rounded flex-shrink-0"
         >
           <Image
-            src={thread.icon}
+            src={iconResized}
             alt={thread.title}
             style={{
               height: '100%',
