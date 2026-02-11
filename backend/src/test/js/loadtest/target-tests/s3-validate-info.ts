@@ -42,9 +42,17 @@ export function s3ValidateInfo(data: InitData) {
 
     sleep(baseDelay / 1000);
 
-    const infos = JSON.parse(res.body as string);
-    if(!infos || infos.length === 0) {
+    try {
+      let infos = JSON.parse(res.body as string);
+
+      if (!infos || infos.length === 0) {
+        console.error('user in dataset not correct', user);
+        return;
+      }
+    } catch(e) {
       console.error('user in dataset not correct', user);
+      console.error(res);
+      console.error('Exception:', e);
       return;
     }
     //display interface actualites
@@ -82,6 +90,8 @@ export function s3ValidateInfo(data: InitData) {
     // short delay to simulate succession of call from browser
     sleep(baseDelay / 5000);
     const infosPendingList = JSON.parse(resListPendingInfo.body as string);
+    console.log(infosPendingList);
+
     const infoId = infosPendingList[0].id;
 
     //update info
@@ -91,6 +101,13 @@ export function s3ValidateInfo(data: InitData) {
         status: 3
       } ),
       { headers: getHeaders(), tags: {type: 'published_info'} });
+
+
+    if(res.status !==200) {
+      console.error("validate fail :",  resInfo);
+      console.error("User validate :",  user);
+    }
+
 
     pushResponseMetrics(resInfo, user);
     sleep(55);

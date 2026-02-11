@@ -133,8 +133,10 @@ export function initLocal(schoolName: string): InitData {
         threadId: thread.id,
         isValidator: false
       }
-      initData.sessions[userInfo.type].push(user);
-      initData.allSessions.push(user)
+      if(user.session !== null) {
+        initData.sessions[userInfo.type].push(user);
+        initData.allSessions.push(user)
+      }
     }
 
     for (let i = 0; i < targetSchoolUsers.length && i < 10; i++) {
@@ -150,8 +152,10 @@ export function initLocal(schoolName: string): InitData {
         threadId: thread.id,
         isValidator: false
       };
-      initData.sessions[userInfo.type].push(user);
-      initData.allSessions.push(user);
+      if(user.session !== null) {
+        initData.sessions[userInfo.type].push(user);
+        initData.allSessions.push(user)
+      }
     }
 
     console.log("Logger teacher ", teacher.login);
@@ -245,12 +249,14 @@ export function initFromCsv(): InitData {
         login : userInfo[1],
         profile: userInfo[3],
         session :  session,
-        role: userInfo[4],
+        role: userInfo[4].toUpperCase(),
         threadId: userInfo[5],
         isValidator: false
       }
-      initData.sessions['Teacher'].push(user);
-      initData.allSessions.push(user)
+      if(user.session !== null) {
+        initData.sessions['Teacher'].push(user);
+        initData.allSessions.push(user)
+      }
     }
 
     for(let i = 1; i < personnelsRecords.length; i++) {
@@ -267,12 +273,14 @@ export function initFromCsv(): InitData {
         login : userInfo[1],
         profile: userInfo[3],
         session :  session,
-        role: userInfo[4],
+        role: userInfo[4].toUpperCase(),
         threadId: userInfo[5],
         isValidator: false
       }
-      initData.sessions['Personnel'].push(user);
-      initData.allSessions.push(user)
+      if(user.session !== null) {
+        initData.sessions['Personnel'].push(user);
+        initData.allSessions.push(user)
+      }
     }
 
     for(let i = 1; i < studentsRecords.length; i++) {
@@ -289,12 +297,14 @@ export function initFromCsv(): InitData {
         login : userInfo[1],
         profile: userInfo[3],
         session :  session,
-        role: userInfo[4],
+        role: userInfo[4].toUpperCase(),
         threadId: userInfo[5],
         isValidator: false
       }
-      initData.sessions['Student'].push(user);
-      initData.allSessions.push(user)
+      if(user.session !== null) {
+        initData.sessions['Student'].push(user);
+        initData.allSessions.push(user)
+      }
     }
 
     for(let i = 1; i < relativesRecords.length; i++) {
@@ -311,12 +321,14 @@ export function initFromCsv(): InitData {
         login : userInfo[1],
         profile: userInfo[3],
         session :  session,
-        role: userInfo[4],
+        role: userInfo[4].toUpperCase(),
         threadId: userInfo[5],
         isValidator: false
       }
-      initData.sessions['Relative'].push(user);
-      initData.allSessions.push(user)
+      if(user.session !== null) {
+        initData.sessions['Relative'].push(user);
+        initData.allSessions.push(user)
+      }
     }
   });
   initValidator(initData);

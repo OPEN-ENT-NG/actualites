@@ -25,7 +25,7 @@ export function s2CreateInfo(data: InitData) {
   describe('[s2-Create-Info] Test scenario s2 access to actualites create an info', () => {
 
     const users = data.allSessions
-      .filter((user: InfoUser) => user.role === 'CONTRIBUTOR' || user.role === 'PUBLISHER');
+      .filter((user: InfoUser) => user.role === 'PUBLISHER');
 
     const randomIndex = exec.scenario.iterationInInstance % users.length;
     const user = users[randomIndex];
@@ -42,11 +42,21 @@ export function s2CreateInfo(data: InitData) {
 
     sleep(baseDelay / 1000);
 
-    const infos = JSON.parse(res.body as string);
-    if(!infos || infos.length === 0) {
+    let infos: { id: any }[] = [];
+    try {
+      infos = JSON.parse(res.body as string);
+
+      if (!infos || infos.length === 0) {
+        console.error('user in dataset not correct', user);
+        return;
+      }
+    } catch(e) {
       console.error('user in dataset not correct', user);
+      console.error(res);
+      console.error('Exception:', e);
       return;
     }
+
     //display interface actualites
     const listInfoUrl = `${rootUrl}/actualites/api/v1/infos`;
     const resListInfo = http.get(listInfoUrl,
@@ -194,6 +204,12 @@ export function s2CreateInfo(data: InitData) {
       "Publish/Submit info should succeed": (r) => r.status === 200,
     });
     pushResponseMetrics(resPublish, user);
+
+    if(resPublish.status !==200) {
+      console.error("publish fail :",  resPublish);
+      console.error("User publish :",  user);
+    }
+
     sleep(baseDelay / 1000);
 
     // reload info after publish/submit

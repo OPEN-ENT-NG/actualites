@@ -39,6 +39,20 @@ export function s7CommentInfo(data: InitData) {
 
     sleep(baseDelay / 1000);
 
+    try {
+      let infos = JSON.parse(res.body as string);
+
+      if (!infos || infos.length === 0) {
+        console.error('user in dataset not correct', user);
+        return;
+      }
+    } catch(e) {
+      console.error('user in dataset not correct', user);
+      console.error(res);
+      console.error('Exception:', e);
+      return;
+    }
+
     //display interface actualites
     const listInfoUrl = `${rootUrl}/actualites/api/v1/infos?threadIds=${user.threadId}`;
     const resListInfo = http.get(listInfoUrl,

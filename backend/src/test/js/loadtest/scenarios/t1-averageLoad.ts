@@ -32,6 +32,7 @@ export const options = {
     'http_req_duration{type:widget_access}': [],
   },
   scenarios: {
+    
     ramp_up_widget: {
       executor: 'ramping-vus',
       exec: 'averageWidget',
