@@ -31,13 +31,9 @@ export function useInfoUnpublish() {
           updateStatsQueryCache(thread.id, InfoStatus.PENDING, 1);
           updateStatsQueryCache(thread.id, InfoStatus.PUBLISHED, -1);
 
+          //TODO optimize invalidation on specifics status PENDING and PUBLISHED (not possible with the current implementation)
           invalidateThreadQueries(queryClient, {
             threadId: thread.id,
-            status: InfoStatus.PENDING,
-          });
-          invalidateThreadQueries(queryClient, {
-            threadId: thread.id,
-            status: InfoStatus.PUBLISHED,
           });
         },
       },

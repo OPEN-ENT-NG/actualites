@@ -27,15 +27,13 @@ export function useInfoUnsubmit() {
         },
         onSuccess() {
           toast.success(t('actualites.info.unsubmit.success'));
+          console.log('UNSUBMIT');
           updateStatsQueryCache(thread.id, InfoStatus.DRAFT, 1);
           updateStatsQueryCache(thread.id, InfoStatus.PENDING, -1);
+
+          //TODO optimize invalidation on specifics status PENDING and PUBLISHED (not possible with the current implementation)
           invalidateThreadQueries(queryClient, {
             threadId: thread.id,
-            status: InfoStatus.DRAFT,
-          });
-          invalidateThreadQueries(queryClient, {
-            threadId: thread.id,
-            status: InfoStatus.PENDING,
           });
         },
       },

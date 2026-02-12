@@ -38,6 +38,8 @@ export const infoQueryKeys = {
   // ['infos', 'thread', 134, 'published']
   byThread: (options: InfoQueryKeysParams) => {
     const queryKey: any = [...infoQueryKeys.all(), 'thread', options.threadId];
+
+    // set filter by state or status
     if (options.state) queryKey.push(options.state);
     else if (options.status) queryKey.push(options.status);
     return queryKey;
@@ -297,14 +299,13 @@ export const invalidateThreadQueries = (
   options: InfoQueryKeysParams,
 ) => {
   const { threadId, status, state } = options;
-  console.log('threadId:', threadId);
+
   //Invalidate the queries for all threads
   const queryKeyAllThreads = infoQueryKeys.byThread({
     threadId: 'all',
     status,
     state,
   });
-  console.log('queryKeyAllThreads:', queryKeyAllThreads);
   invalidateQueriesWithFirstPage(queryClient, {
     queryKey: queryKeyAllThreads,
   });
@@ -314,14 +315,13 @@ export const invalidateThreadQueries = (
     queryKey: infoQueryKeys.stats(),
   });
 
-  if (threadId === 'all') return;
   //Invalidate the queries for the specific thread
+  if (threadId === 'all') return;
   const queryKeySpecificThread = infoQueryKeys.byThread({
     threadId,
     status,
     state,
   });
-  console.log('queryKeySpecificThread:', queryKeySpecificThread);
   invalidateQueriesWithFirstPage(queryClient, {
     queryKey: queryKeySpecificThread,
   });
