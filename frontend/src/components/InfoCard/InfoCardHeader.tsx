@@ -12,9 +12,9 @@ import {
   IconClock,
   IconClockAlert,
   IconOptions,
-  IconSave,
   IconSend,
   IconSubmitToValidate,
+  IconWrite,
 } from '@edifice.io/react/icons';
 import clsx from 'clsx';
 import { RefAttributes, useState } from 'react';
@@ -72,7 +72,7 @@ export const InfoCardHeader = ({
           >
             <Flex align="center" gap="8" wrap="nowrap" className="mx-4">
               {t('actualites.info.status.draft')}
-              <IconSave />
+              <IconWrite />
             </Flex>
           </Badge>
         )}
