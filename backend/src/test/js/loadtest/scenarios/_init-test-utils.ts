@@ -1,4 +1,5 @@
 import { describe } from "https://jslib.k6.io/k6chaijs/4.3.4.0/index.js";
+import http from 'k6/http';
 
 import {
   authenticateWeb,
@@ -19,7 +20,10 @@ import {
   addAdminFunction,
   getRolesOfStructure,
   addCommRuleToGroup,
-  switchSession
+  switchSession,
+  Cookie,
+  SessionMode,
+  BASE_URL
 } from '../../node_modules/edifice-k6-commons/dist/index.js';
 import {
   createThreadOrFail,
@@ -30,8 +34,7 @@ import {
   createPublishedInfoOrFail,
 } from "../../utils/_info-utils.ts";
 import { ShareTargetType } from "../../utils/_shares_utils.ts";
-import csv  from 'k6/experimental/csv';
-import { open } from 'k6/experimental/fs';
+import { SharedArray } from 'k6/data';
 import {pendingVus} from "./t1-averageLoad.ts";
 
 const nbInfosPublish = (__ENV.LOCAL_NB_INFOS_PUBLISH ? Number(__ENV.LOCAL_NB_INFOS_PUBLISH) :  300);
@@ -39,6 +42,15 @@ const nbInfosPending = (__ENV.LOCAL_NB_INFOS_PENDING ? Number(__ENV.LOCAL_NB_INF
 const nbInfosDraft = (__ENV.LOCAL_NB_INFOS_DRAFT ? Number(__ENV.LOCAL_NB_INFOS_DRAFT) :  20);
 
 const duration = __ENV.DURATION || '1m';
+const authBatchSize = Number.parseInt(__ENV.AUTH_BATCH_SIZE || '10');
+const THIRTY_MINUTES_IN_SECONDS = 30 * 60;
+
+function parseCsv(filePath: string): string[][] {
+  return open(filePath)
+    .split('\n')
+    .filter((line: string) => line.trim().length > 0)
+    .map((line: string) => line.split(',').map((f: string) => f.trim()));
+}
 
 export type InfoUser = {
   login: string;
@@ -58,18 +70,10 @@ export type InitData = {
   allSessions: InfoUser[],
 }
 
-const fileTeachers = await open('../data/teachers.csv');
-const fileStudents = await open('../data/students.csv');
-const fileRelatives = await open('../data/relatives.csv');
-const filePersonnels = await open('../data/personnels.csv');
-
-const teachersRecords = await csv.parse(fileTeachers, { delimiter: ',' });
-const studentsRecords = await csv.parse(fileStudents, { delimiter: ',' });
-const relativesRecords = await csv.parse(fileRelatives, { delimiter: ',' });
-const personnelsRecords = await csv.parse(filePersonnels, { delimiter: ',' });
-
-// The `csv.parse` function consumes the entire file at once and returns
-// the parsed records as a `SharedArray` object.
+const teachersRecords = new SharedArray('teachers', () => parseCsv('../data/teachers.csv'));
+const studentsRecords = new SharedArray('students', () => parseCsv('../data/students.csv'));
+const relativesRecords = new SharedArray('relatives', () => parseCsv('../data/relatives.csv'));
+const personnelsRecords = new SharedArray('personnels', () => parseCsv('../data/personnels.csv'));
 
 export function initLocal(schoolName: string): InitData {
 
@@ -231,93 +235,102 @@ export function initFromCsv(): InitData {
     initData.sessions['Student'] = [];
     initData.sessions['Relative'] = [];
 
+    // Collect all user credentials to authenticate in batch
+    const userRecords: Array<{userInfo: string[], type: string}> = [];
+    
     for(let i = 1; i < teachersRecords.length && i < 10; i++) {
-      // @ts-ignore
-      let userInfo: string[] = teachersRecords[i];
-      let session = null;
-      try {
-        session = <Session>authenticateWeb(userInfo[1], userInfo[2]);
-      } catch (e) {
-        console.log("Unable to create session for ", userInfo);
-        continue;
-      }
-      const user: InfoUser = {
-        login : userInfo[1],
-        profile: userInfo[3],
-        session :  session,
-        role: userInfo[4],
-        threadId: userInfo[5],
-        isValidator: false
-      }
-      initData.sessions['Teacher'].push(user);
-      initData.allSessions.push(user)
+      userRecords.push({userInfo: teachersRecords[i], type: 'Teacher'});
     }
 
     for(let i = 1; i < personnelsRecords.length; i++) {
-      // @ts-ignore
-      let userInfo: string[] = personnelsRecords[i];
-      let session = null;
-      try {
-        session = <Session>authenticateWeb(userInfo[1], userInfo[2]);
-      } catch (e) {
-        console.log("Unable to create session for ", userInfo);
-        continue;
-      }
-      const user: InfoUser = {
-        login : userInfo[1],
-        profile: userInfo[3],
-        session :  session,
-        role: userInfo[4],
-        threadId: userInfo[5],
-        isValidator: false
-      }
-      initData.sessions['Personnel'].push(user);
-      initData.allSessions.push(user)
+      userRecords.push({userInfo: personnelsRecords[i], type: 'Personnel'});
     }
 
     for(let i = 1; i < studentsRecords.length; i++) {
-      // @ts-ignore
-      let userInfo: string[] = studentsRecords[i];
-      let session = null;
-      try {
-        session = <Session>authenticateWeb(userInfo[1], userInfo[2]);
-      } catch (e) {
-        console.log("Unable to create session for ", userInfo);
-        continue;
-      }
-      const user: InfoUser = {
-        login : userInfo[1],
-        profile: userInfo[3],
-        session :  session,
-        role: userInfo[4],
-        threadId: userInfo[5],
-        isValidator: false
-      }
-      initData.sessions['Student'].push(user);
-      initData.allSessions.push(user)
+      userRecords.push({userInfo: studentsRecords[i], type: 'Student'});
     }
 
     for(let i = 1; i < relativesRecords.length; i++) {
-      // @ts-ignore
-      let userInfo: string[] = relativesRecords[i];
-      let session = null;
-      try {
-        session = <Session>authenticateWeb(userInfo[1], userInfo[2]);
-      } catch (e) {
-        console.log("Unable to create session for ", userInfo);
-        continue;
-      }
-      const user: InfoUser = {
-        login : userInfo[1],
-        profile: userInfo[3],
-        session :  session,
-        role: userInfo[4],
-        threadId: userInfo[5],
-        isValidator: false
-      }
-      initData.sessions['Relative'].push(user);
-      initData.allSessions.push(user)
+      userRecords.push({userInfo: relativesRecords[i], type: 'Relative'});
     }
+
+    console.log(`Authenticating ${userRecords.length} users in batches of ${authBatchSize}...`);
+
+    let successCount = 0;
+
+    // Process users in chunks of authBatchSize
+    for (let batchStart = 0; batchStart < userRecords.length; batchStart += authBatchSize) {
+      const batchEnd = Math.min(batchStart + authBatchSize, userRecords.length);
+      const batchRecords = userRecords.slice(batchStart, batchEnd);
+
+      // Prepare batch login requests for this chunk
+      const loginRequests = {};
+      batchRecords.forEach((record, index) => {
+        const userInfo = record.userInfo;
+        loginRequests[`user_${index}`] = {
+          method: 'POST',
+          url: `${BASE_URL}/auth/login`,
+          body: {
+            email: userInfo[1],
+            password: userInfo[2] || __ENV.DEFAULT_PASSWORD || "password",
+            callBack: "",
+            detail: "",
+          },
+          params: {
+            redirects: 0,
+          }
+        };
+      });
+
+      // Execute this batch in parallel
+      const responses = http.batch(loginRequests);
+
+      // Process responses and create sessions
+      Object.keys(responses).forEach((key) => {
+        const index = parseInt(key.split('_')[1]);
+        const response = responses[key];
+        const record = batchRecords[index];
+        const userInfo = record.userInfo;
+
+        if (response.status !== 302 || !response.cookies["oneSessionId"]) {
+          console.log("Unable to create session for ", userInfo[1], "- Status:", response.status);
+          return;
+        }
+
+        const cookies: Cookie[] = Object.keys(response.cookies).map(
+          (cookieName) => {
+            return {
+              name: cookieName,
+              value: response.cookies[cookieName][0].value,
+            };
+          },
+        );
+
+        const session = new Session(
+          response.cookies["oneSessionId"][0].value,
+          SessionMode.COOKIE,
+          THIRTY_MINUTES_IN_SECONDS,
+          cookies,
+        );
+
+        const user: InfoUser = {
+          login: userInfo[1],
+          profile: userInfo[3],
+          session: session,
+          role: userInfo[4],
+          threadId: userInfo[5],
+          isValidator: false
+        };
+
+        initData.sessions[record.type].push(user);
+        initData.allSessions.push(user);
+        successCount++;
+      });
+
+      console.log(`Batch ${Math.floor(batchStart / authBatchSize) + 1}: authenticated ${batchEnd}/${userRecords.length} users`);
+    }
+
+    console.log(`Successfully authenticated ${successCount}/${userRecords.length} users`);
   });
   initValidator(initData);
   return initData;
