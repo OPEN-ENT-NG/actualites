@@ -28,7 +28,7 @@ export const options = {
         { duration: duration, target: constantVu }, // plateau stable
         { duration: '5s', target: 0 }, // descente propre (facultatif)
       ],
-      gracefulRampDown: '5s',
+      gracefulRampDown: '60s',
     },
     ramp_up_read_info: {
       executor: 'ramping-vus',
@@ -39,7 +39,7 @@ export const options = {
         { duration: duration, target: constantVu }, // plateau stable
         { duration: '5s', target: 0 }, // descente propre (facultatif)
       ],
-      gracefulRampDown: '5s',
+      gracefulRampDown: '60s',
     },
   },
 };
