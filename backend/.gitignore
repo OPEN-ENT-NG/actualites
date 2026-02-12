@@ -1,6 +1,5 @@
 .idea
 actualites.iml
-src/main/resources/public/js
 rev-manifest.json
 build/
 node_modules
