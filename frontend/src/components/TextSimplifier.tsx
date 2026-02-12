@@ -67,7 +67,7 @@ export const TextSimplifier = forwardRef(
       } catch (e) {
         error(<span>{e as string}</span>);
       }
-    }, [editorRef]);
+    }, [editorRef, generate, error]);
 
     const handleCopyClick = useCallback(() => {
       if (simplifiedContent) navigator.clipboard.writeText(simplifiedContent);
