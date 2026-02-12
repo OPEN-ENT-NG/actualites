@@ -29,24 +29,12 @@ public class GenAiConfig {
     private static final int DEFAULT_FALC_MIN_LENGTH = 200;
     private static final int DEFAULT_FALC_TIMEOUT_MS = 30000;
 
-    private final String uri;
-    private final String token;
     private final int falcMinLength;
     private final int falcTimeoutMs;
 
     public GenAiConfig(JsonObject config) {
-        this.uri = config.getString("uri", "");
-        this.token = config.getString("token", "");
         this.falcMinLength = config.getInteger("falcMinLength", DEFAULT_FALC_MIN_LENGTH);
         this.falcTimeoutMs = config.getInteger("falcTimeoutMs", DEFAULT_FALC_TIMEOUT_MS);
-    }
-
-    public String getUri() {
-        return uri;
-    }
-
-    public String getToken() {
-        return token;
     }
 
     public int getFalcMinLength() {
@@ -58,6 +46,6 @@ public class GenAiConfig {
     }
 
     public boolean isConfigured() {
-        return uri != null && !uri.isEmpty() && token != null && !token.isEmpty();
+        return true;
     }
 }

@@ -18,8 +18,6 @@
         "mode" : "${mode}",
         "entcore.port" : 8009,
         "genai": {
-          "uri": "${actualitesGenaiUri}",
-          "token": "${actualitesGenaiToken}",
           "falcMinLength": ${actualitesGenaiFalcMinLength},
           "falcTimeoutMs": ${actualitesGenaiFalcTimeoutMs}
         }
