@@ -10,17 +10,21 @@ export type CommentListProps = {
    */
   info: Info;
   withPagination?: boolean;
+  forPrinting?: boolean;
 };
 
 export const CommentList = ({
   info,
   withPagination = true,
+  forPrinting = false,
 }: CommentListProps) => {
-  const { comments, type, callbacks, options, rights } = useCommentList(info);
+  let { comments, type, callbacks, options, rights } = useCommentList(info);
 
   if (!withPagination)
     options.maxComments = options.additionalComments =
       MAX_COMMENTS_WITHOUT_PAGINATION;
+
+  if (forPrinting) type = 'read';
 
   return (
     comments && (
