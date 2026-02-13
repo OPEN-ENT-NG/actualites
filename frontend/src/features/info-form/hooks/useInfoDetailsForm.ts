@@ -1,9 +1,14 @@
 import { useToast } from '@edifice.io/react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useI18n } from '~/hooks/useI18n';
 import { InfoId, InfoStatus } from '~/models/info';
-import { useCreateDraftInfo, useUpdateInfo } from '~/services/queries';
+import {
+  invalidateThreadQueries,
+  useCreateDraftInfo,
+  useUpdateInfo,
+} from '~/services/queries';
 import { InfoDetailsFormParams, useInfoFormStore } from '~/store/infoFormStore';
 
 export function useInfoDetailsForm() {
@@ -17,9 +22,9 @@ export function useInfoDetailsForm() {
   const { t } = useI18n();
   const toast = useToast();
   const { mutate: createDraftInfo } = useCreateDraftInfo();
-  const { mutate: updateDraftInfo } = useUpdateInfo();
+  const { mutate: updateInfo } = useUpdateInfo();
   const [isSaving, setIsSaving] = useState(false);
-
+  const queryClient = useQueryClient();
   const createOrUpdateInfo = (
     infoFormValues: InfoDetailsFormParams,
     onSuccess?: ({ id }: { id: InfoId }) => void,
@@ -34,7 +39,7 @@ export function useInfoDetailsForm() {
 
     setIsSaving(true);
     if (infoFormValues.infoId) {
-      return updateDraftInfo(
+      return updateInfo(
         {
           infoId: infoFormValues.infoId,
           infoStatus: infoFormValues.infoStatus,
@@ -49,6 +54,9 @@ export function useInfoDetailsForm() {
         },
         {
           onSuccess: ({ id }: { id: InfoId }) => {
+            invalidateThreadQueries(queryClient, {
+              threadId: Number(infoFormValues.thread_id),
+            });
             setIsSaving(false);
             resetDetailsForm?.();
             onSuccess?.({ id });
@@ -77,6 +85,9 @@ export function useInfoDetailsForm() {
             resetDetailsForm?.(infoUpdated);
             setIsSaving(false);
             onSuccess?.({ id });
+            invalidateThreadQueries(queryClient, {
+              threadId: Number(infoFormValues.thread_id),
+            });
           },
         },
       );
