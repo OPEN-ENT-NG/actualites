@@ -8,5 +8,6 @@
 
 export * from './actions';
 export * from './comment';
+export * from './falc';
 export * from './info';
 export * from './thread';
