@@ -35,7 +35,7 @@ export const options = {
         { duration: duration, target: constantVu / 2 }, // plateau stable
         { duration: '5s', target: 0 }, // descente propre (facultatif)
       ],
-      gracefulRampDown: '5s',
+      gracefulRampDown: '60s',
     },
     ramp_up_comment_info: {
       executor: 'ramping-vus',
@@ -46,7 +46,7 @@ export const options = {
         { duration: duration, target: constantVu / 2 }, // plateau stable
         { duration: '5s', target: 0 }, // descente propre (facultatif)
       ],
-      gracefulRampDown: '5s',
+      gracefulRampDown: '60s',
     },
     ramp_up_create_thread: {
       executor: 'ramping-vus',
@@ -57,7 +57,7 @@ export const options = {
         { duration: duration, target: threadCreationVus }, // plateau stable
         { duration: '5s', target: 0 }, // descente propre (facultatif)
       ],
-      gracefulRampDown: '5s',
+      gracefulRampDown: '60s',
     },
   },
 };
