@@ -1,6 +1,6 @@
 {
   "name": "actualites",
-  "version": "0.0.0",
+  "version": "3.0.0",
   "private": true,
   "license": "GPL-3.0",
   "author": "Edifice",
@@ -38,10 +38,10 @@
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.2",
-    "@edifice.io/bootstrap": "develop",
-    "@edifice.io/client": "develop",
-    "@edifice.io/react": "develop",
-    "@edifice.io/utilities": "develop",
+    "@edifice.io/bootstrap": "2.5.10",
+    "@edifice.io/client": "2.5.10",
+    "@edifice.io/react": "2.5.10",
+    "@edifice.io/utilities": "2.5.10",
     "@react-spring/web": "^9.7.5",
     "@tanstack/react-query": "5.62.7",
     "@uidotdev/usehooks": "2.4.1",
