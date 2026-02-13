@@ -39,20 +39,11 @@ public class GenAiServiceImpl implements GenAiService {
 
     public GenAiServiceImpl(Vertx vertx, GenAiConfig config) {
         this.config = config;
-        this.falcClient = config.isConfigured() ? new FalcClient(vertx) : null;
-        
-        if (!config.isConfigured()) {
-            log.info("FALC service is not configured, FALC transformation will be disabled");
-        }
+        this.falcClient = new FalcClient(vertx);
     }
 
     @Override
     public Future<String> applyFalc(String userId, String session, String userAgent, String content) {
-        if (!isConfigured()) {
-            log.warn("FALC service is not configured");
-            return Future.failedFuture("FALC service is not configured");
-        }
-
         if (content == null || content.length() < config.getFalcMinLength()) {
             log.debug("Content is too short for FALC transformation, returning original content");
             return Future.succeededFuture(content);
@@ -71,10 +62,5 @@ public class GenAiServiceImpl implements GenAiService {
                     log.error("FALC transformation failed, returning original content", err);
                     return Future.succeededFuture(content);
                 });
-    }
-
-    @Override
-    public boolean isConfigured() {
-        return config.isConfigured();
     }
 }

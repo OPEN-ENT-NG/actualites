@@ -47,11 +47,6 @@ public class FalcController extends ControllerHelper {
     @ApiDoc("Apply FALC transformation to simplify content")
     @SecuredAction(value = Actualites.GENAI_FALC_RIGHT, type = ActionType.WORKFLOW)
     public void applyFalc(final HttpServerRequest request) {
-        if (!genAiService.isConfigured()) {
-            Renders.badRequest(request, "genai.not.configured");
-            return;
-        }
-
         UserUtils.getUserInfos(eb, request, user -> {
             if (user == null) {
                 Renders.unauthorized(request);

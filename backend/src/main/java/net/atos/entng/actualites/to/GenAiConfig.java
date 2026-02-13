@@ -44,8 +44,4 @@ public class GenAiConfig {
     public int getFalcTimeoutMs() {
         return falcTimeoutMs;
     }
-
-    public boolean isConfigured() {
-        return true;
-    }
 }

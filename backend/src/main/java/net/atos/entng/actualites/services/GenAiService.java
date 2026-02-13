@@ -37,11 +37,4 @@ public interface GenAiService {
      * @return A Future containing the simplified content, or the original content if too short
      */
     Future<String> applyFalc(String userId, String session, String userAgent, String content);
-
-    /**
-     * Check if the GenAI service is properly configured and available.
-     *
-     * @return true if the service is configured, false otherwise
-     */
-    boolean isConfigured();
 }
