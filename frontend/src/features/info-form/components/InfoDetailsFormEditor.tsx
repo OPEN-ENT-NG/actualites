@@ -1,6 +1,8 @@
 import { FormControl, Label } from '@edifice.io/react';
-import { Editor, EditorInstance } from '@edifice.io/react/editor';
+import { Editor, EditorInstance, EditorRef } from '@edifice.io/react/editor';
+import { useEffect, useRef } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+import { TextSimplifier, TextSimplifierRef } from '~/components/TextSimplifier';
 import { useI18n } from '~/hooks/useI18n';
 import { InfoDetailsFormParams } from '~/store/infoFormStore';
 import { isContentValid } from '../utils/utils';
@@ -17,7 +19,18 @@ export function InfoDetailsFormEditor({ content }: InfoDetailsFormEditorProps) {
     setValue,
     formState: { errors },
   } = useFormContext<InfoDetailsFormParams>();
+
+  const editorRef = useRef<EditorRef>(null);
+  const textSimplifierRef = useRef<TextSimplifierRef>(null);
+
+  // Reset suggestions when a different content is set.
+  useEffect(() => {
+    textSimplifierRef.current?.handleContentChange();
+    textSimplifierRef.current?.resetSuggestions();
+  }, [content]);
+
   const handleEditorChange = ({ editor }: { editor: EditorInstance }) => {
+    textSimplifierRef.current?.handleContentChange();
     setValue('content', editor.isEmpty ? '' : editor.getHTML(), {
       shouldDirty: true,
       shouldValidate: true,
@@ -37,13 +50,19 @@ export function InfoDetailsFormEditor({ content }: InfoDetailsFormEditorProps) {
         rules={{ required: true, validate: (value) => isContentValid(value) }}
         render={() => (
           <div className="info-details-form_content">
-            <Editor
-              content={content || ''}
-              mode="edit"
-              id="info-content"
-              onContentChange={handleEditorChange}
-              data-testid="actualites.info.content.editor"
-            />
+            <TextSimplifier
+              ref={textSimplifierRef}
+              editorRef={editorRef.current}
+            >
+              <Editor
+                ref={editorRef}
+                content={content || ''}
+                mode="edit"
+                id="info-content"
+                onContentChange={handleEditorChange}
+                data-testid="actualites.info.content.editor"
+              />
+            </TextSimplifier>
           </div>
         )}
       />
