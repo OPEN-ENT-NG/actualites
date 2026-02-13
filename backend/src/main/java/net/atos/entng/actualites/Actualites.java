@@ -32,6 +32,7 @@ import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.constants.Field;
 import net.atos.entng.actualites.controllers.CommentController;
 import net.atos.entng.actualites.controllers.DisplayController;
+import net.atos.entng.actualites.controllers.v1.FalcController;
 import net.atos.entng.actualites.controllers.InfoController;
 import net.atos.entng.actualites.controllers.ThreadController;
 import net.atos.entng.actualites.controllers.v1.CommentControllerV1;
@@ -43,6 +44,7 @@ import net.atos.entng.actualites.cron.ExpiredNewsCleanupCron;
 import net.atos.entng.actualites.services.*;
 import net.atos.entng.actualites.services.impl.*;
 import org.entcore.common.audience.AudienceHelper;
+import net.atos.entng.actualites.to.GenAiConfig;
 import org.entcore.common.editor.ContentTransformerConfig;
 import org.entcore.common.editor.ContentTransformerEventRecorderFactory;
 import org.entcore.common.editor.IContentTransformerEventRecorder;
@@ -80,6 +82,8 @@ public class Actualites extends BaseServer {
 	public final static String GROUP_TABLE = "groups";
 	public final static String MEMBER_TABLE = "members";
 	public final static String COMMENT_TABLE = "comment";
+
+	public final static String GENAI_FALC_RIGHT = "actualites.genai.falc";
 
 	public final static String MANAGE_RIGHT_ACTION = "net-atos-entng-actualites-controllers-ThreadController|updateThread";
 
@@ -215,6 +219,12 @@ public class Actualites extends BaseServer {
 
 		//user preferences
 		addController(new UserPreferenceController(new UserPreferenceServiceImpl(threadService)));
+
+		// GenAI / FALC controller
+		JsonObject genAiConfigJson = config.getJsonObject("genai", new JsonObject());
+		GenAiConfig genAiConfig = new GenAiConfig(genAiConfigJson);
+		GenAiService genAiService = new GenAiServiceImpl(vertx, genAiConfig);
+		addController(new FalcController(genAiService));
 
 		// News publication cron task
 		String publicationCronConf = config.getString("news-publication-cron");
