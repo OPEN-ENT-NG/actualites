@@ -1,10 +1,10 @@
 import { Editor, EditorPreview } from '@edifice.io/react/editor';
 import clsx from 'clsx';
 import { useState } from 'react';
+import { useInfoStatus } from '~/hooks/useInfoStatus';
 import { CommentList } from '../comment-list/CommentList';
 import { Expandable } from '../Expandable';
 import { InfoCardProps } from './InfoCard';
-import { useInfoStatus } from '~/hooks/useInfoStatus';
 
 export const InfoCardContent = ({
   info,
@@ -48,7 +48,7 @@ export const InfoCardContent = ({
 
         {withComments && canShowComments && showFullContent && (
           <div id={`info-${info.id}-comments`}>
-            <CommentList info={info} />
+            <CommentList info={info} withPagination={false} forPrinting />
           </div>
         )}
       </div>
