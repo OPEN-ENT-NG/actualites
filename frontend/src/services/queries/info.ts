@@ -1,6 +1,7 @@
 import { invalidateQueriesWithFirstPage } from '@edifice.io/react';
 import {
   infiniteQueryOptions,
+  QueryClient,
   queryOptions,
   useInfiniteQuery,
   useMutation,
@@ -19,6 +20,12 @@ export const DEFAULT_PAGE_SIZE = 20;
  * Info Query Keys always follow this format :
  * ['threads', threadId|undefined, 'infos', infoId|undefined, ...other_parameters]
  */
+
+export type InfoQueryKeysParams = {
+  threadId: ThreadId | 'all';
+  status?: InfoStatus;
+  state?: InfoExtendedStatus;
+};
 export const infoQueryKeys = {
   // ['infos']
   all: () => ['infos'],
@@ -28,17 +35,13 @@ export const infoQueryKeys = {
 
   // List
   // ['infos', 'thread', 'all', 'expired']
-  // ['infos', 'thread', 134, 'expired']
-  byThread: ({
-    ...options
-  }: {
-    threadId: ThreadId | 'all';
-    status?: InfoStatus;
-    state?: InfoExtendedStatus;
-  }) => {
+  // ['infos', 'thread', 134, 'published']
+  byThread: (options: InfoQueryKeysParams) => {
     const queryKey: any = [...infoQueryKeys.all(), 'thread', options.threadId];
-    if (options.status) queryKey.push(options.status);
+
+    // set filter by state or status
     if (options.state) queryKey.push(options.state);
+    else if (options.status) queryKey.push(options.status);
     return queryKey;
   },
 
@@ -219,7 +222,6 @@ export const useInfoViewsDetails = (infoId: InfoId) =>
   useQuery(infoQueryOptions.getViewsDetails(infoId));
 
 export const useCreateDraftInfo = () => {
-  const queryClient = useQueryClient();
   const { updateStatsQueryCache } = useUpdateStatsQueryCache();
 
   return useMutation({
@@ -234,27 +236,10 @@ export const useCreateDraftInfo = () => {
     onMutate: async (payload) => {
       updateStatsQueryCache(payload.thread_id, InfoStatus.DRAFT, 1);
     },
-    onSuccess: async (_, { thread_id }) => {
-      const queryKeyThread = infoQueryKeys.byThread({
-        status: InfoStatus.DRAFT,
-        threadId: thread_id,
-      });
-      invalidateQueriesWithFirstPage(queryClient, { queryKey: queryKeyThread });
-
-      const queryKeyAllThreads = infoQueryKeys.byThread({
-        status: InfoStatus.DRAFT,
-        threadId: 'all',
-      });
-      invalidateQueriesWithFirstPage(queryClient, {
-        queryKey: queryKeyAllThreads,
-      });
-    },
   });
 };
 
 export const useUpdateInfo = () => {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: ({
       infoId,
@@ -272,16 +257,11 @@ export const useUpdateInfo = () => {
         expiration_date?: string;
       };
     }) => infoService.update(infoId, infoStatus, payload),
-    onSuccess: async () => {
-      invalidateQueriesWithFirstPage(queryClient, {
-        queryKey: infoQueryKeys.all(),
-      });
-    },
   });
 };
 
-export const useDeleteInfo = () =>
-  useMutation({
+export const useDeleteInfo = () => {
+  return useMutation({
     mutationFn: ({
       threadId,
       infoId,
@@ -289,9 +269,8 @@ export const useDeleteInfo = () =>
       threadId: ThreadId;
       infoId: InfoId;
     }) => infoService.delete(threadId, infoId),
-    // TODO optimistic update
   });
-
+};
 export const useIncrementInfoViews = (infoId: InfoId) => {
   const queryClient = useQueryClient();
   const { updateViewsCounterByInfoId, viewsCounterByInfoId } =
@@ -312,5 +291,38 @@ export const useIncrementInfoViews = (infoId: InfoId) => {
         queryKey: infoQueryKeys.viewsDetails({ infoId }),
       });
     },
+  });
+};
+
+export const invalidateThreadQueries = (
+  queryClient: QueryClient,
+  options: InfoQueryKeysParams,
+) => {
+  const { threadId, status, state } = options;
+
+  //Invalidate the queries for all threads
+  const queryKeyAllThreads = infoQueryKeys.byThread({
+    threadId: 'all',
+    status,
+    state,
+  });
+  invalidateQueriesWithFirstPage(queryClient, {
+    queryKey: queryKeyAllThreads,
+  });
+
+  //invalidate the stats query
+  queryClient.refetchQueries({
+    queryKey: infoQueryKeys.stats(),
+  });
+
+  //Invalidate the queries for the specific thread
+  if (threadId === 'all') return;
+  const queryKeySpecificThread = infoQueryKeys.byThread({
+    threadId,
+    status,
+    state,
+  });
+  invalidateQueriesWithFirstPage(queryClient, {
+    queryKey: queryKeySpecificThread,
   });
 };

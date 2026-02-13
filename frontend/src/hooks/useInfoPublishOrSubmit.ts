@@ -1,10 +1,10 @@
-import { invalidateQueriesWithFirstPage, useToast } from '@edifice.io/react';
+import { useToast } from '@edifice.io/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { INFO_DATES_RESET_VALUES } from '~/features';
 import { useI18n } from '~/hooks/useI18n';
 import { InfoDetails, InfoStatus } from '~/models/info';
-import { infoQueryKeys, useUpdateInfo } from '~/services/queries';
+import { invalidateThreadQueries, useUpdateInfo } from '~/services/queries';
 import { useUpdateStatsQueryCache } from '~/services/queries/hooks/useUpdateStatsQueryCache';
 
 export function useInfoPublishOrSubmit() {
@@ -13,9 +13,7 @@ export function useInfoPublishOrSubmit() {
   const { mutate: updateInfoMutate } = useUpdateInfo();
   const navigate = useNavigate();
   const { updateStatsQueryCache } = useUpdateStatsQueryCache();
-
   const queryClient = useQueryClient();
-
   const publishOrSubmit = (
     info: InfoDetails,
     status: InfoStatus.PUBLISHED | InfoStatus.PENDING,
@@ -48,17 +46,8 @@ export function useInfoPublishOrSubmit() {
           );
           updateStatsQueryCache(info.thread.id, status, 1);
           updateStatsQueryCache(info.thread.id, info.status, -1);
-          invalidateQueriesWithFirstPage(queryClient, {
-            queryKey: infoQueryKeys.byThread({
-              threadId: info.thread.id,
-              status,
-            }),
-          });
-          invalidateQueriesWithFirstPage(queryClient, {
-            queryKey: infoQueryKeys.byThread({
-              threadId: 'all',
-              status,
-            }),
+          invalidateThreadQueries(queryClient, {
+            threadId: info.thread.id,
           });
           navigate(
             `/?status=${status === InfoStatus.PUBLISHED ? 'published' : 'pending'}`,
