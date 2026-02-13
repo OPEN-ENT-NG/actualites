@@ -13,16 +13,16 @@ importers:
         version: 6.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@edifice.io/bootstrap':
         specifier: develop-b2school
-        version: 2.5.9-develop-b2school.20260216112835
+        version: 2.5.9-develop-b2school.20260213162502
       '@edifice.io/client':
         specifier: develop-b2school
-        version: 2.5.9-develop-b2school.20260216112835
+        version: 2.5.9-develop-b2school.20260213162502
       '@edifice.io/react':
         specifier: develop-b2school
-        version: 2.5.9-develop-b2school.20260216112835(iqddsgj35aagyb53f5quku2icy)
+        version: 2.5.9-develop-b2school.20260213162502(iqddsgj35aagyb53f5quku2icy)
       '@edifice.io/utilities':
         specifier: develop-b2school
-        version: 2.5.9-develop-b2school.20260216112835
+        version: 2.5.9-develop-b2school.20260213162502
       '@react-spring/web':
         specifier: ^9.7.5
         version: 9.7.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -354,14 +354,14 @@ packages:
     peerDependencies:
       react: '>=16.8.0'
 
-  '@edifice.io/bootstrap@2.5.9-develop-b2school.20260216112835':
-    resolution: {integrity: sha512-v1oij/HYdEV7MeMaM4pVPSUYu4z11xmDDRfs/f/r+VrXszNi5x55pzwD9XqMFeCL1FVp8UGuVxdx8xa4TLXRfg==}
+  '@edifice.io/bootstrap@2.5.9-develop-b2school.20260213162502':
+    resolution: {integrity: sha512-GAFizJVkULfuumsdWnd3xgeYq2STjofR8hiq2upos6GuzJoWztza7zonDFOVShTgsli41PtD6zEuWauMGdmtfg==}
 
-  '@edifice.io/client@2.5.9-develop-b2school.20260216112835':
-    resolution: {integrity: sha512-yBuWiW7mh2FUHjnITKJRCazC7ma4JkeqXbN8Y/p9baoFMI+QS7Vfuz3KG/J8yud5K5LSVPVvtp6jRp5ZZLOD7Q==}
+  '@edifice.io/client@2.5.9-develop-b2school.20260213162502':
+    resolution: {integrity: sha512-cXsLaQbHbLngP0+v42pHY8OKFxSp64yv2hJ9C562tbKHk1NgVkDhGimF4mFqqSWOOJoZUYKhEpaqyFIXxL/+2Q==}
 
-  '@edifice.io/react@2.5.9-develop-b2school.20260216112835':
-    resolution: {integrity: sha512-oI2C2KQfDyRujhhvduyXGLZ4cSRGSd9Sal9+BVuhuTbNQPJL2GL1UiWhNX2T3SnUejQPfCdVCk9CcjAn/UhpDw==}
+  '@edifice.io/react@2.5.9-develop-b2school.20260213162502':
+    resolution: {integrity: sha512-p3ZOveRglRAqtHXnLHF6hEyl1RifumkmX/8Sd2gOtxyZbUclWshCq4ltBRCAf5eNPBIjY3s+cZISQIBI+GzfOQ==}
     peerDependencies:
       '@react-spring/web': ^9.7.5
       '@tanstack/react-query': 5.62.7
@@ -370,11 +370,11 @@ packages:
       react-hook-form: ^7.53.0
       react-i18next: ^14.1.0
 
-  '@edifice.io/tiptap-extensions@2.5.9-develop-b2school.20260216112835':
-    resolution: {integrity: sha512-U4fQeOHumnBIYrWCb57FpkyAc5HyvlRw/vZjOUKFp1A8tl9/5/uKBb1wNphTpuFgj/Z5NdhniSXAIqhV4Bjgww==}
+  '@edifice.io/tiptap-extensions@2.5.9-develop-b2school.20260213162502':
+    resolution: {integrity: sha512-vWKLnm2FuqqLC4+EpCp0j1IyfhqadK+FlB1/fNkZsnC8Brj8CGUzcGMGPbVMf5ptdNDjN4eVlZnHTLSrCpfkmQ==}
 
-  '@edifice.io/utilities@2.5.9-develop-b2school.20260216112835':
-    resolution: {integrity: sha512-Bq+/lL92umG0ucvWmeiRPxGRqLxzI+LIIGOtsjoJYIP60QAZuxsCz8OZYRxuTbdysi3PCL4pHTaVdNTMAhgtvA==}
+  '@edifice.io/utilities@2.5.9-develop-b2school.20260213162502':
+    resolution: {integrity: sha512-KAFBTL30oSOg8EBkGt47s+9A6Ihw/V3NOm5U2G6qNYLMt2DxKuRbC6Q/4CFwBH8YUu+9JZuy8hEDIy3FRnz4Kw==}
 
   '@emnapi/core@1.8.1':
     resolution: {integrity: sha512-AvT9QFpxK0Zd8J0jopedNm+w/2fIzvtPKPjqyw9jwvBaReTTqPBk9Hixaz7KbjimP+QNz605/XnjFcDAL2pqBg==}
@@ -706,10 +706,14 @@ packages:
 
   '@napi-rs/canvas-android-arm64@0.1.92':
     resolution: {integrity: sha512-rDOtq53ujfOuevD5taxAuIFALuf1QsQWZe1yS/N4MtT+tNiDBEdjufvQRPWZ11FubL2uwgP8ApYU3YOaNu1ZsQ==}
+  '@napi-rs/canvas-android-arm64@0.1.92':
+    resolution: {integrity: sha512-rDOtq53ujfOuevD5taxAuIFALuf1QsQWZe1yS/N4MtT+tNiDBEdjufvQRPWZ11FubL2uwgP8ApYU3YOaNu1ZsQ==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [android]
 
+  '@napi-rs/canvas-darwin-arm64@0.1.92':
+    resolution: {integrity: sha512-4PT6GRGCr7yMRehp42x0LJb1V0IEy1cDZDDayv7eKbFUIGbPFkV7CRC9Bee5MPkjg1EB4ZPXXUyy3gjQm7mR8Q==}
   '@napi-rs/canvas-darwin-arm64@0.1.92':
     resolution: {integrity: sha512-4PT6GRGCr7yMRehp42x0LJb1V0IEy1cDZDDayv7eKbFUIGbPFkV7CRC9Bee5MPkjg1EB4ZPXXUyy3gjQm7mR8Q==}
     engines: {node: '>= 10'}
@@ -718,10 +722,14 @@ packages:
 
   '@napi-rs/canvas-darwin-x64@0.1.92':
     resolution: {integrity: sha512-5e/3ZapP7CqPtDcZPtmowCsjoyQwuNMMD7c0GKPtZQ8pgQhLkeq/3fmk0HqNSD1i227FyJN/9pDrhw/UMTkaWA==}
+  '@napi-rs/canvas-darwin-x64@0.1.92':
+    resolution: {integrity: sha512-5e/3ZapP7CqPtDcZPtmowCsjoyQwuNMMD7c0GKPtZQ8pgQhLkeq/3fmk0HqNSD1i227FyJN/9pDrhw/UMTkaWA==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
 
+  '@napi-rs/canvas-linux-arm-gnueabihf@0.1.92':
+    resolution: {integrity: sha512-j6KaLL9iir68lwpzzY+aBGag1PZp3+gJE2mQ3ar4VJVmyLRVOh+1qsdNK1gfWoAVy5w6U7OEYFrLzN2vOFUSng==}
   '@napi-rs/canvas-linux-arm-gnueabihf@0.1.92':
     resolution: {integrity: sha512-j6KaLL9iir68lwpzzY+aBGag1PZp3+gJE2mQ3ar4VJVmyLRVOh+1qsdNK1gfWoAVy5w6U7OEYFrLzN2vOFUSng==}
     engines: {node: '>= 10'}
@@ -730,10 +738,14 @@ packages:
 
   '@napi-rs/canvas-linux-arm64-gnu@0.1.92':
     resolution: {integrity: sha512-s3NlnJMHOSotUYVoTCoC1OcomaChFdKmZg0VsHFeIkeHbwX0uPHP4eCX1irjSfMykyvsGHTQDfBAtGYuqxCxhQ==}
+  '@napi-rs/canvas-linux-arm64-gnu@0.1.92':
+    resolution: {integrity: sha512-s3NlnJMHOSotUYVoTCoC1OcomaChFdKmZg0VsHFeIkeHbwX0uPHP4eCX1irjSfMykyvsGHTQDfBAtGYuqxCxhQ==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
 
+  '@napi-rs/canvas-linux-arm64-musl@0.1.92':
+    resolution: {integrity: sha512-xV0GQnukYq5qY+ebkAwHjnP2OrSGBxS3vSi1zQNQj0bkXU6Ou+Tw7JjCM7pZcQ28MUyEBS1yKfo7rc7ip2IPFQ==}
   '@napi-rs/canvas-linux-arm64-musl@0.1.92':
     resolution: {integrity: sha512-xV0GQnukYq5qY+ebkAwHjnP2OrSGBxS3vSi1zQNQj0bkXU6Ou+Tw7JjCM7pZcQ28MUyEBS1yKfo7rc7ip2IPFQ==}
     engines: {node: '>= 10'}
@@ -742,10 +754,14 @@ packages:
 
   '@napi-rs/canvas-linux-riscv64-gnu@0.1.92':
     resolution: {integrity: sha512-+GKvIFbQ74eB/TopEdH6XIXcvOGcuKvCITLGXy7WLJAyNp3Kdn1ncjxg91ihatBaPR+t63QOE99yHuIWn3UQ9w==}
+  '@napi-rs/canvas-linux-riscv64-gnu@0.1.92':
+    resolution: {integrity: sha512-+GKvIFbQ74eB/TopEdH6XIXcvOGcuKvCITLGXy7WLJAyNp3Kdn1ncjxg91ihatBaPR+t63QOE99yHuIWn3UQ9w==}
     engines: {node: '>= 10'}
     cpu: [riscv64]
     os: [linux]
 
+  '@napi-rs/canvas-linux-x64-gnu@0.1.92':
+    resolution: {integrity: sha512-tFd6MwbEhZ1g64iVY2asV+dOJC+GT3Yd6UH4G3Hp0/VHQ6qikB+nvXEULskFYZ0+wFqlGPtXjG1Jmv7sJy+3Ww==}
   '@napi-rs/canvas-linux-x64-gnu@0.1.92':
     resolution: {integrity: sha512-tFd6MwbEhZ1g64iVY2asV+dOJC+GT3Yd6UH4G3Hp0/VHQ6qikB+nvXEULskFYZ0+wFqlGPtXjG1Jmv7sJy+3Ww==}
     engines: {node: '>= 10'}
@@ -754,10 +770,14 @@ packages:
 
   '@napi-rs/canvas-linux-x64-musl@0.1.92':
     resolution: {integrity: sha512-uSuqeSveB/ZGd72VfNbHCSXO9sArpZTvznMVsb42nqPP7gBGEH6NJQ0+hmF+w24unEmxBhPYakP/Wiosm16KkA==}
+  '@napi-rs/canvas-linux-x64-musl@0.1.92':
+    resolution: {integrity: sha512-uSuqeSveB/ZGd72VfNbHCSXO9sArpZTvznMVsb42nqPP7gBGEH6NJQ0+hmF+w24unEmxBhPYakP/Wiosm16KkA==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
 
+  '@napi-rs/canvas-win32-arm64-msvc@0.1.92':
+    resolution: {integrity: sha512-20SK5AU/OUNz9ZuoAPj5ekWai45EIBDh/XsdrVZ8le/pJVlhjFU3olbumSQUXRFn7lBRS+qwM8kA//uLaDx6iQ==}
   '@napi-rs/canvas-win32-arm64-msvc@0.1.92':
     resolution: {integrity: sha512-20SK5AU/OUNz9ZuoAPj5ekWai45EIBDh/XsdrVZ8le/pJVlhjFU3olbumSQUXRFn7lBRS+qwM8kA//uLaDx6iQ==}
     engines: {node: '>= 10'}
@@ -766,10 +786,14 @@ packages:
 
   '@napi-rs/canvas-win32-x64-msvc@0.1.92':
     resolution: {integrity: sha512-KEhyZLzq1MXCNlXybz4k25MJmHFp+uK1SIb8yJB0xfrQjz5aogAMhyseSzewo+XxAq3OAOdyKvfHGNzT3w1RPg==}
+  '@napi-rs/canvas-win32-x64-msvc@0.1.92':
+    resolution: {integrity: sha512-KEhyZLzq1MXCNlXybz4k25MJmHFp+uK1SIb8yJB0xfrQjz5aogAMhyseSzewo+XxAq3OAOdyKvfHGNzT3w1RPg==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
 
+  '@napi-rs/canvas@0.1.92':
+    resolution: {integrity: sha512-q7ZaUCJkEU5BeOdE7fBx1XWRd2T5Ady65nxq4brMf5L4cE1VV/ACq5w9Z5b/IVJs8CwSSIwc30nlthH0gFo4Ig==}
   '@napi-rs/canvas@0.1.92':
     resolution: {integrity: sha512-q7ZaUCJkEU5BeOdE7fBx1XWRd2T5Ady65nxq4brMf5L4cE1VV/ACq5w9Z5b/IVJs8CwSSIwc30nlthH0gFo4Ig==}
     engines: {node: '>= 10'}
@@ -2945,6 +2969,8 @@ packages:
 
   markdown-it@14.1.1:
     resolution: {integrity: sha512-BuU2qnTti9YKgK5N+IeMubp14ZUKUUw7yeJbkjtosvHiP0AZ5c8IAgEMk79D0eC8F23r4Ac/q8cAIFdm2FtyoA==}
+  markdown-it@14.1.1:
+    resolution: {integrity: sha512-BuU2qnTti9YKgK5N+IeMubp14ZUKUUw7yeJbkjtosvHiP0AZ5c8IAgEMk79D0eC8F23r4Ac/q8cAIFdm2FtyoA==}
     hasBin: true
 
   math-intrinsics@1.1.0:
@@ -3333,8 +3359,8 @@ packages:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
 
-  qs@6.15.0:
-    resolution: {integrity: sha512-mAZTtNCeetKMH+pSjrb76NAM8V9a05I9aBZOHztWy/UqcJdQYNsf59vrRKWnojAT9Y+GbIvoTBC++CPHqpDBhQ==}
+  qs@6.14.2:
+    resolution: {integrity: sha512-V/yCWTTF7VJ9hIh18Ugr2zhJMP01MY7c5kh4J870L7imm6/DIzBsNLTXzMwUA3yZ5b/KBqLx8Kp3uRvd7xSe3Q==}
     engines: {node: '>=0.6'}
 
   quansync@0.2.11:
@@ -4567,28 +4593,28 @@ snapshots:
       react: 18.3.1
       tslib: 2.8.1
 
-  '@edifice.io/bootstrap@2.5.9-develop-b2school.20260216112835':
+  '@edifice.io/bootstrap@2.5.9-develop-b2school.20260213162502':
     dependencies:
       '@popperjs/core': 2.11.8
       bootstrap: 5.3.2(@popperjs/core@2.11.8)
 
-  '@edifice.io/client@2.5.9-develop-b2school.20260216112835':
+  '@edifice.io/client@2.5.9-develop-b2school.20260213162502':
     dependencies:
-      '@edifice.io/utilities': 2.5.9-develop-b2school.20260216112835
+      '@edifice.io/utilities': 2.5.9-develop-b2school.20260213162502
       axios: 1.13.5
       core-js: 3.48.0
     transitivePeerDependencies:
       - debug
 
-  '@edifice.io/react@2.5.9-develop-b2school.20260216112835(iqddsgj35aagyb53f5quku2icy)':
+  '@edifice.io/react@2.5.9-develop-b2school.20260213162502(iqddsgj35aagyb53f5quku2icy)':
     dependencies:
       '@ant-design/icons': 5.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@dnd-kit/core': 6.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@dnd-kit/sortable': 8.0.0(@dnd-kit/core@6.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       '@dnd-kit/utilities': 3.2.2(react@18.3.1)
-      '@edifice.io/bootstrap': 2.5.9-develop-b2school.20260216112835
-      '@edifice.io/tiptap-extensions': 2.5.9-develop-b2school.20260216112835(@types/node@18.19.130)(rollup@4.57.1)(typescript@5.9.3)
-      '@edifice.io/utilities': 2.5.9-develop-b2school.20260216112835
+      '@edifice.io/bootstrap': 2.5.9-develop-b2school.20260213162502
+      '@edifice.io/tiptap-extensions': 2.5.9-develop-b2school.20260213162502(@types/node@18.19.130)(rollup@4.57.1)(typescript@5.9.3)
+      '@edifice.io/utilities': 2.5.9-develop-b2school.20260213162502
       '@floating-ui/react': 0.26.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@pixi/mixin-get-child-by-name': 7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2))
       '@pixi/react': 7.1.2(ynarkkgztp5uclycsuoqcck7lm)
@@ -4689,9 +4715,9 @@ snapshots:
       - terser
       - typescript
 
-  '@edifice.io/tiptap-extensions@2.5.9-develop-b2school.20260216112835(@types/node@18.19.130)(rollup@4.57.1)(typescript@5.9.3)':
+  '@edifice.io/tiptap-extensions@2.5.9-develop-b2school.20260213162502(@types/node@18.19.130)(rollup@4.57.1)(typescript@5.9.3)':
     dependencies:
-      '@edifice.io/utilities': 2.5.9-develop-b2school.20260216112835
+      '@edifice.io/utilities': 2.5.9-develop-b2school.20260213162502
       '@tiptap/core': 2.11.0(@tiptap/pm@2.11.0)
       '@tiptap/extension-blockquote': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
       '@tiptap/extension-bold': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
@@ -4737,7 +4763,7 @@ snapshots:
       - terser
       - typescript
 
-  '@edifice.io/utilities@2.5.9-develop-b2school.20260216112835': {}
+  '@edifice.io/utilities@2.5.9-develop-b2school.20260213162502': {}
 
   '@emnapi/core@1.8.1':
     dependencies:
@@ -5030,40 +5056,63 @@ snapshots:
       strict-event-emitter: 0.5.1
 
   '@napi-rs/canvas-android-arm64@0.1.92':
+  '@napi-rs/canvas-android-arm64@0.1.92':
     optional: true
 
+  '@napi-rs/canvas-darwin-arm64@0.1.92':
   '@napi-rs/canvas-darwin-arm64@0.1.92':
     optional: true
 
   '@napi-rs/canvas-darwin-x64@0.1.92':
+  '@napi-rs/canvas-darwin-x64@0.1.92':
     optional: true
 
+  '@napi-rs/canvas-linux-arm-gnueabihf@0.1.92':
   '@napi-rs/canvas-linux-arm-gnueabihf@0.1.92':
     optional: true
 
   '@napi-rs/canvas-linux-arm64-gnu@0.1.92':
+  '@napi-rs/canvas-linux-arm64-gnu@0.1.92':
     optional: true
 
+  '@napi-rs/canvas-linux-arm64-musl@0.1.92':
   '@napi-rs/canvas-linux-arm64-musl@0.1.92':
     optional: true
 
   '@napi-rs/canvas-linux-riscv64-gnu@0.1.92':
+  '@napi-rs/canvas-linux-riscv64-gnu@0.1.92':
     optional: true
 
+  '@napi-rs/canvas-linux-x64-gnu@0.1.92':
   '@napi-rs/canvas-linux-x64-gnu@0.1.92':
     optional: true
 
   '@napi-rs/canvas-linux-x64-musl@0.1.92':
+  '@napi-rs/canvas-linux-x64-musl@0.1.92':
     optional: true
 
+  '@napi-rs/canvas-win32-arm64-msvc@0.1.92':
   '@napi-rs/canvas-win32-arm64-msvc@0.1.92':
     optional: true
 
   '@napi-rs/canvas-win32-x64-msvc@0.1.92':
+  '@napi-rs/canvas-win32-x64-msvc@0.1.92':
     optional: true
 
   '@napi-rs/canvas@0.1.92':
+  '@napi-rs/canvas@0.1.92':
     optionalDependencies:
+      '@napi-rs/canvas-android-arm64': 0.1.92
+      '@napi-rs/canvas-darwin-arm64': 0.1.92
+      '@napi-rs/canvas-darwin-x64': 0.1.92
+      '@napi-rs/canvas-linux-arm-gnueabihf': 0.1.92
+      '@napi-rs/canvas-linux-arm64-gnu': 0.1.92
+      '@napi-rs/canvas-linux-arm64-musl': 0.1.92
+      '@napi-rs/canvas-linux-riscv64-gnu': 0.1.92
+      '@napi-rs/canvas-linux-x64-gnu': 0.1.92
+      '@napi-rs/canvas-linux-x64-musl': 0.1.92
+      '@napi-rs/canvas-win32-arm64-msvc': 0.1.92
+      '@napi-rs/canvas-win32-x64-msvc': 0.1.92
       '@napi-rs/canvas-android-arm64': 0.1.92
       '@napi-rs/canvas-darwin-arm64': 0.1.92
       '@napi-rs/canvas-darwin-x64': 0.1.92
@@ -7286,6 +7335,7 @@ snapshots:
   make-event-props@2.0.0: {}
 
   markdown-it@14.1.1:
+  markdown-it@14.1.1:
     dependencies:
       argparse: 2.0.1
       entities: 4.5.0
@@ -7568,6 +7618,7 @@ snapshots:
   pdfjs-dist@5.4.296:
     optionalDependencies:
       '@napi-rs/canvas': 0.1.92
+      '@napi-rs/canvas': 0.1.92
 
   performance-now@2.1.0: {}
 
@@ -7708,6 +7759,7 @@ snapshots:
     dependencies:
       '@types/markdown-it': 14.1.2
       markdown-it: 14.1.1
+      markdown-it: 14.1.1
       prosemirror-model: 1.25.4
 
   prosemirror-menu@1.2.5:
@@ -7771,7 +7823,7 @@ snapshots:
 
   punycode@2.3.1: {}
 
-  qs@6.15.0:
+  qs@6.14.2:
     dependencies:
       side-channel: 1.1.0
 
@@ -8581,7 +8633,7 @@ snapshots:
   url@0.11.4:
     dependencies:
       punycode: 1.4.1
-      qs: 6.15.0
+      qs: 6.14.2
 
   use-sync-external-store@1.6.0(react@18.3.1):
     dependencies:
