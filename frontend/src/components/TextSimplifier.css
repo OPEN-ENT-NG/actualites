@@ -1,0 +1,36 @@
+.text-simplifier {
+  --edifice-text-simplifier-animation-duration: 0.3s;
+  position: relative;
+}
+
+.text-simplifier > *:not(.text-simplifier-border) {
+  position: relative;
+  z-index: 1;
+  background-color: var(--edifice-white);
+}
+
+.text-simplifier-border {
+  background: linear-gradient(249.1deg, #faea9c -1.66%, #f9beef 93.55%);
+  border-radius: 0 0 2.4rem 2.4rem;
+  padding: var(--edifice-border-width);
+  margin-top: -2.2rem;
+}
+.text-simplifier-background {
+  background: linear-gradient(256.68deg, #fdfaec 15.81%, #fff5fd 82.7%);
+  border-radius: 0 0 2.4rem 2.4rem;
+  padding: 2.4rem 2.4rem 0.4rem 2.4rem;
+}
+.text-simplifier-content {
+  overflow: hidden;
+  transition:
+    opacity var(--edifice-text-simplifier-animation-duration) ease-in-out,
+    height var(--edifice-text-simplifier-animation-duration) ease-in-out;
+}
+.text-simplifier-content.content-hidden {
+  opacity: 0;
+  height: 0;
+}
+.text-simplifier-content.content-visible {
+  opacity: 1;
+  transition-delay: var(--edifice-text-simplifier-animation-duration);
+}
