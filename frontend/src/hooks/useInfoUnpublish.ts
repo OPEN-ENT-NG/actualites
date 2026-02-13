@@ -1,9 +1,9 @@
-import { invalidateQueriesWithFirstPage, useToast } from '@edifice.io/react';
+import { useToast } from '@edifice.io/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useI18n } from '~/hooks/useI18n';
 import { InfoDetails, InfoStatus } from '~/models/info';
-import { infoQueryKeys, useUpdateInfo } from '~/services/queries';
+import { invalidateThreadQueries, useUpdateInfo } from '~/services/queries';
 import { useUpdateStatsQueryCache } from '~/services/queries/hooks/useUpdateStatsQueryCache';
 
 export function useInfoUnpublish() {
@@ -12,9 +12,7 @@ export function useInfoUnpublish() {
   const { mutate: updateInfoMutate } = useUpdateInfo();
   const { updateStatsQueryCache } = useUpdateStatsQueryCache();
   const [isUnpublishAlertOpen, setUnpublishAlertOpen] = useState(false);
-
   const queryClient = useQueryClient();
-
   const unpublish = ({ id, thread }: InfoDetails) => {
     updateInfoMutate(
       {
@@ -33,17 +31,9 @@ export function useInfoUnpublish() {
           updateStatsQueryCache(thread.id, InfoStatus.PENDING, 1);
           updateStatsQueryCache(thread.id, InfoStatus.PUBLISHED, -1);
 
-          invalidateQueriesWithFirstPage(queryClient, {
-            queryKey: infoQueryKeys.byThread({
-              threadId: thread.id,
-              status: InfoStatus.PENDING,
-            }),
-          });
-          invalidateQueriesWithFirstPage(queryClient, {
-            queryKey: infoQueryKeys.byThread({
-              threadId: 'all',
-              status: InfoStatus.PENDING,
-            }),
+          //TODO optimize invalidation on specifics status PENDING and PUBLISHED (not possible with the current implementation)
+          invalidateThreadQueries(queryClient, {
+            threadId: thread.id,
           });
         },
       },
