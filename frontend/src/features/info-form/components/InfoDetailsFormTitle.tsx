@@ -30,6 +30,7 @@ export function InfoDetailsFormTitle() {
         render={() => (
           <Input
             type="text"
+            autoFocus
             size="md"
             placeholder={t('actualites.info.createForm.titlePlaceholder')}
             showCounter
