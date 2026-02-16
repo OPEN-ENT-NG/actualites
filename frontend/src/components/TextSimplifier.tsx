@@ -1,6 +1,7 @@
 import { Button, Flex, useEdificeClient, useToast } from '@edifice.io/react';
 import { EditorRef } from '@edifice.io/react/editor';
 import {
+  IconAlertTriangle,
   IconCopy,
   IconRafterDown,
   IconRafterUp,
@@ -16,7 +17,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useFalc } from '~/services/queries';
 import { AiButton } from './AiButton';
-import MarkdownRenderer from './MarkdownRenderer';
+import { Expandable } from './Expandable';
+import { MarkdownRenderer } from './MarkdownRenderer';
 import './TextSimplifier.css';
 
 export interface TextSimplifierRef {
@@ -81,10 +83,6 @@ export const TextSimplifier = forwardRef(
       setIsVisible((previous) => !previous);
     };
 
-    const contentClassName = `text-simplifier-content content-${
-      isVisible ? 'visible' : 'hidden'
-    }`;
-
     return (
       <Flex direction="column" className="text-simplifier">
         <div className="text-simplifier-children">
@@ -95,7 +93,7 @@ export const TextSimplifier = forwardRef(
           <div className="text-simplifier-background">
             {simplifiedContent && (
               <Button
-                type="button"
+                data-testid="textsimplifier-display-suggestion-toggle"
                 className="text-gray-800"
                 color="secondary"
                 variant="ghost"
@@ -109,7 +107,7 @@ export const TextSimplifier = forwardRef(
               </Button>
             )}
 
-            <div className={contentClassName}>
+            <Expandable collapse={!isVisible} transitionDurationMs={300}>
               <Flex
                 direction="column"
                 className="border rounded-3 bg-white mb-8"
@@ -124,7 +122,7 @@ export const TextSimplifier = forwardRef(
                 >
                   <div></div>
                   <Button
-                    type="button"
+                    data-testid="textsimplifier-copy-suggestion-button"
                     className="text-gray-800"
                     color="secondary"
                     variant="ghost"
@@ -136,10 +134,19 @@ export const TextSimplifier = forwardRef(
                   </Button>
                 </Flex>
               </Flex>
-            </div>
+            </Expandable>
 
             <Flex justify="between" align="center" gap="10">
               <i>
+                {simplifiedContent && contentChanged && (
+                  <IconAlertTriangle
+                    style={{
+                      width: '2.4rem',
+                      display: 'inline-block',
+                      paddingRight: '.8rem',
+                    }}
+                  />
+                )}
                 {t(
                   simplifiedContent
                     ? contentChanged
@@ -150,8 +157,13 @@ export const TextSimplifier = forwardRef(
               </i>
 
               <Flex justify="between" gap="12">
-                <Button size="sm" variant="ghost" color="tertiary">
-                  {t('actualites.textsimplifier.button.seemore')}
+                <Button
+                  textsimplifier-knowmore-button
+                  size="sm"
+                  variant="ghost"
+                  color="tertiary"
+                >
+                  {t('actualites.textsimplifier.button.knowmore')}
                 </Button>
                 <AiButton
                   disabled={isGenerating || !contentChanged}

@@ -6,9 +6,14 @@ export const useExpandable = ({
   onCollapseApplied,
   hasPreview,
   onTogglePreview,
+  transitionDurationMs,
 }: Pick<
   ExpandableProps,
-  'collapse' | 'onCollapseApplied' | 'hasPreview' | 'onTogglePreview'
+  | 'collapse'
+  | 'onCollapseApplied'
+  | 'hasPreview'
+  | 'onTogglePreview'
+  | 'transitionDurationMs'
 >) => {
   const [expanded, setExpanded] = useState(!collapse || hasPreview);
   const collapseRef = useRef(collapse);
@@ -49,5 +54,6 @@ export const useExpandable = ({
   return {
     onTransitionEnd,
     className: `expandable ${expanded ? 'expanded' : ''}`,
+    style: { transitionDuration: `${transitionDurationMs}ms` },
   };
 };

@@ -40,6 +40,18 @@ export function InfoDetailsFormEditor({ content }: InfoDetailsFormEditorProps) {
     });
   };
 
+  const renderEditor = () => (
+    <Editor
+      ref={editorRef}
+      content={content || ''}
+      mode="edit"
+      focus={false}
+      id="info-content"
+      onContentChange={handleEditorChange}
+      data-testid="actualites.info.content.editor"
+    />
+  );
+
   return (
     <FormControl
       id={'content'}
@@ -59,27 +71,12 @@ export function InfoDetailsFormEditor({ content }: InfoDetailsFormEditorProps) {
                   ref={textSimplifierRef}
                   editorRef={editorRef.current}
                 >
-                  <Editor
-                    ref={editorRef}
-                    content={content || ''}
-                    mode="edit"
-                    focus={false}
-                    id="info-content"
-                    onContentChange={handleEditorChange}
-                    data-testid="actualites.info.content.editor"
-                  />
+                  {renderEditor()}
                 </TextSimplifier>
               </div>
             </Suspense>
           ) : (
-            <Editor
-              ref={editorRef}
-              content={content || ''}
-              mode="edit"
-              id="info-content"
-              onContentChange={handleEditorChange}
-              data-testid="actualites.info.content.editor"
-            />
+            renderEditor()
           )
         }
       />

@@ -1,7 +1,7 @@
 import { useScript } from '~/hooks/useScript';
 import './TextSimplifier.css';
 
-const MarkdownRenderer = ({
+export const MarkdownRenderer = ({
   simplifiedContent,
 }: {
   simplifiedContent: string | undefined;
@@ -28,4 +28,3 @@ const MarkdownRenderer = ({
     </zero-md>
   );
 };
-export default MarkdownRenderer;
