@@ -2,13 +2,15 @@ import { FormControl, Label } from '@edifice.io/react';
 import { Editor, EditorInstance, EditorRef } from '@edifice.io/react/editor';
 import { lazy, Suspense, useEffect, useRef } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import { TextSimplifierRef } from '~/components/TextSimplifier';
+import { TextSimplifierRef } from '~/components/text-simplifier/TextSimplifier';
 import { useI18n } from '~/hooks/useI18n';
 import { InfoDetailsFormParams } from '~/store/infoFormStore';
 import { isContentValid } from '../utils/utils';
 import './InfoDetailsForm.css';
 
-const TextSimplifier = lazy(() => import('../../../components/TextSimplifier'));
+const TextSimplifier = lazy(
+  () => import('../../../components/text-simplifier/TextSimplifier'),
+);
 
 interface InfoDetailsFormEditorProps {
   content?: string;
@@ -40,17 +42,31 @@ export function InfoDetailsFormEditor({ content }: InfoDetailsFormEditorProps) {
     });
   };
 
-  const renderEditor = () => (
-    <Editor
-      ref={editorRef}
-      content={content || ''}
-      mode="edit"
-      focus={false}
-      id="info-content"
-      onContentChange={handleEditorChange}
-      data-testid="actualites.info.content.editor"
-    />
-  );
+  const renderEditor = () => {
+    const editorComponent = (
+      <Editor
+        ref={editorRef}
+        content={content || ''}
+        mode="edit"
+        focus={false}
+        id="info-content"
+        onContentChange={handleEditorChange}
+        data-testid="actualites.info.content.editor"
+      />
+    );
+
+    if (!canUseFalc) return editorComponent;
+
+    return (
+      <Suspense>
+        <div className="info-details-form_content">
+          <TextSimplifier ref={textSimplifierRef} editorRef={editorRef.current}>
+            {editorComponent}
+          </TextSimplifier>
+        </div>
+      </Suspense>
+    );
+  };
 
   return (
     <FormControl
@@ -63,22 +79,7 @@ export function InfoDetailsFormEditor({ content }: InfoDetailsFormEditorProps) {
         name="content"
         control={control}
         rules={{ required: true, validate: (value) => isContentValid(value) }}
-        render={() =>
-          canUseFalc ? (
-            <Suspense>
-              <div className="info-details-form_content">
-                <TextSimplifier
-                  ref={textSimplifierRef}
-                  editorRef={editorRef.current}
-                >
-                  {renderEditor()}
-                </TextSimplifier>
-              </div>
-            </Suspense>
-          ) : (
-            renderEditor()
-          )
-        }
+        render={renderEditor}
       />
     </FormControl>
   );

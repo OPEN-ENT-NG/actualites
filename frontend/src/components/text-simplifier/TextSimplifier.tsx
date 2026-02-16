@@ -16,8 +16,8 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFalc } from '~/services/queries';
+import { Expandable } from '../Expandable';
 import { AiButton } from './AiButton';
-import { Expandable } from './Expandable';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import './TextSimplifier.css';
 
