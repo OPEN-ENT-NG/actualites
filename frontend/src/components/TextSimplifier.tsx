@@ -97,7 +97,9 @@ export const TextSimplifier = forwardRef(
 
     return (
       <Flex direction="column" className="text-simplifier">
-        {children /* Display the Editor and any other component */}
+        <div className="text-simplifier-children">
+          {children /* Display the Editor and any other component */}
+        </div>
 
         <div className="text-simplifier-border">
           <div className="text-simplifier-background">
@@ -180,14 +182,19 @@ export const TextSimplifier = forwardRef(
                 )}
               </i>
 
-              <AiButton
-                disabled={isGenerating || !contentChanged}
-                isLoading={isGenerating}
-                onClick={handleGenerateClick}
-              >
-                {!isGenerating &&
-                  t('actualites.textsimplifier.button.generate')}
-              </AiButton>
+              <Flex justify="between" gap="12">
+                <Button size="sm" variant="ghost" color="tertiary">
+                  {t('actualites.textsimplifier.button.seemore')}
+                </Button>
+                <AiButton
+                  disabled={isGenerating || !contentChanged}
+                  isLoading={isGenerating}
+                  onClick={handleGenerateClick}
+                >
+                  {!isGenerating &&
+                    t('actualites.textsimplifier.button.generate')}
+                </AiButton>
+              </Flex>
             </Flex>
           </div>
         </div>
