@@ -47,7 +47,7 @@ public class GroupServiceImpl implements GroupService {
         for(Object row : rows) {
             if (row instanceof JsonObject) {
                 JsonObject group = (JsonObject)row;
-                if (group.getString("filter", "").equals("AdminLocal")) {
+                if ("AdminLocal".equals(group.getString("filter", ""))) {
                     return group;
                 }
             }
