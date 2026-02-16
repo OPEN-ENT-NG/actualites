@@ -8,12 +8,13 @@ import {
   ShareResourcesRef,
   useToast,
 } from '@edifice.io/react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useI18n } from '~/hooks/useI18n';
 import { Thread } from '~/models/thread';
 import { baseUrlAPI } from '~/services';
-import { useThreadShares } from '~/services/queries';
+import { threadQueryKeys, useThreadShares } from '~/services/queries';
 
 interface AdminThreadShareModalProps {
   /** Controls modal visibility */
@@ -40,6 +41,7 @@ export const AdminThreadShareModal = ({
   const shareInfoRef = useRef<ShareResourcesRef>(null);
   const [isDirty, setIsDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const queryClient = useQueryClient();
 
   const shareOptions = useMemo<ShareOptions>(() => {
     return {
@@ -82,6 +84,7 @@ export const AdminThreadShareModal = ({
     setIsDirty(false);
     setIsSaving(false);
     toast.success(t('actualites.adminThreads.shareModal.success'));
+    queryClient.invalidateQueries({ queryKey: threadQueryKeys.all(true) });
     onSuccess();
   };
 
