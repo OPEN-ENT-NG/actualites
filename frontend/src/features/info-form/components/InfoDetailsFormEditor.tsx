@@ -58,6 +58,7 @@ export function InfoDetailsFormEditor({ content }: InfoDetailsFormEditorProps) {
                 ref={editorRef}
                 content={content || ''}
                 mode="edit"
+                focus={false}
                 id="info-content"
                 onContentChange={handleEditorChange}
                 data-testid="actualites.info.content.editor"
