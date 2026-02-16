@@ -1,12 +1,14 @@
 import { FormControl, Label } from '@edifice.io/react';
 import { Editor, EditorInstance, EditorRef } from '@edifice.io/react/editor';
-import { useEffect, useRef } from 'react';
+import { lazy, Suspense, useEffect, useRef } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import { TextSimplifier, TextSimplifierRef } from '~/components/TextSimplifier';
+import { TextSimplifierRef } from '~/components/TextSimplifier';
 import { useI18n } from '~/hooks/useI18n';
 import { InfoDetailsFormParams } from '~/store/infoFormStore';
 import { isContentValid } from '../utils/utils';
 import './InfoDetailsForm.css';
+
+const TextSimplifier = lazy(() => import('../../../components/TextSimplifier'));
 
 interface InfoDetailsFormEditorProps {
   content?: string;
@@ -20,6 +22,7 @@ export function InfoDetailsFormEditor({ content }: InfoDetailsFormEditorProps) {
     formState: { errors },
   } = useFormContext<InfoDetailsFormParams>();
 
+  const canUseFalc = true;
   const editorRef = useRef<EditorRef>(null);
   const textSimplifierRef = useRef<TextSimplifierRef>(null);
 
@@ -48,24 +51,37 @@ export function InfoDetailsFormEditor({ content }: InfoDetailsFormEditorProps) {
         name="content"
         control={control}
         rules={{ required: true, validate: (value) => isContentValid(value) }}
-        render={() => (
-          <div className="info-details-form_content">
-            <TextSimplifier
-              ref={textSimplifierRef}
-              editorRef={editorRef.current}
-            >
-              <Editor
-                ref={editorRef}
-                content={content || ''}
-                mode="edit"
-                focus={false}
-                id="info-content"
-                onContentChange={handleEditorChange}
-                data-testid="actualites.info.content.editor"
-              />
-            </TextSimplifier>
-          </div>
-        )}
+        render={() =>
+          canUseFalc ? (
+            <Suspense>
+              <div className="info-details-form_content">
+                <TextSimplifier
+                  ref={textSimplifierRef}
+                  editorRef={editorRef.current}
+                >
+                  <Editor
+                    ref={editorRef}
+                    content={content || ''}
+                    mode="edit"
+                    focus={false}
+                    id="info-content"
+                    onContentChange={handleEditorChange}
+                    data-testid="actualites.info.content.editor"
+                  />
+                </TextSimplifier>
+              </div>
+            </Suspense>
+          ) : (
+            <Editor
+              ref={editorRef}
+              content={content || ''}
+              mode="edit"
+              id="info-content"
+              onContentChange={handleEditorChange}
+              data-testid="actualites.info.content.editor"
+            />
+          )
+        }
       />
     </FormControl>
   );

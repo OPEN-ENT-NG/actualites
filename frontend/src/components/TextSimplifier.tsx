@@ -16,19 +16,9 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useFalc } from '~/services/queries';
 import { AiButton } from './AiButton';
+import MarkdownRenderer from './MarkdownRenderer';
 import './TextSimplifier.css';
 
-/* Declare integrated webcomponent typings */
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'zero-md': React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement>,
-        HTMLElement
-      >;
-    }
-  }
-}
 export interface TextSimplifierRef {
   resetSuggestions: () => void;
   handleContentChange: () => void;
@@ -125,30 +115,7 @@ export const TextSimplifier = forwardRef(
                 className="border rounded-3 bg-white mb-8"
               >
                 <div className="px-24 py-16">
-                  {/* 
-                Pour le POC, on utilisera un webcomponent https://zerodevx.github.io/zero-md/ 
-                afin de faire le rendu du résultat en markdown.
-                Plus tard, on pourra utiliser TipTap 
-                - soit avec un résultat HTML
-                - soit avec un résultat en markdown (via l'extension 'beta' https://tiptap.dev/docs/editor/markdown)
-                */}
-                  <zero-md>
-                    <script type="text/markdown">{simplifiedContent}</script>
-                    <template>
-                      <link
-                        rel="stylesheet"
-                        href="https://cdn.jsdelivr.net/npm/github-markdown-css@5/github-markdown.min.css"
-                      />
-                      <link
-                        rel="stylesheet"
-                        href="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11/styles/github.min.css"
-                      />
-                      <link
-                        rel="stylesheet"
-                        href="https://cdn.jsdelivr.net/npm/katex@0/dist/katex.min.css"
-                      />
-                    </template>
-                  </zero-md>
+                  <MarkdownRenderer simplifiedContent={simplifiedContent} />
                 </div>
                 <Flex
                   direction="row"
@@ -202,3 +169,5 @@ export const TextSimplifier = forwardRef(
     );
   },
 );
+
+export default TextSimplifier;
