@@ -3,6 +3,7 @@ import { useI18n } from '~/hooks/useI18n';
 import { Button, Flex, useBreakpoint, useToast } from '@edifice.io/react';
 import { IconEdit } from '@edifice.io/react/icons';
 import { useNavigate } from 'react-router-dom';
+import { InfoStatus } from '~/models/info';
 import { useInfoDetailsForm } from '../hooks/useInfoDetailsForm';
 
 export function InfoDetailsEditFormActions() {
@@ -11,7 +12,8 @@ export function InfoDetailsEditFormActions() {
   const { md } = useBreakpoint();
   const navigate = useNavigate();
 
-  const { detailsFormState, onSaveDetails, isSaving } = useInfoDetailsForm();
+  const { detailsForm, detailsFormState, onSaveDetails, isSaving } =
+    useInfoDetailsForm();
 
   const handleCancelClick = () => {
     navigate(-1);
@@ -51,7 +53,9 @@ export function InfoDetailsEditFormActions() {
         disabled={!detailsFormState?.isValid || isSaving}
         data-testid="actualites.info.form.submitButton"
       >
-        {common_t('edit')}
+        {detailsForm?.infoStatus === InfoStatus.PUBLISHED
+          ? t('actualites.info.editForm.validate')
+          : t('actualites.info.editForm.save')}
       </Button>
     </Flex>
   );
