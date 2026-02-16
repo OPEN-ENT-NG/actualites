@@ -3,9 +3,12 @@
   position: relative;
 }
 
-.text-simplifier > *:not(.text-simplifier-border) {
+.text-simplifier-children {
   position: relative;
   z-index: 1;
+}
+
+.text-simplifier-children > :first-child {
   background-color: var(--edifice-white);
 }
 
