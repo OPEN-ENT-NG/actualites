@@ -158,7 +158,7 @@ export const TextSimplifier = forwardRef(
 
               <Flex justify="between" gap="12">
                 <Button
-                  textsimplifier-knowmore-button
+                  data-testid="textsimplifier-knowmore-button"
                   size="sm"
                   variant="ghost"
                   color="tertiary"
@@ -166,6 +166,7 @@ export const TextSimplifier = forwardRef(
                   {t('actualites.textsimplifier.button.knowmore')}
                 </Button>
                 <AiButton
+                  data-testid="textsimplifier-generate-button"
                   disabled={isGenerating || !contentChanged}
                   isLoading={isGenerating}
                   onClick={handleGenerateClick}
