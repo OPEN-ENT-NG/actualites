@@ -96,6 +96,8 @@
   "actualites.info.editForm.subtitle": "Modifiez le contenu de votre actualité ",
   "actualites.info.editForm.title": "Édition de l’actualité",
   "actualites.info.editForm.update.success": "L'actualité a bien été modifiée",
+  "actualites.info.editForm.save": "Enregistrer",
+  "actualites.info.editForm.validate": "Valider",
   "actualites.info.print.modal.body": "Cette actualité contient des commentaires. Voulez-vous les inclure dans l'impression ?",
   "actualites.info.print.modal.title": "Option d’impression",
   "actualites.info.print.modal.with.comments": "Oui",
