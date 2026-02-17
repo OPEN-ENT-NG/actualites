@@ -15,8 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static net.atos.entng.actualites.filters.RightConstants.CREATE_RIGHT_DRAFT;
-import static net.atos.entng.actualites.filters.RightConstants.RIGHT_PUBLISH;
+import static net.atos.entng.actualites.filters.RightConstants.*;
 import static org.entcore.common.sql.Sql.parseId;
 import static org.entcore.common.user.DefaultFunctions.ADMIN_LOCAL;
 
@@ -38,8 +37,8 @@ public class CreateInfoFilter implements ResourcesProvider {
             }
 
             if (!StringUtils.isEmpty(id) && (parseId(id) instanceof Integer) && status != null) {
-                // Method
-                String sharedMethod = status == 3 ? RIGHT_PUBLISH : CREATE_RIGHT_DRAFT;
+                // Choose right based on status
+                String requiredRight = (status == 3) ? THREAD_PUBLISH_RIGHT : THREAD_CONTRIB_RIGHT;
 
                 // Groups and users
                 final List<String> groupsAndUserIds = new ArrayList<>();
@@ -62,7 +61,7 @@ public class CreateInfoFilter implements ResourcesProvider {
                 for (String value : groupsAndUserIds) {
                     values.add(value);
                 }
-                values.add(sharedMethod);
+                values.add(requiredRight);
                 values.add(user.getUserId());
                 // Execute
                 Sql.getInstance().prepared(query.toString(), values, message -> {

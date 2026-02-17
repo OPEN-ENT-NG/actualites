@@ -19,6 +19,7 @@
 
 package net.atos.entng.actualites.filters;
 
+import static net.atos.entng.actualites.filters.RightConstants.*;
 import static org.entcore.common.sql.Sql.parseId;
 import static org.entcore.common.user.DefaultFunctions.ADMIN_LOCAL;
 
@@ -50,25 +51,16 @@ public class ThreadFilter implements ResourcesProvider {
 	@Override
 	public void authorize(final HttpServerRequest request, final Binding binding, final UserInfos user, final Handler<Boolean> handler) {
 		SqlConf conf = SqlConfs.getConf(ThreadController.class.getName());
-		String id = null;
-		if(isThreadShare(binding)){
-			id = request.params().get("id");
-		} else {
-			id = request.params().get(conf.getResourceIdLabel());
-		}
+		String id = request.params().get(conf.getResourceIdLabel());
 		if (id != null && !id.trim().isEmpty() && (parseId(id) instanceof Integer)) {
 			request.pause();
-			// Method
-			String sharedMethod = binding.getRight().replaceAll("\\.", "-");
-
-			// Groups and users
+			
 			final List<String> groupsAndUserIds = new ArrayList<>();
 			groupsAndUserIds.add(user.getUserId());
 			if (user.getGroupsIds() != null) {
 				groupsAndUserIds.addAll(user.getGroupsIds());
 			}
 
-			// Query
 			StringBuilder query = new StringBuilder();
 			JsonArray values = new JsonArray();
 
@@ -82,17 +74,15 @@ public class ThreadFilter implements ResourcesProvider {
 				.append(" LEFT JOIN actualites.thread_shares AS ts ON t.id = ts.resource_id")
 				.append(" WHERE t.id = ? ")
 				.append(" AND (")
-				.append("   (ts.member_id IN (SELECT id FROM user_groups) AND ts.action = ?)")
-				.append("   OR t.owner = ?");
+				.append("   (ts.member_id IN (SELECT id FROM user_groups) AND ts.action IN (?, ?))")
+				.append("   OR t.owner = ?")
+				.append(" )");
 
-			query.append(" )");
 			values.add(user.getUserId());
 			groupsAndUserIds.forEach(values::add);
 			values.add(Sql.parseId(id));
-			values.add(sharedMethod);
-			values.add(user.getUserId());
-
-			// Execute
+			values.add(THREAD_CONTRIB_RIGHT);
+			values.add(THREAD_MANAGER_RIGHT);
 			Sql.getInstance().prepared(query.toString(), values, message -> {
                 request.resume();
                 Long count = SqlResult.countResult(message);
@@ -101,14 +91,6 @@ public class ThreadFilter implements ResourcesProvider {
 		} else {
 			handler.handle(false);
 		}
-	}
-
-	private boolean isThreadShare(final Binding binding) {
-		return ("net.atos.entng.actualites.controllers.ThreadController|shareThread".equals(binding.getRight()) ||
-				 "net.atos.entng.actualites.controllers.ThreadController|shareThreadSubmit".equals(binding.getRight()) ||
-				 "net.atos.entng.actualites.controllers.ThreadController|shareThreadRemove".equals(binding.getRight()) ||
-				"net.atos.entng.actualites.controllers.ThreadController|shareResource".equals(binding.getRight())
-				);
 	}
 
 }
