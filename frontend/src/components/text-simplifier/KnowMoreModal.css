@@ -1,0 +1,18 @@
+.knowmore .foldable {
+  color: var(--edifice-gray-800);
+  background-color: var(--edifice-gray-200);
+  margin-bottom: 0.4rem;
+}
+
+.knowmore .foldable[aria-expanded='true'] {
+  background-color: var(--edifice-secondary-200);
+}
+
+.knowmore .expandable {
+  border-radius: 0.8rem;
+  background-color: var(--edifice-gray-200);
+}
+
+.knowmore .expandable.expanded {
+  padding: 1.2rem 1.6rem;
+}

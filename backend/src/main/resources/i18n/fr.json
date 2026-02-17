@@ -144,6 +144,8 @@
   "actualites.previouscontent.modal.close": "Fermer",
   "actualites.read.less": "Voir moins",
   "actualites.read.more": "Lire la suite",
+  "actualites.threadList.allThreads": "Tous les fils d’actus",
+  "actualites.threadList.manageThreads": "Gérer les fils",
   "actualites.textsimplifier.button.knowmore": "En savoir plus",
   "actualites.textsimplifier.button.copy": "Copier le texte",
   "actualites.textsimplifier.button.generate": "Générer",
@@ -153,6 +155,11 @@
   "actualites.textsimplifier.label.modify": "Modifiez votre texte pour pouvoir générer un nouveau texte simplifié.",
   "actualites.textsimplifier.label.warn": "Attention le texte a été modifié, la suggestion ne correspond pas à la nouvelle version.",
   "actualites.textsimplifier.label.write": "Commencez à écrire pour générer une suggestion de texte plus facile à lire et à comprendre.",
-  "actualites.threadList.allThreads": "Tous les fils d’actus",
-  "actualites.threadList.manageThreads": "Gérer les fils"
+  "actualites.knowmore.title": "Rendre vos communications accessibles au plus grand nombre",
+  "actualites.knowmore.body": "Simplifiez votre texte grâce à l’intelligence artificielle. Nous mettons à votre disposition un outil de reformulation qui utilise les concepts du FALC.",
+  "actualites.knowmore.success": "C'est compris !",
+  "actualites.knowmore.body.what.title": "Qu’est ce que le FALC ?",
+  "actualites.knowmore.body.what.body": "Le FALC (Facile A Lire et à Comprendre) est une méthode d’écriture qui vise à rendre les textes plus clairs et accessibles à tous. Initialement conçu pour aider les personnes atteintes de troubles cognitifs, ce procédé est aussi utile pour améliorer la compréhension des élèves présentant des difficultés de lecture ou des parents allophones. Plus d’information sur le FALC",
+  "actualites.knowmore.body.how.title": "Comment fonctionne l’outil ?",
+  "actualites.knowmore.body.how.body": "L’outil propose une reformulation du texte à l’aide d’une IA générative qui utilise un prompt reprenant les concepts du FALC. La fonctionnalité est utile si le texte est suffisamment long pour que la reformulation ait un intérêt. C’est pourquoi il devra faire au minimum 200 caractères."
 }

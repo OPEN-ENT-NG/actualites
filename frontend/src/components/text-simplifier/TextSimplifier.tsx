@@ -1,4 +1,10 @@
-import { Button, Flex, useEdificeClient, useToast } from '@edifice.io/react';
+import {
+  Button,
+  Flex,
+  useEdificeClient,
+  useToast,
+  useToggle,
+} from '@edifice.io/react';
 import { EditorRef } from '@edifice.io/react/editor';
 import {
   IconAlertTriangle,
@@ -18,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 import { useFalc } from '~/services/queries';
 import { Expandable } from '../Expandable';
 import { AiButton } from './AiButton';
+import { KnowMoreModal } from './KnowMoreModal';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import './TextSimplifier.css';
 
@@ -39,7 +46,9 @@ export const TextSimplifier = forwardRef(
     const { t } = useTranslation(appCode);
     const { error } = useToast();
 
-    const [isVisible, setIsVisible] = useState(false);
+    const [hideSuggestion, toggleSuggestion] = useToggle(true);
+    const [showKnowMore, toggleKnowMore] = useToggle(false);
+
     const [contentChanged, setContentChanged] = useState(false);
     const [simplifiedContent, setSimplifiedContent] = useState<
       string | undefined
@@ -54,7 +63,7 @@ export const TextSimplifier = forwardRef(
         setSimplifiedContent(result);
         setContentChanged(false);
         if (result) {
-          setIsVisible(true);
+          toggleSuggestion(true);
         }
       } catch (e) {
         error(<span>{e as string}</span>);
@@ -74,14 +83,10 @@ export const TextSimplifier = forwardRef(
         );
       },
       resetSuggestions: () => {
-        setIsVisible(false);
+        toggleSuggestion(false);
         setSimplifiedContent(undefined);
       },
     }));
-
-    const handleVisibilityClick = () => {
-      setIsVisible((previous) => !previous);
-    };
 
     return (
       <Flex direction="column" className="text-simplifier">
@@ -98,16 +103,18 @@ export const TextSimplifier = forwardRef(
                 color="secondary"
                 variant="ghost"
                 size="sm"
-                rightIcon={isVisible ? <IconRafterUp /> : <IconRafterDown />}
-                onClick={handleVisibilityClick}
+                rightIcon={
+                  hideSuggestion ? <IconRafterDown /> : <IconRafterUp />
+                }
+                onClick={toggleSuggestion}
               >
-                {isVisible
-                  ? t('actualites.textsimplifier.button.hide')
-                  : t('actualites.textsimplifier.button.show')}
+                {hideSuggestion
+                  ? t('actualites.textsimplifier.button.show')
+                  : t('actualites.textsimplifier.button.hide')}
               </Button>
             )}
 
-            <Expandable collapse={!isVisible} transitionDurationMs={300}>
+            <Expandable collapse={hideSuggestion} transitionDurationMs={300}>
               <Flex
                 direction="column"
                 className="border rounded-3 bg-white mb-8"
@@ -162,9 +169,12 @@ export const TextSimplifier = forwardRef(
                   size="sm"
                   variant="ghost"
                   color="tertiary"
+                  onClick={toggleKnowMore}
                 >
                   {t('actualites.textsimplifier.button.knowmore')}
                 </Button>
+                <KnowMoreModal isOpen={showKnowMore} onClose={toggleKnowMore} />
+
                 <AiButton
                   data-testid="textsimplifier-generate-button"
                   disabled={isGenerating || !contentChanged}
