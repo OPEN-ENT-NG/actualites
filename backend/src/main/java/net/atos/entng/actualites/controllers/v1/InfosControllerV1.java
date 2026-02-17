@@ -274,7 +274,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	@Delete("/api/v1/infos/:" + INFO_RESOURCE_ID)
 	@ApiDoc("Delete : Real delete an Info in thread by thread and by id")
 	@ResourceFilter(InfoFilter.class)
-	@SecuredAction(value = THREAD_PUBLISH_VALUE, type = ActionType.RESOURCE, right = THREAD_PUBLISH_RIGHT)
+	@SecuredAction(value = THREAD_MANAGER_VALUE, type = ActionType.RESOURCE, right = THREAD_MANAGER_RIGHT)
 	public void removeInfo(final HttpServerRequest request) {
 		final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
 		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);

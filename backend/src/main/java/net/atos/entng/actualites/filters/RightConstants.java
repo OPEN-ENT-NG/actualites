@@ -24,6 +24,7 @@ public interface RightConstants {
         
     @Deprecated
     String CREATE_RIGHT_DRAFT = "net-atos-entng-actualites-controllers-InfoController|createDraft";
+    @Deprecated
     String RIGHT_MANAGE = "net-atos-entng-actualites-controllers-ThreadController|updateThread";
     @Deprecated
     String RIGHT_PUBLISH = "net-atos-entng-actualites-controllers-InfoController|publish";

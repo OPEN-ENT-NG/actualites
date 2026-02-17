@@ -64,6 +64,8 @@ public class ThreadFilter implements ResourcesProvider {
 			StringBuilder query = new StringBuilder();
 			JsonArray values = new JsonArray();
 
+			String sharedMethod = binding.getRight();
+
 			query.append("WITH user_groups AS MATERIALIZED ( ")
 				.append("   SELECT id::varchar FROM ( ")
 				.append("   SELECT ? as id UNION ALL ")
@@ -74,15 +76,14 @@ public class ThreadFilter implements ResourcesProvider {
 				.append(" LEFT JOIN actualites.thread_shares AS ts ON t.id = ts.resource_id")
 				.append(" WHERE t.id = ? ")
 				.append(" AND (")
-				.append("   (ts.member_id IN (SELECT id FROM user_groups) AND ts.action IN (?, ?))")
+				.append("   (ts.member_id IN (SELECT id FROM user_groups) AND ts.action = ?)")
 				.append("   OR t.owner = ?")
 				.append(" )");
 
 			values.add(user.getUserId());
 			groupsAndUserIds.forEach(values::add);
 			values.add(Sql.parseId(id));
-			values.add(THREAD_CONTRIB_RIGHT);
-			values.add(THREAD_MANAGER_RIGHT);
+			values.add(sharedMethod);
 			Sql.getInstance().prepared(query.toString(), values, message -> {
                 request.resume();
                 Long count = SqlResult.countResult(message);
