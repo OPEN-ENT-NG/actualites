@@ -530,7 +530,7 @@ export function testInfoStats(data: InitData) {
     } as any);
 
     const shareBody = {
-      users: { [data.teacher2.userId]: ["net-atos-entng-actualites-controllers-InfoController|getInfo"] },
+      users: { [data.teacher2.userId]: ["net-atos-entng-actualites-controllers-InfoController|read"] },
       groups: {},
       bookmark: {}
     };

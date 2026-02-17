@@ -41,16 +41,11 @@ export type Identifier = {
 }
 
 export const commentInfoRights = [
-  "net-atos-entng-actualites-controllers-CommentController|deleteComment",
-  "net-atos-entng-actualites-controllers-CommentController|updateComment",
   "net-atos-entng-actualites-controllers-CommentController|comment"
 ];
 
 export const infoRead = [
-  "net-atos-entng-actualites-controllers-InfoController|getSingleInfo",
-  "net-atos-entng-actualites-controllers-InfoController|getInfo",
-  "net-atos-entng-actualites-controllers-InfoController|getInfoComments",
-  "net-atos-entng-actualites-controllers-InfoController|getInfoShared"
+  "net-atos-entng-actualites-controllers-InfoController|read"
 ];
 
 export const infoFullRights = [...commentInfoRights, ...infoRead];
