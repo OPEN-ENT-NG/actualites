@@ -4,6 +4,7 @@ import { lazy, Suspense, useEffect, useRef } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { TextSimplifierRef } from '~/components/text-simplifier/TextSimplifier';
 import { useI18n } from '~/hooks/useI18n';
+import { useUserRights } from '~/hooks/useUserRights';
 import { InfoDetailsFormParams } from '~/store/infoFormStore';
 import { isContentValid } from '../utils/utils';
 import './InfoDetailsForm.css';
@@ -24,7 +25,7 @@ export function InfoDetailsFormEditor({ content }: InfoDetailsFormEditorProps) {
     formState: { errors },
   } = useFormContext<InfoDetailsFormParams>();
 
-  const canUseFalc = true;
+  const { canUseFalc } = useUserRights();
   const editorRef = useRef<EditorRef>(null);
   const textSimplifierRef = useRef<TextSimplifierRef>(null);
 

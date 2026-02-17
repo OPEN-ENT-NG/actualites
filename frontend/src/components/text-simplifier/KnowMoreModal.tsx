@@ -1,9 +1,5 @@
 import { Button, Flex, useToggle } from '@edifice.io/react';
-import {
-  IconRafterDown,
-  IconRafterUp,
-  IconSave,
-} from '@edifice.io/react/icons';
+import { IconRafterDown, IconRafterUp } from '@edifice.io/react/icons';
 import { PortalModal } from '~/components/PortalModal';
 import { useI18n } from '~/hooks/useI18n';
 import { Expandable } from '../Expandable';
@@ -22,7 +18,7 @@ export function KnowMoreModal({
 
   return (
     <PortalModal
-      id="info-share-modal"
+      id="know-more-modal"
       size="sm"
       isOpen={isOpen}
       onModalClose={handleCloseClick}
@@ -32,7 +28,6 @@ export function KnowMoreModal({
           <Button
             color="primary"
             variant="filled"
-            leftIcon={<IconSave />}
             onClick={handleCloseClick}
             data-testid="knowmore-success-button"
           >
