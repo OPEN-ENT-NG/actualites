@@ -60,7 +60,7 @@ export function InfoDetailsFormEditor({ content }: InfoDetailsFormEditorProps) {
     return (
       <Suspense>
         <div className="info-details-form_content">
-          <TextSimplifier ref={textSimplifierRef} editorRef={editorRef.current}>
+          <TextSimplifier ref={textSimplifierRef} editorRef={editorRef}>
             {editorComponent}
           </TextSimplifier>
         </div>

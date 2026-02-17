@@ -1,4 +1,6 @@
+import { ERROR_CODE, ErrorCode } from '@edifice.io/client';
 import {
+  Alert,
   Button,
   Flex,
   useEdificeClient,
@@ -16,6 +18,7 @@ import {
   forwardRef,
   ReactNode,
   Ref,
+  RefObject,
   useCallback,
   useImperativeHandle,
   useState,
@@ -24,6 +27,7 @@ import { useTranslation } from 'react-i18next';
 import { useFalc } from '~/services/queries';
 import { Expandable } from '../Expandable';
 import { AiButton } from './AiButton';
+import SvgIconAiFill from './IconAiFill';
 import { KnowMoreModal } from './KnowMoreModal';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import './TextSimplifier.css';
@@ -34,8 +38,26 @@ export interface TextSimplifierRef {
 }
 export interface TextSimplifierProps {
   children: ReactNode;
-  editorRef: EditorRef | null;
+  editorRef: RefObject<EditorRef>;
 }
+
+const TextSimplifierLayout = ({
+  body,
+  footer,
+}: {
+  body: ReactNode;
+  footer: ReactNode;
+}) => {
+  return (
+    <Flex direction="column" className="text-simplifier">
+      <div className="text-simplifier-children">{body}</div>
+
+      <div className="text-simplifier-border">
+        <div className="text-simplifier-background">{footer}</div>
+      </div>
+    </Flex>
+  );
+};
 
 export const TextSimplifier = forwardRef(
   (
@@ -49,6 +71,7 @@ export const TextSimplifier = forwardRef(
     const [hideSuggestion, toggleSuggestion] = useToggle(true);
     const [showKnowMore, toggleKnowMore] = useToggle(false);
 
+    const [errorCode, setErrorCode] = useState<ErrorCode>();
     const [contentChanged, setContentChanged] = useState(false);
     const [simplifiedContent, setSimplifiedContent] = useState<
       string | undefined
@@ -57,7 +80,11 @@ export const TextSimplifier = forwardRef(
     const { generate, isGenerating } = useFalc();
 
     const handleGenerateClick = useCallback(async () => {
-      const originalContent = editorRef?.getContent('plain') as string;
+      // reset any previous error
+      setErrorCode(undefined);
+
+      // Simplify editor's content
+      const originalContent = editorRef.current?.getContent('plain') as string;
       try {
         const result = await generate(originalContent);
         setSimplifiedContent(result);
@@ -65,8 +92,8 @@ export const TextSimplifier = forwardRef(
         if (result) {
           toggleSuggestion(true);
         }
-      } catch (e) {
-        error(<span>{e as string}</span>);
+      } catch (e: unknown) {
+        setErrorCode(e as ErrorCode);
       }
     }, [editorRef, generate, error]);
 
@@ -77,7 +104,7 @@ export const TextSimplifier = forwardRef(
     //----- TextSimplifier API
     useImperativeHandle(ref, () => ({
       handleContentChange: () => {
-        const content = editorRef?.getContent('plain') as string;
+        const content = editorRef.current?.getContent('plain') as string;
         setContentChanged(
           typeof content !== 'undefined' && content.length > 200,
         );
@@ -88,14 +115,63 @@ export const TextSimplifier = forwardRef(
       },
     }));
 
-    return (
-      <Flex direction="column" className="text-simplifier">
-        <div className="text-simplifier-children">
-          {children /* Display the Editor and any other component */}
-        </div>
+    if (errorCode === ERROR_CODE.TIME_OUT) {
+      return (
+        <TextSimplifierLayout
+          body={children /* Display the Editor and any other component */}
+          footer={
+            <>
+              <Alert type="danger" className="my-8">
+                <b>{t('actualites.textsimplifier.error.timeOut.title')}</b>
+                <p>{t('actualites.textsimplifier.error.timeOut.body')}</p>
+              </Alert>
+              <Flex direction="row-reverse" gap="12">
+                <Button
+                  color="secondary"
+                  disabled={true}
+                  rightIcon={<SvgIconAiFill />}
+                  className="rounded-pill my-4"
+                >
+                  {t('actualites.textsimplifier.error.timeOut.button')}
+                </Button>
+              </Flex>
+            </>
+          }
+        />
+      );
+    }
+    if (errorCode === ERROR_CODE.NOT_INITIALIZED) {
+      return (
+        <TextSimplifierLayout
+          body={children /* Display the Editor and any other component */}
+          footer={
+            <>
+              <Alert type="danger" className="my-8">
+                <b>{t('actualites.textsimplifier.error.notAvailable.title')}</b>
+                <p>{t('actualites.textsimplifier.error.notAvailable.body')}</p>
+              </Alert>
+              <Flex direction="row-reverse" gap="12">
+                <AiButton
+                  data-testid="textsimplifier-regenerate-button"
+                  disabled={isGenerating || !contentChanged}
+                  isLoading={isGenerating}
+                  onClick={handleGenerateClick}
+                >
+                  {!isGenerating &&
+                    t('actualites.textsimplifier.error.notAvailable.button')}
+                </AiButton>
+              </Flex>
+            </>
+          }
+        />
+      );
+    }
 
-        <div className="text-simplifier-border">
-          <div className="text-simplifier-background">
+    return (
+      <TextSimplifierLayout
+        body={children /* Display the Editor and any other component */}
+        footer={
+          <>
             {simplifiedContent && (
               <Button
                 data-testid="textsimplifier-display-suggestion-toggle"
@@ -186,9 +262,9 @@ export const TextSimplifier = forwardRef(
                 </AiButton>
               </Flex>
             </Flex>
-          </div>
-        </div>
-      </Flex>
+          </>
+        }
+      />
     );
   },
 );
