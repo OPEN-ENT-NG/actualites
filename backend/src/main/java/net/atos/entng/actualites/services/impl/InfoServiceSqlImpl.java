@@ -229,7 +229,7 @@ public class InfoServiceSqlImpl implements InfoService {
 
 		String query = "WITH content_update AS (" +
 				" UPDATE " + NEWS_INFO_TABLE +
-				" SET content = ?, content_version = 1, modified = NOW() " +
+				" SET content = ?, content_version = 1 " +
 				" WHERE id = ? AND content_version = 0 " +
 				" RETURNING id, title, content, owner, '"+ Events.UPDATE +"', content_version) " +
 				" INSERT INTO " + NEWS_INFO_REVISION_TABLE +
