@@ -15,11 +15,11 @@
     <version>3.1-SNAPSHOT</version>
     <properties>
         <jacksonDatabindVersion>2.15.2</jacksonDatabindVersion>
-        <entCoreVersion>6.14-SNAPSHOT</entCoreVersion>
+        <entCoreVersion>6.14-develop-pedago-SNAPSHOT</entCoreVersion>
         <vertxCronTimerVersion>3.0-SNAPSHOT</vertxCronTimerVersion>
         <gatlingHighchartsVersion>2.3.1</gatlingHighchartsVersion>
         <junitVersion>4.13.2</junitVersion>
-        <modMongoVersion>4.1-SNAPSHOT</modMongoVersion>
+        <modMongoVersion>4.1-develop-pedago-SNAPSHOT</modMongoVersion>
         <modPostgresVersion>2.1-SNAPSHOT</modPostgresVersion>
         <mockitoVersion>2.28.2</mockitoVersion>
         <edificeFalcVersion>0.2.3</edificeFalcVersion>
