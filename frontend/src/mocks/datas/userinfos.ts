@@ -37,6 +37,11 @@ export const mockUserInfos = {
       displayName: 'actualites.create',
       type: 'SECURED_ACTION_WORKFLOW',
     },
+    {
+      name: 'net.atos.entng.actualites.controllers.v1.FalcController|applyFalc',
+      displayName: 'actualites.applyFalc',
+      type: 'SECURED_ACTION_WORKFLOW',
+    },
   ],
   apps: [
     {
