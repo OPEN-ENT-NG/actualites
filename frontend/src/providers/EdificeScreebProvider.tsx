@@ -12,11 +12,18 @@ const ScreebInitializer = () => {
 
   useEffect(() => {
     if (user && config?.['screeb-app-id']) {
-      init(config?.['screeb-app-id']).then(() => {
-        setIdentity(user);
-      });
+      init(config?.['screeb-app-id'])
+        .then(() => {
+          setIdentity(user);
+        })
+        .catch((error) => {
+          // Prevent unhandled promise rejection if Screeb initialization fails
+          // and make the failure visible in the console.
+          console.error('Failed to initialize Screeb:', error);
+        });
     }
-  }, [config?.['screeb-app-id'], setIdentity, init]);
+  }, [user, config?.['screeb-app-id'], setIdentity, init]);
+
   return null;
 };
 
