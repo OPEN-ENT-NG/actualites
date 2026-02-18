@@ -78,7 +78,7 @@
   "actualites.info.createForm.publish": "Publier",
   "actualites.info.createForm.publishedSuccess": "L'actualité a été publiée avec succès",
   "actualites.info.createForm.required": "Champs requis",
-  "actualites.info.createForm.rights.infoMessage": "L'actualité ne sera visible qu’une fois publiée. Tous les utilisateurs qui ont le droit de publier sur ce fil verront aussi votre actualité mais la notification de publication ne sera envoyée qu’aux personnes que vous ajoutez ici.",
+  "actualites.info.createForm.rights.infoMessage": "L'actualité ne sera visible qu'une fois publiée. Les utilisateurs qui peuvent publier verront votre actualité, mais seuls ceux que vous ajoutez ici recevront une notification.",
   "actualites.info.createForm.rights.subtitle": "Définissez qui pourra lire et commenter l’actualité.",
   "actualites.info.createForm.rights.title": "Création d’une actualité",
   "actualites.info.createForm.saveDraft": "Brouillon",
