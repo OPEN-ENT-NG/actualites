@@ -62,9 +62,9 @@ INSERT INTO actualites.info_shares (resource_id, member_id, action)
 SELECT DISTINCT resource_id, member_id, 'net-atos-entng-actualites-controllers-InfoController|read'
 FROM actualites.info_shares
 WHERE action IN (
-    'net.atos.entng.actualites.controllers.InfoController|getInfo',
-    'net.atos.entng.actualites.controllers.InfoController|getSingleInfo',
-    'net.atos.entng.actualites.controllers.InfoController|getInfoComments'
+    'net-atos-entng-actualites-controllers-InfoController|getInfo',
+    'net-atos-entng-actualites-controllers-InfoController|getSingleInfo',
+    'net-atos-entng-actualites-controllers-InfoController|getInfoComments'
 )
 ON CONFLICT (resource_id, member_id, action) DO NOTHING;
 
@@ -74,9 +74,9 @@ INSERT INTO actualites.info_shares (resource_id, member_id, action)
 SELECT DISTINCT resource_id, member_id, 'net-atos-entng-actualites-controllers-CommentController|comment'
 FROM actualites.info_shares
 WHERE action IN (
-    'net.atos.entng.actualites.controllers.CommentController|comment',
-    'net.atos.entng.actualites.controllers.CommentController|updateComment',
-    'net.atos.entng.actualites.controllers.CommentController|deleteComment'
+    'net-atos-entng-actualites-controllers-CommentController|comment',
+    'net-atos-entng-actualites-controllers-CommentController|updateComment',
+    'net-atos-entng-actualites-controllers-CommentController|deleteComment'
 )
 ON CONFLICT (resource_id, member_id, action) DO NOTHING;
 
@@ -108,12 +108,12 @@ WHERE action IN (
 -- Step 8: Delete old granular rights from info_shares
 DELETE FROM actualites.info_shares
 WHERE action IN (
-    'net.atos.entng.actualites.controllers.InfoController|getInfo',
-    'net.atos.entng.actualites.controllers.InfoController|getSingleInfo',
-    'net.atos.entng.actualites.controllers.InfoController|getInfoComments',
-    'net.atos.entng.actualites.controllers.CommentController|comment',
-    'net.atos.entng.actualites.controllers.CommentController|updateComment',
-    'net.atos.entng.actualites.controllers.CommentController|deleteComment'
+    'net-atos-entng-actualites-controllers-InfoController|getInfo',
+    'net-atos-entng-actualites-controllers-InfoController|getSingleInfo',
+    'net-atos-entng-actualites-controllers-InfoController|getInfoComments',
+    'net-atos-entng-actualites-controllers-CommentController|comment',
+    'net-atos-entng-actualites-controllers-CommentController|updateComment',
+    'net-atos-entng-actualites-controllers-CommentController|deleteComment'
 );
 
 -- Step 9: Display migration statistics

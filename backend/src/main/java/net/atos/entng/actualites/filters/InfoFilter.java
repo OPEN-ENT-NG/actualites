@@ -128,8 +128,8 @@ public class InfoFilter implements ResourcesProvider {
 				values.add(sharedMethod);
 			}
 
-			query.append(")) AND (i.status > 1");
-			query.append(" OR i.owner = ?))");
+			query.append(")) AND (i.status > 1"); // do not authorize actions on draft by managers/publishers
+			query.append(" OR i.owner = ?))"); // unless it's theirs
 			values.add(user.getUserId());
 
 			if (!isPublishRight) {

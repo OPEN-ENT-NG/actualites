@@ -61,7 +61,7 @@ public class CommentControllerV1 extends ControllerHelper {
     @Get("/api/v1/infos/:" + Actualites.INFO_RESOURCE_ID + "/comments")
     @ApiDoc("Comment : Get info's comments")
     @ResourceFilter(InfoFilter.class)
-    @SecuredAction(value = INFO_READ_VALUE, type = ActionType.RESOURCE, right = INFO_READ_RIGHT)
+    @SecuredAction(value = INFO_READ_VALUE, type = ActionType.RESOURCE, right = INFO_READ_ANNOTATION)
     public void getInfoComments(final HttpServerRequest request) {
 		final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
 		Long id;
@@ -77,7 +77,7 @@ public class CommentControllerV1 extends ControllerHelper {
     @Post("/api/v1/infos/:" + Actualites.INFO_RESOURCE_ID + "/comments")
     @ApiDoc("Comment : Add a comment to an Info by info id")
     @ResourceFilter(InfoFilter.class)
-    @SecuredAction(value = INFO_COMMENT_VALUE, type = ActionType.RESOURCE, right = INFO_COMMENT_RIGHT)
+    @SecuredAction(value = INFO_COMMENT_VALUE, type = ActionType.RESOURCE, right = INFO_COMMENT_ANNOTATION)
     public void createComment(final HttpServerRequest request) {
 		final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
 		UserUtils.getUserInfos(eb, request, user -> {
@@ -112,7 +112,7 @@ public class CommentControllerV1 extends ControllerHelper {
     @Put("/api/v1/infos/:" + Actualites.INFO_RESOURCE_ID + "/comments/:id")
     @ApiDoc("Comment : modify a comment of an Info by info and comment id")
     @ResourceFilter(UpdateCommentFilter.class)
-    @SecuredAction(value = INFO_COMMENT_VALUE, type = ActionType.RESOURCE, right = INFO_COMMENT_RIGHT)
+    @SecuredAction(value = INFO_COMMENT_VALUE, type = ActionType.RESOURCE, right = INFO_COMMENT_ANNOTATION)
     public void updateComment(final HttpServerRequest request) {
 		final String commentId = request.params().get(COMMENT_ID_PARAMETER);
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
@@ -138,7 +138,7 @@ public class CommentControllerV1 extends ControllerHelper {
     @Delete("/api/v1/infos/:" + Actualites.INFO_RESOURCE_ID + "/comments/:id")
     @ApiDoc("Comment : delete a comment by comment id ")
     @ResourceFilter(CommentFilter.class)
-    @SecuredAction(value = INFO_COMMENT_VALUE, type = ActionType.RESOURCE, right = INFO_COMMENT_RIGHT)
+    @SecuredAction(value = INFO_COMMENT_VALUE, type = ActionType.RESOURCE, right = INFO_COMMENT_ANNOTATION)
     public void deleteComment(final HttpServerRequest request) {
 		final String commentId = request.params().get(COMMENT_ID_PARAMETER);
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
