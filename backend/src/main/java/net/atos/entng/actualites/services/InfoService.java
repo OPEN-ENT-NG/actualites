@@ -100,11 +100,11 @@ public interface InfoService {
 
 	public void getOwnerInfo(String infoId, Handler<Either<String, JsonObject>> handler);
 
-	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, Integer threadId);
+	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, Integer pageSize, Integer threadId);
 
-	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, List<Integer> threadIds, List<NewsStatus> statuses);
+	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, Integer pageSize, List<Integer> threadIds, List<NewsStatus> statuses);
 
-	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, List<Integer> threadIds, List<NewsStatus> statuses, List<NewsState> states);
+	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, Integer pageSize, List<Integer> threadIds, List<NewsStatus> statuses, List<NewsState> states);
 
 	public Future<NewsComplete> getFromId(Map<String, SecuredAction> securedActions, UserInfos user, int infoId, boolean originalContent);
 

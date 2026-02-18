@@ -180,6 +180,24 @@ public class InfosControllerV1 extends ControllerHelper {
 		});
 	}
 
+	@Get("/api/v1/infos/linker")
+	@SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")
+	public void infosLinker(final HttpServerRequest request) {
+		// status argument
+		final List<NewsStatus> statuses = new ArrayList<>();
+		statuses.add(NewsStatus.PUBLISHED);
+		UserUtils.getUserInfos(eb, request, user -> {
+			if (user != null) {
+				infoService.listPaginated(securedActions, user, 0, null, null, statuses)
+						.onSuccess(news ->render(request, news))
+						.onFailure(ex -> renderError(request));
+			} else {
+				unauthorized(request);
+			}
+		});
+	}
+
+
 	@Get("/api/v1/infos/preview/last/:" + RESULT_SIZE_PARAMETER)
 	@ApiDoc("List last infos, accept query param resultSize.")
 	@SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")

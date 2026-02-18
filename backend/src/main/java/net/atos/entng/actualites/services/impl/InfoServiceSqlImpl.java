@@ -601,7 +601,7 @@ public class InfoServiceSqlImpl implements InfoService {
     }
 
 	@Override
-	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, Integer threadId) {
+	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, Integer pageSize, Integer threadId) {
 		List<Integer> threadIds = new ArrayList<>();
 		if (threadId != null) threadIds.add(threadId);
 
@@ -609,12 +609,12 @@ public class InfoServiceSqlImpl implements InfoService {
 	}
 
 	@Override
-	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, List<Integer> threadIds, List<NewsStatus> statuses) {
+	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, Integer pageSize, List<Integer> threadIds, List<NewsStatus> statuses) {
 		return listPaginated(securedActions, user, page, pageSize, threadIds, statuses, Collections.emptyList());
 	}
 
 	@Override
-	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, int pageSize, List<Integer> threadIds, List<NewsStatus> statuses, List<NewsState> states) {
+	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, Integer pageSize, List<Integer> threadIds, List<NewsStatus> statuses, List<NewsState> states) {
 		final Promise<List<News>> promise = Promise.promise();
 		if (user == null) {
 			promise.fail("user not provided");
@@ -625,7 +625,7 @@ public class InfoServiceSqlImpl implements InfoService {
 		if (user.getGroupsIds() != null) {
 			groupsAndUserIds.addAll(user.getGroupsIds());
 		}
-		helperSql.getInfosIdsByUnion(user, pageSize,page * pageSize, statuses, threadIds, states)
+		helperSql.getInfosIdsByUnion(user, pageSize, pageSize != null ? page * pageSize : 0, statuses, threadIds, states)
 				.onSuccess( ids -> {
 					if (ids.isEmpty()) {
 						promise.complete(Collections.emptyList());
@@ -642,6 +642,7 @@ public class InfoServiceSqlImpl implements InfoService {
 									"        u.deleted as owner_deleted, TO_CHAR(i.created AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as created, TO_CHAR(i.modified AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as modified, " +
 									" 		 TO_CHAR(i.publication_date AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as publication_date, TO_CHAR(i.expiration_date AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as expiration_date, " +
 									"        i.is_headline, i.number_of_comments," +
+									"        t.icon as thread_icon, " +
 									"        (SELECT array_agg(DISTINCT ish.action) " +
 									"            FROM actualites.info_shares AS ish  " +
 									"            WHERE ish.resource_id = i.id " +
@@ -653,6 +654,7 @@ public class InfoServiceSqlImpl implements InfoService {
 									"        ), 1) as previous_content_version, COALESCE(i.publication_date, i.modified) as sorting_date " +
 									"    FROM " + NEWS_INFO_TABLE + " AS i " +
 									"        LEFT JOIN " + NEWS_USER_TABLE + " AS u ON i.owner = u.id " +
+									"        LEFT JOIN " + NEWS_THREAD_TABLE + " AS t ON t.id = i.thread_id " +
 									"    WHERE i.id IN " +  Sql.listPrepared(ids.toArray(new Object[0])) +
 									"    ORDER BY sorting_date " + order;
 
@@ -703,7 +705,8 @@ public class InfoServiceSqlImpl implements InfoService {
 										row.getInteger("number_of_comments"),
 										Rights.fromRawRights(securedActions, rawRights, isOwner, Rights.ResourceType.INFO),
 										row.getInteger("content_version"),
-										row.getInteger("previous_content_version")
+										row.getInteger("previous_content_version"),
+										row.getString("thread_icon")
 								);
 							})
 							.collect(Collectors.toList());

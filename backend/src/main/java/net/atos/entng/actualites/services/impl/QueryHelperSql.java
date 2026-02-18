@@ -13,11 +13,13 @@ import io.vertx.core.logging.LoggerFactory;
 import net.atos.entng.actualites.to.NewsState;
 import net.atos.entng.actualites.to.NewsStatus;
 import net.atos.entng.actualites.utils.UserUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
 import org.entcore.common.user.UserInfos;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -137,7 +139,7 @@ public class QueryHelperSql {
         String dateFilter = null;
         String order = "DESC ";
 
-        if (states != null && !states.isEmpty()) {
+        if (!CollectionUtils.isEmpty(states)) {
             List<String> stateConditions = new ArrayList<>();
             for (NewsState state : states) {
                 switch (state) {
@@ -158,14 +160,14 @@ public class QueryHelperSql {
             }
         }
 
-        if (states == null || states.isEmpty()) {
+        if (CollectionUtils.isEmpty(states)) {
             dateFilter = "(i.publication_date <= NOW() OR i.publication_date IS NULL) " +
                     "AND (i.expiration_date > NOW() OR i.expiration_date IS NULL)";
         }
 
         String threadFilter = "";
         boolean addThreadFilter = false;
-        if (threadIds != null && !threadIds.isEmpty()) {
+        if (!CollectionUtils.isEmpty(threadIds)) {
             addThreadFilter = true;
             String threadIdsSql = Sql.listPrepared(threadIds.toArray());
             threadFilter = " i.thread_id IN " + threadIdsSql + " ";
