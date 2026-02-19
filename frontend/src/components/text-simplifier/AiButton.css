@@ -1,8 +1,7 @@
 .btn-ai {
   border: 0;
-  border-radius: var(--edifice-border-radius-pill);
   background: linear-gradient(249.1deg, #ecbe30 -1.66%, #c232aa 93.55%);
-  padding: 0.8rem 1.6rem;
+  min-width: 12rem;
 }
 .btn-ai:disabled {
   background: linear-gradient(249.1deg, #faea9c -1.66%, #f9beef 93.55%);

@@ -11,6 +11,7 @@ export type ExpandableContent = ReactNode | (() => ReactNode);
  * - `hasPreview` indicates whether a preview view is available which may alter rendering.
  * - `onTogglePreview` should be provided to handle rendering previews or full content.
  * - `children` contains the content (preview or full) to render inside the expandable area.
+ * - `transitionDurationMs`, in milliseconds, defaulting to 500ms
  */
 export type ExpandableProps = {
   collapse: boolean;
@@ -18,6 +19,7 @@ export type ExpandableProps = {
   hasPreview?: boolean;
   onTogglePreview?: () => void;
   children: ReactNode;
+  transitionDurationMs?: number;
 };
 
 /**
@@ -63,18 +65,21 @@ export type ExpandableProps = {
 export const Expandable = ({ children, ...props }: ExpandableProps) => {
   const ref = useRef<HTMLDivElement>(null);
 
-  const { className, onTransitionEnd } = useExpandable(props);
+  const { className, style, onTransitionEnd } = useExpandable(props);
 
   const handleTransitionEnd = (e: TransitionEvent) => {
     if (e.target === ref.current && e.propertyName === 'grid-template-rows') {
-      // Defer hook callback to the next tick so that all DOM/CSS transition updates
-      // have fully settled before `onTransitionEnd` (and any `onCollapseApplied`) runs.
       setTimeout(onTransitionEnd, 0);
     }
   };
 
   return (
-    <div ref={ref} className={className} onTransitionEnd={handleTransitionEnd}>
+    <div
+      ref={ref}
+      className={className}
+      onTransitionEnd={handleTransitionEnd}
+      style={style}
+    >
       <div>{children}</div>
     </div>
   );

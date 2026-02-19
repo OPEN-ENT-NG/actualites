@@ -24,15 +24,10 @@ export interface AiButtonProps extends Pick<ButtonProps, PickedProps> {
 
 export const AiButton = forwardRef(
   (
-    {
-      rightIcon = <SvgIconAiFill />,
-      loadingIcon = <SvgIconAiFill />,
-      className,
-      ...restProps
-    }: AiButtonProps,
+    { rightIcon = <SvgIconAiFill />, className, ...restProps }: AiButtonProps,
     ref?: Ref<ButtonRef>,
   ) => {
-    const classes = clsx('btn-ai', '', className);
+    const classes = clsx('btn-ai rounded-pill px-16 py-8', className);
 
     return (
       <Button
