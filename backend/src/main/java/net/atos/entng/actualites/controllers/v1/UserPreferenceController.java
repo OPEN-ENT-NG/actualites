@@ -6,6 +6,7 @@ import fr.wseduc.security.SecuredAction;
 import fr.wseduc.webutils.http.Renders;
 import fr.wseduc.webutils.request.RequestUtils;
 import io.vertx.core.http.HttpServerRequest;
+import net.atos.entng.actualites.filters.UserPreferencesFilter;
 import net.atos.entng.actualites.services.UserPreferenceService;
 import net.atos.entng.actualites.to.Preferences;
 import net.atos.entng.actualites.to.ThreadPreferenceExists;
@@ -27,7 +28,7 @@ public class UserPreferenceController extends ControllerHelper {
 
     @Put("/api/v1/me/thread-preferences")
     @ApiDoc("Preference of user for thread visibility")
-	@ResourceFilter(AdminFilter.class)
+	@ResourceFilter(UserPreferencesFilter.class)
     @SecuredAction(value = "", type = ActionType.RESOURCE)
     public void updateThreadPreference(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
@@ -42,7 +43,7 @@ public class UserPreferenceController extends ControllerHelper {
 
 	@Get("/api/v1/me/thread-preferences/exists")
 	@ApiDoc("Give information of the existence of thread preference for the user")
-	@ResourceFilter(AdminFilter.class)
+	@ResourceFilter(UserPreferencesFilter.class)
 	@SecuredAction(value = "", type = ActionType.RESOURCE)
 	public void isPreferenceExists(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
