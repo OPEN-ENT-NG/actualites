@@ -154,7 +154,7 @@
   "actualites.textsimplifier.button.show": "Afficher la suggestion",
   "actualites.textsimplifier.label.modify": "Modifiez votre texte pour pouvoir générer un nouveau texte simplifié.",
   "actualites.textsimplifier.label.warn": "Attention le texte a été modifié, la suggestion ne correspond pas à la nouvelle version.",
-  "actualites.textsimplifier.label.write": "Commencez à écrire pour générer une suggestion de texte plus facile à lire et à comprendre.",
+  "actualites.textsimplifier.label.write": "Commencer à écrire pour générer une suggestion de texte plus facile à lire et à comprendre (200 caractères minimum).",
   "actualites.knowmore.title": "Rendre vos communications accessibles au plus grand nombre",
   "actualites.knowmore.body": "Simplifiez votre texte grâce à l’intelligence artificielle. Nous mettons à votre disposition un outil de reformulation qui utilise les concepts du FALC.",
   "actualites.knowmore.success": "C'est compris !",

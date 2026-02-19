@@ -19,7 +19,7 @@ export function KnowMoreModal({
   return (
     <PortalModal
       id="know-more-modal"
-      size="sm"
+      size="md"
       isOpen={isOpen}
       onModalClose={handleCloseClick}
       header={t('actualites.knowmore.title')}

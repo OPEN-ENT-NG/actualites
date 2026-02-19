@@ -56,7 +56,6 @@ export const useExpandable = ({
     className: `expandable ${expanded ? 'expanded' : ''}`,
     style: {
       transitionDuration: `${transitionDurationMs}ms`,
-      visibility: expanded ? 'visible' : 'hidden',
     } as CSSProperties,
   };
 };
