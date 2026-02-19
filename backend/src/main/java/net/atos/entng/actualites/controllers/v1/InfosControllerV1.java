@@ -186,9 +186,30 @@ public class InfosControllerV1 extends ControllerHelper {
 		// status argument
 		final List<NewsStatus> statuses = new ArrayList<>();
 		statuses.add(NewsStatus.PUBLISHED);
+
+		// page argument
+		int pageParsed = 0;
+		String pageParam = request.params().get("page");
+		try {
+			pageParsed = pageParam == null ? 0 : Integer.parseInt(pageParam);
+		} catch (NumberFormatException ignored) {
+        }
+
+		// pageSize argument
+		Integer pageSizeParsed;
+		String pageSizeParam = request.params().get("pageSize");
+		try {
+			pageSizeParsed = pageSizeParam == null ? null : Integer.parseInt(pageSizeParam);
+		} catch (NumberFormatException e) {
+			pageSizeParsed = null;
+		}
+
+		Integer finalPageSizeParsed = pageSizeParsed;
+		int finalPageParsed = pageParsed;
+
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
-				infoService.listPaginated(securedActions, user, 0, null, null, statuses)
+				infoService.listPaginated(securedActions, user, finalPageParsed, finalPageSizeParsed, null, statuses)
 						.onSuccess(news ->render(request, news))
 						.onFailure(ex -> renderError(request));
 			} else {
