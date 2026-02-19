@@ -1,7 +1,9 @@
 .expandable {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows 0.5s ease-out;
+  transition-property: grid-template-rows;
+  transition-timing-function: ease-out;
+  /* transition-duration sera défini via style inline, par défaut 500ms */
 }
 
 .expandable.expanded {

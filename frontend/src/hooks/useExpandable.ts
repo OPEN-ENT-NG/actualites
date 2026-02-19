@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 import { ExpandableProps } from '~/components/Expandable';
 
 export const useExpandable = ({
@@ -6,9 +6,14 @@ export const useExpandable = ({
   onCollapseApplied,
   hasPreview,
   onTogglePreview,
+  transitionDurationMs = 500,
 }: Pick<
   ExpandableProps,
-  'collapse' | 'onCollapseApplied' | 'hasPreview' | 'onTogglePreview'
+  | 'collapse'
+  | 'onCollapseApplied'
+  | 'hasPreview'
+  | 'onTogglePreview'
+  | 'transitionDurationMs'
 >) => {
   const [expanded, setExpanded] = useState(!collapse || hasPreview);
   const collapseRef = useRef(collapse);
@@ -49,5 +54,8 @@ export const useExpandable = ({
   return {
     onTransitionEnd,
     className: `expandable ${expanded ? 'expanded' : ''}`,
+    style: {
+      transitionDuration: `${transitionDurationMs}ms`,
+    } as CSSProperties,
   };
 };

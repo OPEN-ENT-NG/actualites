@@ -1,4 +1,4 @@
-import { odeServices } from '@edifice.io/client';
+import { ERROR_CODE, odeServices } from '@edifice.io/client';
 import { baseUrlAPI } from '.';
 
 export const createFalcService = () => {
@@ -16,33 +16,14 @@ export const createFalcService = () => {
         return result;
       } catch {
         if (http.isResponseError()) {
-          const { status, headers, statusText } = http.latestResponse;
+          const { status, statusText } = http.latestResponse;
+          console.log(`FALC service error text: ${statusText}`);
 
-          // Map error objects
-          if ('application/json' == headers?.['content-type']) {
-            try {
-              const message = JSON.parse(statusText);
-              if (typeof message?.error == 'string') {
-                return Promise.reject(new Error(message.error));
-              }
-            } catch {
-              // Proceed with status codes
-            }
-          }
-
-          // Map usual error codes
-          switch (status) {
-            case 403:
-            case 408:
-            case 500:
-            case 504:
-              return Promise.reject(new Error(`e${status}`));
-            case 401:
-            case 404:
-              return Promise.reject(new Error(`e${status}.page`));
+          if (status === 408 || status === 504) {
+            return Promise.reject(ERROR_CODE.TIME_OUT);
           }
         }
-        return Promise.reject(new Error('Echec inconnu'));
+        return Promise.reject(ERROR_CODE.NOT_INITIALIZED);
       }
     },
   };
