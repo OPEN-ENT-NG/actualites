@@ -219,7 +219,7 @@ export const TextSimplifier = forwardRef(
               </Flex>
             </Expandable>
 
-            <Flex justify="between" align="center" gap="10">
+            <Flex wrap="wrap" justify="between" align="center" gap="10">
               <i>
                 {simplifiedContent && contentChanged && (
                   <IconAlertTriangle
@@ -239,7 +239,7 @@ export const TextSimplifier = forwardRef(
                 )}
               </i>
 
-              <Flex justify="between" gap="12">
+              <Flex justify="between" gap="12" className="ms-auto">
                 <Button
                   data-testid="textsimplifier-knowmore-button"
                   size="sm"
