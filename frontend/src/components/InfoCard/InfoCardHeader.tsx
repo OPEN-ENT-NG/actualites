@@ -72,7 +72,7 @@ export const InfoCardHeader = ({
           >
             <Flex align="center" gap="8" wrap="nowrap" className="mx-4">
               {t('actualites.info.status.draft')}
-              <IconWrite />
+              <IconWrite height={'20px'} width={'20px'} />
             </Flex>
           </Badge>
         )}
@@ -100,7 +100,7 @@ export const InfoCardHeader = ({
           >
             <Flex align="center" gap="8" wrap="nowrap" className="mx-4">
               {t('actualites.info.status.incoming')}
-              <IconClock />
+              <IconClock height={'20px'} width={'20px'} />
             </Flex>
           </Badge>
         )}
@@ -111,7 +111,7 @@ export const InfoCardHeader = ({
           >
             <Flex align="center" gap="8" wrap="nowrap" className="mx-4">
               {t('actualites.info.status.expired')}
-              <IconClockAlert />
+              <IconClockAlert height={'20px'} width={'20px'} />
             </Flex>
           </Badge>
         )}
