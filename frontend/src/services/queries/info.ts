@@ -31,7 +31,11 @@ export const infoQueryKeys = {
   all: () => ['infos'],
 
   // ['infos', 'stats']
-  stats: () => [...infoQueryKeys.all(), 'stats'],
+  stats: (viewHidden?: boolean) => [
+    ...infoQueryKeys.all(),
+    'stats',
+    { viewHidden: !!viewHidden },
+  ],
 
   // List
   // ['infos', 'thread', 'all', 'expired']
@@ -144,7 +148,7 @@ export const infoQueryOptions = {
    */
   getStats(enabled?: boolean, viewHidden?: boolean) {
     return queryOptions({
-      queryKey: infoQueryKeys.stats(),
+      queryKey: infoQueryKeys.stats(!!viewHidden),
       queryFn: () => infoService.getStats(viewHidden),
       enabled: enabled ?? true,
     });

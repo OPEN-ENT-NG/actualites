@@ -4,6 +4,7 @@ import { Share } from '../../models/share';
 import {
   Thread,
   ThreadId,
+  ThreadListFilter,
   ThreadPayload,
   ThreadPreferences,
 } from '../../models/thread';
@@ -24,8 +25,9 @@ export const createThreadService = () => {
      * Get all threads.
      * @returns an array of Thread objects
      */
-    getThreads(viewHidden = false) {
-      const visibilityParam = viewHidden ? '?viewHidden=true' : '';
+    getThreads(filter?: ThreadListFilter) {
+      console.log('Fetching threads with filter:', filter);
+      const visibilityParam = filter ? `?include=${filter}` : '';
       return odeServices
         .http()
         .get<Thread[]>(`${baseUrlAPI}/threads${visibilityParam}`);

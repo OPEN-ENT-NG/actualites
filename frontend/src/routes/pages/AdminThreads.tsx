@@ -6,20 +6,25 @@ import { AdminThreadList } from '~/features/admin-threads-list/AdminThreadList';
 import { AdminThreadListSkeleton } from '~/features/admin-threads-list/components/AdminThreadListSkeleton';
 import { useI18n } from '~/hooks/useI18n';
 import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
+import { ThreadListFilter } from '~/models/thread';
 import { threadQueryOptions, useThreads } from '~/services/queries';
 
 export const loader = (queryClient: QueryClient) => async () => {
-  const queryThreads = threadQueryOptions.getThreads(true);
+  const queryThreads = threadQueryOptions.getThreads(
+    ThreadListFilter.MANAGABLE,
+  );
 
   queryClient.ensureQueryData(queryThreads);
   return null;
 };
 
 export function AdminThreads() {
-  const { isPending } = useThreads(true);
+  const { isPending } = useThreads(ThreadListFilter.MANAGABLE);
   const { t } = useI18n();
   const navigate = useNavigate();
-  const { canManageOnOneThread } = useThreadsUserRights(true);
+  const { canManageOnOneThread } = useThreadsUserRights(
+    ThreadListFilter.MANAGABLE,
+  );
 
   if (canManageOnOneThread !== undefined && !canManageOnOneThread) {
     throw new Error(t('actualites.adminThreads.accessDenied'));

@@ -5,20 +5,21 @@ import { useNavigate } from 'react-router-dom';
 import { ThreadsSettingList, ThreadsSettingListSkeleton } from '~/features';
 import { useI18n } from '~/hooks/useI18n';
 import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
+import { ThreadListFilter } from '~/models/thread';
 import { threadQueryOptions, useThreads } from '~/services/queries';
 
 export const loader = (queryClient: QueryClient) => async () => {
-  const queryThreads = threadQueryOptions.getThreads(true);
+  const queryThreads = threadQueryOptions.getThreads(ThreadListFilter.ALL);
 
   queryClient.ensureQueryData(queryThreads);
   return null;
 };
 
 export function ThreadsSetting() {
-  const { isPending } = useThreads(true);
+  const { isPending } = useThreads(ThreadListFilter.ALL);
   const { t } = useI18n();
   const navigate = useNavigate();
-  const { canManageOnOneThread } = useThreadsUserRights(true);
+  const { canManageOnOneThread } = useThreadsUserRights(ThreadListFilter.ALL);
 
   if (canManageOnOneThread !== undefined && !canManageOnOneThread) {
     throw new Error(t('actualites.adminThreads.accessDenied'));

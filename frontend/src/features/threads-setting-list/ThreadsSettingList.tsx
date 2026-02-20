@@ -18,7 +18,7 @@ import {
   useState,
 } from 'react';
 import { InfoStatus } from '~/models/info';
-import { Thread } from '~/models/thread';
+import { Thread, ThreadListFilter } from '~/models/thread';
 import {
   useInfosStats,
   useThreads,
@@ -34,7 +34,7 @@ enum ThreadsSettingFilter {
 }
 
 export function ThreadsSettingList() {
-  const { data: threads, isPending } = useThreads(true);
+  const { data: threads, isPending } = useThreads(ThreadListFilter.ALL);
   const { t } = useI18n();
   const { data: threadsStats } = useInfosStats({ viewHidden: true });
   const { mutateAsync: updateThreadPreferences } = useUpdateThreadPreferences();

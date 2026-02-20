@@ -17,6 +17,7 @@ import { AdminNewThreadButton } from '~/features';
 import { useThreadRoute } from '~/hooks/useThreadRoute';
 import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
 import { useUserRights } from '~/hooks/useUserRights';
+import { ThreadListFilter } from '~/models/thread';
 import { queryClient } from '~/providers';
 import { actionsQueryOptions } from '~/services/queries/actions';
 import { useActionUserRights } from '~/store';
@@ -40,7 +41,7 @@ export const Root = () => {
 
   const { currentApp, init } = useEdificeClient();
   const { canContributeOnOneThread } = useThreadsUserRights(
-    routeType === 'admin',
+    routeType === 'admin' ? ThreadListFilter.MANAGABLE : undefined,
   );
   const { canCreateThread } = useUserRights();
   const { lg } = useBreakpoint();

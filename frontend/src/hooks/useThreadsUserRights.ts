@@ -1,6 +1,6 @@
 import { useUser } from '@edifice.io/react';
 import { useMemo } from 'react';
-import { Thread, ThreadId } from '~/models/thread';
+import { Thread, ThreadId, ThreadListFilter } from '~/models/thread';
 import { useThreads } from '~/services/queries';
 import { getThreadUserRights } from '../utils/getThreadUserRights';
 import { useUserRights } from './useUserRights';
@@ -22,7 +22,7 @@ import { useUserRights } from './useUserRights';
  * }
  * ```
  */
-export function useThreadsUserRights(viewHidden = false): {
+export function useThreadsUserRights(threadListFilter?: ThreadListFilter): {
   threadsWithContributeRight?: Thread[];
   threadsWithManageRight?: Thread[];
   canContributeOnOneThread?: boolean;
@@ -30,7 +30,7 @@ export function useThreadsUserRights(viewHidden = false): {
   isReady: boolean;
   hasContributeRightOnThread?: (threadId?: ThreadId) => boolean;
 } {
-  const { data: threads, isSuccess } = useThreads(viewHidden);
+  const { data: threads, isSuccess } = useThreads(threadListFilter);
   const { user } = useUser();
   const { canCreateThread } = useUserRights();
 

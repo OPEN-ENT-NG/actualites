@@ -16,6 +16,10 @@ export enum ThreadFilters {
 export enum ThreadTypes {
   LATEST = 0,
 }
+export enum ThreadListFilter {
+  ALL = 'ALL',
+  MANAGABLE = 'MANAGEABLE',
+}
 
 export type ThreadOwner = {
   id: string;

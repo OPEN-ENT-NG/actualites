@@ -12,7 +12,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useI18n } from '~/hooks/useI18n';
-import { Thread } from '~/models/thread';
+import { Thread, ThreadListFilter } from '~/models/thread';
 import { baseUrlAPI } from '~/services';
 import { threadQueryKeys, useThreadShares } from '~/services/queries';
 
@@ -84,7 +84,9 @@ export const AdminThreadShareModal = ({
     setIsDirty(false);
     setIsSaving(false);
     toast.success(t('actualites.adminThreads.shareModal.success'));
-    queryClient.invalidateQueries({ queryKey: threadQueryKeys.all(true) });
+    queryClient.invalidateQueries({
+      queryKey: threadQueryKeys.all(ThreadListFilter.MANAGABLE),
+    });
     onSuccess();
   };
 
