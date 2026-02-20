@@ -17,9 +17,9 @@ import { ThreadIcon } from '~/components/ThreadIcon';
 import { useI18n } from '~/hooks/useI18n';
 import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
 import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
+import { useUserRights } from '~/hooks/useUserRights';
 import { Thread } from '~/models/thread';
 import { useThreads } from '~/services/queries';
-import { useUserRights } from '~/store/rights/resource';
 
 export const ThreadListMobile = () => {
   const { t } = useI18n();

@@ -1,4 +1,5 @@
 import { Checkbox, Divider, Flex, useBreakpoint } from '@edifice.io/react';
+import { ChangeEvent } from 'react';
 import { ThreadIcon } from '~/components/ThreadIcon';
 import { useI18n } from '~/hooks/useI18n';
 import { Thread } from '~/models/thread';
@@ -17,7 +18,7 @@ export function ThreadSetting({
   const { t } = useI18n();
   const { xl } = useBreakpoint();
 
-  const handleCheckClick = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCheckClick = (e: ChangeEvent<HTMLInputElement>) => {
     onCheckedChange(e.currentTarget.checked);
   };
 
