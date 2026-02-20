@@ -42,7 +42,7 @@ export function ThreadSetting({
         >
           <div
             data-testid="thread-div-structure-name"
-            className={'text-truncate' + (!thread.structure && ' text-red-500')}
+            className={`text-truncate${!thread.structure ? ' text-red-500' : ''}`}
           >
             {thread.structure?.name || t('actualites.adminThreads.noStructure')}
           </div>
