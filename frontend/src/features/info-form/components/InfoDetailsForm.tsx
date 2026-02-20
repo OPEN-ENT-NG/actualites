@@ -20,7 +20,7 @@ export const INFO_DETAILS_DEFAULT_VALUES: InfoDetailsFormParams = {
   expirationDate: undefined,
 };
 
-export const INFO_HOURS_DATE_DEFAULT = 6;
+export const INFO_HOURS_DATE_DEFAULT = 7;
 
 export const INFO_DATES_RESET_VALUES: {
   publicationDate: Date;
