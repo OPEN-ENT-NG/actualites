@@ -23,6 +23,7 @@ export const InfoCardFooter = ({
   const { t } = useI18n();
   const { canShowComments } = useInfoStatus(info);
   const {
+    canViewDetails,
     viewsCounter,
     isAudienceOpen,
     handleViewsCounterClick,
@@ -35,6 +36,7 @@ export const InfoCardFooter = ({
         <Flex align="center">
           <ViewsCounter
             data-testid="info-view-views-counter-button"
+            disabled={!canViewDetails}
             viewsCounter={viewsCounter}
             onClick={handleViewsCounterClick}
           />
