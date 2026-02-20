@@ -1,13 +1,13 @@
 import { QueryClient } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 import {
   LoaderFunctionArgs,
   useLoaderData,
   useSearchParams,
 } from 'react-router-dom';
 import { InfoCardContent, InfoCardHeader } from '~/components';
-import { infoQueryOptions, useInfoById } from '~/services/queries';
 import { Info } from '~/models/info';
-import { useEffect, useState } from 'react';
+import { infoQueryOptions, useInfoById } from '~/services/queries';
 
 interface PrintInfoProps {
   infoId: number;
@@ -61,6 +61,7 @@ export function InfoPrint() {
             info={info}
             collapse={false}
             withComments={withComments}
+            forPrinting={true}
           />
         </>
       )}

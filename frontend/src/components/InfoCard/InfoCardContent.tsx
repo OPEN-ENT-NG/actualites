@@ -9,10 +9,12 @@ import { InfoCardProps } from './InfoCard';
 export const InfoCardContent = ({
   info,
   withComments = true,
+  forPrinting = false,
   collapse = true,
   onCollapseApplied,
 }: Pick<InfoCardProps, 'info'> & {
   withComments?: boolean;
+  forPrinting?: boolean;
   collapse?: boolean;
   onCollapseApplied?: () => void;
 }) => {
@@ -48,7 +50,11 @@ export const InfoCardContent = ({
 
         {withComments && canShowComments && showFullContent && (
           <div id={`info-${info.id}-comments`}>
-            <CommentList info={info} withPagination={false} forPrinting />
+            <CommentList
+              info={info}
+              withPagination={false}
+              forPrinting={forPrinting}
+            />
           </div>
         )}
       </div>
