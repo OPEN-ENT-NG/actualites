@@ -1,10 +1,10 @@
 import { useToast } from '@edifice.io/react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useI18n } from '~/hooks/useI18n';
 import { InfoDetails, InfoStatus } from '~/models/info';
 import { invalidateThreadQueries, useUpdateInfo } from '~/services/queries';
 import { useUpdateStatsQueryCache } from '~/services/queries/hooks/useUpdateStatsQueryCache';
-import { useQueryClient } from '@tanstack/react-query';
 export function useInfoUnsubmit() {
   const { t } = useI18n();
   const toast = useToast();
@@ -27,7 +27,6 @@ export function useInfoUnsubmit() {
         },
         onSuccess() {
           toast.success(t('actualites.info.unsubmit.success'));
-          console.log('UNSUBMIT');
           updateStatsQueryCache(thread.id, InfoStatus.DRAFT, 1);
           updateStatsQueryCache(thread.id, InfoStatus.PENDING, -1);
 

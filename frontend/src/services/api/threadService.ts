@@ -26,7 +26,6 @@ export const createThreadService = () => {
      * @returns an array of Thread objects
      */
     getThreads(filter?: ThreadListFilter) {
-      console.log('Fetching threads with filter:', filter);
       const visibilityParam = filter ? `?include=${filter}` : '';
       return odeServices
         .http()
