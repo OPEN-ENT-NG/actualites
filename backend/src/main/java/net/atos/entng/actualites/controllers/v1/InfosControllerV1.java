@@ -107,7 +107,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	}
 
 	@Get("/api/v1/infos")
-	@SecuredAction(value = "actualites.infos.list")
+	@SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")
 	public void infos(final HttpServerRequest request) {
 		// page argument
 		int pageParsed;
@@ -223,7 +223,7 @@ public class InfosControllerV1 extends ControllerHelper {
 
 	@Get("/api/v1/infos/preview/last/:" + RESULT_SIZE_PARAMETER)
 	@ApiDoc("List last infos, accept query param resultSize.")
-	@SecuredAction(value = "actualites.infos.list")
+	@SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")
 	public void getLastInfos(HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
             String resultSize = request.params().get(RESULT_SIZE_PARAMETER);
@@ -251,7 +251,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	@Get("/api/v1/infos/:" + INFO_RESOURCE_ID)
 	@ApiDoc("Retrieve : retrieve an Info in thread by thread and by id")
 	@ResourceFilter(InfoFilter.class)
-	@SecuredAction(value = INFO_READ_VALUE, type = ActionType.RESOURCE, right = INFO_READ_ANNOTATION)
+	@SecuredAction(value = INFO_READ_VALUE, type = ActionType.RESOURCE, right = ROOT_RIGHT + "|getInfo")
 	public void getInfos(final HttpServerRequest request) {
 		// TODO IMPROVE : Security on Infos visibles by statuses / dates is not enforced
 		UserUtils.getUserInfos(eb, request, user -> {
@@ -274,7 +274,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	@Delete("/api/v1/infos/:" + INFO_RESOURCE_ID)
 	@ApiDoc("Delete : Real delete an Info in thread by thread and by id")
 	@ResourceFilter(InfoFilter.class)
-	@SecuredAction(value = THREAD_MANAGER_VALUE, type = ActionType.RESOURCE, right = THREAD_MANAGER_ANNOTATION)
+	@SecuredAction(value = THREAD_MANAGER_VALUE, type = ActionType.RESOURCE, right = ROOT_RIGHT + "|delete")
 	public void removeInfo(final HttpServerRequest request) {
 		final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
 		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
@@ -304,7 +304,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	@Get("/api/v1/infos/:id/shares")
 	@ApiDoc("Get share info")
 	@ResourceFilter(InfoFilter.class)
-	@SecuredAction(value = THREAD_CONTRIB_VALUE, type = ActionType.RESOURCE, right = THREAD_CONTRIB_ANNOTATION)
+	@SecuredAction(value = THREAD_CONTRIB_VALUE, type = ActionType.RESOURCE, right = ROOT_RIGHT + "|shareInfo")
 	public void getShareInfo(final HttpServerRequest request) {
 		final String id = request.params().get(INFO_ID_PARAMETER);
 		if (id == null || id.trim().isEmpty()) {
@@ -362,7 +362,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	@Put("/api/v1/infos/:id/shares")
 	@ApiDoc("Update share info")
 	@ResourceFilter(InfoFilter.class)
-	@SecuredAction(value = THREAD_CONTRIB_VALUE, type = ActionType.RESOURCE, right = THREAD_CONTRIB_ANNOTATION)
+	@SecuredAction(value = THREAD_CONTRIB_VALUE, type = ActionType.RESOURCE, right = ROOT_RIGHT + "|shareInfo")
 	public void updateShareInfo(final HttpServerRequest request) {
 		final String infoId = request.params().get(INFO_ID_PARAMETER);
 		if(StringUtils.isEmpty(infoId)) {
@@ -406,7 +406,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	@Get("/api/v1/infos/:" + INFO_RESOURCE_ID + "/timeline")
 	@ApiDoc("Get timeline info")
 	@ResourceFilter(InfoFilter.class)
-	@SecuredAction(value = THREAD_PUBLISH_VALUE, type = ActionType.RESOURCE, right = THREAD_PUBLISH_ANNOTATION)
+	@SecuredAction(value = THREAD_PUBLISH_VALUE, type = ActionType.RESOURCE, right = ROOT_RIGHT + "|getInfoTimeline")
 	public void getInfoTimeline(final HttpServerRequest request) {
 		final String id = request.params().get(Actualites.INFO_RESOURCE_ID);
 		if (id == null || id.trim().isEmpty()) {
@@ -424,7 +424,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	@Post("/api/v1/infos")
 	@ApiDoc("Create an info in pending or draft")
 	@ResourceFilter(CreateInfoFilter.class)
-	@SecuredAction(value = THREAD_CONTRIB_VALUE, type = ActionType.RESOURCE, right = THREAD_CONTRIB_ANNOTATION)
+	@SecuredAction(value = THREAD_CONTRIB_VALUE, type = ActionType.RESOURCE, right = ROOT_RIGHT + "|createDraft")
 	public void createInfo(HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
 			RequestUtils.bodyToJson(request, pathPrefix + SCHEMA_INFO_CREATE, resource -> {
@@ -466,7 +466,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	@Post("/api/v1/infos/published")
 	@ApiDoc("Create a published info")
 	@ResourceFilter(CreateInfoFilter.class)
-	@SecuredAction(value = THREAD_PUBLISH_VALUE, type = ActionType.RESOURCE, right = THREAD_PUBLISH_ANNOTATION)
+	@SecuredAction(value = THREAD_PUBLISH_VALUE, type = ActionType.RESOURCE, right = ROOT_RIGHT + "|publish")
 	public void createPublishedInfo(HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
 			RequestUtils.bodyToJson(request, pathPrefix + SCHEMA_INFO_CREATE, resource -> {
@@ -520,7 +520,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	@Put("/api/v1/infos/:" + INFO_RESOURCE_ID)
 	@ApiDoc("Update an info in any states")
 	@ResourceFilter(UpdateInfoFilter.class)
-	@SecuredAction(value = THREAD_CONTRIB_VALUE, type = ActionType.RESOURCE, right = THREAD_CONTRIB_ANNOTATION)
+	@SecuredAction(value = THREAD_CONTRIB_VALUE, type = ActionType.RESOURCE, right = ROOT_RIGHT + "|createDraft")
 	public void updateInfo(HttpServerRequest request) {
 		final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
 		UserUtils.getUserInfos(eb, request, user -> {
@@ -642,7 +642,7 @@ public class InfosControllerV1 extends ControllerHelper {
 
 	@Get("/api/v1/infos/stats")
 	@ApiDoc("Get statistics about threads and infos grouped by status")
-	@SecuredAction(value = "actualites.infos.list")
+	@SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")
 	public void getStats(HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {

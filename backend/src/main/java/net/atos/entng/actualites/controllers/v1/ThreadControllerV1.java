@@ -77,7 +77,7 @@ public class ThreadControllerV1 extends ControllerHelper {
 
     @Get("/api/v1/threads")
     @ApiDoc("Get all threads ")
-    @SecuredAction(value = "actualites.threads.list")
+    @SecuredAction(value = "actualites.threads.list", right = ROOT_RIGHT + "|listThreads")
     public void getThreads(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
@@ -94,7 +94,7 @@ public class ThreadControllerV1 extends ControllerHelper {
     @Get("/api/v1/threads/:" + THREAD_RESOURCE_ID)
     @ApiDoc("Get a thread by Id")
     @ResourceFilter(ThreadFilter.class)
-    @SecuredAction(value = THREAD_CONTRIB_VALUE, right = THREAD_CONTRIB_ANNOTATION, type = ActionType.RESOURCE)
+    @SecuredAction(value = THREAD_CONTRIB_VALUE, right = ROOT_RIGHT + "|getThread", type = ActionType.RESOURCE)
     public void getThreadById(final HttpServerRequest request) {
 		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
 		UserUtils.getUserInfos(eb, request, user ->
@@ -109,7 +109,7 @@ public class ThreadControllerV1 extends ControllerHelper {
     @Post("/api/v1/threads")
     @ApiDoc("Create a new thread")
     @ResourceFilter(ThreadFilter.class)
-    @SecuredAction(value = "actualites.create")
+    @SecuredAction(value = "actualites.create", right = ROOT_RIGHT + "|createThread")
     public void createThread(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request,user -> RequestUtils.bodyToJson(request, pathPrefix + SCHEMA_THREAD_CREATE,
 				resource -> {
@@ -133,7 +133,7 @@ public class ThreadControllerV1 extends ControllerHelper {
     @Put("/api/v1/threads/:" + THREAD_RESOURCE_ID)
     @ApiDoc("Update thread by id")
     @ResourceFilter(ThreadFilter.class)
-    @SecuredAction(value = THREAD_MANAGER_VALUE, right = THREAD_MANAGER_ANNOTATION, type = ActionType.RESOURCE)
+    @SecuredAction(value = THREAD_MANAGER_VALUE, right = ROOT_RIGHT + "|updateThread", type = ActionType.RESOURCE)
     public void updateThread(final HttpServerRequest request) {
 		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
 		UserUtils.getUserInfos(eb, request, user -> RequestUtils.bodyToJson(request, pathPrefix + SCHEMA_THREAD_UPDATE,
@@ -165,7 +165,7 @@ public class ThreadControllerV1 extends ControllerHelper {
     @Delete("/api/v1/threads/:" + THREAD_RESOURCE_ID)
     @ApiDoc("Delete thread by id")
     @ResourceFilter(ThreadFilter.class)
-    @SecuredAction(value = THREAD_MANAGER_VALUE, right = THREAD_MANAGER_ANNOTATION, type = ActionType.RESOURCE)
+    @SecuredAction(value = THREAD_MANAGER_VALUE, right = ROOT_RIGHT + "|deleteThread", type = ActionType.RESOURCE)
     public void deleteThread(final HttpServerRequest request) {
 		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
 		UserUtils.getUserInfos(eb, request, user -> crudService.delete(threadId, user, notEmptyResponseHandler(request)));
@@ -174,7 +174,7 @@ public class ThreadControllerV1 extends ControllerHelper {
     @Get("/api/v1/threads/:id/shares")
     @ApiDoc("Get thread's shares")
     @ResourceFilter(ThreadFilter.class)
-    @SecuredAction(value = THREAD_MANAGER_VALUE, right = THREAD_MANAGER_ANNOTATION, type = ActionType.RESOURCE)
+    @SecuredAction(value = THREAD_MANAGER_VALUE, right = ROOT_RIGHT + "|shareThread", type = ActionType.RESOURCE)
     public void getThreadShares(final HttpServerRequest request) {
 		final String id = request.params().get(THREAD_ID_PARAMETER);
 		if (id == null || id.trim().isEmpty()) {
@@ -226,7 +226,7 @@ public class ThreadControllerV1 extends ControllerHelper {
     @Put("/api/v1/threads/:id/shares")
     @ApiDoc("Update thread's shares")
     @ResourceFilter(ThreadFilter.class)
-    @SecuredAction(value = THREAD_MANAGER_VALUE, right = THREAD_MANAGER_ANNOTATION, type = ActionType.RESOURCE)
+    @SecuredAction(value = THREAD_MANAGER_VALUE, right = ROOT_RIGHT + "|shareResource", type = ActionType.RESOURCE)
     public void updateThreadShares(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
             if (user != null) {
@@ -251,7 +251,7 @@ public class ThreadControllerV1 extends ControllerHelper {
     @Post("/api/v1/threads/tasks")
     @ApiDoc("Launch a maintenance task")
     @ResourceFilter(SuperAdminFilter.class)
-    @SecuredAction(value = "", type = ActionType.RESOURCE)
+    @SecuredAction(value = "", right = ROOT_RIGHT + "|admcTask", type = ActionType.RESOURCE)
     public void launchTask(final HttpServerRequest request) {
 		RequestUtils.bodyToJson(request, pathPrefix + ADMC_TASK, (JsonObject resource) -> {
 			switch(resource.getString("task")) {
