@@ -22,7 +22,7 @@ export function useInfoActionDropdown(info: Info) {
   const canPrint = isPublished;
 
   const canModifyShare =
-    (isPublished && !isExpired && isThreadOwnerOrPublisherOrAdmin) || isOwner;
+    !isExpired && ((isPublished && isThreadOwnerOrPublisherOrAdmin) || isOwner);
 
   const canEdit =
     (isDraft && isOwner) ||
