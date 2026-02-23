@@ -48,7 +48,7 @@ export function AdminThread({
         gap="4"
         fill
         className="overflow-hidden"
-        style={{ minWidth: '300px' }}
+        style={{ minWidth: '140px' }}
       >
         <strong className="text-truncate">{thread.title}</strong>
 
