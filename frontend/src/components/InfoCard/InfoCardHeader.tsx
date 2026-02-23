@@ -12,7 +12,6 @@ import {
   IconClock,
   IconClockAlert,
   IconOptions,
-  IconSend,
   IconSubmitToValidate,
   IconWrite,
 } from '@edifice.io/react/icons';
@@ -51,8 +50,9 @@ export const InfoCardHeader = ({
 
   const { t } = useI18n();
   const navigate = useNavigate();
-  const { md, lg } = useBreakpoint();
-  const styles = lg
+  const { md } = useBreakpoint();
+
+  const styles = md
     ? { gridTemplateColumns: '1fr auto 1fr' }
     : { gridTemplateColumns: '1fr' };
 
@@ -60,11 +60,15 @@ export const InfoCardHeader = ({
     'text-center': md,
   });
 
+  const badgeClasses = clsx({
+    'text-end': md,
+  });
+
   const badgeContent = () => {
     if (isPrint) return null;
 
     return (
-      <div className="text-end">
+      <div className={badgeClasses}>
         {isDraft && (
           <Badge
             data-testid="info-card-badge-draft"
@@ -79,18 +83,12 @@ export const InfoCardHeader = ({
         {!isDraft && canPublish && (
           <Button
             variant="outline"
-            data-testid={
-              isOwner
-                ? 'info-card-header-publish-button'
-                : 'info-card-header-submit-button'
-            }
-            leftIcon={isOwner ? <IconSend /> : <IconSubmitToValidate />}
+            data-testid={'info-card-header-submit-button'}
+            leftIcon={<IconSubmitToValidate />}
             onClick={handleSubmitClick}
             color="secondary"
           >
-            {isOwner
-              ? t('actualites.info.actions.publish')
-              : t('actualites.info.actions.validateAndPublish')}
+            {t('actualites.info.actions.validateAndPublish')}
           </Button>
         )}
         {!isExpired && extendedStatus === InfoExtendedStatus.INCOMING && (
@@ -132,14 +130,11 @@ export const InfoCardHeader = ({
   return (
     <header key={info.id} className="mb-12">
       <div className="d-grid gap-12" style={styles}>
-        <Flex align="center" justify="between">
-          <InfoCardThreadHeader thread={thread} />
-          {!lg && badgeContent()}
-        </Flex>
+        <InfoCardThreadHeader thread={thread} />
         <h3 data-testid="info-name" className={classes}>
           {info?.title}
         </h3>
-        {lg && badgeContent()}
+        {badgeContent()}
       </div>
 
       <Flex className="flex-fill mt-12" align="center" wrap="nowrap" gap="16">
