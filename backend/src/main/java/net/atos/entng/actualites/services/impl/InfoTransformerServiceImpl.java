@@ -102,7 +102,7 @@ public class InfoTransformerServiceImpl implements InfoService {
                                      Consumer<ContentTransformerResponse> apply) {
         contentTransformerClient
                 .transform(new ContentTransformerRequest(
-                        Sets.newHashSet(ContentTransformerFormat.HTML),
+                        Sets.newHashSet(ContentTransformerFormat.HTML, ContentTransformerFormat.JSON),
                         0,
                         data.getString("content"),
                         null))
@@ -224,7 +224,7 @@ public class InfoTransformerServiceImpl implements InfoService {
         log.info(String.format("[%s] Transform old content of info %s ", getClass().getSimpleName(), news.getId()));
         Future<ContentTransformerResponse> responseFuture = contentTransformerClient
                 .transform(new ContentTransformerRequest(
-                        Sets.newHashSet(ContentTransformerFormat.HTML),
+                        Sets.newHashSet(ContentTransformerFormat.HTML, ContentTransformerFormat.JSON),
                         news.getContentVersion(),
                         news.getContent(),
                         null));
