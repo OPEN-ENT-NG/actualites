@@ -44,7 +44,6 @@ import java.util.*;
 import java.util.function.Function;
 
 import static fr.wseduc.webutils.Utils.handlerToAsyncHandler;
-import static fr.wseduc.webutils.Utils.isNotEmpty;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -433,16 +432,6 @@ public class ThreadServiceSqlImpl implements ThreadService {
 	}
 
 	@Override
-    public Future<Void> attachThreadsWithNullStructureToDefault() {
-		// 1. Get IDs of owner of threads without a structure.
-		return getIdsOfOwnersForNullStructure()
-		// 2. Get structure infos of threads owners.
-		.compose(this::getDefaultStructureOfUsers)
-		// 3. Assign a default structure to eligible threads.
-		.compose(this::assignDefaultOwnerStructure);
-	}
-
-	@Override
 	public void getOwnerInfo(String threadId, Handler<Either<String, JsonObject>> handler) {
 		if (threadId != null && !threadId.isEmpty()) {
 			String query = "SELECT thread.owner FROM " + threadsTable + " WHERE id = ?";
@@ -450,82 +439,6 @@ public class ThreadServiceSqlImpl implements ThreadService {
 					SqlResult.validUniqueResultHandler(handler));
 		}
 	}
-
-	/** Get IDs of owner of threads without a structure. */
-    private Future<List<String>> getIdsOfOwnersForNullStructure() {
-		final Promise<List<String>> promise = Promise.promise();
-		String query =
-			" SELECT DISTINCT t.owner AS id " +
-			" FROM " + threadsTable + " AS t " +
-			" WHERE t.owner IS NOT NULL AND t.structure_id IS NULL ";
-		Sql.getInstance().prepared(query, new fr.wseduc.webutils.collections.JsonArray(), (sqlResult) -> {
-			final Either<String, JsonArray> result = SqlResult.validResult(sqlResult);
-			if (result.isLeft()) {
-				promise.fail(result.left().getValue());
-			} else {
-				try {
-					final List<String> ids = result.right().getValue()
-						.stream()
-						.filter(row -> row instanceof JsonObject)
-						.map(JsonObject.class::cast)
-						.map(row -> row.getString("id"))
-						.collect(toList());
-					promise.complete(ids);
-				} catch (Exception e) {
-					promise.fail(e);
-				}
-			}
-		});
-		return promise.future();
-	}
-
-	/** 
-	 * Retrieve the one and only structure that some users are attached to.
-	 * Users with no (or many) structures will have no mapping in the resulting Map.
-	 * @return a future Map of <User ID, Structure ID>
-	 */
-	private Future<Map<String, String>> getDefaultStructureOfUsers(final List<String> ids) {
-		return getUsersStructures(ids)
-			.map( results -> {
-				final Map<String, String> map = new HashMap<>(results.size());
-				results.stream()
-					.filter(row -> row instanceof JsonObject)
-					.map(JsonObject.class::cast)
-					.forEach(result -> {
-						final String userId = result.getString("userId");
-						final JsonArray structures = result.getJsonArray("structures");
-						if(userId!=null && structures!=null && structures.size()==1) {
-							map.put(userId, structures.getJsonObject(0).getString("id"));
-						}
-					});
-				return map;
-			});
-	}
-
-    /**
-     * Get structure details for a list of users.
-     * @param ids a list of user IDs
-     * @return a Future array of JsonObjects such as { userId: "ID of the user", structures: [{id: "ID of the structure"}] }
-     */
-    private Future<JsonArray> getUsersStructures(final List<String> ids) {
-		Promise<JsonArray> promise = Promise.promise();
-		if(ids==null || ids.isEmpty()) {
-			promise.complete(new JsonArray());
-		} else {
-			JsonObject action = new JsonObject()
-				.put("action", "getUsersStructures")
-				.put("userIds", new JsonArray(ids));
-			eb.request("directory", action, handlerToAsyncHandler(event -> {
-				JsonArray res = event.body().getJsonArray("result", new JsonArray());
-				if ("ok".equals(event.body().getString("status")) && res != null) {
-					promise.complete(res);
-				} else {
-					promise.fail(event.body().getString("message"));
-				}
-			}));
-		}
-		return promise.future();
-    }
 
 	private Future<List<Structure>> getStructureFromIds(List<String> ids) {
 		Promise<List<Structure>> promise = Promise.promise();
@@ -552,42 +465,4 @@ public class ThreadServiceSqlImpl implements ThreadService {
 		return promise.future();
 	}
 
-	/** Set the structure ID of threads with their owner's default one. */
-	private Future<Void> assignDefaultOwnerStructure(final Map<String, String> defaultOwnerStructures) {
-		final JsonArray userIds = new fr.wseduc.webutils.collections.JsonArray();
-		final JsonArray structureIds = new fr.wseduc.webutils.collections.JsonArray();
-		if(defaultOwnerStructures!=null && !defaultOwnerStructures.isEmpty()) {
-			defaultOwnerStructures.entrySet().forEach(set -> {
-				final String key = set.getKey();
-				final String value = set.getValue();
-				if(isNotEmpty(key) && isNotEmpty(value)) {
-					userIds.add(key);
-					structureIds.add(value);
-				}
-			});
-		}
-		if(!userIds.isEmpty() && !structureIds.isEmpty()) {
-			final Promise<Void> promise = Promise.promise();
-			SqlStatementsBuilder builder = new SqlStatementsBuilder();
-			String query =
-				"UPDATE " + threadsTable + " SET structure_id = mapped.s_id " +
-				"FROM (SELECT unnest"+Sql.arrayPrepared(userIds)+" AS u_id, unnest"+Sql.arrayPrepared(structureIds)+" AS s_id) AS mapped " +
-				"WHERE owner = mapped.u_id AND structure_id IS NULL ";
-			
-			final JsonArray values = new fr.wseduc.webutils.collections.JsonArray()
-				.addAll(userIds)
-				.addAll(structureIds);
-			builder.prepared(query, values);
-
-			Sql.getInstance().transaction(builder.build(), SqlResult.validUniqueResultHandler(0, res -> {
-				if(res.isLeft()){
-					promise.tryFail(res.left().getValue());
-				} else {
-					promise.complete();
-				}
-			}));
-			return promise.future();
-		}
-		return Future.succeededFuture();
-	}
 }
