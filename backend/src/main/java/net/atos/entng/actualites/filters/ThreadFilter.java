@@ -51,10 +51,17 @@ public class ThreadFilter implements ResourcesProvider {
 	@Override
 	public void authorize(final HttpServerRequest request, final Binding binding, final UserInfos user, final Handler<Boolean> handler) {
 		SqlConf conf = SqlConfs.getConf(ThreadController.class.getName());
-		String id = request.params().get(conf.getResourceIdLabel());
+		String id = null;
+		if (isThreadShare(binding)) {
+			id = request.params().get("id");
+		} else {
+			id = request.params().get(conf.getResourceIdLabel());
+		}
 		if (id != null && !id.trim().isEmpty() && (parseId(id) instanceof Integer)) {
 			request.pause();
-			
+
+			String sqlRight = resolveThreadRight(binding);
+
 			final List<String> groupsAndUserIds = new ArrayList<>();
 			groupsAndUserIds.add(user.getUserId());
 			if (user.getGroupsIds() != null) {
@@ -63,8 +70,6 @@ public class ThreadFilter implements ResourcesProvider {
 
 			StringBuilder query = new StringBuilder();
 			JsonArray values = new JsonArray();
-
-			String sharedMethod = binding.getRight();
 
 			query.append("WITH user_groups AS MATERIALIZED ( ")
 				.append("   SELECT id::varchar FROM ( ")
@@ -83,7 +88,8 @@ public class ThreadFilter implements ResourcesProvider {
 			values.add(user.getUserId());
 			groupsAndUserIds.forEach(values::add);
 			values.add(Sql.parseId(id));
-			values.add(sharedMethod);
+			values.add(sqlRight);
+			values.add(user.getUserId());
 			Sql.getInstance().prepared(query.toString(), values, message -> {
                 request.resume();
                 Long count = SqlResult.countResult(message);
@@ -94,4 +100,28 @@ public class ThreadFilter implements ResourcesProvider {
 		}
 	}
 
+	// Share endpoints use a different id param
+	private boolean isThreadShare(final Binding binding) {
+		String right = binding.getRight();
+		return "net.atos.entng.actualites.controllers.ThreadController|shareThread".equals(right)
+			|| "net.atos.entng.actualites.controllers.ThreadController|shareResource".equals(right);
+	}
+
+	// Map original annotation right (points) to consolidated DB right (dashes)
+	private String resolveThreadRight(final Binding binding) {
+		String right = binding.getRight();
+		// contrib: getThread
+		if ("net.atos.entng.actualites.controllers.ThreadController|getThread".equals(right)) {
+			return THREAD_CONTRIB_RIGHT;
+		}
+		// manager: updateThread, deleteThread, shareThread, shareResource
+		if ("net.atos.entng.actualites.controllers.ThreadController|updateThread".equals(right)
+			|| "net.atos.entng.actualites.controllers.ThreadController|deleteThread".equals(right)
+			|| "net.atos.entng.actualites.controllers.ThreadController|shareThread".equals(right)
+			|| "net.atos.entng.actualites.controllers.ThreadController|shareResource".equals(right)) {
+			return THREAD_MANAGER_RIGHT;
+		}
+		// fallback: convert dots to dashes (should not happen after migration)
+		return right.replaceAll("\\.", "-");
+	}
 }
