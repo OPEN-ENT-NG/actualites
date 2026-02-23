@@ -1,5 +1,5 @@
 import { Button, Flex, useToggle } from '@edifice.io/react';
-import { IconRafterDown, IconRafterUp } from '@edifice.io/react/icons';
+import { IconRafterDown } from '@edifice.io/react/icons';
 import { PortalModal } from '~/components/PortalModal';
 import { useI18n } from '~/hooks/useI18n';
 import { Expandable } from '../Expandable';
@@ -45,7 +45,15 @@ export function KnowMoreModal({
             className="foldable"
             variant="ghost"
             size="md"
-            rightIcon={hideWhat ? <IconRafterDown /> : <IconRafterUp />}
+            rightIcon={
+              <IconRafterDown
+                className="w-16 min-w-0"
+                style={{
+                  transition: 'rotate 0.3s ease-out',
+                  rotate: hideWhat ? '0deg' : '-180deg',
+                }}
+              />
+            }
             onClick={handleWhatClick}
           >
             {t('actualites.knowmore.body.what.title')}
@@ -61,7 +69,15 @@ export function KnowMoreModal({
             className="foldable"
             variant="ghost"
             size="md"
-            rightIcon={hideHow ? <IconRafterDown /> : <IconRafterUp />}
+            rightIcon={
+              <IconRafterDown
+                className="w-16 min-w-0"
+                style={{
+                  transition: 'rotate 0.3s ease-out',
+                  rotate: hideHow ? '0deg' : '-180deg',
+                }}
+              />
+            }
             onClick={handleHowClick}
           >
             {t('actualites.knowmore.body.how.title')}
