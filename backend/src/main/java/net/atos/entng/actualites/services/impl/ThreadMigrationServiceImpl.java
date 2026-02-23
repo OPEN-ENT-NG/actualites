@@ -41,52 +41,6 @@ public class ThreadMigrationServiceImpl implements ThreadMigrationService {
     }
 
     @Override
-    public Future<Void> addAdminLocalToThreads() {
-        Promise<Void> promise = Promise.promise();
-        String query = "SELECT t.id as id, t.structure_id as structure_id " +
-                            "FROM actualites.thread AS t " +
-                            "WHERE t.structure_id IS NOT NULL " +
-                            "      AND t.migrated = false ";
-
-        Sql.getInstance().prepared(query, new JsonArray(), res -> {
-            Either<String, JsonArray> resp = SqlResult.validResult(res);
-            if (resp.isLeft()) {
-                promise.fail(resp.left().getValue());
-                return;
-            }
-
-            Map<String, JsonObject> structToAdminGroup = new HashMap<>();
-            Map<Integer, String> threadToStructureId = new HashMap<>();
-            Set<String> resolvedStructureAdminGroup = new HashSet<>();
-
-            JsonArray rows = resp.right().getValue();
-            List<Future> futures = new ArrayList<>();
-
-            for (Object row : rows) {
-                String structureId = ((JsonObject)row).getString("structure_id");
-                threadToStructureId.put(((JsonObject)row).getInteger("id"), structureId);
-
-                if(!resolvedStructureAdminGroup.contains(structureId)){
-                    resolvedStructureAdminGroup.add(structureId);
-                    futures.add(groupService.getAdminLocalGroup(structureId)
-                            .onSuccess( g -> structToAdminGroup.put(structureId, g))
-                            .onFailure(ex -> log.warn(ex.getMessage())));
-                }
-            }
-
-            CompositeFuture.all(futures)
-                    .onComplete(ar -> {
-                if (ar.succeeded()) {
-                    updateThreadAndAddShared(structToAdminGroup, threadToStructureId, promise);
-                } else {
-                    promise.fail(ar.cause());
-                }
-            });
-        });
-        return promise.future();
-    }
-
-    @Override
     public void addAdmlShare(String threadId) {
         Sql.getInstance().prepared("SELECT structure_id FROM actualites.thread WHERE id = ? ",
                 new JsonArray().add(threadId), h -> {
