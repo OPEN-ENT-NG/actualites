@@ -30,7 +30,7 @@ export function ThreadSetting({
       gap="24"
       fill
     >
-      <ThreadIcon thread={thread} iconSize="80" />
+      <ThreadIcon thread={thread} iconSize="80" hidden={!checked} />
       <Flex direction="column" gap="4" fill className="overflow-hidden">
         <strong className="text-truncate">{thread.title}</strong>
 

@@ -1,16 +1,11 @@
 import {
-  Button,
   ButtonSkeleton,
   Divider,
   Dropdown,
   Flex,
   useBreakpoint,
 } from '@edifice.io/react';
-import {
-  IconAdjustSettings,
-  IconBulletList,
-  IconSettings,
-} from '@edifice.io/react/icons';
+import { IconBulletList } from '@edifice.io/react/icons';
 import { clsx } from 'clsx';
 import { useNavigate } from 'react-router-dom';
 import { ThreadIcon } from '~/components/ThreadIcon';
@@ -20,6 +15,7 @@ import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
 import { useUserRights } from '~/hooks/useUserRights';
 import { Thread } from '~/models/thread';
 import { useThreads } from '~/services/queries';
+import { ThreadListActions } from './ThreadListActions';
 
 export const ThreadListMobile = () => {
   const { t } = useI18n();
@@ -40,14 +36,6 @@ export const ThreadListMobile = () => {
     navigate(`/threads/${thread.id}`);
   };
 
-  const handleManageThreadsClick = () => {
-    navigate('/threads/admin');
-  };
-
-  const handleParamThreadsClick = () => {
-    navigate('/threads/settings');
-  };
-
   if (!isFetched) {
     return <ButtonSkeleton size="lg" className="col-12" />;
   }
@@ -58,7 +46,7 @@ export const ThreadListMobile = () => {
 
   return (
     <Flex
-      direction={md ? 'row' : 'column'}
+      direction="column"
       gap={md ? '24' : '0'}
       className="position-relative mx-n16 py-16 px-0 px-md-16 border-bottom"
     >
@@ -102,30 +90,7 @@ export const ThreadListMobile = () => {
       {(canManageOnOneThread || canParamThreads) && (
         <>
           {!md && <Divider className="my-16" />}
-          {canParamThreads && (
-            <Button
-              data-testid="param-threads-button"
-              color="secondary"
-              leftIcon={<IconAdjustSettings />}
-              variant="ghost"
-              onClick={handleParamThreadsClick}
-              className="w-100"
-            >
-              {t('actualites.threadList.threadSettings')}
-            </Button>
-          )}
-          {canManageOnOneThread && (
-            <Button
-              color="secondary"
-              size="sm"
-              leftIcon={<IconSettings />}
-              variant="outline"
-              onClick={handleManageThreadsClick}
-              className="mx-16 mx-md-0"
-            >
-              {t('actualites.threadList.manageThreads')}
-            </Button>
-          )}
+          <ThreadListActions />
         </>
       )}
     </Flex>

@@ -44,16 +44,6 @@ export function ThreadsSettingList() {
   const [visibledThreads, setVisibledThreads] = useState<number[] | undefined>(
     undefined,
   );
-  const isAllChecked = useMemo(() => {
-    if (!threads) return false;
-    return visibledThreads?.length === threads.length;
-  }, [visibledThreads, threads]);
-
-  function getInfoCount(thread: Thread) {
-    const stats = threadsStats?.threads?.find((t) => t.id === thread.id);
-    return { count: stats?.status[InfoStatus.PUBLISHED] || 0 };
-  }
-
   const filteredList = useMemo(() => {
     const normalizeString = (str: string) =>
       StringUtils.removeAccents(str.toLocaleLowerCase());
@@ -78,6 +68,18 @@ export function ThreadsSettingList() {
       return !thread.visible;
     });
   }, [threads, search, threadsFilter]);
+  const isAllChecked = useMemo(() => {
+    if (!filteredList) return false;
+    return (
+      filteredList.filter((thread) => visibledThreads?.includes(thread.id))
+        .length === filteredList.length
+    );
+  }, [visibledThreads, filteredList]);
+
+  function getInfoCount(thread: Thread) {
+    const stats = threadsStats?.threads?.find((t) => t.id === thread.id);
+    return { count: stats?.status[InfoStatus.PUBLISHED] || 0 };
+  }
 
   const debouncedCheckedThreads = useDebounce(visibledThreads, 600);
 
@@ -114,10 +116,21 @@ export function ThreadsSettingList() {
   };
 
   const handleAllCheckedChange = () => {
-    if (!threads) return;
-    setVisibledThreads((prev) =>
-      prev?.length === threads.length ? [] : [...threads!.map((t) => t.id)],
-    );
+    if (!threads || !filteredList) return;
+    setVisibledThreads((prev) => {
+      if (!prev) return [...filteredList.map((thread) => thread.id)];
+      const notIncludedThreads = filteredList
+        .filter((thread) => !prev?.includes(thread.id))
+        .map((thread) => thread.id);
+      // If all threads are already included, uncheck from filtered list. Otherwise, check all.
+      return notIncludedThreads.length > 0
+        ? [...prev, ...notIncludedThreads]
+        : [
+            ...prev.filter(
+              (id) => !filteredList.some((thread) => thread.id === id),
+            ),
+          ];
+    });
   };
 
   const handleCheckedChange = (threadId: number, checked: boolean) => {
