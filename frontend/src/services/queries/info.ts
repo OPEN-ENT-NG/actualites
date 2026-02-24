@@ -30,7 +30,7 @@ export const infoQueryKeys = {
   // ['infos']
   all: () => ['infos'],
 
-  // ['infos', 'stats']
+  // ["infos","stats",{"viewHidden":true}]
   stats: (viewHidden?: boolean) => [
     ...infoQueryKeys.all(),
     'stats',

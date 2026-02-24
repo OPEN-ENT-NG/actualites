@@ -1,6 +1,6 @@
 import { useMatches } from 'react-router-dom';
 
-export function useThreadRoute() {
+export function useRouteType() {
   const matches = useMatches();
   const type: 'admin' | 'param' | 'create' | 'list' = matches.find(
     (route) => route.id === 'AdminThreads',

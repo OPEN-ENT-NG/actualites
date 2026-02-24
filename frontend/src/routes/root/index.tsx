@@ -14,7 +14,7 @@ import { IWebApp } from '@edifice.io/client';
 import clsx from 'clsx';
 import { existingActions } from '~/config';
 import { AdminNewThreadButton } from '~/features';
-import { useThreadRoute } from '~/hooks/useThreadRoute';
+import { useRouteType } from '~/hooks/useThreadRoute';
 import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
 import { useUserRights } from '~/hooks/useUserRights';
 import { ThreadListFilter } from '~/models/thread';
@@ -37,7 +37,7 @@ export const Root = () => {
   };
   const setRights = useActionUserRights.use.setRights();
   setRights(actionUserRights);
-  const { type: routeType } = useThreadRoute();
+  const { type: routeType } = useRouteType();
 
   const { currentApp, init } = useEdificeClient();
   const { canContributeOnOneThread } = useThreadsUserRights(
