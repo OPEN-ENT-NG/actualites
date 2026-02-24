@@ -20,6 +20,7 @@
 package net.atos.entng.actualites.controllers;
 
 
+import static net.atos.entng.actualites.filters.RightConstants.*;
 import static org.entcore.common.http.response.DefaultResponseHandler.notEmptyResponseHandler;
 
 import java.util.List;
@@ -60,6 +61,7 @@ public class CommentController extends ControllerHelper {
 	private static final String EVENT_TYPE = "NEWS";
 	private static final String NEWS_COMMENT_EVENT_TYPE = EVENT_TYPE + "_COMMENT";
 	private static final int OVERVIEW_LENGTH = 50;
+	public static final String ROOT_RIGHT = "net.atos.entng.actualites.controllers.CommentController";
 
 	protected final InfoService infoService;
 	protected final ThreadService threadService;
@@ -73,7 +75,7 @@ public class CommentController extends ControllerHelper {
 	@Put("/info/:"+Actualites.INFO_RESOURCE_ID+"/comment")
 	@ApiDoc("Comment : Add a comment to an Info by info id")
 	@ResourceFilter(InfoFilter.class)
-	@SecuredAction(value = "info.comment", type = ActionType.RESOURCE, right= "net.atos.entng.actualites.controllers.CommentController|comment" )
+	@SecuredAction(value = INFO_COMMENT_VALUE, type = ActionType.RESOURCE, right = ROOT_RIGHT + "|comment")
 	public void createComment(final HttpServerRequest request) {
 		final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
@@ -116,7 +118,7 @@ public class CommentController extends ControllerHelper {
 	@Put("/info/:"+Actualites.INFO_RESOURCE_ID+"/comment/:"+COMMENT_ID_PARAMETER)
 	@ApiDoc("Comment : modify a comment of an Info by info and comment id. DEPRECATED - Used by mobile app only.")
 	@ResourceFilter(UpdateCommentFilter.class)
-	@SecuredAction(value = "info.comment", type = ActionType.RESOURCE)
+	@SecuredAction(value = INFO_COMMENT_VALUE, type = ActionType.RESOURCE, right = ROOT_RIGHT + "|updateComment")
 	public void updateComment(final HttpServerRequest request) {
 		final String commentId = request.params().get(COMMENT_ID_PARAMETER);
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
@@ -143,7 +145,7 @@ public class CommentController extends ControllerHelper {
 	@Delete("/info/:"+Actualites.INFO_RESOURCE_ID+"/comment/:"+COMMENT_ID_PARAMETER)
 	@ApiDoc("Comment : delete a comment by comment id. DEPRECATED - Used by mobile app only.")
 	@ResourceFilter(CommentFilter.class)
-	@SecuredAction(value = "info.comment", type = ActionType.RESOURCE)
+	@SecuredAction(value = INFO_COMMENT_VALUE, type = ActionType.RESOURCE, right = ROOT_RIGHT + "|deleteComment")
 	public void deleteComment(final HttpServerRequest request) {
 		final String commentId = request.params().get(COMMENT_ID_PARAMETER);
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
