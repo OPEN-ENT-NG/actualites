@@ -95,7 +95,7 @@ public class ThreadController extends ControllerHelper {
 	@Deprecated
 	@Get("/threads")
 	@ApiDoc("Get Thread by id. DEPRECATED - Use /api/v1/threads instead.")
-	@SecuredAction(value = "actualites.threads.list", right = ROOT_RIGHT + "|listThreads")
+	@SecuredAction("actualites.threads.list")
 	public void listThreads(final HttpServerRequest request) {
 		log.warn("[DEPRECATED] GET /threads called - Use /api/v1/threads instead");
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
@@ -109,7 +109,7 @@ public class ThreadController extends ControllerHelper {
 	@Deprecated
 	@Post("/thread")
 	@ApiDoc("Create a new Thread. DEPRECATED - Use /api/v1/threads instead.")
-	@SecuredAction(value = "actualites.create", right = ROOT_RIGHT + "|createThread")
+	@SecuredAction("actualites.create")
 	public void createThread(final HttpServerRequest request) {
 		log.warn("[DEPRECATED] POST /thread called - Use /api/v1/threads instead");
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
@@ -298,7 +298,7 @@ public class ThreadController extends ControllerHelper {
 			" - Threads containing news that are shared to the user or one of its groups" +
 			"The ensemble of threads returned by this method contain every visible news to the user." +
 			"DEPRECATED - Used by mobile app only.")
-	@SecuredAction(value = "actualites.threads.listthreads", right = ROOT_RIGHT + "|listThreads")
+	@SecuredAction("actualites.threads.listthreads")
 	public void listThreadsV2(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {

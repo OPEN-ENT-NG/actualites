@@ -77,7 +77,7 @@ public class ThreadControllerV1 extends ControllerHelper {
 
     @Get("/api/v1/threads")
     @ApiDoc("Get all threads ")
-    @SecuredAction(value = "actualites.threads.list", right = ROOT_RIGHT + "|listThreads")
+    @SecuredAction("actualites.threads.list")
     public void getThreads(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
@@ -109,7 +109,7 @@ public class ThreadControllerV1 extends ControllerHelper {
     @Post("/api/v1/threads")
     @ApiDoc("Create a new thread")
     @ResourceFilter(ThreadFilter.class)
-    @SecuredAction(value = "actualites.create", right = ROOT_RIGHT + "|createThread")
+    @SecuredAction("actualites.create")
     public void createThread(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request,user -> RequestUtils.bodyToJson(request, pathPrefix + SCHEMA_THREAD_CREATE,
 				resource -> {

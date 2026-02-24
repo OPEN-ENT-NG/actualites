@@ -130,7 +130,7 @@ public class InfoController extends ControllerHelper {
     @Deprecated
     @Get("/infos")
     @ApiDoc("Get infos. DEPRECATED - Use /api/v1/infos instead.")
-    @SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")
+    @SecuredAction("actualites.infos.list")
     public void listInfos(final HttpServerRequest request) {
         log.warn("[DEPRECATED] GET /infos called - Use /api/v1/infos instead");
         // TODO IMPROVE : Security on Infos visibles by statuses / dates is not enforced
@@ -202,7 +202,7 @@ public class InfoController extends ControllerHelper {
     @Deprecated
     @Get("/linker/infos")
     @ApiDoc("List infos without their content. Used by linker. DEPRECATED - Used by linker only.")
-    @SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")
+    @SecuredAction("actualites.infos.list")
     public void listInfosForLinker(final HttpServerRequest request) {
         log.warn("[DEPRECATED] GET /linker/infos called - This endpoint should no longer be used");
         // TODO IMPROVE : Security on Infos visibles by statuses / dates is not enforced
@@ -222,7 +222,7 @@ public class InfoController extends ControllerHelper {
     @Deprecated
     @Get("/infos/last/:"+RESULT_SIZE_PARAMETER)
     @ApiDoc("Get infos in thread by status and by thread id. DEPRECATED - Used by widget only.")
-    @SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")
+    @SecuredAction("actualites.infos.list")
     public void listLastPublishedInfos(final HttpServerRequest request) {
         log.warn("[DEPRECATED] GET /infos/last/:resultSize called - This endpoint should no longer be used");
         UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
@@ -772,7 +772,7 @@ public class InfoController extends ControllerHelper {
     @Deprecated
     @Get("/list")
     @ApiDoc("List infos with pagination. Accept custom page size. Params threadId can be used to restrict the list to this thread. DEPRECATED - Used by mobile app only.")
-    @SecuredAction(value = "actualites.infos.list.page", right = ROOT_RIGHT + "|listInfos")
+    @SecuredAction("actualites.infos.list.page")
     public void listInfosPagined(final HttpServerRequest request) {
         // TODO IMPROVE : Security on Infos visibles by statuses / dates is not enforced
         UserUtils.getUserInfos(eb, request, user -> {

@@ -107,7 +107,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	}
 
 	@Get("/api/v1/infos")
-	@SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")
+	@SecuredAction("actualites.infos.list")
 	public void infos(final HttpServerRequest request) {
 		// page argument
 		int pageParsed;
@@ -223,7 +223,7 @@ public class InfosControllerV1 extends ControllerHelper {
 
 	@Get("/api/v1/infos/preview/last/:" + RESULT_SIZE_PARAMETER)
 	@ApiDoc("List last infos, accept query param resultSize.")
-	@SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")
+	@SecuredAction("actualites.infos.list")
 	public void getLastInfos(HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
             String resultSize = request.params().get(RESULT_SIZE_PARAMETER);
@@ -642,7 +642,7 @@ public class InfosControllerV1 extends ControllerHelper {
 
 	@Get("/api/v1/infos/stats")
 	@ApiDoc("Get statistics about threads and infos grouped by status")
-	@SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")
+	@SecuredAction("actualites.infos.list")
 	public void getStats(HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
