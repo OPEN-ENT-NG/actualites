@@ -11,7 +11,7 @@ import { Info, InfoId } from '~/models/info';
 import { ThreadId } from '~/models/thread';
 import { queryClient } from '~/providers';
 import { commentService } from '../api';
-import { infoQueryKeys } from './info';
+import { infoQueryKeys } from './infoQueryKeys';
 
 /**
  * Comment Query Keys always follow this format :

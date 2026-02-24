@@ -15,7 +15,7 @@ import {
   ThreadQueryPayload,
 } from '~/models/thread';
 import { threadService } from '../api';
-import { infoQueryKeys } from './info';
+import { infoQueryKeys } from './infoQueryKeys';
 
 interface OnMutateResult {
   queryKey: (string | number)[];
