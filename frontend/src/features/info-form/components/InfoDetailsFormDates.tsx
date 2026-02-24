@@ -43,7 +43,7 @@ export function InfoDetailsFormDates() {
     if (newPublicationDate) {
       newPublicationDate.setHours(INFO_HOURS_DATE_DEFAULT, 0, 0, 0);
     }
-    setValue('publicationDate', pickedPublicationDate, {
+    setValue('publicationDate', newPublicationDate, {
       shouldDirty: true,
       shouldValidate: true,
     });
