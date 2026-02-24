@@ -172,7 +172,7 @@ public class CommentControllerV1 extends ControllerHelper {
 				.put("profilUri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
 				.put("username", user.getUsername())
 				.put("info", title)
-				.put("resourceUri", pathPrefix + "#/view/info/" + infoId + "/comment/" + commentId)
+				.put("resourceUri", pathPrefix + "/?info=" + infoId + "#comment-" + commentId)
 				.put("overview", overview);
 
 			notification.notifyTimeline(request, notificationName, user, ids, infoId, params);

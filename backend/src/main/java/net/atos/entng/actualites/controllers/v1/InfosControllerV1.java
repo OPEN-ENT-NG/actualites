@@ -345,7 +345,7 @@ public class InfosControllerV1 extends ControllerHelper {
 									.put("profilUri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
 									.put("username", user.getUsername())
 									.put("info", info.getString("title"))
-									.put("resourceUri", pathPrefix + "#/view/thread/" + info.getString("thread_id") + "/info/" + infoId)
+									.put("resourceUri", pathPrefix + "/threads/" + info.getString("thread_id") + "?info=" + infoId)
 									.put("disableAntiFlood", true);
 
 							params.put("pushNotif", new JsonObject().put("title", "push.notif.actu.info.published")

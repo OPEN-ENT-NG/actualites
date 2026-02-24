@@ -139,7 +139,7 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
                     .put("username", owner.getUsername())
                     .put("info", title)
                     .put("disableAntiFlood", ignoreFlood)
-                    .put("resourceUri", pathPrefix + "#/view/thread/" + threadId + "/info/" + infoId);
+                    .put("resourceUri", pathPrefix + "/threads/" + threadId + "?info=" + infoId);
             if("news.news-published".equals(notificationName)) {
                 params.put("pushNotif", new JsonObject().put("title", "push.notif.actu.info.published").put("body", owner.getUsername()+ " : "+ title));
                 infoService.retrieve(infoId, false, actu -> {
