@@ -1,4 +1,5 @@
 import { Checkbox, Divider, Flex, useBreakpoint } from '@edifice.io/react';
+import { clsx } from 'clsx';
 import { ChangeEvent } from 'react';
 import { ThreadIcon } from '~/components/ThreadIcon';
 import { useI18n } from '~/hooks/useI18n';
@@ -22,6 +23,10 @@ export function ThreadSetting({
     onCheckedChange(e.currentTarget.checked);
   };
 
+  const classes = clsx('overflow-hidden', {
+    'opacity-50': !checked,
+  });
+
   return (
     <Flex
       data-testid="thread-div"
@@ -31,7 +36,7 @@ export function ThreadSetting({
       fill
     >
       <ThreadIcon thread={thread} iconSize="80" hidden={!checked} />
-      <Flex direction="column" gap="4" fill className="overflow-hidden">
+      <Flex direction="column" gap="4" fill className={classes}>
         <strong className="text-truncate">{thread.title}</strong>
 
         <Flex

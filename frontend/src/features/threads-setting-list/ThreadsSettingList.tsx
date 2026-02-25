@@ -50,24 +50,23 @@ export function ThreadsSettingList() {
 
     return threads?.filter((thread) => {
       if (
-        !(
-          normalizeString(thread.title).includes(normalizeString(search)) ||
-          normalizeString(thread.structure?.name || '').includes(
-            normalizeString(search),
-          )
+        normalizeString(thread.title).includes(normalizeString(search)) ||
+        normalizeString(thread.structure?.name || '').includes(
+          normalizeString(search),
         )
       ) {
-        return false;
+        if (threadsFilter === ThreadsSettingFilter.ALL) {
+          return true;
+        }
+        if (threadsFilter === ThreadsSettingFilter.DISPLAYED) {
+          return thread.visible;
+        }
+        return !thread.visible;
       }
-      if (threadsFilter === ThreadsSettingFilter.ALL) {
-        return true;
-      }
-      if (threadsFilter === ThreadsSettingFilter.DISPLAYED) {
-        return thread.visible;
-      }
-      return !thread.visible;
+      return false;
     });
   }, [threads, search, threadsFilter]);
+
   const isAllChecked = useMemo(() => {
     if (!filteredList) return false;
     return (
@@ -91,20 +90,16 @@ export function ThreadsSettingList() {
   useLayoutEffect(() => {
     if (!threads || !debouncedCheckedThreads) return;
 
-    // Compare the current visible threads with the debounced checked threads
-    const currentVisibleThreads = threads
-      .filter((t) => t.visible)
-      .map((t) => t.id);
-    const areArraysEqual =
-      currentVisibleThreads.length === debouncedCheckedThreads.length &&
-      !currentVisibleThreads.some(
-        (value) => !debouncedCheckedThreads.includes(value),
-      );
-    // Skip update if arrays are equal that means no changes have been made
-    if (areArraysEqual) return;
+    // Check if there is a thread with visibility different from the checked state.
+    // If there is no thread, that means there is no change and we can skip the update.
+    const threadsUpdated = threads.filter((thread) => {
+      const isVisible = debouncedCheckedThreads.includes(thread.id);
+      return thread.visible !== isVisible;
+    });
+    if (threadsUpdated.length === 0) return;
 
     updateThreadPreferences({
-      threads: threads.map((thread) => ({
+      threads: threadsUpdated.map((thread) => ({
         threadId: thread.id,
         visible: debouncedCheckedThreads.includes(thread.id),
       })),

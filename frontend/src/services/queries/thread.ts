@@ -219,10 +219,5 @@ export const useUpdateThreadPreferences = () => {
     onError: () => {
       toast.error(t('actualites.threadsSetting.error'));
     },
-    onSettled: (_data, error) => {
-      if (error) return;
-
-      queryClient.invalidateQueries({ queryKey: threadQueryKeys.all() });
-    },
   });
 };
