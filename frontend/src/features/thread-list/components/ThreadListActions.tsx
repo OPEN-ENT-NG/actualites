@@ -42,7 +42,7 @@ export const ThreadListActions = () => {
           leftIcon={<IconAdjustSettings />}
           variant="ghost"
           onClick={handleParamThreadsClick}
-          className="w-100 h-auto"
+          className="h-auto mx-16 mx-md-0"
         >
           {t('actualites.threadList.threadSettings')}
         </Button>
