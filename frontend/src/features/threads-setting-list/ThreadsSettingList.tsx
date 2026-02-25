@@ -1,4 +1,5 @@
 import {
+  Alert,
   Checkbox,
   EmptyScreen,
   Flex,
@@ -188,13 +189,26 @@ export function ThreadsSettingList() {
           onChange={handleSearchChange}
         />
       </Flex>
+      <Alert
+        type="info"
+        title={t('actualites.threadsSetting.info.title')}
+        className="mt-32"
+        isDismissible
+      >
+        <>
+          <div>
+            <strong>{t('actualites.threadsSetting.info.title')}</strong>
+          </div>
+          {t('actualites.threadsSetting.info.description')}
+        </>
+      </Alert>
       <Flex align="center" justify="between">
         <SegmentedControl
           options={threadsFilterOptions}
           value={threadsFilter}
           onChange={(value) => setThreadsFilter(value as ThreadsSettingFilter)}
           data-testid="threads-list-segmented"
-        ></SegmentedControl>
+        />
 
         <Checkbox
           label={t('actualites.threadsSetting.displayThreadAll')}

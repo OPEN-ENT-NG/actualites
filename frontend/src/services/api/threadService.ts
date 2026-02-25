@@ -3,6 +3,7 @@ import { baseUrlAPI } from '.';
 import { Share } from '../../models/share';
 import {
   Thread,
+  ThreadHasPreferencesQueryResponse,
   ThreadId,
   ThreadListFilter,
   ThreadPayload,
@@ -83,6 +84,18 @@ export const createThreadService = () => {
       return odeServices
         .http()
         .put<void>(`${baseUrlAPI}/me/thread-preferences`, threadPreferences);
+    },
+
+    /**
+     * Check if the user has thread preferences.
+     * @returns A promise that resolves with a boolean indicating if the user has thread preferences.
+     */
+    getThreadHasPreferencesExists() {
+      return odeServices
+        .http()
+        .get<ThreadHasPreferencesQueryResponse>(
+          `${baseUrlAPI}/me/thread-preferences/exists`,
+        );
     },
   };
 };

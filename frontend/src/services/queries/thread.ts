@@ -31,6 +31,7 @@ export const threadQueryKeys = {
     'share',
     'json',
   ],
+  threadHasPreferences: ['threadHasPreferences'],
 };
 
 /**
@@ -221,3 +222,9 @@ export const useUpdateThreadPreferences = () => {
     },
   });
 };
+
+export const useThreadHasPreferences = () =>
+  useQuery({
+    queryKey: threadQueryKeys.threadHasPreferences,
+    queryFn: () => threadService.getThreadHasPreferencesExists(),
+  });
