@@ -14,6 +14,9 @@ export function useRouteType() {
         ? 'param'
         : 'list';
   return {
-    type,
+    isAdminRoute: type === 'admin',
+    isCreateRoute: type === 'create',
+    isParamRoute: type === 'param',
+    isListRoute: type === 'list',
   };
 }

@@ -3,7 +3,7 @@ import { useInfoForm } from '../hooks/useInfoForm';
 
 export function InfoFormActionsSkeleton() {
   const { md } = useBreakpoint();
-  const { type } = useInfoForm();
+  const { isCreateRoute } = useInfoForm();
 
   return (
     <Flex
@@ -14,7 +14,7 @@ export function InfoFormActionsSkeleton() {
       className="mb-48"
     >
       <ButtonSkeleton className="col-1" />
-      {type === 'create' ? (
+      {isCreateRoute ? (
         <Flex gap="12" className="col-4 me-12">
           <ButtonSkeleton className="col-6" />
           <ButtonSkeleton className="col-6" />

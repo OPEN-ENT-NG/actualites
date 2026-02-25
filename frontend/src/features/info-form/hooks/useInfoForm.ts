@@ -13,6 +13,8 @@ export function useInfoForm() {
       : 'publish';
 
   return {
-    type,
+    isEditRoute: type === 'edit',
+    isCreateRoute: type === 'create',
+    isPublishRoute: type === 'publish',
   };
 }

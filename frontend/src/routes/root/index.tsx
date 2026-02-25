@@ -14,7 +14,7 @@ import { IWebApp } from '@edifice.io/client';
 import clsx from 'clsx';
 import { existingActions } from '~/config';
 import { AdminNewThreadButton } from '~/features';
-import { useRouteType } from '~/hooks/useThreadRoute';
+import { useRouteType } from '~/hooks/useRouteType';
 import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
 import { useUserRights } from '~/hooks/useUserRights';
 import { ThreadListFilter } from '~/models/thread';
@@ -37,11 +37,12 @@ export const Root = () => {
   };
   const setRights = useActionUserRights.use.setRights();
   setRights(actionUserRights);
-  const { type: routeType } = useRouteType();
+  const { isAdminRoute, isCreateRoute, isListRoute, isParamRoute } =
+    useRouteType();
 
   const { currentApp, init } = useEdificeClient();
   const { canContributeOnOneThread } = useThreadsUserRights(
-    routeType === 'admin' ? ThreadListFilter.MANAGABLE : undefined,
+    isAdminRoute ? ThreadListFilter.MANAGABLE : undefined,
   );
   const { canCreateThread } = useUserRights();
   const { lg } = useBreakpoint();
@@ -56,17 +57,17 @@ export const Root = () => {
   return init ? (
     <div
       className={clsx({
-        'd-flex flex-column vh-100': lg && routeType === 'list',
+        'd-flex flex-column vh-100': lg && isListRoute,
       })}
     >
       <Layout>
         <AppHeader>
           <Breadcrumb app={(currentApp as IWebApp) ?? displayApp} />
-          {routeType !== 'create' && (
+          {!isCreateRoute && (
             <Flex fill align="center" justify="end">
-              {routeType === 'admin'
+              {isAdminRoute
                 ? canCreateThread && <AdminNewThreadButton />
-                : routeType !== 'param' &&
+                : !isParamRoute &&
                   canContributeOnOneThread && <NewInfoButton />}
             </Flex>
           )}
