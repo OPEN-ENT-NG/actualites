@@ -221,7 +221,7 @@ public class Actualites extends BaseServer {
 		addController(new UserPreferenceController(new UserPreferenceServiceImpl(threadService)));
 
 		// GenAI / FALC controller
-		JsonObject genAiConfigJson = config.getJsonObject("genai", new JsonObject());
+		JsonObject genAiConfigJson = config.getJsonObject("publicConf").getJsonObject("genai");
 		GenAiConfig genAiConfig = new GenAiConfig(genAiConfigJson);
 		GenAiService genAiService = new GenAiServiceImpl(vertx, genAiConfig);
 		addController(new FalcController(genAiService));
