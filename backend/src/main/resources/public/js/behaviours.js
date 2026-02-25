@@ -191,23 +191,23 @@
 	    },
 	    // Used by component "linker" to load news
 	    loadResources: function (callback) {
-	        axios_1.default.get('/actualites/linker/infos').then(function (infos) {
+	        axios_1.default.get('/actualites/api/v1/infos/linker').then(function (infos) {
 	            var infosArray = entcore_1._.map(infos.data, function (info) {
 	                var threadIcon;
-	                if (!info.thread_icon) {
+	                if (!info.threadIcon) {
 	                    threadIcon = '/img/icons/glyphicons_036_file.png';
 	                }
 	                else {
-	                    threadIcon = info.thread_icon + '?thumbnail=48x48';
+	                    threadIcon = info.threadIcon + '?thumbnail=48x48';
 	                }
 	                return {
-	                    title: info.title + ' [' + info.thread_title + ']',
-	                    ownerName: info.unsername,
-	                    owner: info.owner,
+	                    title: info.title + ' [' + info.title + ']',
+	                    ownerName: info.owner.displayName,
+	                    owner: info.owner.id,
 	                    icon: threadIcon,
-	                    path: '/actualites#/view/thread/' + info.thread_id + '/info/' + info._id,
-	                    id: info._id,
-	                    thread_id: info.thread_id
+	                    path: '/actualites/threads/' + info.threadId + '?info=' + info.id,
+	                    id: info.id,
+	                    thread_id: info.threadId
 	                };
 	            });
 	            this.resources = entcore_1._.compact(entcore_1._.flatten(infosArray));

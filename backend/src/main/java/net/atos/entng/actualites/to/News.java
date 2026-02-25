@@ -28,10 +28,11 @@ public class News {
     private final String title;
     private int contentVersion;
     private int previousContentVersion;
+    private final String threadIcon;
 
     public News(int id, int threadId, String title, String content, NewsStatus status, ResourceOwner owner, String created, String modified,
                 String publicationDate, String expirationDate, boolean isHeadline, int numberOfComments, Rights sharedRights,
-                int contentVersion, int previousContentVersion) {
+                int contentVersion, int previousContentVersion, String threadIcon) {
         this.id = id;
         this.threadId = threadId;
         this.content = content;
@@ -47,6 +48,7 @@ public class News {
         this.title = title;
         this.contentVersion = contentVersion;
         this.previousContentVersion = previousContentVersion;
+        this.threadIcon = threadIcon;
     }
 
     public String getTitle() {
@@ -125,5 +127,9 @@ public class News {
 
     public void setPreviousContentVersion(int previousContentVersion) {
         this.previousContentVersion = previousContentVersion;
+    }
+
+    public String getThreadIcon() {
+        return threadIcon;
     }
 }
