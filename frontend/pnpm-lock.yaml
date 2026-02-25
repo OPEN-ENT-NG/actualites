@@ -12,17 +12,17 @@ importers:
         specifier: ^6.0.2
         version: 6.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@edifice.io/bootstrap':
-        specifier: develop
-        version: 2.5.9-develop.20260202140207
+        specifier: 2.5.12
+        version: 2.5.12
       '@edifice.io/client':
-        specifier: develop
-        version: 2.5.9-develop.20260202140207
+        specifier: 2.5.12
+        version: 2.5.12
       '@edifice.io/react':
-        specifier: develop
-        version: 2.5.9-develop.20260202140207(iqddsgj35aagyb53f5quku2icy)
+        specifier: 2.5.12
+        version: 2.5.12(iqddsgj35aagyb53f5quku2icy)
       '@edifice.io/utilities':
-        specifier: develop
-        version: 2.5.9-develop.20260202140207
+        specifier: 2.5.12
+        version: 2.5.12
       '@react-spring/web':
         specifier: ^9.7.5
         version: 9.7.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -354,14 +354,14 @@ packages:
     peerDependencies:
       react: '>=16.8.0'
 
-  '@edifice.io/bootstrap@2.5.9-develop.20260202140207':
-    resolution: {integrity: sha512-lOQHUjykTKpAmaJqQ9I2D5k1WRwFX8muRkqNgHo/zWVLG4kxNpLT/JDFhADnXvyzPGvevvJozzNv+rSCfZ/OkA==}
+  '@edifice.io/bootstrap@2.5.12':
+    resolution: {integrity: sha512-XvYNH5jZTy6cuJdQRVciUqpUJItQd2HjNLrg7hjt0ygqOXmFHaYnp1JFU9oligSygsnWVTB/MwKNk06x5fqXtQ==}
 
-  '@edifice.io/client@2.5.9-develop.20260202140207':
-    resolution: {integrity: sha512-xgMSvf+9EeoplyXkRdHAPmYPJc+Tx5b42n60qwNVCv4qAzmJ8J85Q/3FQWRlw7OO5+99nAsCTFYffInERxIiIQ==}
+  '@edifice.io/client@2.5.12':
+    resolution: {integrity: sha512-TIdY0ArgkQXbeOaIAkrJ6VGUTMJe6GgYTbkUtXsjL4TcfBtqjZW+SKD2t/JbBh9MtP9RQ0hcd90leS+sFOq4TA==}
 
-  '@edifice.io/react@2.5.9-develop.20260202140207':
-    resolution: {integrity: sha512-+lUpbR+wa00dwnbiBn/TigsVc5NaKjrKxe+Ga09I6mmgvRgMomxOukMtpJcnEYUumbPHlbtYH0ICBggM5gzJnw==}
+  '@edifice.io/react@2.5.12':
+    resolution: {integrity: sha512-IJoVOZ6BZjoJ27Vtz5ZkizXNzmCMbw6DTR30BXHvIfV3a4+XSBD4oWbugRks1CJx0IlvGj7bRnmRbASneY9yYw==}
     peerDependencies:
       '@react-spring/web': ^9.7.5
       '@tanstack/react-query': 5.62.7
@@ -370,11 +370,11 @@ packages:
       react-hook-form: ^7.53.0
       react-i18next: ^14.1.0
 
-  '@edifice.io/tiptap-extensions@2.5.9-develop.20260202140207':
-    resolution: {integrity: sha512-JTNwmkLRKM4cFsBiCQczhMWDaNr9gOhiXe0VjitO26DtsKRGpLgVhcOLpADSQB+wafGcjJrQ0OQB2QGxRACgkw==}
+  '@edifice.io/tiptap-extensions@2.5.12':
+    resolution: {integrity: sha512-XIG2oUiiQmuZKs1GPXjsrdXfgtnkylQ9p7l98DtFgEalPJKuT22EYq2c7ntQ/ZAWnng0tPgYpRj3BGIYOO/GVQ==}
 
-  '@edifice.io/utilities@2.5.9-develop.20260202140207':
-    resolution: {integrity: sha512-wzhpZXrMjR/OqnEEbLyVXFRqSaEkj+UkcoeztRS5Fbc831AOQlf2TJxb6xtwzUZgcw1HvKfFH/IbYGHRC+R+GQ==}
+  '@edifice.io/utilities@2.5.12':
+    resolution: {integrity: sha512-N9F1u/rKsgTVCPeNHktmY9xtOafvs8kU82ve5d1mil1lUbT91WCO3BxiBiVbIAl1GTFrESO6WJlpD8lvnvA5pA==}
 
   '@emnapi/core@1.8.1':
     resolution: {integrity: sha512-AvT9QFpxK0Zd8J0jopedNm+w/2fIzvtPKPjqyw9jwvBaReTTqPBk9Hixaz7KbjimP+QNz605/XnjFcDAL2pqBg==}
@@ -2223,6 +2223,9 @@ packages:
     resolution: {integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==}
     engines: {node: '>=6'}
 
+  detect-europe-js@0.1.2:
+    resolution: {integrity: sha512-lgdERlL3u0aUdHocoouzT10d9I89VVhk0qNRmll7mXdGfJT1/wqZ2ZLA4oJAjeACPY5fT1wsbq2AT+GkuInsow==}
+
   diff-sequences@29.6.3:
     resolution: {integrity: sha512-EjePK1srD3P08o2j4f0ExnylqRs5B9tJjcp9t1krH2qRi8CCdsYfwe9JgSLurFBWwq4uOlipzfk5fHNvwFKr8Q==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -2741,6 +2744,9 @@ packages:
 
   is-potential-custom-element-name@1.0.1:
     resolution: {integrity: sha512-bCYeRA2rVibKZd+s2625gGnGF/t7DSqDs4dP7CrLA1m7jKWz6pps0LpYLJN8Q64HtmPKJ1hrN3nzPNKFEKOUiQ==}
+
+  is-standalone-pwa@0.1.1:
+    resolution: {integrity: sha512-9Cbovsa52vNQCjdXOzeQq5CnCbAcRk05aU62K20WO372NrTv0NxibLFCK6lQ4/iZEFdEA3p3t2VNOn8AJ53F5g==}
 
   is-stream@3.0.0:
     resolution: {integrity: sha512-LnQR4bZ9IADDRSkvpqMGvt/tEJWclzklNgSw48V5EAaAeDd6qGvN8ei6k5p0tvxSR171VmGyHuTiAOfxAbr8kA==}
@@ -4056,8 +4062,15 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
+  ua-is-frozen@0.1.2:
+    resolution: {integrity: sha512-RwKDW2p3iyWn4UbaxpP2+VxwqXh0jpvdxsYpZ5j/MLLiQOfbsV5shpgQiw93+KMYQPcteeMQ289MaAFzs3G9pw==}
+
   ua-parser-js@1.0.41:
     resolution: {integrity: sha512-LbBDqdIC5s8iROCUjMbW1f5dJQTEFB1+KO9ogbvlb3nm9n4YHa5p4KTvFPWvh2Hs8gZMBuiB1/8+pdfe/tDPug==}
+    hasBin: true
+
+  ua-parser-js@2.0.9:
+    resolution: {integrity: sha512-OsqGhxyo/wGdLSXMSJxuMGN6H4gDnKz6Fb3IBm4bxZFMnyy0sdf6MN96Ie8tC6z/btdO+Bsy8guxlvLdwT076w==}
     hasBin: true
 
   uc.micro@2.1.0:
@@ -4567,28 +4580,29 @@ snapshots:
       react: 18.3.1
       tslib: 2.8.1
 
-  '@edifice.io/bootstrap@2.5.9-develop.20260202140207':
+  '@edifice.io/bootstrap@2.5.12':
     dependencies:
       '@popperjs/core': 2.11.8
       bootstrap: 5.3.2(@popperjs/core@2.11.8)
 
-  '@edifice.io/client@2.5.9-develop.20260202140207':
+  '@edifice.io/client@2.5.12':
     dependencies:
-      '@edifice.io/utilities': 2.5.9-develop.20260202140207
+      '@edifice.io/utilities': 2.5.12
       axios: 1.13.5
       core-js: 3.48.0
+      ua-parser-js: 2.0.9
     transitivePeerDependencies:
       - debug
 
-  '@edifice.io/react@2.5.9-develop.20260202140207(iqddsgj35aagyb53f5quku2icy)':
+  '@edifice.io/react@2.5.12(iqddsgj35aagyb53f5quku2icy)':
     dependencies:
       '@ant-design/icons': 5.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@dnd-kit/core': 6.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@dnd-kit/sortable': 8.0.0(@dnd-kit/core@6.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       '@dnd-kit/utilities': 3.2.2(react@18.3.1)
-      '@edifice.io/bootstrap': 2.5.9-develop.20260202140207
-      '@edifice.io/tiptap-extensions': 2.5.9-develop.20260202140207(@types/node@18.19.130)(rollup@4.57.1)(typescript@5.9.3)
-      '@edifice.io/utilities': 2.5.9-develop.20260202140207
+      '@edifice.io/bootstrap': 2.5.12
+      '@edifice.io/tiptap-extensions': 2.5.12(@types/node@18.19.130)(rollup@4.57.1)(typescript@5.9.3)
+      '@edifice.io/utilities': 2.5.12
       '@floating-ui/react': 0.26.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@pixi/mixin-get-child-by-name': 7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2))
       '@pixi/react': 7.1.2(ynarkkgztp5uclycsuoqcck7lm)
@@ -4689,9 +4703,9 @@ snapshots:
       - terser
       - typescript
 
-  '@edifice.io/tiptap-extensions@2.5.9-develop.20260202140207(@types/node@18.19.130)(rollup@4.57.1)(typescript@5.9.3)':
+  '@edifice.io/tiptap-extensions@2.5.12(@types/node@18.19.130)(rollup@4.57.1)(typescript@5.9.3)':
     dependencies:
-      '@edifice.io/utilities': 2.5.9-develop.20260202140207
+      '@edifice.io/utilities': 2.5.12
       '@tiptap/core': 2.11.0(@tiptap/pm@2.11.0)
       '@tiptap/extension-blockquote': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
       '@tiptap/extension-bold': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
@@ -4737,7 +4751,7 @@ snapshots:
       - terser
       - typescript
 
-  '@edifice.io/utilities@2.5.9-develop.20260202140207': {}
+  '@edifice.io/utilities@2.5.12': {}
 
   '@emnapi/core@1.8.1':
     dependencies:
@@ -6547,6 +6561,8 @@ snapshots:
 
   dequal@2.0.3: {}
 
+  detect-europe-js@0.1.2: {}
+
   diff-sequences@29.6.3: {}
 
   diff@8.0.3: {}
@@ -7055,6 +7071,8 @@ snapshots:
   is-number@7.0.0: {}
 
   is-potential-custom-element-name@1.0.1: {}
+
+  is-standalone-pwa@0.1.1: {}
 
   is-stream@3.0.0: {}
 
@@ -8556,7 +8574,15 @@ snapshots:
 
   typescript@5.9.3: {}
 
+  ua-is-frozen@0.1.2: {}
+
   ua-parser-js@1.0.41: {}
+
+  ua-parser-js@2.0.9:
+    dependencies:
+      detect-europe-js: 0.1.2
+      is-standalone-pwa: 0.1.1
+      ua-is-frozen: 0.1.2
 
   uc.micro@2.1.0: {}
 
