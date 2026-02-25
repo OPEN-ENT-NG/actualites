@@ -15,6 +15,7 @@ import {
   ThreadQueryPayload,
 } from '~/models/thread';
 import { threadService } from '../api';
+import { infoQueryKeys } from './info';
 
 interface OnMutateResult {
   queryKey: (string | number)[];
@@ -216,6 +217,8 @@ export const useUpdateThreadPreferences = () => {
     },
     onSuccess: () => {
       toast.success(t('actualites.threadsSetting.success'));
+      queryClient.invalidateQueries({ queryKey: threadQueryKeys.all() });
+      queryClient.invalidateQueries({ queryKey: infoQueryKeys.all() });
     },
     onError: () => {
       toast.error(t('actualites.threadsSetting.error'));
