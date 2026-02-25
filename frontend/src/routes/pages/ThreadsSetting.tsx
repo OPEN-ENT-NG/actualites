@@ -2,29 +2,24 @@ import { Button, Flex } from '@edifice.io/react';
 import { IconArrowLeft } from '@edifice.io/react/icons';
 import { QueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { AdminThreadList } from '~/features/admin-threads-list/AdminThreadList';
-import { AdminThreadListSkeleton } from '~/features/admin-threads-list/components/AdminThreadListSkeleton';
+import { ThreadsSettingList, ThreadsSettingListSkeleton } from '~/features';
 import { useI18n } from '~/hooks/useI18n';
 import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
 import { ThreadListFilter } from '~/models/thread';
 import { threadQueryOptions, useThreads } from '~/services/queries';
 
 export const loader = (queryClient: QueryClient) => async () => {
-  const queryThreads = threadQueryOptions.getThreads(
-    ThreadListFilter.MANAGABLE,
-  );
+  const queryThreads = threadQueryOptions.getThreads(ThreadListFilter.ALL);
 
   queryClient.ensureQueryData(queryThreads);
   return null;
 };
 
-export function AdminThreads() {
-  const { isPending } = useThreads(ThreadListFilter.MANAGABLE);
+export function ThreadsSetting() {
+  const { isPending } = useThreads(ThreadListFilter.ALL);
   const { t } = useI18n();
   const navigate = useNavigate();
-  const { canManageOnOneThread } = useThreadsUserRights(
-    ThreadListFilter.MANAGABLE,
-  );
+  const { canManageOnOneThread } = useThreadsUserRights(ThreadListFilter.ALL);
 
   if (canManageOnOneThread !== undefined && !canManageOnOneThread) {
     throw new Error(t('actualites.adminThreads.accessDenied'));
@@ -35,12 +30,12 @@ export function AdminThreads() {
   };
 
   if (isPending) {
-    return <AdminThreadListSkeleton />;
+    return <ThreadsSettingListSkeleton />;
   }
   return (
     <Flex direction="column" align="start" fill>
       <Button
-        data-testid="admin-thread-goback-button"
+        data-testid="thread-setting-goback-button"
         variant="ghost"
         color="tertiary"
         onClick={handleGoBackClick}
@@ -49,7 +44,7 @@ export function AdminThreads() {
       >
         {t('actualites.adminThreads.goBack')}
       </Button>
-      <AdminThreadList />
+      <ThreadsSettingList />
     </Flex>
   );
 }

@@ -1,7 +1,14 @@
 import { odeServices } from '@edifice.io/client';
 import { baseUrlAPI } from '.';
 import { Share } from '../../models/share';
-import { Thread, ThreadId, ThreadPayload } from '../../models/thread';
+import {
+  Thread,
+  ThreadHasPreferencesQueryResponse,
+  ThreadId,
+  ThreadListFilter,
+  ThreadPayload,
+  ThreadPreferences,
+} from '../../models/thread';
 
 /**
  * Creates a thread service that provides methods for managing threads.
@@ -19,8 +26,8 @@ export const createThreadService = () => {
      * Get all threads.
      * @returns an array of Thread objects
      */
-    getThreads(viewHidden = false) {
-      const visibilityParam = viewHidden ? '?viewHidden=true' : '';
+    getThreads(filter?: ThreadListFilter) {
+      const visibilityParam = filter ? `?include=${filter}` : '';
       return odeServices
         .http()
         .get<Thread[]>(`${baseUrlAPI}/threads${visibilityParam}`);
@@ -66,6 +73,29 @@ export const createThreadService = () => {
       return odeServices
         .cache()
         .httpGetJson<Share>(`${baseUrlAPI}/threads/${threadId}/shares?search=`);
+    },
+
+    /**
+     * Update thread preferences for the current user.
+     * @param threadPreferences - The thread preferences to update.
+     * @returns A promise that resolves when the preferences are updated.
+     */
+    updateThreadPreferences(threadPreferences: ThreadPreferences) {
+      return odeServices
+        .http()
+        .put<void>(`${baseUrlAPI}/me/thread-preferences`, threadPreferences);
+    },
+
+    /**
+     * Check if the user has thread preferences.
+     * @returns A promise that resolves with a boolean indicating if the user has thread preferences.
+     */
+    getThreadHasPreferencesExists() {
+      return odeServices
+        .http()
+        .get<ThreadHasPreferencesQueryResponse>(
+          `${baseUrlAPI}/me/thread-preferences/exists`,
+        );
     },
   };
 };

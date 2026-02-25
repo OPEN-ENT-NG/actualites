@@ -16,6 +16,10 @@ export enum ThreadFilters {
 export enum ThreadTypes {
   LATEST = 0,
 }
+export enum ThreadListFilter {
+  ALL = 'ALL',
+  MANAGABLE = 'MANAGEABLE',
+}
 
 export type ThreadOwner = {
   id: string;
@@ -56,6 +60,8 @@ export interface Thread {
         ]
     */
   sharedRights?: Array<string>;
+  /** Visibility of the thread. */
+  visible: boolean;
 }
 
 export interface ThreadPayload {
@@ -72,4 +78,17 @@ export interface ThreadQueryPayload extends ThreadPayload {
     id: string;
     name: string;
   };
+}
+
+export interface ThreadPreference {
+  threadId: number;
+  visible: boolean;
+}
+
+export interface ThreadPreferences {
+  threads: ThreadPreference[];
+}
+
+export interface ThreadHasPreferencesQueryResponse {
+  hasPreference: boolean;
 }

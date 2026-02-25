@@ -1,16 +1,12 @@
-import {
-  Button,
-  ButtonSkeleton,
-  Flex,
-  Menu,
-  useScrollToTop,
-} from '@edifice.io/react';
-import { IconBulletList, IconSettings } from '@edifice.io/react/icons';
+import { ButtonSkeleton, Flex, Menu } from '@edifice.io/react';
+import { IconBulletList } from '@edifice.io/react/icons';
 import { useNavigate } from 'react-router-dom';
 import { useI18n } from '~/hooks/useI18n';
 import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
 import { useThreadsUserRights } from '~/hooks/useThreadsUserRights';
+import { useUserRights } from '~/hooks/useUserRights';
 import { useThreads } from '~/services/queries';
+import { ThreadListActions } from './ThreadListActions';
 import './ThreadListDesktop.css';
 import { ThreadListDesktopThread } from './ThreadListDesktopThread';
 
@@ -21,15 +17,10 @@ export const ThreadListDesktop = () => {
   const navigate = useNavigate();
 
   const { canManageOnOneThread } = useThreadsUserRights();
-  const scrollToTop = useScrollToTop();
+  const { canParamThreads } = useUserRights();
 
   const handleAllThreadsClick = () => {
     navigate('/');
-  };
-
-  const handleManageThreadsClick = () => {
-    scrollToTop();
-    navigate('/threads/admin');
   };
 
   return (
@@ -60,19 +51,14 @@ export const ThreadListDesktop = () => {
             ))}
           </Menu>
 
-          {canManageOnOneThread && (
-            <div className="border-top py-16 bg-white sticky-bottom z-1">
-              <Button
-                data-testid="manage-threads-button"
-                color="secondary"
-                leftIcon={<IconSettings />}
-                variant="outline"
-                onClick={handleManageThreadsClick}
-                className="w-100"
-              >
-                {t('actualites.threadList.manageThreads')}
-              </Button>
-            </div>
+          {(canManageOnOneThread || canParamThreads) && (
+            <Flex
+              gap="8"
+              direction="column"
+              className="border-top py-16 bg-white sticky-bottom z-1"
+            >
+              <ThreadListActions />
+            </Flex>
           )}
         </>
       )}

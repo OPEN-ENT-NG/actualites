@@ -6,7 +6,7 @@ import { useInfoForm } from '../hooks/useInfoForm';
 export function InfoFormHeader({ className }: { className?: string }) {
   const currentCreationStep = useInfoFormStore.use.currentWorkflowStep();
   const { t } = useI18n();
-  const { type } = useInfoForm();
+  const { isCreateRoute, isEditRoute, isPublishRoute } = useInfoForm();
 
   const currentStepTitle =
     currentCreationStep === InfoWorkflowStep.INFO_DETAILS
@@ -15,7 +15,7 @@ export function InfoFormHeader({ className }: { className?: string }) {
 
   return (
     <Flex direction="column" gap="16" className={className}>
-      {(type === 'create' || type === 'publish') && (
+      {(isCreateRoute || isPublishRoute) && (
         <Stepper
           currentStep={currentCreationStep}
           nbSteps={2}
@@ -24,16 +24,16 @@ export function InfoFormHeader({ className }: { className?: string }) {
       )}
       <Flex direction="column" gap="2">
         <h2>
-          {type === 'create'
+          {isCreateRoute
             ? t(`actualites.info.createForm.${currentStepTitle}.title`)
-            : type === 'edit'
+            : isEditRoute
               ? t(`actualites.info.editForm.title`)
               : t(`actualites.info.publishForm.${currentStepTitle}.title`)}
         </h2>
         <p className=" text-gray-700">
-          {type === 'create'
+          {isCreateRoute
             ? t(`actualites.info.createForm.${currentStepTitle}.subtitle`)
-            : type === 'edit'
+            : isEditRoute
               ? t(`actualites.info.editForm.subtitle`)
               : t(`actualites.info.publishForm.${currentStepTitle}.subtitle`)}
         </p>

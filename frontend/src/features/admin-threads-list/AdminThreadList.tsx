@@ -7,7 +7,7 @@ import { StringUtils } from '@edifice.io/client';
 import { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { PortalModal } from '~/components/PortalModal';
 import { InfoStatus } from '~/models/info';
-import { Thread } from '~/models/thread';
+import { Thread, ThreadListFilter } from '~/models/thread';
 import { useDeleteThread, useInfosStats } from '~/services/queries';
 import './AdminThreadList.css';
 import { AdminThread } from './components/AdminThread';
@@ -15,7 +15,9 @@ import AdminThreadModal from './components/AdminThreadModal';
 import AdminThreadShareModal from './components/AdminThreadShareModal';
 
 export function AdminThreadList() {
-  const { threadsWithManageRight } = useThreadsUserRights(true);
+  const { threadsWithManageRight } = useThreadsUserRights(
+    ThreadListFilter.MANAGABLE,
+  );
   const { t } = useI18n();
   const { data: infosStats } = useInfosStats();
   const { mutate: deleteThread } = useDeleteThread();
