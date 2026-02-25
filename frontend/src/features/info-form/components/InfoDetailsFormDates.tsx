@@ -4,12 +4,15 @@ import { useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useI18n } from '~/hooks/useI18n';
 import { InfoDetailsFormParams } from '~/store/infoFormStore';
-import { INFO_DATES_RESET_VALUES } from './InfoDetailsForm';
+import {
+  INFO_DATES_RESET_VALUES,
+  INFO_HOURS_DATE_DEFAULT,
+} from './InfoDetailsForm';
 import { InfoDetailsFormDatesModal } from './InfoDetailsFormDatesModal';
 
 export function InfoDetailsFormDates() {
   const { t } = useI18n();
-  const { formatDate } = useDate();
+  const { formatDate, dateIsToday, dateIsSame } = useDate();
   const { getValues, setValue } = useFormContext<InfoDetailsFormParams>();
 
   const [isModalOpen, setModalOpen] = useState(false);
@@ -27,12 +30,38 @@ export function InfoDetailsFormDates() {
     });
   }, [publicationDate, expirationDate]);
 
-  const handleUpdateDates = (publicationDate?: Date, expirationDate?: Date) => {
-    setValue('publicationDate', publicationDate, {
+  const handleUpdateDates = (
+    pickedPublicationDate: Date,
+    pickedExpirationDate: Date,
+  ) => {
+    // Not replace an undefined date if the value hasn't changed
+    const newPublicationDate =
+      !publicationDate && dateIsToday(pickedPublicationDate)
+        ? undefined
+        : new Date(pickedPublicationDate);
+
+    if (newPublicationDate) {
+      newPublicationDate.setHours(INFO_HOURS_DATE_DEFAULT, 0, 0, 0);
+    }
+    setValue('publicationDate', newPublicationDate, {
       shouldDirty: true,
       shouldValidate: true,
     });
-    setValue('expirationDate', expirationDate, {
+
+    let newExpirationDate = undefined;
+    if (
+      newPublicationDate ||
+      (!expirationDate &&
+        !dateIsSame(
+          pickedExpirationDate,
+          INFO_DATES_RESET_VALUES.expirationDate,
+        ))
+    ) {
+      newExpirationDate = new Date(pickedExpirationDate);
+      newExpirationDate.setHours(INFO_HOURS_DATE_DEFAULT, 0, 0, 0);
+    }
+
+    setValue('expirationDate', newExpirationDate, {
       shouldDirty: true,
       shouldValidate: true,
     });
