@@ -1,7 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import {
+  DEFAULT_FALC_MIN_LENGTH,
+  DEFAULT_FALC_TIMEOUT_MS,
+} from '~/models/publicConf';
 import { falcService } from '../api';
-import { GenAiConf } from '../api/falcService';
+import { useConfig } from './config';
 
 const useGenerateFalc = () =>
   useMutation({
@@ -10,15 +13,17 @@ const useGenerateFalc = () =>
 
 export function useFalc() {
   const mutation = useGenerateFalc();
-  const [configuration, setConfiguration] = useState<GenAiConf>();
+  const { data: conf } = useConfig();
 
-  // Load FALC configuration
-  useEffect(() => {
-    (async () => {
-      const configuration = await falcService.getConfiguration();
-      setConfiguration(configuration);
-    })();
-  }, []);
+  const configuration =
+    typeof conf?.genai === 'object' &&
+    typeof conf.genai.falcMinLength === 'number' &&
+    typeof conf.genai.falcTimeoutMs === 'number'
+      ? conf.genai
+      : {
+          falcMinLength: DEFAULT_FALC_MIN_LENGTH,
+          falcTimeoutMs: DEFAULT_FALC_TIMEOUT_MS,
+        };
 
   return {
     configuration,

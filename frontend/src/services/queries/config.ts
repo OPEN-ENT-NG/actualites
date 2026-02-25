@@ -1,5 +1,6 @@
 import { odeServices } from '@edifice.io/client';
 import { queryOptions, useQuery } from '@tanstack/react-query';
+import { PublicConf } from '~/models/publicConf';
 
 /**
  * Config Query Keys
@@ -18,7 +19,7 @@ export const configQueryOptions = {
   getConfig() {
     return queryOptions({
       queryKey: configQueryKeys.config(),
-      queryFn: (): Promise<{ 'screeb-app-id'?: string }> =>
+      queryFn: (): Promise<PublicConf> =>
         odeServices.conf().getPublicConf('actualites'),
       staleTime: Infinity,
     });

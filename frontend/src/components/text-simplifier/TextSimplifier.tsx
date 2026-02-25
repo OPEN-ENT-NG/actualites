@@ -109,7 +109,6 @@ export const TextSimplifier = forwardRef(
           const content = editorRef.current?.getContent('plain') as string;
           setContentChanged(
             typeof content !== 'undefined' &&
-              typeof configuration !== 'undefined' &&
               content.length > configuration.falcMinLength,
           );
         },
