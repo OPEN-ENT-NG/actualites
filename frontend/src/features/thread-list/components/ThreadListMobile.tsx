@@ -90,7 +90,9 @@ export const ThreadListMobile = () => {
       {(canManageOnOneThread || canParamThreads) && (
         <>
           {!md && <Divider className="my-16" />}
-          <ThreadListActions />
+          <Flex gap="8" direction="column">
+            <ThreadListActions />
+          </Flex>
         </>
       )}
     </Flex>
