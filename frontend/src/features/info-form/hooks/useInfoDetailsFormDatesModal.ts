@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import { INFO_HOURS_DATE_DEFAULT } from '../components/InfoDetailsForm';
 import { useDate } from '@edifice.io/react';
 
 interface UseInfoDetailsFormDatesModalProps {
   publicationDate: Date;
   expirationDate: Date;
-  onUpdate: (publicationDate?: Date, expirationDate?: Date) => void;
+  onUpdate: (publicationDate: Date, expirationDate: Date) => void;
 }
 
 const getMinExpirationDate = (publicationDate: Date) => {
@@ -26,7 +25,7 @@ export function useInfoDetailsFormDatesModal({
   expirationDate,
   onUpdate,
 }: UseInfoDetailsFormDatesModalProps) {
-  const { dateIsSame, dateIsSameOrAfter, dateIsToday } = useDate();
+  const { dateIsSame, dateIsSameOrAfter } = useDate();
   const [selectedPublicationDate, setSelectedPublicationDate] = useState<Date>(
     new Date(publicationDate),
   );
@@ -73,21 +72,7 @@ export function useInfoDetailsFormDatesModal({
   };
 
   const handleUpdate = () => {
-    const publicationDate = dateIsToday(selectedPublicationDate)
-      ? undefined
-      : selectedPublicationDate;
-    let expirationDate = undefined;
-    if (publicationDate) {
-      publicationDate.setHours(INFO_HOURS_DATE_DEFAULT, 0, 0, 0);
-    }
-    if (
-      publicationDate ||
-      !dateIsSame(selectedExpirationDate, maxExpirationDate)
-    ) {
-      expirationDate = new Date(selectedExpirationDate);
-      expirationDate.setHours(INFO_HOURS_DATE_DEFAULT, 0, 0, 0);
-    }
-    onUpdate(publicationDate, expirationDate);
+    onUpdate(selectedPublicationDate, selectedExpirationDate);
   };
 
   const publicationDateIsDirty = useMemo(() => {

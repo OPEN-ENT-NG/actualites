@@ -15,7 +15,7 @@ interface InfoDetailsFormDatesModalProps {
   onClose: () => void;
   publicationDate: Date;
   expirationDate: Date;
-  onUpdate: (publicationDate?: Date, expirationDate?: Date) => void;
+  onUpdate: (publicationDate: Date, expirationDate: Date) => void;
 }
 
 export function InfoDetailsFormDatesModal({
