@@ -9,7 +9,9 @@ import { useI18n } from '~/hooks/useI18n';
 import {
   Thread,
   ThreadId,
+  ThreadListFilter,
   ThreadPayload,
+  ThreadPreferences,
   ThreadQueryPayload,
 } from '~/models/thread';
 import { threadService } from '../api';
@@ -20,8 +22,8 @@ interface OnMutateResult {
 }
 
 export const threadQueryKeys = {
-  all: (viewHidden = false) =>
-    viewHidden ? ['threads', 'viewHidden'] : ['threads'],
+  all: (filter?: ThreadListFilter) =>
+    filter ? ['threads', filter] : ['threads'],
   thread: (threadId?: ThreadId) =>
     threadId ? [...threadQueryKeys.all(), threadId] : threadQueryKeys.all(),
   share: (threadId: ThreadId) => [
@@ -29,6 +31,7 @@ export const threadQueryKeys = {
     'share',
     'json',
   ],
+  threadHasPreferences: ['threadHasPreferences'],
 };
 
 /**
@@ -38,10 +41,10 @@ export const threadQueryOptions = {
   /**
    * @returns Query options for fetching the threads.
    */
-  getThreads(viewHidden = false) {
+  getThreads(filter?: ThreadListFilter) {
     return queryOptions({
-      queryKey: threadQueryKeys.all(viewHidden),
-      queryFn: () => threadService.getThreads(viewHidden),
+      queryKey: threadQueryKeys.all(filter),
+      queryFn: () => threadService.getThreads(filter),
     });
   },
 
@@ -59,8 +62,8 @@ export const threadQueryOptions = {
   },
 };
 
-export const useThreads = (viewHidden = false) =>
-  useQuery(threadQueryOptions.getThreads(viewHidden));
+export const useThreads = (filter?: ThreadListFilter) =>
+  useQuery(threadQueryOptions.getThreads(filter));
 
 export const useThreadShares = (threadId: ThreadId) =>
   useQuery(threadQueryOptions.getShares(threadId));
@@ -184,3 +187,44 @@ export const useDeleteThread = () => {
     },
   });
 };
+
+export const useUpdateThreadPreferences = () => {
+  const queryClient = useQueryClient();
+  const { t } = useI18n();
+  const toast = useToast();
+
+  return useMutation({
+    mutationFn: (threadPreferences: ThreadPreferences) =>
+      threadService.updateThreadPreferences(threadPreferences),
+    onMutate: (threadPreferences: ThreadPreferences) => {
+      queryClient.setQueryData(
+        threadQueryKeys.all(ThreadListFilter.ALL),
+        (oldData: Thread[]) => {
+          if (!oldData || !threadPreferences) return oldData;
+          const updatedThreads = oldData.map((thread) => {
+            return {
+              ...thread,
+              visible:
+                threadPreferences.threads.find(
+                  (pref) => pref.threadId === thread.id,
+                )?.visible ?? thread.visible,
+            };
+          });
+          return updatedThreads;
+        },
+      );
+    },
+    onSuccess: () => {
+      toast.success(t('actualites.threadsSetting.success'));
+    },
+    onError: () => {
+      toast.error(t('actualites.threadsSetting.error'));
+    },
+  });
+};
+
+export const useThreadHasPreferences = () =>
+  useQuery({
+    queryKey: threadQueryKeys.threadHasPreferences,
+    queryFn: () => threadService.getThreadHasPreferencesExists(),
+  });

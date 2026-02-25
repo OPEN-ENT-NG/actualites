@@ -22,7 +22,7 @@ export function InfoWorkflowDetails() {
   const { data: threads } = useThreads();
   const { infoId } = useThreadInfoParams();
   const { data: info } = useInfoById(Number(infoId));
-  const { type } = useInfoForm();
+  const { isEditRoute } = useInfoForm();
 
   const setCurrentCreationStep = useInfoFormStore.use.setCurrentWorkflowStep();
 
@@ -56,7 +56,7 @@ export function InfoWorkflowDetails() {
     <>
       <InfoFormHeader className="mb-24" />
       <InfoDetailsForm infoDetails={infoDetails} />
-      {type === 'edit' ? (
+      {isEditRoute ? (
         <InfoDetailsEditFormActions />
       ) : (
         <InfoDetailsCreateFormActions />

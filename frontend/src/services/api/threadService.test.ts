@@ -1,4 +1,8 @@
-import { mockThreads, mockThreadShare } from '~/mocks/datas/threads';
+import {
+  mockThreadPreferences,
+  mockThreads,
+  mockThreadShare,
+} from '~/mocks/datas/threads';
 import { threadService } from '.';
 import { ThreadMode } from '../../models/thread';
 
@@ -46,5 +50,13 @@ describe('Thread Mutation Methods', () => {
     expect(response).toStrictEqual({
       rows: 1,
     });
+  });
+
+  test('makes a UPDATE THREAD PREFERENCES request to update thread preferences', async () => {
+    const response = await threadService.updateThreadPreferences(
+      mockThreadPreferences,
+    );
+
+    expect(response).toStrictEqual('');
   });
 });

@@ -30,8 +30,12 @@ export const infoQueryKeys = {
   // ['infos']
   all: () => ['infos'],
 
-  // ['infos', 'stats']
-  stats: () => [...infoQueryKeys.all(), 'stats'],
+  // ["infos","stats",{"viewHidden":true}]
+  stats: (viewHidden?: boolean) => [
+    ...infoQueryKeys.all(),
+    'stats',
+    { viewHidden: !!viewHidden },
+  ],
 
   // List
   // ['infos', 'thread', 'all', 'expired']
@@ -142,10 +146,10 @@ export const infoQueryOptions = {
    * Get the stats of all infos.
    * @returns The stats of all infos.
    */
-  getStats(enabled?: boolean) {
+  getStats(enabled?: boolean, viewHidden?: boolean) {
     return queryOptions({
-      queryKey: infoQueryKeys.stats(),
-      queryFn: () => infoService.getStats(),
+      queryKey: infoQueryKeys.stats(!!viewHidden),
+      queryFn: () => infoService.getStats(viewHidden),
       enabled: enabled ?? true,
     });
   },
@@ -209,8 +213,11 @@ export const useInfos = (
 export const useInfoShares = (infoId: InfoId) =>
   useQuery(infoQueryOptions.getShares(infoId));
 
-export const useInfosStats = (options?: { enabled?: boolean }) =>
-  useQuery(infoQueryOptions.getStats(options?.enabled));
+export const useInfosStats = (options?: {
+  enabled?: boolean;
+  viewHidden?: boolean;
+}) =>
+  useQuery(infoQueryOptions.getStats(options?.enabled, options?.viewHidden));
 
 export const useInfoRevisions = (infoId: InfoId) =>
   useQuery(infoQueryOptions.getRevisions(infoId));

@@ -146,6 +146,7 @@
   "actualites.read.more": "Lire la suite",
   "actualites.threadList.allThreads": "Tous les fils d’actus",
   "actualites.threadList.manageThreads": "Gérer les fils",
+  "actualites.threadList.threadSettings": "Personnaliser mon affichage",
   "actualites.textsimplifier.button.knowmore": "En savoir plus",
   "actualites.textsimplifier.button.copy": "Copier le texte",
   "actualites.textsimplifier.button.generate": "Générer",
@@ -167,5 +168,15 @@
   "actualites.textsimplifier.error.notAvailable.button": "Génération indisponible",
   "actualites.textsimplifier.error.timeOut.title": "La génération du texte prend plus de temps que prévu.",
   "actualites.textsimplifier.error.timeOut.body": "Merci de réessayer dans quelques instants.",
-  "actualites.textsimplifier.error.timeOut.button": "Relancer la génération"
+  "actualites.textsimplifier.error.timeOut.button": "Relancer la génération",
+  "actualites.threadsSetting.saveButton": "Enregistrer mes préférences",
+  "actualites.threadsSetting.displayThread": "Afficher le fil",
+  "actualites.threadsSetting.displayThreadAll": "Afficher tous",
+  "actualites.threadsSetting.segmented.all": "Tous les fils [[count]]",
+  "actualites.threadsSetting.segmented.displayed": "Fils affichés [[count]]",
+  "actualites.threadsSetting.segmented.hidden": "Fils masqués [[count]]",
+  "actualites.threadsSetting.info.title": "Vous suivez beaucoup de fils différents et les actualités se mélangent ?",
+  "actualites.threadsSetting.info.description": "Vous pouvez afficher ou masquer les fils afin d'y voir plus clair sur la page d'accueil d'Actualités ! Les fils sont masqués uniquement pour vous, et vous ne recevrez plus les notifications liées aux fils que vous avez masqués.",
+  "actualites.threadsSetting.success": "Vos préférences ont été enregistrées avec succès.",
+  "actualites.threadsSetting.error": "Une erreur est survenue lors de l'enregistrement de vos préférences. Veuillez réessayer."
 }
