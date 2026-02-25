@@ -23,18 +23,16 @@ import io.vertx.core.json.JsonObject;
 
 /**
  * Configuration class for GenAI service settings.
+ * Parameters are read from the public configuration section (publicConf) of the module config.
  */
 public class GenAiConfig {
-
-    private static final int DEFAULT_FALC_MIN_LENGTH = 2000;
-    private static final int DEFAULT_FALC_TIMEOUT_MS = 30000;
 
     private final int falcMinLength;
     private final int falcTimeoutMs;
 
     public GenAiConfig(JsonObject config) {
-        this.falcMinLength = config.getInteger("falcMinLength", DEFAULT_FALC_MIN_LENGTH);
-        this.falcTimeoutMs = config.getInteger("falcTimeoutMs", DEFAULT_FALC_TIMEOUT_MS);
+        this.falcMinLength = config.getInteger("falcMinLength");
+        this.falcTimeoutMs = config.getInteger("falcTimeoutMs", 30000);
     }
 
     public int getFalcMinLength() {

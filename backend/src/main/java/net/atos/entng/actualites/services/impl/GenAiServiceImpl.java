@@ -39,7 +39,7 @@ public class GenAiServiceImpl implements GenAiService {
 
     public GenAiServiceImpl(Vertx vertx, GenAiConfig config) {
         this.config = config;
-        this.falcClient = new FalcClient(vertx);
+        this.falcClient = new FalcClient(vertx, config.getFalcTimeoutMs());
     }
 
     @Override

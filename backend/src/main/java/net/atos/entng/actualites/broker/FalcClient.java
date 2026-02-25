@@ -16,8 +16,9 @@ public class FalcClient {
     
     private final EdificeFalcPublisher publisher;
 
-    public FalcClient(Vertx vertx) {
+    public FalcClient(Vertx vertx, int timeoutMs) {
         this.publisher = new EdificeFalcPublisher(vertx);
+        this.publisher.setDefaultTimeout(timeoutMs);
     }
 
     public Future<String> simplifyContent(String userId, String session, String userAgent, String content) {
