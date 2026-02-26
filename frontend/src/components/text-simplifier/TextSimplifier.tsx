@@ -77,7 +77,7 @@ export const TextSimplifier = forwardRef(
       string | undefined
     >();
 
-    const { generate, isGenerating } = useFalc();
+    const { configuration, generate, isGenerating } = useFalc();
 
     const handleGenerateClick = useCallback(async () => {
       // reset any previous error
@@ -102,18 +102,23 @@ export const TextSimplifier = forwardRef(
     }, [simplifiedContent]);
 
     //----- TextSimplifier API
-    useImperativeHandle(ref, () => ({
-      handleContentChange: () => {
-        const content = editorRef.current?.getContent('plain') as string;
-        setContentChanged(
-          typeof content !== 'undefined' && content.length > 200,
-        );
-      },
-      resetSuggestions: () => {
-        toggleSuggestion(false);
-        setSimplifiedContent(undefined);
-      },
-    }));
+    useImperativeHandle(
+      ref,
+      () => ({
+        handleContentChange: () => {
+          const content = editorRef.current?.getContent('plain') as string;
+          setContentChanged(
+            typeof content !== 'undefined' &&
+              content.length > configuration.falcMinLength,
+          );
+        },
+        resetSuggestions: () => {
+          toggleSuggestion(false);
+          setSimplifiedContent(undefined);
+        },
+      }),
+      [configuration],
+    );
 
     if (errorCode === ERROR_CODE.TIME_OUT) {
       return (
