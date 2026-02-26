@@ -90,5 +90,5 @@ export interface ThreadPreferences {
 }
 
 export interface ThreadHasPreferencesQueryResponse {
-  hasPreference: boolean;
+  hasThreadPreference: boolean;
 }

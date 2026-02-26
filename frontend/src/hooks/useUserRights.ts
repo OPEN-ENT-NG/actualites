@@ -15,7 +15,7 @@ const NUMBER_OF_STRUCTURES_TO_BE_SUPER_ADML = 5;
 //  */
 export function useUserRights() {
   const { user } = useEdificeClient();
-  const { data: threadHasPreferences } = useThreadHasPreferences();
+  const { data: threadHasPreferencesData } = useThreadHasPreferences();
 
   const rights = useActionUserRights.use.rights();
   const canCreateThread = rights[THREADS_CREATOR] ?? false;
@@ -28,9 +28,9 @@ export function useUserRights() {
       (user?.functions.ADMIN_LOCAL &&
         user?.functions.ADMIN_LOCAL.scope.length >
           NUMBER_OF_STRUCTURES_TO_BE_SUPER_ADML) ||
-      threadHasPreferences
+      threadHasPreferencesData?.hasThreadPreference
     );
-  }, [user]);
+  }, [user, threadHasPreferencesData]);
 
   return { canCreateThread, canParamThreads, canUseFalc };
 }
