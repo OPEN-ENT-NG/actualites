@@ -1,6 +1,15 @@
 #!/bin/bash
 set -e
 
+
+# If DEBUG env var is set to "true" then set -x to enable debug mode
+if [ "$DEBUG" == "true" ]; then
+	set -x
+	EDIFICE_CLI_DEBUG_OPTION="--debug"
+else
+	EDIFICE_CLI_DEBUG_OPTION=""
+fi
+
 execute_without_params() {
     # Frontend
     cd frontend
