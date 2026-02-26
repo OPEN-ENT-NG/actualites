@@ -55,7 +55,7 @@ export function useInfoDetailsFormDatesModal({
   useEffect(() => {
     if (!selectedPublicationDate) return;
 
-    // Caculate min and max expiration dates
+    // Calculate min and max expiration dates
     const newMinExpirationDate = getMinExpirationDate(selectedPublicationDate);
     setMinExpirationDate(newMinExpirationDate);
     const newMaxExpirationDate = getMaxExpirationDate(selectedPublicationDate);

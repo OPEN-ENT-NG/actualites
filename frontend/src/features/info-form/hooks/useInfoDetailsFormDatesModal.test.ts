@@ -19,12 +19,12 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock('@edifice.io/react', async () => {
-  const actual =
-    await vi.importActual<typeof import('@edifice.io/react')>(
+  const base =
+    await vi.importMock<typeof import('@edifice.io/react')>(
       '@edifice.io/react',
     );
   return {
-    ...actual,
+    ...base,
     useDate: () => ({
       dateIsSame: mocks.dateIsSame,
       dateIsSameOrAfter: mocks.dateIsSameOrAfter,
