@@ -21,7 +21,13 @@ export function InfoDetailsFormDates() {
 
   const dateString = useMemo(() => {
     if (!publicationDate || !expirationDate) {
-      return t('actualites.info.createForm.dates.default');
+      if (!expirationDate) {
+        return t('actualites.info.createForm.dates.default');
+      } else {
+        return t('actualites.info.createForm.dates.customized.expirationDate', {
+          expirationDate: formatDate(expirationDate.toISOString(), 'long'),
+        });
+      }
     }
 
     return t('actualites.info.createForm.dates.customized', {
