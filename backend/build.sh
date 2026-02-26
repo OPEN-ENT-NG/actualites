@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-MVN_OPTS="-Duser.home=/var/maven"
+MVN_OPTS="-Duser.home=/var/maven -T 4"
 
 if [ ! -e node_modules ]
 then

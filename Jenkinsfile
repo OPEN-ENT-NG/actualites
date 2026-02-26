@@ -4,6 +4,18 @@ pipeline {
   agent any
 
   stages {
+    stage("Initialization") {
+      when {
+        environment name: 'RENAME_BUILDS', value: 'true'
+      }
+      steps {
+        script {
+          sh './build.sh $BUILD_SH_EXTRA_PARAM init'
+          def version = sh(returnStdout: true, script: 'cd backend && docker run --rm -u `id -u`:`id -g` --env MAVEN_CONFIG=/var/maven/.m2 -w /usr/src/maven -v ./:/usr/src/maven -v ~/.m2:/var/maven/.m2  opendigitaleducation/mvn-java8-node20:latest mvn -Duser.home=/var/maven help:evaluate -Dexpression=project.version -DforceStdout -q')
+          buildName "${env.GIT_BRANCH.replace("origin/", "")}@${version}"
+        }
+      }
+    }
     stage('Frontend') {
       steps {
         dir('frontend') {
@@ -22,6 +34,12 @@ pipeline {
           sh './build.sh clean init build publish'
           sh 'rm -rf ../frontend/dist'
         }
+      }
+    }
+
+    stage('Build image') {
+      steps {
+          sh './edifice image --archs=linux/amd64 --force --rebuild=false'
       }
     }
   }
