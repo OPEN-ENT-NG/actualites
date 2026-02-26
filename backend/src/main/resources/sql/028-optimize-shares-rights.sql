@@ -31,7 +31,7 @@ ON CONFLICT (resource_id, member_id, action) DO NOTHING;
 -- Step 3: Map old thread rights to THREAD_MANAGER_RIGHT
 -- These actions represent manager-level access (full thread management)
 INSERT INTO actualites.thread_shares (resource_id, member_id, action)
-SELECT DISTINCT resource_id, member_id, 'net-atos-entng-actualites-controllers-ThreadController|manager'
+SELECT DISTINCT resource_id, member_id, 'net-atos-entng-actualites-controllers-ThreadController|manage'
 FROM actualites.thread_shares
 WHERE action IN (
     'net-atos-entng-actualites-controllers-ThreadController|updateThread',
@@ -82,38 +82,17 @@ ON CONFLICT (resource_id, member_id, action) DO NOTHING;
 
 -- Step 7: Delete old granular rights from thread_shares
 DELETE FROM actualites.thread_shares
-WHERE action IN (
-    'net-atos-entng-actualites-controllers-ThreadController|getThread',
-    'net-atos-entng-actualites-controllers-InfoController|createDraft',
-    'net-atos-entng-actualites-controllers-InfoController|createPending',
-    'net-atos-entng-actualites-controllers-InfoController|submit',
-    'net-atos-entng-actualites-controllers-InfoController|unsubmit',
-    'net-atos-entng-actualites-controllers-InfoController|updateDraft',
-    'net-atos-entng-actualites-controllers-InfoController|updatePending',
-    'net-atos-entng-actualites-controllers-InfoController|listInfosByThreadId',
-    'net-atos-entng-actualites-controllers-InfoController|shareInfo',
-    'net-atos-entng-actualites-controllers-InfoController|shareResourceInfo',
-    'net-atos-entng-actualites-controllers-ThreadController|updateThread',
-    'net-atos-entng-actualites-controllers-ThreadController|deleteThread',
-    'net-atos-entng-actualites-controllers-ThreadController|shareThread',
-    'net-atos-entng-actualites-controllers-ThreadController|shareResource',
-    'net-atos-entng-actualites-controllers-InfoController|publish',
-    'net-atos-entng-actualites-controllers-InfoController|unpublish',
-    'net-atos-entng-actualites-controllers-InfoController|createPublished',
-    'net-atos-entng-actualites-controllers-InfoController|updatePublished',
-    'net-atos-entng-actualites-controllers-InfoController|delete',
-    'net-atos-entng-actualites-controllers-InfoController|getInfoTimeline'
+WHERE action NOT IN (
+    'net-atos-entng-actualites-controllers-ThreadController|contrib',
+    'net-atos-entng-actualites-controllers-ThreadController|manage',
+    'net-atos-entng-actualites-controllers-InfoController|publish'
 );
 
 -- Step 8: Delete old granular rights from info_shares
 DELETE FROM actualites.info_shares
-WHERE action IN (
-    'net-atos-entng-actualites-controllers-InfoController|getInfo',
-    'net-atos-entng-actualites-controllers-InfoController|getSingleInfo',
-    'net-atos-entng-actualites-controllers-InfoController|getInfoComments',
-    'net-atos-entng-actualites-controllers-CommentController|comment',
-    'net-atos-entng-actualites-controllers-CommentController|updateComment',
-    'net-atos-entng-actualites-controllers-CommentController|deleteComment'
+WHERE action NOT IN (
+    'net-atos-entng-actualites-controllers-InfoController|read',
+    'net-atos-entng-actualites-controllers-CommentController|comment'
 );
 
 -- Step 9: Display migration statistics

@@ -25,7 +25,7 @@ export const threadContributorRights: string[] = [ "net-atos-entng-actualites-co
 
 export const threadPublisherRights: string[] = [ "net-atos-entng-actualites-controllers-InfoController|publish" ];
 
-export const threadManagerRights: string[] = [ "net-atos-entng-actualites-controllers-ThreadController|manager" ];
+export const threadManagerRights: string[] = [ "net-atos-entng-actualites-controllers-ThreadController|manage" ];
 
 export const threadAllRights =  [...threadContributorRights, ...threadPublisherRights, ...threadManagerRights];
 

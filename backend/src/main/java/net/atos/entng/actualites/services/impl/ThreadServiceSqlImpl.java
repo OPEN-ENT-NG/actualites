@@ -37,10 +37,11 @@ import net.atos.entng.actualites.to.*;
 import net.atos.entng.actualites.utils.UserUtils;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
-import org.entcore.common.sql.SqlStatementsBuilder;
 import org.entcore.common.user.UserInfos;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import static fr.wseduc.webutils.Utils.handlerToAsyncHandler;
@@ -220,7 +221,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
                     if (thread.containsKey("shared")) {
                         JsonArray shared = thread.getJsonArray("shared");
                         for(Object jo : shared){
-                            if(((JsonObject) jo).containsKey(RightConstants.RIGHT_PUBLISH)){
+                            if(((JsonObject) jo).containsKey(RightConstants.THREAD_PUBLISH_RIGHT)){
                                 sharedWithIds.add(jo);
                             }
                         }
@@ -410,7 +411,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 
 		String query = " SELECT DISTINCT tsh.resource_id as id, tsh.member_id as group_id FROM " + threadsSharesTable + " as tsh " +
 					   "    WHERE tsh.resource_id IN " + Sql.listPrepared(Lists.newArrayList(threadIdToThread.keySet())) +
-					   "        AND tsh.action = '" + RightConstants.RIGHT_PUBLISH + "' " +
+					   "        AND tsh.action = '" + RightConstants.THREAD_PUBLISH_RIGHT + "' " +
 	    			   "        AND tsh.adml_group = true ";
 		JsonArray values = new JsonArray();
 		threadIdToThread.keySet().forEach(values::add);

@@ -107,7 +107,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	}
 
 	@Get("/api/v1/infos")
-	@SecuredAction("actualites.infos.list")
+	@SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")
 	public void infos(final HttpServerRequest request) {
 		// page argument
 		int pageParsed;
@@ -223,7 +223,7 @@ public class InfosControllerV1 extends ControllerHelper {
 
 	@Get("/api/v1/infos/preview/last/:" + RESULT_SIZE_PARAMETER)
 	@ApiDoc("List last infos, accept query param resultSize.")
-	@SecuredAction("actualites.infos.list")
+	@SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")
 	public void getLastInfos(HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
             String resultSize = request.params().get(RESULT_SIZE_PARAMETER);
@@ -304,7 +304,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	@Get("/api/v1/infos/:id/shares")
 	@ApiDoc("Get share info")
 	@ResourceFilter(InfoFilter.class)
-	@SecuredAction(value = THREAD_CONTRIB_VALUE, type = ActionType.RESOURCE, right = INFO_SHARE_ANNOTATION)
+	@SecuredAction(value = THREAD_CONTRIB_VALUE, type = ActionType.RESOURCE, right = THREAD_CONTRIB_ANNOTATION)
 	public void getShareInfo(final HttpServerRequest request) {
 		final String id = request.params().get(INFO_ID_PARAMETER);
 		if (id == null || id.trim().isEmpty()) {
@@ -362,7 +362,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	@Put("/api/v1/infos/:id/shares")
 	@ApiDoc("Update share info")
 	@ResourceFilter(InfoFilter.class)
-	@SecuredAction(value = THREAD_CONTRIB_VALUE, type = ActionType.RESOURCE, right = INFO_SHARE_ANNOTATION)
+	@SecuredAction(value = THREAD_CONTRIB_VALUE, type = ActionType.RESOURCE, right = THREAD_CONTRIB_VALUE)
 	public void updateShareInfo(final HttpServerRequest request) {
 		final String infoId = request.params().get(INFO_ID_PARAMETER);
 		if(StringUtils.isEmpty(infoId)) {
@@ -642,7 +642,7 @@ public class InfosControllerV1 extends ControllerHelper {
 
 	@Get("/api/v1/infos/stats")
 	@ApiDoc("Get statistics about threads and infos grouped by status")
-	@SecuredAction("actualites.infos.list")
+	@SecuredAction(value = "actualites.infos.list", right = ROOT_RIGHT + "|listInfos")
 	public void getStats(HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {

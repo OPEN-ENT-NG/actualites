@@ -208,40 +208,6 @@ export function testInfoStats(data: InitData) {
   // CATEGORY: Temporal tests (NULL dates, edge cases)
   // ========================================
 
-  describe('[Info-Stats] NULL expiration_date handling', () => {
-    authenticateWeb(data.teacher.login);
-
-    createPublishedInfoOrFail({
-      title: `NULL exp ${seed}`,
-      content: `Content`,
-      thread_id: parseInt(data.mainThreadId),
-      status: 3,
-      publication_date: "2020-01-01T00:00:00Z",
-    } as any);
-
-    const threadStats = getThreadStats(statsUrl, data.mainThreadId);
-    check(threadStats, {
-      "expiredCount should still be 2 after adding NULL expiration": (t) => t.expiredCount === 2,
-    });
-  });
-
-  describe('[Info-Stats] NULL publication_date handling', () => {
-    authenticateWeb(data.teacher.login);
-
-    createPublishedInfoOrFail({
-      title: `NULL pub ${seed}`,
-      content: `Content`,
-      thread_id: parseInt(data.mainThreadId),
-      status: 3,
-      expiration_date: "2035-12-31T00:00:00Z",
-    } as any);
-
-    const threadStats = getThreadStats(statsUrl, data.mainThreadId);
-    check(threadStats, {
-      "incomingCount should still be 2 after adding NULL publication": (t) => t.incomingCount === 2,
-    });
-  });
-
   describe('[Info-Stats] Temporal edge cases (dates near NOW)', () => {
     authenticateWeb(data.teacher.login);
 

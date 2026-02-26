@@ -594,7 +594,7 @@ public class InfoController extends ControllerHelper {
     @Get("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/share/json/:"+INFO_ID_PARAMETER)
     @ApiDoc("Get shared info by id.")
     @ResourceFilter(InfoFilter.class)
-    @SecuredAction(value = THREAD_CONTRIB_VALUE, type = ActionType.RESOURCE, right = INFO_SHARE_ANNOTATION)
+    @SecuredAction(value = THREAD_CONTRIB_VALUE, type = ActionType.RESOURCE, right = THREAD_CONTRIB_ANNOTATION)
     public void shareInfo(final HttpServerRequest request) {
         log.warn("[DEPRECATED] GET /thread/:threadId/info/share/json/:id called - This endpoint should no longer be used");
         final String id = request.params().get(INFO_ID_PARAMETER);
@@ -694,7 +694,7 @@ public class InfoController extends ControllerHelper {
 	@Put("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/share/resource/:"+INFO_ID_PARAMETER)
 	@ApiDoc("Share info by id. DEPRECATED - This endpoint is no longer used and will be removed in a future version.")
 	@ResourceFilter(InfoFilter.class)
-	@SecuredAction(value = THREAD_CONTRIB_VALUE, type = ActionType.RESOURCE, right = INFO_SHARE_ANNOTATION)
+	@SecuredAction(value = THREAD_CONTRIB_VALUE, type = ActionType.RESOURCE, right = THREAD_CONTRIB_ANNOTATION)
 	public void shareResourceInfo(final HttpServerRequest request) {
 		log.warn("[DEPRECATED] PUT /thread/:threadId/info/share/resource/:infoId called - This endpoint should no longer be used");
 		final String infoId = request.params().get(INFO_ID_PARAMETER);

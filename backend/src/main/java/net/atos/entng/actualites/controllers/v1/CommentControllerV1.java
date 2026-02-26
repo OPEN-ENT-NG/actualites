@@ -138,15 +138,10 @@ public class CommentControllerV1 extends ControllerHelper {
     @Delete("/api/v1/infos/:" + Actualites.INFO_RESOURCE_ID + "/comments/:id")
     @ApiDoc("Comment : delete a comment by comment id ")
     @ResourceFilter(CommentFilter.class)
-    @SecuredAction(value = INFO_COMMENT_VALUE, type = ActionType.RESOURCE, right = INFO_COMMENT_ANNOTATION)
+    @SecuredAction(value = THREAD_PUBLISH_VALUE, type = ActionType.RESOURCE, right = THREAD_PUBLISH_ANNOTATION)
     public void deleteComment(final HttpServerRequest request) {
 		final String commentId = request.params().get(COMMENT_ID_PARAMETER);
-		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
-			@Override
-			public void handle(final UserInfos user) {
-				crudService.delete(commentId, user, notEmptyResponseHandler(request));
-			}
-		});
+		UserUtils.getUserInfos(eb, request, user -> crudService.delete(commentId, user, notEmptyResponseHandler(request)));
 	}
 
 	private void notifyTimeline(final HttpServerRequest request, final UserInfos user, final String infoId, final String commentId, final String title, final String commentText, final String eventType){

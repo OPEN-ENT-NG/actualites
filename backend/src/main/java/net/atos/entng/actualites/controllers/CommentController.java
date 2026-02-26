@@ -75,7 +75,7 @@ public class CommentController extends ControllerHelper {
 	@Put("/info/:"+Actualites.INFO_RESOURCE_ID+"/comment")
 	@ApiDoc("Comment : Add a comment to an Info by info id")
 	@ResourceFilter(InfoFilter.class)
-	@SecuredAction(value = INFO_COMMENT_VALUE, type = ActionType.RESOURCE, right = ROOT_RIGHT + "|comment")
+	@SecuredAction(value = INFO_COMMENT_VALUE, type = ActionType.RESOURCE, right = INFO_COMMENT_ANNOTATION)
 	public void createComment(final HttpServerRequest request) {
 		final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
@@ -118,7 +118,7 @@ public class CommentController extends ControllerHelper {
 	@Put("/info/:"+Actualites.INFO_RESOURCE_ID+"/comment/:"+COMMENT_ID_PARAMETER)
 	@ApiDoc("Comment : modify a comment of an Info by info and comment id. DEPRECATED - Used by mobile app only.")
 	@ResourceFilter(UpdateCommentFilter.class)
-	@SecuredAction(value = INFO_COMMENT_VALUE, type = ActionType.RESOURCE, right = ROOT_RIGHT + "|updateComment")
+	@SecuredAction(value = INFO_COMMENT_VALUE, type = ActionType.RESOURCE, right = INFO_COMMENT_ANNOTATION)
 	public void updateComment(final HttpServerRequest request) {
 		final String commentId = request.params().get(COMMENT_ID_PARAMETER);
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
@@ -145,7 +145,7 @@ public class CommentController extends ControllerHelper {
 	@Delete("/info/:"+Actualites.INFO_RESOURCE_ID+"/comment/:"+COMMENT_ID_PARAMETER)
 	@ApiDoc("Comment : delete a comment by comment id. DEPRECATED - Used by mobile app only.")
 	@ResourceFilter(CommentFilter.class)
-	@SecuredAction(value = INFO_COMMENT_VALUE, type = ActionType.RESOURCE, right = ROOT_RIGHT + "|deleteComment")
+	@SecuredAction(value = THREAD_PUBLISH_VALUE, type = ActionType.RESOURCE, right = THREAD_PUBLISH_ANNOTATION)
 	public void deleteComment(final HttpServerRequest request) {
 		final String commentId = request.params().get(COMMENT_ID_PARAMETER);
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {

@@ -77,7 +77,7 @@ public class ThreadControllerV1 extends ControllerHelper {
 
     @Get("/api/v1/threads")
     @ApiDoc("Get all threads ")
-    @SecuredAction("actualites.threads.list")
+    @SecuredAction(value = "actualites.threads.list", right = ROOT_RIGHT + "|listThreads")
     public void getThreads(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
@@ -109,7 +109,7 @@ public class ThreadControllerV1 extends ControllerHelper {
     @Post("/api/v1/threads")
     @ApiDoc("Create a new thread")
     @ResourceFilter(ThreadFilter.class)
-    @SecuredAction("actualites.create")
+    @SecuredAction(value = "actualites.create", right = ROOT_RIGHT + "|createThread")
     public void createThread(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request,user -> RequestUtils.bodyToJson(request, pathPrefix + SCHEMA_THREAD_CREATE,
 				resource -> {
@@ -174,7 +174,7 @@ public class ThreadControllerV1 extends ControllerHelper {
     @Get("/api/v1/threads/:id/shares")
     @ApiDoc("Get thread's shares")
     @ResourceFilter(ThreadFilter.class)
-    @SecuredAction(value = THREAD_MANAGER_VALUE, right = THREAD_SHARE_ANNOTATION, type = ActionType.RESOURCE)
+    @SecuredAction(value = THREAD_MANAGER_VALUE, right = THREAD_MANAGER_ANNOTATION, type = ActionType.RESOURCE)
     public void getThreadShares(final HttpServerRequest request) {
 		final String id = request.params().get(THREAD_ID_PARAMETER);
 		if (id == null || id.trim().isEmpty()) {
@@ -226,7 +226,7 @@ public class ThreadControllerV1 extends ControllerHelper {
     @Put("/api/v1/threads/:id/shares")
     @ApiDoc("Update thread's shares")
     @ResourceFilter(ThreadFilter.class)
-    @SecuredAction(value = THREAD_MANAGER_VALUE, right = THREAD_SHARE_ANNOTATION, type = ActionType.RESOURCE)
+    @SecuredAction(value = THREAD_MANAGER_VALUE, right = THREAD_MANAGER_ANNOTATION, type = ActionType.RESOURCE)
     public void updateThreadShares(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
             if (user != null) {

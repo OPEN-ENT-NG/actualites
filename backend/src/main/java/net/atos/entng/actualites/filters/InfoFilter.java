@@ -44,11 +44,13 @@ public class InfoFilter implements ResourcesProvider {
 	@Override
 	public void authorize(final HttpServerRequest request, final Binding binding, final UserInfos user, final Handler<Boolean> handler) {
 		SqlConf conf = SqlConfs.getConf(InfoController.class.getName());
-		String id = null;
-		if (isInfoShare(binding)) {
-			id = request.params().get("id");
-		} else {
+
+		String id = request.params().get("infoid");
+		if(id == null) {
 			id = request.params().get(conf.getResourceIdLabel());
+		}
+		if(id == null) {
+			id = request.params().get("id");
 		}
 		if (id != null && !id.trim().isEmpty() && (parseId(id) instanceof Integer)) {
 			request.pause();
@@ -165,17 +167,12 @@ public class InfoFilter implements ResourcesProvider {
 	// Contrib access (including share endpoints)
 	private boolean isInfoContribAction(final Binding binding) {
 		String right = binding.getRight();
-		return THREAD_CONTRIB_ANNOTATION.equals(right) || INFO_SHARE_ANNOTATION.equals(right);
+		return THREAD_CONTRIB_ANNOTATION.equals(right);
 	}
 
 	// Publish access
 	private boolean isInfoPublishAction(final Binding binding) {
 		return THREAD_PUBLISH_ANNOTATION.equals(binding.getRight());
-	}
-
-	// Share endpoints use a different id param
-	private boolean isInfoShare(final Binding binding) {
-		return INFO_SHARE_ANNOTATION.equals(binding.getRight());
 	}
 
 	// Map to consolidated thread_shares right

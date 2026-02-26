@@ -51,10 +51,8 @@ public class ThreadFilter implements ResourcesProvider {
 	@Override
 	public void authorize(final HttpServerRequest request, final Binding binding, final UserInfos user, final Handler<Boolean> handler) {
 		SqlConf conf = SqlConfs.getConf(ThreadController.class.getName());
-		String id = null;
-		if (isThreadShare(binding)) {
-			id = request.params().get("id");
-		} else {
+		String id = request.params().get("id");
+		if (id == null) {
 			id = request.params().get(conf.getResourceIdLabel());
 		}
 		if (id != null && !id.trim().isEmpty() && (parseId(id) instanceof Integer)) {
@@ -100,10 +98,6 @@ public class ThreadFilter implements ResourcesProvider {
 		}
 	}
 
-	// Share endpoints use a different id param
-	private boolean isThreadShare(final Binding binding) {
-		return THREAD_SHARE_ANNOTATION.equals(binding.getRight());
-	}
 
 	// Map consolidated annotation right to DB right (dashes)
 	private String resolveThreadRight(final Binding binding) {
@@ -117,7 +111,7 @@ public class ThreadFilter implements ResourcesProvider {
 			return THREAD_PUBLISH_RIGHT;
 		}
 		// manager (including share endpoints)
-		if (THREAD_MANAGER_ANNOTATION.equals(right) || THREAD_SHARE_ANNOTATION.equals(right)) {
+		if (THREAD_MANAGER_ANNOTATION.equals(right)) {
 			return THREAD_MANAGER_RIGHT;
 		}
 		// fallback: convert dots to dashes (should not happen after migration)

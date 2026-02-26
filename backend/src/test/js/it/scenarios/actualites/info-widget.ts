@@ -81,8 +81,8 @@ export function setup() {
       content: `Incoming content`,
       thread_id: parseInt(thread.id as string),
       status: 3,
-      publication_date: "2020-01-01",
-      expiration_date: futureExpirationDate.toUTCString(),
+      publication_date: "2020-01-01T00:00:00Z",
+      expiration_date: futureExpirationDate.toISOString(),
     } as any);
 
     publishedInfos.push(publishedInfo.id);
@@ -92,8 +92,8 @@ export function setup() {
       content: `Incoming content`,
       thread_id: parseInt(thread.id as string),
       status: 3,
-      publication_date: "2020-01-01",
-      expiration_date: futureExpirationDate.toUTCString(),
+      publication_date: "2020-01-02T00:00:00Z",
+      expiration_date: futureExpirationDate.toISOString(),
     } as any);
 
     publishedInfos.push(publishedInfo.id);
@@ -104,8 +104,8 @@ export function setup() {
       content: `Incoming content`,
       thread_id: parseInt(thread.id as string),
       status: 1,
-      publication_date: "2020-01-01",
-      expiration_date: futureExpirationDate.toUTCString(),
+      publication_date: "2020-01-03T00:00:00Z",
+      expiration_date: futureExpirationDate.toISOString(),
     } as any);
 
     //pending should not be visible
@@ -114,8 +114,8 @@ export function setup() {
       content: `Incoming content`,
       thread_id: parseInt(thread.id as string),
       status: 2,
-      publication_date: "2020-01-01",
-      expiration_date: futureExpirationDate.toUTCString(),
+      publication_date: "2020-01-04T00:00:00Z",
+      expiration_date: futureExpirationDate.toISOString(),
     } as any);
 
     publishedInfo = createPublishedInfoOrFail({
@@ -123,8 +123,8 @@ export function setup() {
       content: `Incoming content`,
       thread_id: parseInt(thread.id as string),
       status: 3,
-      publication_date: "2020-01-01",
-      expiration_date: futureExpirationDate.toUTCString(),
+      publication_date: "2020-01-05T00:00:00Z",
+      expiration_date: futureExpirationDate.toISOString(),
     } as any);
 
     publishedInfos.push(publishedInfo.id);
@@ -134,8 +134,8 @@ export function setup() {
       content: `Incoming content`,
       thread_id: parseInt(thread.id as string),
       status: 3,
-      publication_date: "2020-01-01",
-      expiration_date: futureExpirationDate.toUTCString(),
+      publication_date: "2020-01-06T00:00:00Z",
+      expiration_date: futureExpirationDate.toISOString(),
     } as any);
 
     publishedInfos.push(publishedInfo.id);
@@ -146,8 +146,8 @@ export function setup() {
       content: `Incoming content`,
       thread_id: parseInt(thread.id as string),
       status: 3,
-      publication_date: "2020-01-01",
-      expiration_date: "2021-01-01",
+      publication_date: "2020-01-01T00:00:00Z",
+      expiration_date: "2021-01-01T00:00:00Z",
     } as any);
 
     //incoming info
@@ -156,7 +156,7 @@ export function setup() {
       content: `Incoming content`,
       thread_id: parseInt(thread.id as string),
       status: 3,
-      publication_date:  futureExpirationDate.toUTCString()
+      publication_date:  futureExpirationDate.toISOString()
     } as any);
 
     publishedInfo = createPublishedInfoOrFail({
@@ -164,8 +164,8 @@ export function setup() {
       content: `Incoming content`,
       thread_id: parseInt(thread.id as string),
       status: 3,
-      publication_date: "2020-01-01",
-      expiration_date: futureExpirationDate.toUTCString(),
+      publication_date: "2020-01-07T00:00:00Z",
+      expiration_date: futureExpirationDate.toISOString(),
     } as any);
 
     publishedInfos.push(publishedInfo.id);
@@ -190,7 +190,7 @@ export function testWidget(data: InitData) {
     check(infos, {
       "Default query returns an array": (list) => Array.isArray(list),
     });
-
+    console.log(infos);
     check( infos, {
       "Result should contain 4 elements": (result: any[]) => result.length === 4,
       "Result should contain the last 4 id in reversed order": (result: any[]) => {

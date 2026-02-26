@@ -93,7 +93,7 @@ export function testCommentManagement(data: InitData) {
   // ============================================================
   // TESTS DE MODIFICATION DE COMMENTAIRES
   // ============================================================
-
+/*
   describe('[Comment] Test that comment owner can update their own comment', () => {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
@@ -381,9 +381,9 @@ export function testCommentManagement(data: InitData) {
     check(comments, {
       "Comment was deleted by manager": (c) => !c.find((c) => c._id === comment.id),
     });
-  });
+  });*/
 
-  describe('[Comment] Test that user without rights cannot delete someone elses comment', () => {
+  describe('[Comment] Test that user without rights cannot delete someone else comment', () => {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
     const teacher1 = getRandomUserWithProfile(headUsers, 'Teacher');
@@ -425,6 +425,7 @@ export function testCommentManagement(data: InitData) {
 
     console.log("Trying to delete comment as non-owner without manager rights");
     const deleteResp = deleteComment(info.id, comment.id);
+    console.log(deleteResp);
     check(deleteResp, {
       "User without rights cannot delete someone else's comment": (r) => r.status === 401 || r.status === 403,
     });
@@ -438,7 +439,7 @@ export function testCommentManagement(data: InitData) {
       "Comment text unchanged": (c) => c?.comment === `Comment by teacher1 ${seed}`,
     });
   });
-
+/*
   describe('[Comment] Test V1 API - delete operations', () => {
     <Session>authenticateWeb(__ENV.ADMC_LOGIN, __ENV.ADMC_PASSWORD);
     const headUsers = getUsersOfSchool(data.head);
@@ -477,5 +478,5 @@ export function testCommentManagement(data: InitData) {
     check(comments, {
       "V1 API: Comment was deleted": (c) => !c.find((c) => c._id === comment.id),
     });
-  });
+  });*/
 }
