@@ -79,11 +79,12 @@ public class DisplayController extends BaseController {
 	 *  /actualites/infos/:infoId/publish/rights     (manage info rights)
 	 *  /actualites/infos/:infoId/print              (print info)
 	 *  /actualites/threads/admin                    (manage threads)
+	 *  /actualites/threads/settings                 (thread settings)
 	 *
 	 * Query parameters (?status=...) and hash fragments (#infos-..., #comments-...)
 	 * are handled by the frontend router and not part of this regex.
 	 */
-	@Get(value = "/(?:threads/[0-9]+|infos/(?:[^/\\\\s]+(?:/edit|/print|/create(?:/rights)?|/publish(?:/rights)?)?|create)|threads/admin)?", regex = true)
+	@Get(value = "/(?:threads/[0-9]+|infos/(?:[^/\\\\s]+(?:/edit|/print|/create(?:/rights)?|/publish(?:/rights)?)?|create)|threads/(?:admin|settings))?", regex = true)
 	@SecuredAction("actualites.view")
 	public void view(final HttpServerRequest request) {
 		renderView(request, new JsonObject(), "index.html", null);
