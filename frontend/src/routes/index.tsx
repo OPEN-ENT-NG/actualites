@@ -114,6 +114,7 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
             children: [
               {
                 path: '',
+                id: 'PublishInfo',
                 index: true,
                 async lazy() {
                   const { InfoWorkflowDetails: Component } =
@@ -123,6 +124,7 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
               },
               {
                 path: 'rights',
+                id: 'PublishInfoRights',
                 async lazy() {
                   const { loader, InfoWorkflowRights: Component } =
                     await import('~/routes/pages/InfoWorkflowRights');

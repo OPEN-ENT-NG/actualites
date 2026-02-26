@@ -9,7 +9,7 @@ import {
   InfoFormSkeleton,
 } from '~/features';
 import { InfoDetailsEditFormActions } from '~/features/info-form/components/InfoDetailsEditFormActions';
-import { useInfoForm } from '~/features/info-form/hooks/useInfoForm';
+import { useRouteType } from '~/hooks/useRouteType';
 import { useThreadInfoParams } from '~/hooks/useThreadInfoParams';
 import { useInfoById, useThreads } from '~/services/queries';
 import {
@@ -22,7 +22,7 @@ export function InfoWorkflowDetails() {
   const { data: threads } = useThreads();
   const { infoId } = useThreadInfoParams();
   const { data: info } = useInfoById(Number(infoId));
-  const { isEditRoute } = useInfoForm();
+  const { isEditRoute } = useRouteType();
 
   const setCurrentCreationStep = useInfoFormStore.use.setCurrentWorkflowStep();
 
