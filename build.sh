@@ -54,7 +54,6 @@ else
         init)
         init
         ;;
-        ;;
         *)
         echo "Invalid argument : $param"
     esac
