@@ -152,38 +152,30 @@ public class InfoFilter implements ResourcesProvider {
 		}
 	}
 
-	// Read access: getInfo
+	// Read access
 	private boolean isInfoReadAction(final Binding binding) {
-		String right = binding.getRight();
-		return "net.atos.entng.actualites.controllers.InfoController|getInfo".equals(right);
+		return INFO_READ_ANNOTATION.equals(binding.getRight());
 	}
 
-	// Comment access: comment, updateComment, deleteComment
+	// Comment access
 	private boolean isInfoCommentAction(final Binding binding) {
-		String right = binding.getRight();
-		return "net.atos.entng.actualites.controllers.CommentController|comment".equals(right)
-			|| "net.atos.entng.actualites.controllers.CommentController|updateComment".equals(right)
-			|| "net.atos.entng.actualites.controllers.CommentController|deleteComment".equals(right);
+		return INFO_COMMENT_ANNOTATION.equals(binding.getRight());
 	}
 
-	// Contrib access: shareInfo, createDraft
+	// Contrib access (including share endpoints)
 	private boolean isInfoContribAction(final Binding binding) {
 		String right = binding.getRight();
-		return "net.atos.entng.actualites.controllers.InfoController|shareInfo".equals(right)
-			|| "net.atos.entng.actualites.controllers.InfoController|createDraft".equals(right);
+		return THREAD_CONTRIB_ANNOTATION.equals(right) || INFO_SHARE_ANNOTATION.equals(right);
 	}
 
-	// Publish access: getInfoTimeline, publish
+	// Publish access
 	private boolean isInfoPublishAction(final Binding binding) {
-		String right = binding.getRight();
-		return "net.atos.entng.actualites.controllers.InfoController|getInfoTimeline".equals(right)
-			|| "net.atos.entng.actualites.controllers.InfoController|publish".equals(right);
+		return THREAD_PUBLISH_ANNOTATION.equals(binding.getRight());
 	}
 
 	// Share endpoints use a different id param
 	private boolean isInfoShare(final Binding binding) {
-		String right = binding.getRight();
-		return "net.atos.entng.actualites.controllers.InfoController|shareInfo".equals(right);
+		return INFO_SHARE_ANNOTATION.equals(binding.getRight());
 	}
 
 	// Map to consolidated thread_shares right

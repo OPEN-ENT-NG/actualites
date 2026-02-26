@@ -19,7 +19,7 @@
 
 package net.atos.entng.actualites.controllers;
 
-import static net.atos.entng.actualites.filters.RightConstants.INFO_READ_VALUE;
+import static net.atos.entng.actualites.filters.RightConstants.*;
 
 import java.util.Map;
 
@@ -104,7 +104,7 @@ public class DisplayController extends BaseController {
 
 	/** Render react frontend in old-format */
 	@Get("/oldformat/:"+Actualites.THREAD_RESOURCE_ID+"/:"+Actualites.INFO_RESOURCE_ID)
-    @SecuredAction(value = INFO_READ_VALUE, type = ActionType.RESOURCE, right = InfoController.ROOT_RIGHT + "|getInfo")
+    @SecuredAction(value = INFO_READ_VALUE, type = ActionType.RESOURCE, right = INFO_READ_ANNOTATION)
     @ResourceFilter(InfoFilter.class)
 	public void viewOldInfoById(HttpServerRequest request) {
 		renderView(request, new JsonObject(), "index.html", null);

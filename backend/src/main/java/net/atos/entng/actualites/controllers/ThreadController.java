@@ -140,7 +140,7 @@ public class ThreadController extends ControllerHelper {
 	@Get("/thread/:" + Actualites.THREAD_RESOURCE_ID)
 	@ApiDoc("Get Thread by id. DEPRECATED - Use /api/v1/threads/:id instead.")
 	@ResourceFilter(ThreadFilter.class)
-	@SecuredAction(value = THREAD_CONTRIB_VALUE, right = ROOT_RIGHT + "|getThread", type = ActionType.RESOURCE)
+	@SecuredAction(value = THREAD_CONTRIB_VALUE, right = THREAD_CONTRIB_ANNOTATION, type = ActionType.RESOURCE)
 	public void getThread(final HttpServerRequest request) {
 		log.warn("[DEPRECATED] GET /thread/:id called - Use /api/v1/threads/:id instead");
 		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
@@ -157,7 +157,7 @@ public class ThreadController extends ControllerHelper {
 	@Put("/thread/:" + Actualites.THREAD_RESOURCE_ID)
 	@ApiDoc("Update thread by id. DEPRECATED - Use /api/v1/threads/:id instead.")
 	@ResourceFilter(ThreadFilter.class)
-	@SecuredAction(value = THREAD_MANAGER_VALUE, right = ROOT_RIGHT + "|updateThread", type = ActionType.RESOURCE)
+	@SecuredAction(value = THREAD_MANAGER_VALUE, right = THREAD_MANAGER_ANNOTATION, type = ActionType.RESOURCE)
 	public void updateThread(final HttpServerRequest request) {
 		log.warn("[DEPRECATED] PUT /thread/:id called - Use /api/v1/threads/:id instead");
 		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
@@ -178,7 +178,7 @@ public class ThreadController extends ControllerHelper {
 	@Delete("/thread/:"+Actualites.THREAD_RESOURCE_ID)
 	@ApiDoc("Delete thread by id. DEPRECATED - Use /api/v1/threads/:id instead.")
 	@ResourceFilter(ThreadFilter.class)
-	@SecuredAction(value = THREAD_MANAGER_VALUE, right = ROOT_RIGHT + "|deleteThread", type = ActionType.RESOURCE)
+	@SecuredAction(value = THREAD_MANAGER_VALUE, right = THREAD_MANAGER_ANNOTATION, type = ActionType.RESOURCE)
 	public void deleteThread(final HttpServerRequest request) {
 		log.warn("[DEPRECATED] DELETE /thread/:id called - Use /api/v1/threads/:id instead");
 		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
@@ -194,7 +194,7 @@ public class ThreadController extends ControllerHelper {
 	@Get("/thread/share/json/:"+THREAD_ID_PARAMETER)
 	@ApiDoc("Share thread by id. DEPRECATED - This endpoint is no longer used and will be removed in a future version.")
 	@ResourceFilter(ThreadFilter.class)
-	@SecuredAction(value = THREAD_MANAGER_VALUE, right = ROOT_RIGHT + "|shareThread", type = ActionType.RESOURCE)
+	@SecuredAction(value = THREAD_MANAGER_VALUE, right = THREAD_SHARE_ANNOTATION, type = ActionType.RESOURCE)
 	public void shareThread(final HttpServerRequest request) {
 		log.warn("[DEPRECATED] GET /thread/share/json/:id called - This endpoint should no longer be used");
 		final String id = request.params().get(THREAD_ID_PARAMETER);
@@ -253,7 +253,7 @@ public class ThreadController extends ControllerHelper {
 	@Put("/thread/share/resource/:id")
 	@ApiDoc("Share thread by id. DEPRECATED - This endpoint is no longer used and will be removed in a future version.")
 	@ResourceFilter(ThreadFilter.class)
-	@SecuredAction(value = THREAD_MANAGER_VALUE, right = ROOT_RIGHT + "|shareResource", type = ActionType.RESOURCE)
+	@SecuredAction(value = THREAD_MANAGER_VALUE, right = THREAD_SHARE_ANNOTATION, type = ActionType.RESOURCE)
 	public void shareResource(final HttpServerRequest request) {
 		log.warn("[DEPRECATED] PUT /thread/share/resource/:id called - This endpoint should no longer be used");
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {

@@ -102,23 +102,22 @@ public class ThreadFilter implements ResourcesProvider {
 
 	// Share endpoints use a different id param
 	private boolean isThreadShare(final Binding binding) {
-		String right = binding.getRight();
-		return "net.atos.entng.actualites.controllers.ThreadController|shareThread".equals(right)
-			|| "net.atos.entng.actualites.controllers.ThreadController|shareResource".equals(right);
+		return THREAD_SHARE_ANNOTATION.equals(binding.getRight());
 	}
 
-	// Map original annotation right (points) to consolidated DB right (dashes)
+	// Map consolidated annotation right to DB right (dashes)
 	private String resolveThreadRight(final Binding binding) {
 		String right = binding.getRight();
-		// contrib: getThread
-		if ("net.atos.entng.actualites.controllers.ThreadController|getThread".equals(right)) {
+		// contrib
+		if (THREAD_CONTRIB_ANNOTATION.equals(right)) {
 			return THREAD_CONTRIB_RIGHT;
 		}
-		// manager: updateThread, deleteThread, shareThread, shareResource
-		if ("net.atos.entng.actualites.controllers.ThreadController|updateThread".equals(right)
-			|| "net.atos.entng.actualites.controllers.ThreadController|deleteThread".equals(right)
-			|| "net.atos.entng.actualites.controllers.ThreadController|shareThread".equals(right)
-			|| "net.atos.entng.actualites.controllers.ThreadController|shareResource".equals(right)) {
+		// publish
+		if (THREAD_PUBLISH_ANNOTATION.equals(right)) {
+			return THREAD_PUBLISH_RIGHT;
+		}
+		// manager (including share endpoints)
+		if (THREAD_MANAGER_ANNOTATION.equals(right) || THREAD_SHARE_ANNOTATION.equals(right)) {
 			return THREAD_MANAGER_RIGHT;
 		}
 		// fallback: convert dots to dashes (should not happen after migration)
