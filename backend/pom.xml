@@ -12,10 +12,11 @@
 
     <groupId>net.atos</groupId>
     <artifactId>actualites</artifactId>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.1-separation-SNAPSHOT</version>
     <properties>
         <jacksonDatabindVersion>2.15.2</jacksonDatabindVersion>
-        <entCoreVersion>6.14-SNAPSHOT</entCoreVersion>
+        <entCoreLibsVersion>6.14-separation-SNAPSHOT</entCoreLibsVersion>
+        <entCoreVersion>6.14-separation-SNAPSHOT</entCoreVersion>
         <vertxCronTimerVersion>3.0-SNAPSHOT</vertxCronTimerVersion>
         <gatlingHighchartsVersion>2.3.1</gatlingHighchartsVersion>
         <junitVersion>4.13.2</junitVersion>
@@ -55,7 +56,7 @@
         <dependency>
             <groupId>org.entcore</groupId>
             <artifactId>common</artifactId>
-            <version>${entCoreVersion}</version>
+            <version>${entCoreLibsVersion}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
