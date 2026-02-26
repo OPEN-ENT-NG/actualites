@@ -27,6 +27,15 @@ export function ThreadSetting({
     'opacity-50': !checked,
   });
 
+  const userRole: 'publish' | 'contributor' | 'manager' | 'read' =
+    thread.sharedRights?.includes('thread.publish')
+      ? 'publish'
+      : thread.sharedRights?.includes('thread.contrib')
+        ? 'contributor'
+        : thread.sharedRights?.includes('thread.manager')
+          ? 'manager'
+          : 'read';
+
   return (
     <Flex
       data-testid="thread-div"
@@ -38,7 +47,7 @@ export function ThreadSetting({
       <ThreadIcon thread={thread} iconSize="80" hidden={!checked} />
       <Flex direction="column" gap="4" fill className={classes}>
         <strong className="text-truncate">{thread.title}</strong>
-
+        <div>{t(`actualites.threadsSetting.rights.${userRole}`)}</div>
         <Flex
           direction={xl ? 'row' : 'column'}
           align={xl ? 'center' : 'start'}
@@ -63,6 +72,7 @@ export function ThreadSetting({
           label={t('actualites.threadsSetting.displayThread')}
           onChange={handleCheckClick}
           checked={checked}
+          data-testid={`thread-${thread.id}-checkbox`}
         />
       </Flex>
     </Flex>

@@ -8,7 +8,7 @@ import { useThreads } from '~/services/queries';
 
 export const ThreadListActions = () => {
   const { t } = useI18n();
-  const { data: threads, isFetched } = useThreads();
+  const { isFetched } = useThreads();
 
   const navigate = useNavigate();
   const { canManageOnOneThread } = useThreadsUserRights();
@@ -27,10 +27,6 @@ export const ThreadListActions = () => {
 
   if (!isFetched) {
     return <ButtonSkeleton size="lg" className="col-12" />;
-  }
-
-  if (!threads) {
-    return null;
   }
 
   return (

@@ -134,6 +134,14 @@ export function AdminThreadList() {
           />
         );
       })}
+      {filteredList?.length === 0 && (
+        <EmptyScreen
+          imageSrc={illuEmptyAdminThreads}
+          imageAlt={t('actualites.adminThreads.empty.title')}
+          title={t('actualites.adminThreads.searchEmpty.title')}
+          text={t('actualites.adminThreads.searchEmpty.description')}
+        />
+      )}
 
       {threadToUpdate && (
         <AdminThreadModal

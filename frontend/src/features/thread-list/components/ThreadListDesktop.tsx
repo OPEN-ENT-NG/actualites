@@ -23,6 +23,7 @@ export const ThreadListDesktop = () => {
     navigate('/');
   };
 
+  console.log('threads in ', canParamThreads || canManageOnOneThread);
   return (
     <Flex
       direction="column"

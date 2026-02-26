@@ -221,12 +221,12 @@ export const useUpdateThreadPreferences = () => {
       );
     },
     onSuccess: () => {
-      toast.success(t('actualites.threadsSetting.success'));
       queryClient.invalidateQueries({ queryKey: threadQueryKeys.all() });
       queryClient.invalidateQueries({ queryKey: infoQueryKeys.all() });
     },
     onError: () => {
       toast.error(t('actualites.threadsSetting.error'));
+      queryClient.invalidateQueries({ queryKey: threadQueryKeys.all() });
     },
   });
 };
