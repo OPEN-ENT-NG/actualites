@@ -137,23 +137,28 @@ export const useUpdateThread = () => {
       }
 
       // Update thread list in the cache
-      queryClient.setQueryData(threadQueryKeys.all(), (oldData: Thread[]) => {
-        previousData.push({
-          queryKey: threadQueryKeys.all(),
-          data: oldData,
-        });
-        if (!oldData) return oldData;
-        const updatedThreadList = oldData.map((thread) => {
-          if (thread.id === threadId) {
-            return {
-              ...thread,
-              ...newThreadData,
-            };
-          }
-          return thread;
-        });
-        return updatedThreadList.sort((a, b) => a.title.localeCompare(b.title));
-      });
+      queryClient.setQueriesData(
+        { queryKey: threadQueryKeys.all() },
+        (oldData: Thread[]) => {
+          previousData.push({
+            queryKey: threadQueryKeys.all(),
+            data: oldData,
+          });
+          if (!oldData) return oldData;
+          const updatedThreadList = oldData.map((thread) => {
+            if (thread.id === threadId) {
+              return {
+                ...thread,
+                ...newThreadData,
+              };
+            }
+            return thread;
+          });
+          return updatedThreadList.sort((a, b) =>
+            a.title.localeCompare(b.title),
+          );
+        },
+      );
 
       return previousData;
     },

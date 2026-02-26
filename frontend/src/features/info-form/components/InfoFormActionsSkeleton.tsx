@@ -1,9 +1,9 @@
 import { ButtonSkeleton, Flex, useBreakpoint } from '@edifice.io/react';
-import { useInfoForm } from '../hooks/useInfoForm';
+import { useRouteType } from '~/hooks/useRouteType';
 
 export function InfoFormActionsSkeleton() {
   const { md } = useBreakpoint();
-  const { isCreateRoute } = useInfoForm();
+  const { isCreateRoute } = useRouteType();
 
   return (
     <Flex

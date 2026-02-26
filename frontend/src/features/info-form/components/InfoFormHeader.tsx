@@ -1,12 +1,12 @@
 import { Flex, Stepper } from '@edifice.io/react';
 import { useI18n } from '~/hooks/useI18n';
+import { useRouteType } from '~/hooks/useRouteType';
 import { InfoWorkflowStep, useInfoFormStore } from '~/store/infoFormStore';
-import { useInfoForm } from '../hooks/useInfoForm';
 
 export function InfoFormHeader({ className }: { className?: string }) {
   const currentCreationStep = useInfoFormStore.use.currentWorkflowStep();
   const { t } = useI18n();
-  const { isCreateRoute, isEditRoute, isPublishRoute } = useInfoForm();
+  const { isCreateRoute, isEditRoute, isPublishRoute } = useRouteType();
 
   const currentStepTitle =
     currentCreationStep === InfoWorkflowStep.INFO_DETAILS

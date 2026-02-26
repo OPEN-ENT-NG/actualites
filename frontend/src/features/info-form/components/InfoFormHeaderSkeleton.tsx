@@ -1,8 +1,8 @@
 import { Flex, Stepper, TextSkeleton } from '@edifice.io/react';
-import { useInfoForm } from '../hooks/useInfoForm';
+import { useRouteType } from '~/hooks/useRouteType';
 
 export function InfoFormHeaderSkeleton() {
-  const { isCreateRoute } = useInfoForm();
+  const { isCreateRoute } = useRouteType();
   return (
     <Flex direction="column" gap="16" className="mb-24">
       {isCreateRoute && <Stepper currentStep={0} nbSteps={2} />}
