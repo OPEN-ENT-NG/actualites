@@ -28,7 +28,11 @@
     {% endif %}
     "entcore.port": 8009,
     "publicConf": {
-      "screeb-app-id": "{{ screebAppId | default('') }}"
+      "screeb-app-id": "{{ screebAppId | default('') }}",
+	  "genai": {
+	    "falcMinLength": {{ actuFalcMinLength | default(200) }},
+	    "falcTimeoutMs": {{ actuFalcTimeoutMs | default(30000) }}
+	  }
     }
   }
 }
