@@ -43,8 +43,7 @@ public class UserPreferenceController extends ControllerHelper {
 
 	@Get("/api/v1/me/thread-preferences/exists")
 	@ApiDoc("Give information of the existence of thread preference for the user")
-	@ResourceFilter(UserPreferencesFilter.class)
-	@SecuredAction(value = "", type = ActionType.RESOURCE)
+	@SecuredAction(value = "", type = ActionType.AUTHENTICATED)
 	public void isPreferenceExists(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
 			userPreferenceService.hasThreadPreference(user)
