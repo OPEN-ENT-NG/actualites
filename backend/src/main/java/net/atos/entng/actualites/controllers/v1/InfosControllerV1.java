@@ -17,6 +17,8 @@ import net.atos.entng.actualites.Actualites;
 import net.atos.entng.actualites.filters.CreateInfoFilter;
 import net.atos.entng.actualites.filters.InfoFilter;
 import net.atos.entng.actualites.filters.UpdateInfoFilter;
+
+import static net.atos.entng.actualites.filters.RightConstants.*;
 import net.atos.entng.actualites.services.InfoService;
 import net.atos.entng.actualites.services.NotificationTimelineService;
 import net.atos.entng.actualites.services.TimelineMongo;
@@ -249,7 +251,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	@Get("/api/v1/infos/:" + INFO_RESOURCE_ID)
 	@ApiDoc("Retrieve : retrieve an Info in thread by thread and by id")
 	@ResourceFilter(InfoFilter.class)
-	@SecuredAction(value = "info.read", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|getInfo")
+	@SecuredAction(value = INFO_READ_VALUE, type = ActionType.RESOURCE, right = INFO_READ_ANNOTATION)
 	public void getInfos(final HttpServerRequest request) {
 		// TODO IMPROVE : Security on Infos visibles by statuses / dates is not enforced
 		UserUtils.getUserInfos(eb, request, user -> {
@@ -272,7 +274,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	@Delete("/api/v1/infos/:" + INFO_RESOURCE_ID)
 	@ApiDoc("Delete : Real delete an Info in thread by thread and by id")
 	@ResourceFilter(InfoFilter.class)
-	@SecuredAction(value = "thread.manager", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|delete")
+	@SecuredAction(value = THREAD_MANAGER_VALUE, type = ActionType.RESOURCE, right = THREAD_MANAGER_ANNOTATION)
 	public void removeInfo(final HttpServerRequest request) {
 		final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
 		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
@@ -302,7 +304,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	@Get("/api/v1/infos/:id/shares")
 	@ApiDoc("Get share info")
 	@ResourceFilter(InfoFilter.class)
-	@SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|shareInfo")
+	@SecuredAction(value = THREAD_CONTRIB_VALUE, type = ActionType.RESOURCE, right = THREAD_CONTRIB_ANNOTATION)
 	public void getShareInfo(final HttpServerRequest request) {
 		final String id = request.params().get(INFO_ID_PARAMETER);
 		if (id == null || id.trim().isEmpty()) {
@@ -360,7 +362,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	@Put("/api/v1/infos/:id/shares")
 	@ApiDoc("Update share info")
 	@ResourceFilter(InfoFilter.class)
-	@SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|shareInfo")
+	@SecuredAction(value = THREAD_CONTRIB_VALUE, type = ActionType.RESOURCE, right = THREAD_CONTRIB_VALUE)
 	public void updateShareInfo(final HttpServerRequest request) {
 		final String infoId = request.params().get(INFO_ID_PARAMETER);
 		if(StringUtils.isEmpty(infoId)) {
@@ -404,7 +406,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	@Get("/api/v1/infos/:" + INFO_RESOURCE_ID + "/timeline")
 	@ApiDoc("Get timeline info")
 	@ResourceFilter(InfoFilter.class)
-	@SecuredAction(value = "thread.publish", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|getInfoTimeline")
+	@SecuredAction(value = THREAD_PUBLISH_VALUE, type = ActionType.RESOURCE, right = THREAD_PUBLISH_ANNOTATION)
 	public void getInfoTimeline(final HttpServerRequest request) {
 		final String id = request.params().get(Actualites.INFO_RESOURCE_ID);
 		if (id == null || id.trim().isEmpty()) {
@@ -422,7 +424,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	@Post("/api/v1/infos")
 	@ApiDoc("Create an info in pending or draft")
 	@ResourceFilter(CreateInfoFilter.class)
-	@SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|createDraft")
+	@SecuredAction(value = THREAD_CONTRIB_VALUE, type = ActionType.RESOURCE, right = THREAD_CONTRIB_ANNOTATION)
 	public void createInfo(HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
 			RequestUtils.bodyToJson(request, pathPrefix + SCHEMA_INFO_CREATE, resource -> {
@@ -464,7 +466,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	@Post("/api/v1/infos/published")
 	@ApiDoc("Create a published info")
 	@ResourceFilter(CreateInfoFilter.class)
-	@SecuredAction(value = "thread.publish", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|publish")
+	@SecuredAction(value = THREAD_PUBLISH_VALUE, type = ActionType.RESOURCE, right = THREAD_PUBLISH_ANNOTATION)
 	public void createPublishedInfo(HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
 			RequestUtils.bodyToJson(request, pathPrefix + SCHEMA_INFO_CREATE, resource -> {
@@ -518,7 +520,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	@Put("/api/v1/infos/:" + INFO_RESOURCE_ID)
 	@ApiDoc("Update an info in any states")
 	@ResourceFilter(UpdateInfoFilter.class)
-	@SecuredAction(value = "thread.contrib", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|createDraft")
+	@SecuredAction(value = THREAD_CONTRIB_VALUE, type = ActionType.RESOURCE, right = THREAD_CONTRIB_ANNOTATION)
 	public void updateInfo(HttpServerRequest request) {
 		final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
 		UserUtils.getUserInfos(eb, request, user -> {

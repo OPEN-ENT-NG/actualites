@@ -21,28 +21,11 @@ export enum ThreadRight {
   MANAGER = 'MANAGER',
 }
 
-export const threadContributorRights: string[] = [ "net-atos-entng-actualites-controllers-InfoController|unsubmit",
-  "net-atos-entng-actualites-controllers-InfoController|updateDraft",
-  "net-atos-entng-actualites-controllers-InfoController|listInfosByThreadId",
-  "net-atos-entng-actualites-controllers-InfoController|createPending",
-  "net-atos-entng-actualites-controllers-InfoController|createDraft",
-  "net-atos-entng-actualites-controllers-InfoController|shareInfo",
-  "net-atos-entng-actualites-controllers-InfoController|shareResourceInfo",
-  "net-atos-entng-actualites-controllers-InfoController|submit",
-  "net-atos-entng-actualites-controllers-ThreadController|getThread"];
+export const threadContributorRights: string[] = [ "net-atos-entng-actualites-controllers-ThreadController|contrib" ];
 
-export const threadPublisherRights: string[] = [ "net-atos-entng-actualites-controllers-InfoController|getInfoTimeline",
-  "net-atos-entng-actualites-controllers-InfoController|createPublished",
-  "net-atos-entng-actualites-controllers-InfoController|updatePending",
-  "net-atos-entng-actualites-controllers-InfoController|unpublish",
-  "net-atos-entng-actualites-controllers-InfoController|publish",
-  "net-atos-entng-actualites-controllers-InfoController|updatePublished"];
+export const threadPublisherRights: string[] = [ "net-atos-entng-actualites-controllers-InfoController|publish" ];
 
-export const threadManagerRights: string[] = [ "net-atos-entng-actualites-controllers-ThreadController|shareResource",
-  "net-atos-entng-actualites-controllers-InfoController|delete",
-  "net-atos-entng-actualites-controllers-ThreadController|deleteThread",
-  "net-atos-entng-actualites-controllers-ThreadController|shareThread",
-  "net-atos-entng-actualites-controllers-ThreadController|updateThread"];
+export const threadManagerRights: string[] = [ "net-atos-entng-actualites-controllers-ThreadController|manage" ];
 
 export const threadAllRights =  [...threadContributorRights, ...threadPublisherRights, ...threadManagerRights];
 

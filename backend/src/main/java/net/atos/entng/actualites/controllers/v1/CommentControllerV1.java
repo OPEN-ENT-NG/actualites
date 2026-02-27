@@ -12,6 +12,8 @@ import net.atos.entng.actualites.Actualites;
 import net.atos.entng.actualites.filters.CommentFilter;
 import net.atos.entng.actualites.filters.InfoFilter;
 import net.atos.entng.actualites.filters.UpdateCommentFilter;
+
+import static net.atos.entng.actualites.filters.RightConstants.*;
 import net.atos.entng.actualites.services.InfoService;
 import org.entcore.common.controller.ControllerHelper;
 import org.entcore.common.http.filter.ResourceFilter;
@@ -59,7 +61,7 @@ public class CommentControllerV1 extends ControllerHelper {
     @Get("/api/v1/infos/:" + Actualites.INFO_RESOURCE_ID + "/comments")
     @ApiDoc("Comment : Get info's comments")
     @ResourceFilter(InfoFilter.class)
-    @SecuredAction(value = "info.read", type = ActionType.RESOURCE, right = InfosControllerV1.ROOT_RIGHT + "|getInfo")
+    @SecuredAction(value = INFO_READ_VALUE, type = ActionType.RESOURCE, right = INFO_READ_ANNOTATION)
     public void getInfoComments(final HttpServerRequest request) {
 		final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
 		Long id;
@@ -75,7 +77,7 @@ public class CommentControllerV1 extends ControllerHelper {
     @Post("/api/v1/infos/:" + Actualites.INFO_RESOURCE_ID + "/comments")
     @ApiDoc("Comment : Add a comment to an Info by info id")
     @ResourceFilter(InfoFilter.class)
-    @SecuredAction(value = "info.comment", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|comment")
+    @SecuredAction(value = INFO_COMMENT_VALUE, type = ActionType.RESOURCE, right = INFO_COMMENT_ANNOTATION)
     public void createComment(final HttpServerRequest request) {
 		final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
 		UserUtils.getUserInfos(eb, request, user -> {
@@ -110,7 +112,7 @@ public class CommentControllerV1 extends ControllerHelper {
     @Put("/api/v1/infos/:" + Actualites.INFO_RESOURCE_ID + "/comments/:id")
     @ApiDoc("Comment : modify a comment of an Info by info and comment id")
     @ResourceFilter(UpdateCommentFilter.class)
-    @SecuredAction(value = "info.comment", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|updateComment")
+    @SecuredAction(value = INFO_COMMENT_VALUE, type = ActionType.RESOURCE, right = INFO_COMMENT_ANNOTATION)
     public void updateComment(final HttpServerRequest request) {
 		final String commentId = request.params().get(COMMENT_ID_PARAMETER);
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
@@ -136,15 +138,10 @@ public class CommentControllerV1 extends ControllerHelper {
     @Delete("/api/v1/infos/:" + Actualites.INFO_RESOURCE_ID + "/comments/:id")
     @ApiDoc("Comment : delete a comment by comment id ")
     @ResourceFilter(CommentFilter.class)
-    @SecuredAction(value = "info.comment", type = ActionType.RESOURCE, right = ROOT_RIGHT + "|deleteComment")
+    @SecuredAction(value = THREAD_PUBLISH_VALUE, type = ActionType.RESOURCE, right = THREAD_PUBLISH_ANNOTATION)
     public void deleteComment(final HttpServerRequest request) {
 		final String commentId = request.params().get(COMMENT_ID_PARAMETER);
-		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
-			@Override
-			public void handle(final UserInfos user) {
-				crudService.delete(commentId, user, notEmptyResponseHandler(request));
-			}
-		});
+		UserUtils.getUserInfos(eb, request, user -> crudService.delete(commentId, user, notEmptyResponseHandler(request)));
 	}
 
 	private void notifyTimeline(final HttpServerRequest request, final UserInfos user, final String infoId, final String commentId, final String title, final String commentText, final String eventType){

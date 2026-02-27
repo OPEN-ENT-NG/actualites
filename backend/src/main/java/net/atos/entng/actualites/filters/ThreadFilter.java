@@ -19,6 +19,7 @@
 
 package net.atos.entng.actualites.filters;
 
+import static net.atos.entng.actualites.filters.RightConstants.*;
 import static org.entcore.common.sql.Sql.parseId;
 import static org.entcore.common.user.DefaultFunctions.ADMIN_LOCAL;
 
@@ -50,25 +51,21 @@ public class ThreadFilter implements ResourcesProvider {
 	@Override
 	public void authorize(final HttpServerRequest request, final Binding binding, final UserInfos user, final Handler<Boolean> handler) {
 		SqlConf conf = SqlConfs.getConf(ThreadController.class.getName());
-		String id = null;
-		if(isThreadShare(binding)){
-			id = request.params().get("id");
-		} else {
+		String id = request.params().get("id");
+		if (id == null) {
 			id = request.params().get(conf.getResourceIdLabel());
 		}
 		if (id != null && !id.trim().isEmpty() && (parseId(id) instanceof Integer)) {
 			request.pause();
-			// Method
-			String sharedMethod = binding.getRight().replaceAll("\\.", "-");
 
-			// Groups and users
+			String sqlRight = resolveThreadRight(binding);
+
 			final List<String> groupsAndUserIds = new ArrayList<>();
 			groupsAndUserIds.add(user.getUserId());
 			if (user.getGroupsIds() != null) {
 				groupsAndUserIds.addAll(user.getGroupsIds());
 			}
 
-			// Query
 			StringBuilder query = new StringBuilder();
 			JsonArray values = new JsonArray();
 
@@ -83,16 +80,14 @@ public class ThreadFilter implements ResourcesProvider {
 				.append(" WHERE t.id = ? ")
 				.append(" AND (")
 				.append("   (ts.member_id IN (SELECT id FROM user_groups) AND ts.action = ?)")
-				.append("   OR t.owner = ?");
+				.append("   OR t.owner = ?")
+				.append(" )");
 
-			query.append(" )");
 			values.add(user.getUserId());
 			groupsAndUserIds.forEach(values::add);
 			values.add(Sql.parseId(id));
-			values.add(sharedMethod);
+			values.add(sqlRight);
 			values.add(user.getUserId());
-
-			// Execute
 			Sql.getInstance().prepared(query.toString(), values, message -> {
                 request.resume();
                 Long count = SqlResult.countResult(message);
@@ -103,12 +98,23 @@ public class ThreadFilter implements ResourcesProvider {
 		}
 	}
 
-	private boolean isThreadShare(final Binding binding) {
-		return ("net.atos.entng.actualites.controllers.ThreadController|shareThread".equals(binding.getRight()) ||
-				 "net.atos.entng.actualites.controllers.ThreadController|shareThreadSubmit".equals(binding.getRight()) ||
-				 "net.atos.entng.actualites.controllers.ThreadController|shareThreadRemove".equals(binding.getRight()) ||
-				"net.atos.entng.actualites.controllers.ThreadController|shareResource".equals(binding.getRight())
-				);
-	}
 
+	// Map consolidated annotation right to DB right (dashes)
+	private String resolveThreadRight(final Binding binding) {
+		String right = binding.getRight();
+		// contrib
+		if (THREAD_CONTRIB_ANNOTATION.equals(right)) {
+			return THREAD_CONTRIB_RIGHT;
+		}
+		// publish
+		if (THREAD_PUBLISH_ANNOTATION.equals(right)) {
+			return THREAD_PUBLISH_RIGHT;
+		}
+		// manager (including share endpoints)
+		if (THREAD_MANAGER_ANNOTATION.equals(right)) {
+			return THREAD_MANAGER_RIGHT;
+		}
+		// fallback: convert dots to dashes (should not happen after migration)
+		return right.replaceAll("\\.", "-");
+	}
 }
