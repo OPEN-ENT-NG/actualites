@@ -172,12 +172,38 @@ export const TextSimplifier = forwardRef(
       );
     }
 
-    return (
-      <TextSimplifierLayout
-        body={children /* Display the Editor and any other component */}
-        footer={
-          <>
-            {simplifiedContent && (
+    function renderGenerateButton() {
+      return (
+        <Flex justify="between" gap="12" className="ms-auto">
+          <Button
+            data-testid="textsimplifier-knowmore-button"
+            size="sm"
+            variant="ghost"
+            color="tertiary"
+            onClick={toggleKnowMore}
+          >
+            {t('actualites.textsimplifier.button.knowmore')}
+          </Button>
+          <KnowMoreModal isOpen={showKnowMore} onClose={toggleKnowMore} />
+
+          <AiButton
+            data-testid="textsimplifier-generate-button"
+            disabled={isGenerating || !contentChanged}
+            isLoading={isGenerating}
+            onClick={handleGenerateClick}
+          >
+            {!isGenerating && t('actualites.textsimplifier.button.generate')}
+          </AiButton>
+        </Flex>
+      );
+    }
+
+    if (simplifiedContent) {
+      return (
+        <TextSimplifierLayout
+          body={children /* Display the Editor and any other component */}
+          footer={
+            <>
               <Button
                 data-testid="textsimplifier-display-suggestion-toggle"
                 className="text-gray-800"
@@ -193,81 +219,72 @@ export const TextSimplifier = forwardRef(
                   ? t('actualites.textsimplifier.button.show')
                   : t('actualites.textsimplifier.button.hide')}
               </Button>
-            )}
 
-            <Expandable collapse={hideSuggestion} transitionDurationMs={300}>
-              <Flex
-                direction="column"
-                className="border rounded-3 bg-white mb-8"
-              >
-                <div className="px-24 py-16">
-                  <MarkdownRenderer simplifiedContent={simplifiedContent} />
-                </div>
+              <Expandable collapse={hideSuggestion} transitionDurationMs={300}>
                 <Flex
-                  direction="row"
-                  justify="between"
-                  className="border-top px-24"
+                  direction="column"
+                  className="border rounded-3 bg-white mb-8"
                 >
-                  <div></div>
-                  <Button
-                    data-testid="textsimplifier-copy-suggestion-button"
-                    className="text-gray-800"
-                    color="secondary"
-                    variant="ghost"
-                    size="sm"
-                    leftIcon={<IconCopy />}
-                    onClick={handleCopyClick}
+                  <div className="px-24 py-16">
+                    <MarkdownRenderer simplifiedContent={simplifiedContent} />
+                  </div>
+                  <Flex
+                    direction="row"
+                    justify="between"
+                    className="border-top px-24"
                   >
-                    {t('actualites.textsimplifier.button.copy')}
-                  </Button>
+                    <div></div>
+                    <Button
+                      data-testid="textsimplifier-copy-suggestion-button"
+                      className="text-gray-800"
+                      color="secondary"
+                      variant="ghost"
+                      size="sm"
+                      leftIcon={<IconCopy />}
+                      onClick={handleCopyClick}
+                    >
+                      {t('actualites.textsimplifier.button.copy')}
+                    </Button>
+                  </Flex>
                 </Flex>
-              </Flex>
-            </Expandable>
+              </Expandable>
 
-            <Flex wrap="wrap" justify="between" align="center" gap="10">
-              <i>
-                {simplifiedContent && contentChanged && (
-                  <IconAlertTriangle
-                    style={{
-                      width: '2.4rem',
-                      display: 'inline-block',
-                      paddingRight: '.8rem',
-                    }}
-                  />
-                )}
-                {t(
-                  simplifiedContent
-                    ? contentChanged
+              <Flex wrap="wrap" justify="between" align="center" gap="10">
+                <i>
+                  {contentChanged && (
+                    <IconAlertTriangle
+                      style={{
+                        width: '2.4rem',
+                        display: 'inline-block',
+                        paddingRight: '.8rem',
+                      }}
+                    />
+                  )}
+                  {t(
+                    contentChanged
                       ? 'actualites.textsimplifier.label.warn'
-                      : 'actualites.textsimplifier.label.modify'
-                    : 'actualites.textsimplifier.label.write',
-                )}
-              </i>
+                      : 'actualites.textsimplifier.label.modify',
+                  )}
+                </i>
 
-              <Flex justify="between" gap="12" className="ms-auto">
-                <Button
-                  data-testid="textsimplifier-knowmore-button"
-                  size="sm"
-                  variant="ghost"
-                  color="tertiary"
-                  onClick={toggleKnowMore}
-                >
-                  {t('actualites.textsimplifier.button.knowmore')}
-                </Button>
-                <KnowMoreModal isOpen={showKnowMore} onClose={toggleKnowMore} />
-
-                <AiButton
-                  data-testid="textsimplifier-generate-button"
-                  disabled={isGenerating || !contentChanged}
-                  isLoading={isGenerating}
-                  onClick={handleGenerateClick}
-                >
-                  {!isGenerating &&
-                    t('actualites.textsimplifier.button.generate')}
-                </AiButton>
+                {renderGenerateButton()}
               </Flex>
-            </Flex>
-          </>
+            </>
+          }
+        />
+      );
+    }
+
+    // When simplifiedContent is undefined
+    return (
+      <TextSimplifierLayout
+        body={children /* Display the Editor and any other component */}
+        footer={
+          <Flex wrap="wrap" justify="between" align="center" gap="10">
+            <i>{t('actualites.textsimplifier.label.write')}</i>
+
+            {renderGenerateButton()}
+          </Flex>
         }
       />
     );
