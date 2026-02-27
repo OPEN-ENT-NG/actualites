@@ -274,7 +274,7 @@ public class InfosControllerV1 extends ControllerHelper {
 	@Delete("/api/v1/infos/:" + INFO_RESOURCE_ID)
 	@ApiDoc("Delete : Real delete an Info in thread by thread and by id")
 	@ResourceFilter(InfoFilter.class)
-	@SecuredAction(value = THREAD_MANAGER_VALUE, type = ActionType.RESOURCE, right = THREAD_MANAGER_ANNOTATION)
+	@SecuredAction(value = THREAD_PUBLISH_VALUE, type = ActionType.RESOURCE, right = THREAD_PUBLISH_ANNOTATION)
 	public void removeInfo(final HttpServerRequest request) {
 		final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
 		final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
@@ -288,12 +288,15 @@ public class InfosControllerV1 extends ControllerHelper {
 					promise.complete();
 				});
 				return promise.future();
-			})
-			.compose(result -> timelineMongo.getNotification(threadId, infoId))
-			.compose(timelineMongo::deleteNotification)
-			.compose((o) -> audienceHelper.notifyResourcesDeletion("actualites", "info", Collections.singleton(infoId)))
-			.onSuccess(success -> ok(request))
-			.onFailure(failure -> {
+			}).onSuccess( o -> {
+				ok(request);
+				timelineMongo.getNotification(threadId, infoId)
+						.onSuccess(timelineMongo::deleteNotification)
+						.onFailure(ex -> log.error("[ACTUALITES@%s::deleteInfo] Error while deleting notification ", ex));
+				audienceHelper.notifyResourcesDeletion("actualites", "info", Collections.singleton(infoId))
+						.onFailure(ex ->  log.error("[ACTUALITES@%s::deleteInfo] Error while notify audience", ex) );
+
+			}).onFailure(failure -> {
 				String message = String.format("[ACTUALITES@%s::deleteInfo] Failed to delete info : %s",
 						this.getClass().getSimpleName(), failure.getMessage());
 				LOGGER.error(message);

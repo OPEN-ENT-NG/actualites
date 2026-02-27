@@ -63,7 +63,7 @@ describe('Info Mutation Methods', () => {
   });
 
   test('makes a DELETE request to delete a Info and its infos', async () => {
-    const response = await infoService.delete(229, 466);
+    const response = await infoService.delete(466);
 
     expect(response).toStrictEqual({
       rows: 1,
