@@ -1,5 +1,7 @@
 package net.atos.entng.actualites.services.impl;
 
+import static net.atos.entng.actualites.filters.RightConstants.*;
+
 import com.google.common.collect.Lists;
 import fr.wseduc.webutils.Either;
 import io.vertx.core.CompositeFuture;
@@ -26,7 +28,6 @@ import java.util.stream.Collectors;
 
 public class QueryHelperSql {
     private static Logger log = LoggerFactory.getLogger(QueryHelperSql.class);
-    private static final String THREAD_PUBLISH = "net-atos-entng-actualites-controllers-InfoController|publish";
 
     public void fetchInfos(final UserInfos user, final boolean optimized, final Handler<Either<String, JsonArray>> handler){
         if(optimized){
@@ -93,9 +94,9 @@ public class QueryHelperSql {
         queryIds.append("INNER JOIN actualites.info ON (info.thread_id = thread.id) ");
         queryIds.append("WHERE thread.owner = ? ");
         queryIds.append(" OR ( thread_shares.member_id IN ").append(memberIds);
-        queryIds.append("      AND thread_shares.action = '" + THREAD_PUBLISH + "'");
+        queryIds.append("      AND thread_shares.action = ?");
         queryIds.append("    )  AND info.status > 1 ");
-        final JsonArray values = new JsonArray().add(user.getUserId()).addAll(new JsonArray(groupsAndUserIds));
+        final JsonArray values = new JsonArray().add(user.getUserId()).addAll(new JsonArray(groupsAndUserIds)).add(THREAD_PUBLISH_RIGHT);
         final Promise<Set<Long>> promiseInfoIds = Promise.promise();
         Sql.getInstance().prepared(queryIds.toString(), values, SqlResult.validResultHandler(resIds -> {
             try{
@@ -227,7 +228,7 @@ public class QueryHelperSql {
         queryIds.append("    INNER JOIN actualites.info AS i ON (i.thread_id = thread.id) ");
         queryIds.append("    LEFT JOIN actualites.thread_user_preferences prefs ON prefs.thread_id = thread.id  AND prefs.user_id = ? ");
         queryIds.append("    WHERE (thread_shares.member_id IN (SELECT id FROM user_groups)");
-        queryIds.append("    AND thread_shares.action = '" + THREAD_PUBLISH + "' ");
+        queryIds.append("    AND thread_shares.action = ? ");
         queryIds.append(     filterAdml);
         queryIds.append("    AND ( prefs.visible IS NULL OR prefs.visible = true ) ");
         queryIds.append("    AND i.status > 1) AND ");
@@ -262,6 +263,7 @@ public class QueryHelperSql {
         }
         statusValues.forEach(values::add);
         values.add(user.getUserId());
+        values.add(THREAD_PUBLISH_RIGHT);
         if (addThreadFilter) {
             threadIds.forEach(values::add);
         }
@@ -369,7 +371,7 @@ public class QueryHelperSql {
                 "INNER JOIN actualites.info ON (info.thread_id = thread.id) " +
                 "WHERE thread.owner = ? " +
                 "OR (thread_shares.member_id IN " + Sql.listPrepared(groupsAndUserIds.toArray()) +
-                " AND thread_shares.action = '" + THREAD_PUBLISH + "') AND info.status > 1) " +
+                " AND thread_shares.action = ?) AND info.status > 1) " +
                 "SELECT info.id as _id, info.title, info.content, info.status, info.publication_date::text, info.expiration_date::text, info.is_headline, info.thread_id, info.created::text, info.modified::text, " +
                 "info.owner, users.username, thread.title AS thread_title, thread.icon AS thread_icon, ( " +
                 "SELECT json_agg(cr.*) " +
@@ -393,7 +395,8 @@ public class QueryHelperSql {
                 .add(user.getUserId())
                 .addAll(new JsonArray(groupsAndUserIds))
                 .add(user.getUserId())
-                .addAll(new JsonArray(groupsAndUserIds));
+                .addAll(new JsonArray(groupsAndUserIds))
+                .add(THREAD_PUBLISH_RIGHT);
         Sql.getInstance().prepared(query, values, SqlResult.parseShared(handler));
     }
 
@@ -428,7 +431,7 @@ public class QueryHelperSql {
         queryIds.append("    INNER JOIN actualites.thread ON (thread.id = thread_shares.resource_id) ");
         queryIds.append("    INNER JOIN actualites.info AS i ON (i.thread_id = thread.id) ");
         queryIds.append("    WHERE (thread_shares.member_id IN (SELECT id FROM user_groups)");
-        queryIds.append("    AND thread_shares.action = '" + THREAD_PUBLISH + "' ");
+        queryIds.append("    AND thread_shares.action = ? ");
         queryIds.append("    AND i.status > 1) )");
         queryIds.append("ORDER BY date DESC ");
 
@@ -436,7 +439,8 @@ public class QueryHelperSql {
                 .add(userId)
                 .addAll(new JsonArray(groupsAndUserIds))
                 .add(userId)
-                .add(userId);
+                .add(userId)
+                .add(THREAD_PUBLISH_RIGHT);
 
         final Promise<Boolean> promise = Promise.promise();
         Sql.getInstance().prepared(queryIds.toString(), values, SqlResult.validResultHandler(resIds -> {

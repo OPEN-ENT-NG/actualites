@@ -19,6 +19,8 @@
 
 package net.atos.entng.actualites.filters;
 
+import static net.atos.entng.actualites.filters.RightConstants.*;
+
 import fr.wseduc.webutils.http.Binding;
 import io.vertx.core.Handler;
 import io.vertx.core.eventbus.Message;
@@ -32,9 +34,6 @@ import org.entcore.common.sql.SqlConf;
 import org.entcore.common.sql.SqlConfs;
 import org.entcore.common.sql.SqlResult;
 import org.entcore.common.user.UserInfos;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,21 +41,29 @@ import static org.entcore.common.sql.Sql.parseId;
 
 public class InfoFilter implements ResourcesProvider {
 
-	private static final Logger log = LoggerFactory.getLogger(InfoFilter.class);
-
 	@Override
 	public void authorize(final HttpServerRequest request, final Binding binding, final UserInfos user, final Handler<Boolean> handler) {
 		SqlConf conf = SqlConfs.getConf(InfoController.class.getName());
-		String id = null;
-		if(isInfoShare(binding)){
-			id = request.params().get("id");
-		} else {
+
+		String id = request.params().get("infoid");
+		if(id == null) {
 			id = request.params().get(conf.getResourceIdLabel());
+		}
+		if(id == null) {
+			id = request.params().get("id");
 		}
 		if (id != null && !id.trim().isEmpty() && (parseId(id) instanceof Integer)) {
 			request.pause();
-			// Method
-			String sharedMethod = binding.getRight().replaceAll("\\.", "-");
+
+			// Detect right type
+			boolean isReadRight    = isInfoReadAction(binding);
+			boolean isCommentRight = isInfoCommentAction(binding);
+			boolean isContribRight = isInfoContribAction(binding);
+			boolean isPublishRight = isInfoPublishAction(binding);
+
+			// Map to consolidated right used in DB
+			String sqlInfoRight   = isReadRight ? INFO_READ_RIGHT : (isCommentRight ? INFO_COMMENT_RIGHT : null);
+			String sqlThreadRight = resolveThreadRight(isContribRight, isPublishRight);
 
 			// Groups and users
 			final List<String> groupsAndUserIds = new ArrayList<>();
@@ -81,9 +88,9 @@ public class InfoFilter implements ResourcesProvider {
 				.append(" FROM actualites.info AS i")
 				.append(" LEFT JOIN actualites.info_shares AS ios ON i.id = ios.resource_id ");
 
-			if (!isInfoPublishing(binding) && !isDeleteComment(binding)) {
+			if (sqlInfoRight != null) {
 				query.append(" AND ios.action = ? ");
-				values.add(sharedMethod);
+				values.add(sqlInfoRight);
 			}
 
 			query.append(" LEFT JOIN actualites.thread AS t ON i.thread_id = t.id")
@@ -92,11 +99,8 @@ public class InfoFilter implements ResourcesProvider {
 			values.add(Sql.parseId(id));
 
 			query.append(" AND (");
-			if (! isInfoPublishing(binding)) {
-				// info's owner is irrelevant for publishing right
-
-				if(isInfoShareSubmitOrRemove(binding)) {
-					// info's owner can change shares (i.e. choose readers) only if status is different from published
+			if (!isPublishRight) {
+				if(isContribRight) {
 					query.append("((i.owner = ? AND i.status != 3) ");
 				}
 				else {
@@ -104,46 +108,39 @@ public class InfoFilter implements ResourcesProvider {
 				}
 				values.add(user.getUserId());
 
-				if(!isDeleteComment(binding)) {
+				if(isReadRight || isCommentRight) {
 					query.append(" OR (ios.member_id IN (SELECT id FROM user_groups)")
 							.append(" AND i.status > 2)");
 				}
 				query.append(") OR (");
 			}
 
-
 			query.append("(t.owner = ?");
 			values.add(user.getUserId());
 
 			query.append(" OR (ts.member_id IN (SELECT id FROM user_groups)");
 
-			if(isInfoAction(binding) || isInfoPendingOrPublished(binding)){
-				// Authorize if user is a publisher or a manager
-				query.append(" AND ts.action = 'net-atos-entng-actualites-controllers-InfoController|publish'");
-			} else if (isInfoShareSubmitOrRemove(binding)) {
-				// An info's owner, who's not a publisher nor a manager, can change shares (i.e. choose readers) only if status is different from published
+			if(isPublishRight || isReadRight || isCommentRight){
+				query.append(" AND ts.action = ?");
+				values.add(THREAD_PUBLISH_RIGHT);
+			} else if (isContribRight) {
 				query.append(" AND ((ts.action = ? AND i.status != 3)");
-				values.add(sharedMethod);
-
-				// A publisher or manager can change shares, whatever the status
-				query.append(" OR ts.action = 'net-atos-entng-actualites-controllers-InfoController|publish')");
+				values.add(sqlThreadRight);
+				query.append(" OR ts.action = ?)");
+				values.add(THREAD_PUBLISH_RIGHT);
 			} else {
 				query.append(" AND ts.action = ?");
-				values.add(sharedMethod);
+				values.add(sqlThreadRight);
 			}
 
 			query.append(")) AND (i.status > 1"); // do not authorize actions on draft by managers/publishers
 			query.append(" OR i.owner = ?))"); // unless it's theirs
 			values.add(user.getUserId());
 
-			if (! isInfoPublishing(binding)) {
-				// missing parenthesis
+			if (!isPublishRight) {
 				query.append(")");
 			}
-			log.info("query : {}", query);
-			log.info("values:  {}", values);
-
-			// Execute
+    		// Execute
 			Sql.getInstance().prepared(query.toString(), values, new Handler<Message<JsonObject>>() {
 				@Override
 				public void handle(Message<JsonObject> message) {
@@ -157,46 +154,31 @@ public class InfoFilter implements ResourcesProvider {
 		}
 	}
 
-	private boolean isInfoAction(final Binding binding) {
-		return ("net.atos.entng.actualites.controllers.InfoController|getInfo".equals(binding.getRight()) ||
-				 "net.atos.entng.actualites.controllers.InfoController|getSingleInfo".equals(binding.getRight()) ||
-				 "net.atos.entng.actualites.controllers.CommentController|comment".equals(binding.getRight()) ||
-				 "net.atos.entng.actualites.controllers.CommentController|updateComment".equals(binding.getRight()) ||
-				 "net.atos.entng.actualites.controllers.CommentController|deleteComment".equals(binding.getRight()) ||
-				 "net.atos.entng.actualites.controllers.InfoController|getInfoComments".equals(binding.getRight()) ||
-				 "net.atos.entng.actualites.controllers.InfoController|getInfoShared".equals(binding.getRight())
-				);
+	// Read access
+	private boolean isInfoReadAction(final Binding binding) {
+		return INFO_READ_ANNOTATION.equals(binding.getRight());
 	}
 
-	private boolean isDeleteComment(final Binding binding) {
-		return "net.atos.entng.actualites.controllers.CommentController|deleteComment".equals(binding.getRight());
+	// Comment access
+	private boolean isInfoCommentAction(final Binding binding) {
+		return INFO_COMMENT_ANNOTATION.equals(binding.getRight());
 	}
 
-	private boolean isInfoShare(final Binding binding) {
-		return ("net.atos.entng.actualites.controllers.InfoController|shareInfo".equals(binding.getRight()) ||
-				isInfoShareSubmitOrRemove(binding));
+	// Contrib access (including share endpoints)
+	private boolean isInfoContribAction(final Binding binding) {
+		String right = binding.getRight();
+		return THREAD_CONTRIB_ANNOTATION.equals(right);
 	}
 
-	private boolean isInfoShareSubmitOrRemove(final Binding binding) {
-		return ("net.atos.entng.actualites.controllers.InfoController|shareInfoSubmit".equals(binding.getRight()) ||
-				 "net.atos.entng.actualites.controllers.InfoController|shareInfoRemove".equals(binding.getRight()) ||
-				"net.atos.entng.actualites.controllers.InfoController|shareResourceInfo".equals(binding.getRight())
-				);
-	};
-
-	private boolean isInfoPendingOrPublished(final Binding binding) {
-		return ("net.atos.entng.actualites.controllers.InfoController|publish".equals(binding.getRight()) ||
-				"net.atos.entng.actualites.controllers.InfoController|unpublish".equals(binding.getRight()) ||
-				"net.atos.entng.actualites.controllers.InfoController|unsubmit".equals(binding.getRight()) ||
-				"net.atos.entng.actualites.controllers.InfoController|updatePublished".equals(binding.getRight()) ||
-				"net.atos.entng.actualites.controllers.InfoController|updatePending".equals(binding.getRight()));
+	// Publish access
+	private boolean isInfoPublishAction(final Binding binding) {
+		return THREAD_PUBLISH_ANNOTATION.equals(binding.getRight());
 	}
 
-	private boolean isInfoPublishing(final Binding binding) {
-		return ("net.atos.entng.actualites.controllers.InfoController|publish".equals(binding.getRight()) ||
-				 "net.atos.entng.actualites.controllers.InfoController|updatePublished".equals(binding.getRight() )
-				);
+	// Map to consolidated thread_shares right
+	private String resolveThreadRight(boolean isContribRight, boolean isPublishRight) {
+		if (isContribRight)  return THREAD_CONTRIB_RIGHT;
+		if (isPublishRight)  return THREAD_PUBLISH_RIGHT;
+		return THREAD_MANAGER_RIGHT; // delete
 	}
-
-	private static final String mActionDeleteComment = "net-atos-entng-actualites-controllers-CommentController|deleteComment";
 }

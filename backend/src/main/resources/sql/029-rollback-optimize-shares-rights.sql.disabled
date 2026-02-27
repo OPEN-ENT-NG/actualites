@@ -1,0 +1,45 @@
+-- Rollback: Restore original thread_shares and info_shares from backup
+-- Reverts migration 028 by restoring backup tables
+
+-- Step 1: Verify backup tables exist
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'actualites' AND table_name = 'thread_shares_backup_028') THEN
+        RAISE EXCEPTION 'Backup table thread_shares_backup_028 does not exist. Cannot rollback migration 028.';
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'actualites' AND table_name = 'info_shares_backup_028') THEN
+        RAISE EXCEPTION 'Backup table info_shares_backup_028 does not exist. Cannot rollback migration 028.';
+    END IF;
+END $$;
+
+-- Step 2: Restore thread_shares from backup
+TRUNCATE TABLE actualites.thread_shares;
+
+INSERT INTO actualites.thread_shares (resource_id, member_id, action)
+SELECT resource_id, member_id, action
+FROM actualites.thread_shares_backup_028;
+
+-- Step 3: Restore info_shares from backup
+TRUNCATE TABLE actualites.info_shares;
+
+INSERT INTO actualites.info_shares (resource_id, member_id, action)
+SELECT resource_id, member_id, action
+FROM actualites.info_shares_backup_028;
+
+-- Step 4: Display rollback statistics
+DO $$
+DECLARE
+    thread_count INTEGER;
+    info_count INTEGER;
+BEGIN
+    SELECT COUNT(*) INTO thread_count FROM actualites.thread_shares;
+    SELECT COUNT(*) INTO info_count FROM actualites.info_shares;
+    
+    RAISE NOTICE '=== Rollback 028 Statistics ===';
+    RAISE NOTICE 'thread_shares restored: % rows', thread_count;
+    RAISE NOTICE 'info_shares restored: % rows', info_count;
+END $$;
+
+-- Step 5: Drop backup tables (optional - comment out if you want to keep them)
+-- DROP TABLE IF EXISTS actualites.thread_shares_backup_028;
+-- DROP TABLE IF EXISTS actualites.info_shares_backup_028;

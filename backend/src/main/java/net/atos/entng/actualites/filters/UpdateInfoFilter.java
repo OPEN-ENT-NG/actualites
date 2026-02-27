@@ -1,6 +1,6 @@
 package net.atos.entng.actualites.filters;
 
-import static net.atos.entng.actualites.filters.RightConstants.RIGHT_PUBLISH;
+import static net.atos.entng.actualites.filters.RightConstants.*;
 import static org.entcore.common.sql.Sql.parseId;
 import static org.entcore.common.user.DefaultFunctions.ADMIN_LOCAL;
 
@@ -91,12 +91,13 @@ public class UpdateInfoFilter implements ResourcesProvider {
                     .append(" (\n")
                     .append("   t.owner = ? \n")
                     .append("   OR ts.member_id IN ").append(Sql.listPrepared(groupsAndUserIds.toArray()))
-                    .append("   AND ts.action = '" + RIGHT_PUBLISH + "' \n")
+                    .append("   AND ts.action = ? \n")
                     .append(" ) \n")
                     .append(" AND (i.status > 1 or i.owner = ?) \n")
                     .append(")\n");
             values.add(user.getUserId());
             groupsAndUserIds.forEach(values::add);
+            values.add(THREAD_PUBLISH_RIGHT);
             values.add(user.getUserId());
 
         } else if(targetStatus == 2) { //unpublish an info or submit a pending info or update a pending info
@@ -111,13 +112,14 @@ public class UpdateInfoFilter implements ResourcesProvider {
                     .append("      ( \n")
                     .append("        t.owner = ? \n")
                     .append("        OR (ts.member_id IN ").append(Sql.listPrepared(groupsAndUserIds.toArray()))
-                    .append("            AND ts.action = '" + RIGHT_PUBLISH + "') \n")
+                    .append("            AND ts.action = ?) \n")
                     .append("       ) AND i.status > 1 \n")
                     .append("  )\n")
                 .append("   )\n");
             values.add(user.getUserId());
             values.add(user.getUserId());
             groupsAndUserIds.forEach(values::add);
+            values.add(THREAD_PUBLISH_RIGHT);
         } else { // to draft or update draft or submit a draft
             /**
              * Either owner of the info or in shared groups contributor on a published info
@@ -130,13 +132,14 @@ public class UpdateInfoFilter implements ResourcesProvider {
                     .append("      ( \n")
                     .append("        t.owner = ? AND i.status > 1 \n")
                     .append("        OR (ts.member_id IN ").append(Sql.listPrepared(groupsAndUserIds.toArray()))
-                    .append("           AND ( ts.action = '" + RIGHT_PUBLISH + "' AND i.status = 3 ) )\n")
+                    .append("           AND ( ts.action = ? AND i.status = 3 ) )\n")
                     .append("       )\n")
                     .append("  )\n")
                     .append("   )\n");
             values.add(user.getUserId());
             values.add(user.getUserId());
             groupsAndUserIds.forEach(values::add);
+            values.add(THREAD_PUBLISH_RIGHT);
         }
         // Execute
         Sql.getInstance().prepared(query.toString(), values, SqlResult.validUniqueResultHandler(res -> {
