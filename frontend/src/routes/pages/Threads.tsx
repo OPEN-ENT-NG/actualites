@@ -51,7 +51,7 @@ export function Threads() {
 
   return (
     <>
-      <Grid className={clsx('gap-0', { 'overflow-x-hidden': lg })}>
+      <Grid className={clsx('gap-0 flex-fill', { 'overflow-x-hidden': lg })}>
         <ThreadList />
         <Grid.Col
           sm="12"
