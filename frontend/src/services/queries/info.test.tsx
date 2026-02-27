@@ -86,7 +86,7 @@ describe('Info Queries', () => {
 
     const serviceSpy = vi.spyOn(infoService, 'delete');
 
-    const variables = { threadId: 1, infoId: 123 };
+    const variables = { infoId: 123 };
 
     act(() => {
       result.current.mutate(variables);
@@ -94,8 +94,7 @@ describe('Info Queries', () => {
 
     await waitFor(() => {
       expect(serviceSpy).toHaveBeenCalledWith(
-        variables.threadId,
-        variables.infoId,
+        variables.infoId
       );
     });
   });

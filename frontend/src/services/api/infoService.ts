@@ -193,14 +193,13 @@ export const createInfoService = () => {
 
     /**
      * Delete an Info.
-     * @param threadId
      * @param infoId
      * @returns
      */
-    delete(threadId: ThreadId, infoId: InfoId) {
+    delete(infoId: InfoId) {
       return odeServices.http().delete<{
         rows: number;
-      }>(`${baseUrl}/thread/${threadId}/info/${infoId}`);
+      }>(`${baseUrlAPI}/infos/${infoId}`);
     },
 
     getShares(infoId: InfoId) {

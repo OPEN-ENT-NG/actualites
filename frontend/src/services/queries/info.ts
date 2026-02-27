@@ -211,12 +211,10 @@ export const useUpdateInfo = () => {
 export const useDeleteInfo = () => {
   return useMutation({
     mutationFn: ({
-      threadId,
-      infoId,
+      infoId
     }: {
-      threadId: ThreadId;
       infoId: InfoId;
-    }) => infoService.delete(threadId, infoId),
+    }) => infoService.delete(infoId),
   });
 };
 export const useIncrementInfoViews = (infoId: InfoId) => {

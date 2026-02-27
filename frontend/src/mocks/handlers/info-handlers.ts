@@ -96,8 +96,8 @@ export const infoHandlers = [
     },
   ),
   // Delete an info
-  http.delete<{ threadId: string; infoId: string }>(
-    `${baseUrl}/thread/:threadId/info/:infoId`,
+  http.delete<{ infoId: string }>(
+    `${baseUrlAPI}/infos/:infoId`,
     async () =>
       HttpResponse.json(
         {

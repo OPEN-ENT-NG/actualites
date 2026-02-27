@@ -24,7 +24,6 @@ export function useInfoDelete() {
         : undefined;
     deleteInfoMutate(
       {
-        threadId: thread.id,
         infoId: id,
       },
       {
