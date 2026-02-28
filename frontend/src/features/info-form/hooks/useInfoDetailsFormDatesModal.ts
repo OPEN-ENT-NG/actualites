@@ -12,10 +12,7 @@ const DEFAULT_EXPIRATION_DATE_MAX_YEAR_DIFFERENCE = 1;
 
 const getMinExpirationDate = (publicationDate: Date) => {
   const newMinExpirationDate = new Date(publicationDate);
-  newMinExpirationDate.setDate(
-    newMinExpirationDate.getDate() +
-      DEFAULT_EXPIRATION_DATE_MAX_YEAR_DIFFERENCE,
-  );
+  newMinExpirationDate.setDate(newMinExpirationDate.getDate() + 1);
   return newMinExpirationDate;
 };
 
