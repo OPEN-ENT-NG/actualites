@@ -1,48 +1,25 @@
+import { useDate } from '@edifice.io/react';
 import { act, renderHook, waitFor } from '@testing-library/react';
+import { MockedProviders } from '~/mocks/mockedProvider';
 import {
   getMaxExpirationDate,
   useInfoDetailsFormDatesModal,
 } from './useInfoDetailsFormDatesModal';
 
-const dateIsSameDay = (a: Date, b: Date) =>
-  a.getFullYear() === b.getFullYear() &&
-  a.getMonth() === b.getMonth() &&
-  a.getDate() === b.getDate();
-
-const dateIsSameOrAfterDay = (a: Date, b: Date) =>
-  dateIsSameDay(a, b) || a.getTime() > b.getTime();
-
-const mocks = vi.hoisted(() => ({
-  dateIsSame: vi.fn((a: Date, b: Date) => dateIsSameDay(a, b)),
-  dateIsSameOrAfter: vi.fn((a: Date, b: Date) => dateIsSameOrAfterDay(a, b)),
-  dateIsAfter: vi.fn(),
-}));
-
-vi.mock('@edifice.io/react', async () => {
-  const base =
-    await vi.importMock<typeof import('@edifice.io/react')>(
-      '@edifice.io/react',
-    );
-  return {
-    ...base,
-    useDate: () => ({
-      dateIsSame: mocks.dateIsSame,
-      dateIsSameOrAfter: mocks.dateIsSameOrAfter,
-      dateIsAfter: mocks.dateIsAfter,
-    }),
-  };
-});
+let dateIsSame: ReturnType<typeof useDate>['dateIsSame'];
 
 function renderDatesModal(props: {
   publicationDate: Date;
   expirationDate: Date;
   onUpdate?: (publicationDate: Date, expirationDate: Date) => void;
 }) {
-  return renderHook(() =>
-    useInfoDetailsFormDatesModal({
-      ...props,
-      onUpdate: props.onUpdate ?? vi.fn(),
-    }),
+  return renderHook(
+    () =>
+      useInfoDetailsFormDatesModal({
+        ...props,
+        onUpdate: props.onUpdate ?? vi.fn(),
+      }),
+    { wrapper: MockedProviders },
   );
 }
 
@@ -61,9 +38,9 @@ async function changePublicationDateAndWait(
 }
 
 function expectExpirationSameDay(result: HookResult, expected: Date) {
-  expect(dateIsSameDay(result.current.selectedExpirationDate, expected)).toBe(
-    true,
-  );
+  expect(
+    dateIsSame(result.current.selectedExpirationDate, expected, 'day'),
+  ).toBe(true);
 }
 
 describe('useInfoDetailsFormDatesModal', () => {
@@ -71,6 +48,10 @@ describe('useInfoDetailsFormDatesModal', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    const { result } = renderHook(() => useDate(), {
+      wrapper: MockedProviders,
+    });
+    dateIsSame = result.current.dateIsSame;
   });
 
   describe('when expiration date is the default (max for publication)', () => {
@@ -121,9 +102,10 @@ describe('useInfoDetailsFormDatesModal', () => {
 
       expectExpirationSameDay(result, customExpiration);
       expect(
-        dateIsSameDay(
+        dateIsSame(
           result.current.selectedExpirationDate,
           getMaxExpirationDate(newPublication),
+          'day',
         ),
       ).toBe(false);
     });
