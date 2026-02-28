@@ -76,7 +76,12 @@ export const InfoCard = ({ info, id }: InfoCardProps) => {
 
   return (
     <Card className={className} isClickable={false} isSelectable={false}>
-      <article id={id} className="overflow-hidden" data-testid="info-card">
+      <article
+        id={id}
+        className="overflow-hidden"
+        data-testid="info-card"
+        style={{ scrollMarginTop: '50px' }}
+      >
         <InfoCardHeader info={info} extendedStatus={extendedStatus} />
 
         {isExpired && info.expirationDate && (
