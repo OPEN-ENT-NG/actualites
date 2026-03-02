@@ -23,6 +23,7 @@ export const options = {
     'http_req_duration{type:list_info}': [],
     'http_req_duration{type:list_info_shares}': [],
     'http_req_duration{type:list_thread}': [],
+    'http_req_duration{type:pref_exists}': [],
     'http_req_duration{type:published_info}': [],
     'http_req_duration{type:search_personnel}': [],
     'http_req_duration{type:search_teacher}': [],

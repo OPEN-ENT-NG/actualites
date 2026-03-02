@@ -14,6 +14,7 @@ export const options = {
     // add threshold empty to export metrics by url
     'http_req_duration{type:list_info}': [],
     'http_req_duration{type:list_thread}': [],
+    'http_req_duration{type:pref_exists}': [],
     'http_req_duration{type:stats}': [],
     'http_req_duration{type:get_info}': [],
     'http_req_duration{type:widget_access}': [],

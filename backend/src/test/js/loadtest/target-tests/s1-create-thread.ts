@@ -77,6 +77,13 @@ export function s1CreateThread(data: InitData) {
     pushResponseMetrics(resListThread, user);
     sleep(baseDelay / 5000);
 
+    //test preferences
+    const preferencesUrl = `${rootUrl}/actualites/api/v1/me/thread-preferences/exists`;
+    const resPreferences = http.get(preferencesUrl,
+        { headers: getHeaders(), tags: {type : 'pref_exists'} });
+    pushResponseMetrics(resPreferences, user);
+    sleep(baseDelay / 5000);
+
     //display stats
     const statsUrl = `${rootUrl}/actualites/api/v1/infos/stats`;
     const resStats = http.get(statsUrl, { headers: getHeaders(),
@@ -85,11 +92,19 @@ export function s1CreateThread(data: InitData) {
     sleep(baseDelay / 5000);
 
     //access admin thread list
-    const listAdminThreadUrl = `${rootUrl}/actualites/api/v1/threads?viewHidden=true`;
+    const listAdminThreadUrl = `${rootUrl}/actualites/api/v1/threads?include=MANAGEABLE`;
     const resListAdminThread = http.get(listAdminThreadUrl,
       { headers: getHeaders(), tags: {type : 'list_admin_thread'} });
     pushResponseMetrics(resListAdminThread, user);
     sleep(baseDelay / 5000);
+
+    //test preferences
+    const preferencesUrl = `${rootUrl}/actualites/api/v1/me/thread-preferences/exists`;
+    const resPreferences = http.get(preferencesUrl,
+        { headers: getHeaders(), tags: {type : 'pref_exists'} });
+    pushResponseMetrics(resPreferences, user);
+    sleep(baseDelay / 5000);
+
 
     //retreive user info
     const userInfoUrl = `${rootUrl}/auth/oauth2/userinfo`;

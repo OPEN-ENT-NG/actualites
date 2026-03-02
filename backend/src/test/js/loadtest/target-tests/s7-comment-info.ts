@@ -79,6 +79,13 @@ export function s7CommentInfo(data: InitData) {
     pushResponseMetrics(resListThread, user);
     sleep(baseDelay / 5000);
 
+    //test preferences
+    const preferencesUrl = `${rootUrl}/actualites/api/v1/me/thread-preferences/exists`;
+    const resPreferences = http.get(preferencesUrl,
+        { headers: getHeaders(), tags: {type : 'pref_exists'} });
+    pushResponseMetrics(resPreferences, user);
+    sleep(baseDelay / 5000);
+
     //display stats
     const statsUrl = `${rootUrl}/actualites/api/v1/infos/stats`;
     const resStats = http.get(statsUrl, { headers: getHeaders(),
