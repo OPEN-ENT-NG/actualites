@@ -34,6 +34,7 @@ export function InfoDetailsFormDatesModal({
     minExpirationDate,
     maxExpirationDate,
     minPublicationDate,
+    maxPublicationDate,
     handlePublicationDateChange,
     handleExpirationDateChange,
     handleUpdate,
@@ -82,6 +83,7 @@ export function InfoDetailsFormDatesModal({
               value={selectedPublicationDate}
               onChange={handlePublicationDateChange}
               minDate={minPublicationDate}
+              maxDate={maxPublicationDate}
               dateFormat={t(
                 'actualites.info.createForm.dates.modal.dateFormat',
               )}

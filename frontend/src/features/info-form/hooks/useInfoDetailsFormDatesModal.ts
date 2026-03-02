@@ -8,15 +8,20 @@ interface UseInfoDetailsFormDatesModalProps {
   onUpdate: (publicationDate: Date, expirationDate: Date) => void;
 }
 
+const DEFAULT_EXPIRATION_DATE_MAX_YEAR_DIFFERENCE = 1;
+
 const getMinExpirationDate = (publicationDate: Date) => {
   const newMinExpirationDate = new Date(publicationDate);
   newMinExpirationDate.setDate(newMinExpirationDate.getDate() + 1);
   return newMinExpirationDate;
 };
 
-const getMaxExpirationDate = (publicationDate: Date) => {
+export const getMaxExpirationDate = (publicationDate: Date) => {
   const newExpirationDate = new Date(publicationDate);
-  newExpirationDate.setFullYear(newExpirationDate.getFullYear() + 1);
+  newExpirationDate.setFullYear(
+    newExpirationDate.getFullYear() +
+      DEFAULT_EXPIRATION_DATE_MAX_YEAR_DIFFERENCE,
+  );
   return newExpirationDate;
 };
 
@@ -26,6 +31,8 @@ export function useInfoDetailsFormDatesModal({
   onUpdate,
 }: UseInfoDetailsFormDatesModalProps) {
   const { dateIsSame, dateIsSameOrAfter } = useDate();
+  const maxPublicationDate = new Date();
+  maxPublicationDate.setFullYear(maxPublicationDate.getFullYear() + 1);
   const [selectedPublicationDate, setSelectedPublicationDate] = useState<Date>(
     new Date(publicationDate),
   );
@@ -41,21 +48,30 @@ export function useInfoDetailsFormDatesModal({
   );
   const minPublicationDate = new Date();
 
+  // ExpirationDate auto selection
   useEffect(() => {
     if (!selectedPublicationDate) return;
+
+    // Calculate min and max expiration dates
     const newMinExpirationDate = getMinExpirationDate(selectedPublicationDate);
     setMinExpirationDate(newMinExpirationDate);
     const newMaxExpirationDate = getMaxExpirationDate(selectedPublicationDate);
     setMaxExpirationDate(newMaxExpirationDate);
 
-    if (dateIsSame(selectedExpirationDate, maxExpirationDate)) {
+    // Auto selection of the expiration date
+    const expirationDateChangedByUser = !dateIsSame(
+      selectedExpirationDate,
+      maxExpirationDate,
+      'day',
+    );
+    if (!expirationDateChangedByUser) {
       setSelectedExpirationDate(newMaxExpirationDate);
-    }
-    if (
+    } else if (
       dateIsSameOrAfter(selectedPublicationDate, selectedExpirationDate, 'day')
     ) {
       setSelectedExpirationDate(newMinExpirationDate);
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPublicationDate]);
 
@@ -93,6 +109,7 @@ export function useInfoDetailsFormDatesModal({
     minExpirationDate,
     maxExpirationDate,
     minPublicationDate,
+    maxPublicationDate,
     handlePublicationDateChange,
     handleExpirationDateChange,
     handleUpdate,
