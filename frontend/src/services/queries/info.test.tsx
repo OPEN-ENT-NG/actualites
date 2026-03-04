@@ -93,9 +93,7 @@ describe('Info Queries', () => {
     });
 
     await waitFor(() => {
-      expect(serviceSpy).toHaveBeenCalledWith(
-        variables.infoId
-      );
+      expect(serviceSpy).toHaveBeenCalledWith(variables.infoId);
     });
   });
 

@@ -96,15 +96,13 @@ export const infoHandlers = [
     },
   ),
   // Delete an info
-  http.delete<{ infoId: string }>(
-    `${baseUrlAPI}/infos/:infoId`,
-    async () =>
-      HttpResponse.json(
-        {
-          rows: 1,
-        },
-        { status: 200 },
-      ),
+  http.delete<{ infoId: string }>(`${baseUrlAPI}/infos/:infoId`, async () =>
+    HttpResponse.json(
+      {
+        rows: 1,
+      },
+      { status: 200 },
+    ),
   ),
   // Get info's share
   http.get<{ threadId: string; infoId: string }>(

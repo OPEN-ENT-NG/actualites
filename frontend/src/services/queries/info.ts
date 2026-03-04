@@ -210,11 +210,7 @@ export const useUpdateInfo = () => {
 
 export const useDeleteInfo = () => {
   return useMutation({
-    mutationFn: ({
-      infoId
-    }: {
-      infoId: InfoId;
-    }) => infoService.delete(infoId),
+    mutationFn: ({ infoId }: { infoId: InfoId }) => infoService.delete(infoId),
   });
 };
 export const useIncrementInfoViews = (infoId: InfoId) => {
