@@ -14,6 +14,7 @@ import {
   IconRafterDown,
   IconRafterUp,
 } from '@edifice.io/react/icons';
+import clsx from 'clsx';
 import {
   forwardRef,
   ReactNode,
@@ -53,7 +54,9 @@ const TextSimplifierLayout = ({
       <div className="text-simplifier-children">{body}</div>
 
       <div className="text-simplifier-border">
-        <div className="text-simplifier-background">{footer}</div>
+        <div className="text-simplifier-background pb-4 pt-24 px-8 px-md-24">
+          {footer}
+        </div>
       </div>
     </Flex>
   );
@@ -199,6 +202,9 @@ export const TextSimplifier = forwardRef(
     }
 
     if (simplifiedContent) {
+      const toggleClassName = clsx('text-gray-800', {
+        'my-8': !hideSuggestion,
+      });
       return (
         <TextSimplifierLayout
           body={children /* Display the Editor and any other component */}
@@ -206,7 +212,7 @@ export const TextSimplifier = forwardRef(
             <>
               <Button
                 data-testid="textsimplifier-display-suggestion-toggle"
-                className="text-gray-800"
+                className={toggleClassName}
                 color="secondary"
                 variant="ghost"
                 size="sm"
@@ -231,7 +237,7 @@ export const TextSimplifier = forwardRef(
                   <Flex
                     direction="row"
                     justify="between"
-                    className="border-top px-24"
+                    className="border-top px-24 py-4"
                   >
                     <div></div>
                     <Button
@@ -249,7 +255,13 @@ export const TextSimplifier = forwardRef(
                 </Flex>
               </Expandable>
 
-              <Flex wrap="wrap" justify="between" align="center" gap="10">
+              <Flex
+                wrap="wrap"
+                justify="between"
+                align="center"
+                gap="10"
+                className="ms-8"
+              >
                 <i>
                   {contentChanged && (
                     <IconAlertTriangle
