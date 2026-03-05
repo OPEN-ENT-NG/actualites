@@ -54,7 +54,9 @@ const TextSimplifierLayout = ({
       <div className="text-simplifier-children">{body}</div>
 
       <div className="text-simplifier-border">
-        <div className="text-simplifier-background">{footer}</div>
+        <div className="text-simplifier-background pb-4 pt-24 px-8 px-md-24">
+          {footer}
+        </div>
       </div>
     </Flex>
   );
