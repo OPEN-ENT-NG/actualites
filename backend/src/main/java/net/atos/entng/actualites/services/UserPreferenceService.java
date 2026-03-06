@@ -24,11 +24,11 @@ public interface UserPreferenceService {
     Future<Boolean> hasThreadPreference(UserInfos userInfo);
 
     /**
-     * Filter out IDs of users prefering not to see a thread.
+     * Filter out IDs of users preferring not to see a thread.
      * 
      * @param threadId the thread ID
-     * @param ids list of users ID to check
-     * @return A filtered list of users ID
+     * @param ids list of user IDs to check
+     * @return A filtered list of user IDs
      */
     Future<List<String>> removeUsersNotSeeingThread(final String threadId, List<String> ids);
 }
