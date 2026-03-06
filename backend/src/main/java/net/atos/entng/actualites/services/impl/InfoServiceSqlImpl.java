@@ -869,7 +869,7 @@ public class InfoServiceSqlImpl implements InfoService {
 	}
 
 	@Override
-	public Future<JsonObject> getStats(UserInfos user, Boolean viewHidden) {
+	public Future<JsonObject> getStats(UserInfos user, boolean viewHidden) {
 		final Promise<JsonObject> promise = Promise.promise();
 		if (user == null) {
 			promise.fail("User's infos not provided");

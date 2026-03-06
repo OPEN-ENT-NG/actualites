@@ -201,7 +201,7 @@ public class InfoTransformerServiceImpl implements InfoService {
     }
 
     @Override
-    public Future<JsonObject> getStats(UserInfos user, Boolean viewHidden) {
+    public Future<JsonObject> getStats(UserInfos user, boolean viewHidden) {
         return infoService.getStats(user, viewHidden);
     }
 
