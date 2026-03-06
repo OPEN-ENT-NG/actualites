@@ -18,12 +18,19 @@
     "integration-mode": "{{ integration_mode|default('HTTP') }}",
     "app-registry.port": 8012,
     "mode": "prod",
+    "probes": [
+      "org.entcore.common.http.health.Neo4jProbe",
+      "org.entcore.common.http.health.MongoProbe",
+      "org.entcore.common.http.health.PostgresProbe",
+      "org.entcore.common.http.health.RedisProbe",
+      "fr.wseduc.webutils.metrics.EventBusProbe"
+    ],
     {% if actuReadDefault is defined %}
       "share": {
         "overrideDefaultActions": ["info.read"]
       },
-    {% endif %},
-    {% if (ha is defined and not(ha)) or (inventory_hostname_short is defined and inventory_hostname_short == 'jobs') %}
+    {% endif %}
+    {% if actualitesNewsPublicationCron is defined and actualitesNewsPublicationCron != '' %}
       "news-publication-cron": "{{ actualitesNewsPublicationCron|default('0 0 * * * ? *') }}",
     {% endif %}
     "entcore.port": 8009,

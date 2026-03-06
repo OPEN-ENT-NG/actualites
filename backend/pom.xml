@@ -20,7 +20,7 @@
         <vertxCronTimerVersion>3.0-SNAPSHOT</vertxCronTimerVersion>
         <gatlingHighchartsVersion>2.3.1</gatlingHighchartsVersion>
         <junitVersion>4.13.2</junitVersion>
-        <modMongoVersion>4.1-SNAPSHOT</modMongoVersion>
+        <modMongoVersion>4.1-separation-SNAPSHOT</modMongoVersion>
         <modPostgresVersion>2.1-separation-SNAPSHOT</modPostgresVersion>
         <mockitoVersion>2.28.2</mockitoVersion>
         <edificeFalcVersion>0.2.4.dev.0</edificeFalcVersion>
@@ -45,6 +45,12 @@
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
             <version>${vertxVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-buffer</artifactId>
+            <version>4.1.107.Final</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
