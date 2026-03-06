@@ -6,6 +6,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.services.ThreadService;
 import net.atos.entng.actualites.services.UserPreferenceService;
 import net.atos.entng.actualites.to.Preferences;
@@ -15,8 +16,11 @@ import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlStatementsBuilder;
 import org.entcore.common.user.UserInfos;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import static fr.wseduc.webutils.Utils.isNotEmpty;
 import static net.atos.entng.actualites.Actualites.NEWS_SCHEMA;
 
 public class UserPreferenceServiceImpl implements UserPreferenceService {
@@ -84,6 +88,32 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
                 promise.fail(result.body().getString("message"));
             }
         });
+        return promise.future();
+    }
+
+    @Override
+    public Future<List<String>> removeUsersNotSeeingThread(final String threadId, List<String> ids) {
+        Promise<List<String>> promise = Promise.promise();
+        // Look for users who do not want to see this thread
+        Sql.getInstance().prepared(
+            "SELECT user_id FROM " + PREFERENCE_TABLE + " WHERE thread_id = ? AND visible IS NOT TRUE",
+            new JsonArray().add(threadId), 
+            result -> {
+                if ("ok".equals(result.body().getString("status"))) {
+                    final List<String> unwantedIds = result.body().getJsonArray("results")
+                        .stream()
+                        .filter(o -> o instanceof JsonObject)
+                        .map(JsonObject.class::cast)
+                        .map( row -> row.getString("user_id"))
+                        .filter(id->isNotEmpty(id))
+                        .collect(Collectors.toList());
+
+                    promise.complete( ids.stream().filter(id -> !unwantedIds.contains(id)).collect(Collectors.toList()) );
+                } else {
+                    promise.fail(result.body().getString("message"));
+                }
+            }
+        );
         return promise.future();
     }
 }

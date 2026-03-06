@@ -7,6 +7,7 @@ import io.vertx.core.Handler;
 import net.atos.entng.actualites.to.Preferences;
 import org.entcore.common.user.UserInfos;
 
+import java.util.List;
 import java.util.Map;
 
 public interface UserPreferenceService {
@@ -21,4 +22,13 @@ public interface UserPreferenceService {
 
 
     Future<Boolean> hasThreadPreference(UserInfos userInfo);
+
+    /**
+     * Filter out IDs of users preferring not to see a thread.
+     * 
+     * @param threadId the thread ID
+     * @param ids list of user IDs to check
+     * @return A filtered list of user IDs
+     */
+    Future<List<String>> removeUsersNotSeeingThread(final String threadId, List<String> ids);
 }
