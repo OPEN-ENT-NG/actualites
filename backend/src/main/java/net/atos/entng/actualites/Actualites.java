@@ -181,7 +181,14 @@ public class Actualites extends BaseServer {
 		InfoService infoService = new InfoTransformerServiceImpl(contentTransformerClient, contentEventRecorder, new InfoServiceSqlImpl());
 
 		//notification timeline
-		NotificationTimelineService notificationTimelineService = new NotificationTimelineServiceImpl(infoService,  new ThreadServiceSqlImpl().setEventBus(eb), vertx, eb, config);
+		NotificationTimelineService notificationTimelineService = new NotificationTimelineServiceImpl(
+			infoService,  
+			new ThreadServiceSqlImpl().setEventBus(eb),
+			new UserPreferenceServiceImpl(threadService),
+			vertx, 
+			eb, 
+			config
+		);
 		PublicationCron publicationCron  = new PublicationCron(notificationTimelineService);
 		threadControllerV1.setPublicationCron(publicationCron);
 

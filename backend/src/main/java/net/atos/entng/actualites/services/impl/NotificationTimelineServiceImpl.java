@@ -1,6 +1,21 @@
 package net.atos.entng.actualites.services.impl;
 
+import static net.atos.entng.actualites.controllers.InfoController.NEWS_PUBLISH_EVENT_TYPE;
+import static net.atos.entng.actualites.controllers.InfoController.NEWS_SUBMIT_EVENT_TYPE;
+import static net.atos.entng.actualites.controllers.InfoController.NEWS_UPDATE_EVENT_TYPE;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.entcore.common.notification.NotificationUtils;
+import org.entcore.common.notification.TimelineHelper;
+import org.entcore.common.user.UserInfos;
+import org.entcore.common.user.UserUtils;
+
 import com.google.common.collect.Lists;
+
 import fr.wseduc.webutils.Server;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
@@ -14,18 +29,7 @@ import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.services.InfoService;
 import net.atos.entng.actualites.services.NotificationTimelineService;
 import net.atos.entng.actualites.services.ThreadService;
-import org.entcore.common.notification.NotificationUtils;
-import org.entcore.common.notification.TimelineHelper;
-import org.entcore.common.user.UserInfos;
-import org.entcore.common.user.UserUtils;
-
-import java.security.cert.CertificateNotYetValidException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static net.atos.entng.actualites.controllers.InfoController.*;
+import net.atos.entng.actualites.services.UserPreferenceService;
 
 public class NotificationTimelineServiceImpl implements NotificationTimelineService {
 
@@ -33,13 +37,19 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
     private final TimelineHelper notification;
     private final InfoService infoService;
     private final ThreadService threadService;
+    private final UserPreferenceService userPreferenceService;
     private final EventBus eventBus;
     private final String pathPrefix;
 
-    public NotificationTimelineServiceImpl(InfoService infoService, ThreadService threadService, Vertx vertx,
-                                           EventBus eb, JsonObject config) {
+    public NotificationTimelineServiceImpl(
+            InfoService infoService,
+            ThreadService threadService, 
+            UserPreferenceService userPreferenceService, 
+            Vertx vertx,
+            EventBus eb, JsonObject config) {
         this.infoService = infoService;
         this.threadService = threadService;
+        this.userPreferenceService = userPreferenceService;
         this.notification = new TimelineHelper(vertx, eb, config);
         this.eventBus = eb;
         this.pathPrefix = Server.getPathPrefix(config);
@@ -131,29 +141,37 @@ public class NotificationTimelineServiceImpl implements NotificationTimelineServ
         }
     }
 
-    private void sendNotify(final HttpServerRequest request, final List<String> ids, final UserInfos owner,
+    private void sendNotify(final HttpServerRequest request, final List<String> recipientIds, final UserInfos owner,
                             final String threadId, final String infoId, final String title, final String notificationName, final boolean ignoreFlood){
         if (infoId != null && !infoId.isEmpty() && threadId != null && !threadId.isEmpty() && owner != null) {
-            JsonObject params = new JsonObject()
-                    .put("profilUri", "/userbook/annuaire#" + owner.getUserId() + "#" + (owner.getType() != null ? owner.getType() : ""))
-                    .put("username", owner.getUsername())
-                    .put("info", title)
-                    .put("disableAntiFlood", ignoreFlood)
-                    .put("resourceUri", pathPrefix + "#/view/thread/" + threadId + "/info/" + infoId);
-            if("news.news-published".equals(notificationName)) {
-                params.put("pushNotif", new JsonObject().put("title", "push.notif.actu.info.published").put("body", owner.getUsername()+ " : "+ title));
-                infoService.retrieve(infoId, false, actu -> {
-                    JsonObject preview = null;
-                    if (actu.isRight()) {
-                        preview = NotificationUtils.htmlContentToPreview(
-                                actu.right().getValue().getString("content"));
-                    }
-                    notification.notifyTimeline(request, notificationName, owner, ids, infoId,
-                            null, params, false, preview);
-                });
-            } else {
-                notification.notifyTimeline(request, notificationName, owner, ids, infoId, params);
-            }
+            // Do not notify users who do not want to see this thread.
+            userPreferenceService.removeUsersNotSeeingThread(threadId, recipientIds)
+            .onComplete(result -> {
+                List<String> ids = result.succeeded() ? result.result() : recipientIds;
+                if(result.failed()) {
+                    LOGGER.error(String.format("[%s] Unable to filter out users from undesired timeline notifications. Sending to all recipients. ", getClass().getSimpleName()), result.cause());
+                }
+                JsonObject params = new JsonObject()
+                        .put("profilUri", "/userbook/annuaire#" + owner.getUserId() + "#" + (owner.getType() != null ? owner.getType() : ""))
+                        .put("username", owner.getUsername())
+                        .put("info", title)
+                        .put("disableAntiFlood", ignoreFlood)
+                        .put("resourceUri", pathPrefix + "#/view/thread/" + threadId + "/info/" + infoId);
+                if("news.news-published".equals(notificationName)) {
+                    params.put("pushNotif", new JsonObject().put("title", "push.notif.actu.info.published").put("body", owner.getUsername()+ " : "+ title));
+                    infoService.retrieve(infoId, false, actu -> {
+                        JsonObject preview = null;
+                        if (actu.isRight()) {
+                            preview = NotificationUtils.htmlContentToPreview(
+                                    actu.right().getValue().getString("content"));
+                        }
+                        notification.notifyTimeline(request, notificationName, owner, ids, infoId,
+                                null, params, false, preview);
+                    });
+                } else {
+                    notification.notifyTimeline(request, notificationName, owner, ids, infoId, params);
+                }
+            });
         }
     }
 }
