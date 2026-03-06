@@ -268,7 +268,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 			}
 
 			if (filter == ThreadInclude.MANAGEABLE) {
-				filterManageable = " WHERE (rights @> ARRAY['" + RightConstants.THREAD_MANAGER_RIGHT  + "']::varchar[] or owner = ?) AND visible IS TRUE ";
+				filterManageable = " WHERE (rights @> ARRAY['" + RightConstants.THREAD_MANAGER_RIGHT  + "']::varchar[] or owner = ?) ";
 			} else if (filter == ThreadInclude.DEFAULT) {
 				filterManageable = " WHERE visible IS TRUE ";
 			}
