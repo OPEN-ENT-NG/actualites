@@ -869,7 +869,7 @@ public class InfoServiceSqlImpl implements InfoService {
 	}
 
 	@Override
-	public Future<JsonObject> getStats(UserInfos user, Boolean viewHidden) {
+	public Future<JsonObject> getStats(UserInfos user, boolean viewHidden) {
 		final Promise<JsonObject> promise = Promise.promise();
 		if (user == null) {
 			promise.fail("User's infos not provided");
@@ -925,7 +925,7 @@ public class InfoServiceSqlImpl implements InfoService {
 					"  		 LEFT JOIN actualites.thread_user_preferences prefs ON prefs.thread_id = tsh.resource_id  AND prefs.user_id = ? " +
 					"    	 WHERE tsh.member_id IN (SELECT id FROM user_groups)" +
 					"              AND tsh.action = 'net-atos-entng-actualites-controllers-InfoController|publish' " + filterAdml +
-					"              AND  ( prefs.visible IS NULL OR prefs.visible = true ) " +
+					(viewHidden ? "" : "      AND  ( prefs.visible IS NULL OR prefs.visible = true ) ") +
 					"    	 GROUP BY tsh.resource_id " +
 					"	 ) " +
 					"SELECT t.id, " +
@@ -944,7 +944,7 @@ public class InfoServiceSqlImpl implements InfoService {
 							"(i.publication_date <= NOW() OR i.publication_date IS NULL) " +
 							"AND (i.expiration_date > NOW() OR i.expiration_date IS NULL)" +
 					"      OR i.owner = ?) " +
-                    "      AND  ( prefs.visible IS NULL OR prefs.visible = true ) " +
+					(viewHidden ? "" : " AND  ( prefs.visible IS NULL OR prefs.visible = true ) ") +
 					"GROUP BY t.id " +
 					"ORDER BY t.id";
 

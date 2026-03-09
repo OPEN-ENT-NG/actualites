@@ -114,6 +114,6 @@ public interface InfoService {
 	 * @param viewHidden show hidden threads (hidden by default for adml group automatically added)
 	 * @return Future containing stats with threads array including id, infosCount and status breakdown
 	 */
-	public Future<JsonObject> getStats(UserInfos user, Boolean viewHidden);
+	public Future<JsonObject> getStats(UserInfos user, boolean viewHidden);
 
 }

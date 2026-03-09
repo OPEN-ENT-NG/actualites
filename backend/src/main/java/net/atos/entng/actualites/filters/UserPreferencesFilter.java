@@ -14,14 +14,16 @@ public class UserPreferencesFilter  extends AdminFilter {
 
     @Override
     public void authorize(HttpServerRequest resourceRequest, Binding binding, UserInfos user, Handler<Boolean> handler) {
+        resourceRequest.pause();
         super.authorize(resourceRequest, binding, user, h -> {
             if  (h.booleanValue()) {
                 handler.handle(true);
                 return;
             }
             userPreferenceService.hasThreadPreference(user)
-                    .onSuccess(handler)
-                    .onFailure( e -> handler.handle(false));
+                    .onSuccess( result -> handler.handle(true))
+                    .onFailure( e -> handler.handle(false))
+                    .onComplete(result -> resourceRequest.resume());
         });
     }
 }
