@@ -21,8 +21,9 @@ public class UserPreferencesFilter  extends AdminFilter {
                 return;
             }
             userPreferenceService.hasThreadPreference(user)
-                    .onSuccess( result -> { handler.handle(true); resourceRequest.resume(); })
-                    .onFailure( e -> { handler.handle(false); resourceRequest.resume(); });
+                    .onSuccess( result -> handler.handle(true))
+                    .onFailure( e -> handler.handle(false))
+                    .onComplete(result -> resourceRequest.resume());
         });
     }
 }
