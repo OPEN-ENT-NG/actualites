@@ -31,4 +31,19 @@ public interface UserPreferenceService {
      * @return A filtered list of user IDs
      */
     Future<List<String>> removeUsersNotSeeingThread(final String threadId, List<String> ids);
+
+    /**
+     * Retrieve all distinct user IDs that have stored preferences.
+     *
+     * @return list of user IDs
+     */
+    Future<List<String>> getUsersWithPreferences();
+
+    /**
+     * Delete all preferences for the given list of users.
+     *
+     * @param userIds user IDs whose preferences must be removed
+     * @return completed future on success
+     */
+    Future<Void> deletePreferencesForUsers(List<String> userIds);
 }

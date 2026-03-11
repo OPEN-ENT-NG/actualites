@@ -92,6 +92,50 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
     }
 
     @Override
+    public Future<List<String>> getUsersWithPreferences() {
+        Promise<List<String>> promise = Promise.promise();
+        Sql.getInstance().prepared(
+            "SELECT DISTINCT user_id FROM " + PREFERENCE_TABLE,
+            new JsonArray(),
+            result -> {
+                if ("ok".equals(result.body().getString("status"))) {
+                    List<String> userIds = result.body().getJsonArray("results")
+                        .stream()
+                        .filter(o -> o instanceof JsonArray)
+                        .map(JsonArray.class::cast)
+                        .map(row -> row.getString(0))
+                        .filter(id -> id != null && !id.isEmpty())
+                        .collect(Collectors.toList());
+                    promise.complete(userIds);
+                } else {
+                    promise.fail(result.body().getString("message"));
+                }
+            }
+        );
+        return promise.future();
+    }
+
+    @Override
+    public Future<Void> deletePreferencesForUsers(List<String> userIds) {
+        if (userIds == null || userIds.isEmpty()) {
+            return Future.succeededFuture();
+        }
+        Promise<Void> promise = Promise.promise();
+        Sql.getInstance().prepared(
+            "DELETE FROM " + PREFERENCE_TABLE + " WHERE user_id IN " + Sql.listPrepared(userIds),
+            new JsonArray(userIds),
+            result -> {
+                if ("ok".equals(result.body().getString("status"))) {
+                    promise.complete();
+                } else {
+                    promise.fail(result.body().getString("message"));
+                }
+            }
+        );
+        return promise.future();
+    }
+
+    @Override
     public Future<List<String>> removeUsersNotSeeingThread(final String threadId, List<String> ids) {
         Promise<List<String>> promise = Promise.promise();
         // Look for users who do not want to see this thread

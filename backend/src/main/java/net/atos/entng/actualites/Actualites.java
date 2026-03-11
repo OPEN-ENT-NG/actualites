@@ -41,6 +41,7 @@ import net.atos.entng.actualites.controllers.v1.ThreadControllerV1;
 import net.atos.entng.actualites.controllers.v1.UserPreferenceController;
 import net.atos.entng.actualites.cron.PublicationCron;
 import net.atos.entng.actualites.cron.ExpiredNewsCleanupCron;
+import net.atos.entng.actualites.cron.SuperAdmlPreferencesCleanupCron;
 import net.atos.entng.actualites.services.*;
 import net.atos.entng.actualites.services.impl.*;
 import org.entcore.common.audience.AudienceHelper;
@@ -242,6 +243,7 @@ public class Actualites extends BaseServer {
                 throw new RuntimeException(e);
             }
         }
+        
         // News cleanup cron task
         String cronExpression = config.getString("NewsCleanupCron");
 		if (!StringUtils.isEmpty(cronExpression)) {
@@ -254,6 +256,19 @@ public class Actualites extends BaseServer {
             }
             log.info("News cleanup cron enabled with expression: " + cronExpression + " (threshold: " + config.getInteger("NewsCleanupMonthsThreshold", 24) + " months)");
         }
+        
+		// Super-ADML preferences cleanup cron task
+		String superAdmlCleanupCron = config.getString("super-adml-cleanup-cron");
+		if (!StringUtils.isEmpty(superAdmlCleanupCron)) {
+			SuperAdmlPreferencesCleanupCron superAdmlCleanupCronTask = new SuperAdmlPreferencesCleanupCron(new UserPreferenceServiceImpl(threadService));
+			try {
+				new CronTrigger(vertx, superAdmlCleanupCron).schedule(superAdmlCleanupCronTask);
+				log.info("Super-ADML preferences cleanup cron enabled with expression: " + superAdmlCleanupCron);
+			} catch (ParseException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		
 		return Future.succeededFuture();
 	}
 
