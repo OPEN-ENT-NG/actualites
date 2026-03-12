@@ -7,7 +7,6 @@ import io.vertx.core.logging.LoggerFactory;
 import net.atos.entng.actualites.Actualites;
 import net.atos.entng.actualites.services.InfoCleanupService;
 import org.entcore.common.sql.Sql;
-import org.entcore.common.sql.SqlResult;
 
 /**
  * Implementation of InfoCleanupService
@@ -38,9 +37,12 @@ public class InfoCleanupServiceImpl implements InfoCleanupService {
                        "  LIMIT " + batchSize +
                        ")";
 
-        sql.raw(query, SqlResult.validUniqueResultHandler(event -> {
-            if (event.isRight()) {
-                int batchDeleted = event.right().getValue().getInteger("rows", 0);
+        // Use raw message handler: validUniqueResultHandler is designed for SELECT queries
+        // and does not correctly expose the affected rows count for DELETE statements.
+        // The affected row count is available directly on message.body() as "rows".
+        sql.raw(query, message -> {
+            if ("ok".equals(message.body().getString("status"))) {
+                int batchDeleted = message.body().getInteger("rows", 0);
                 int newTotal = totalDeleted + batchDeleted;
 
                 if (batchDeleted > 0 && batchDeleted == batchSize) {
@@ -60,11 +62,11 @@ public class InfoCleanupServiceImpl implements InfoCleanupService {
             } else {
                 JsonObject result = new JsonObject()
                     .put("status", "error")
-                    .put("message", event.left().getValue())
+                    .put("message", message.body().getString("message", "Unknown error"))
                     .put("deleted", totalDeleted);
-                log.error("[Actualites@InfoCleanupService::deleteOldNews] Failed to delete batch after " + totalDeleted + " deletions: " + event.left().getValue());
+                log.error("[Actualites@InfoCleanupService::deleteOldNews] Failed to delete batch after " + totalDeleted + " deletions: " + message.body().getString("message"));
                 handler.handle(result);
             }
-        }));
+        });
     }
 }
