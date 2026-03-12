@@ -30,10 +30,7 @@ import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.constants.Field;
-import net.atos.entng.actualites.controllers.CommentController;
-import net.atos.entng.actualites.controllers.DisplayController;
-import net.atos.entng.actualites.controllers.InfoController;
-import net.atos.entng.actualites.controllers.ThreadController;
+import net.atos.entng.actualites.controllers.*;
 import net.atos.entng.actualites.controllers.v1.CommentControllerV1;
 import net.atos.entng.actualites.controllers.v1.InfosControllerV1;
 import net.atos.entng.actualites.controllers.v1.ThreadControllerV1;
@@ -216,8 +213,15 @@ public class Actualites extends BaseServer {
 		//user preferences
 		addController(new UserPreferenceController(new UserPreferenceServiceImpl(threadService)));
 
+		//CRON
 		// News publication cron task
 		String publicationCronConf = config.getString("news-publication-cron");
+		// News cleanup cron task
+		InfoCleanupService cleanupService = new InfoCleanupServiceImpl();
+		ExpiredNewsCleanupCron cleanupCron = new ExpiredNewsCleanupCron(cleanupService, config);
+		// Enable cron tasks to be triggered via API
+		addController(new TaskController(publicationCron, cleanupCron));
+		// Schedule cron tasks from cron expression
 		if (!StringUtils.isEmpty(publicationCronConf)) {
             try {
                 new CronTrigger(vertx, publicationCronConf).schedule(publicationCron);
@@ -225,11 +229,8 @@ public class Actualites extends BaseServer {
                 throw new RuntimeException(e);
             }
         }
-        // News cleanup cron task
         String cronExpression = config.getString("NewsCleanupCron");
 		if (!StringUtils.isEmpty(cronExpression)) {
-			InfoCleanupService cleanupService = new InfoCleanupServiceImpl();
-            ExpiredNewsCleanupCron cleanupCron = new ExpiredNewsCleanupCron(cleanupService, config);
             try {
                 new CronTrigger(vertx, cronExpression).schedule(cleanupCron);
             } catch (ParseException e) {
