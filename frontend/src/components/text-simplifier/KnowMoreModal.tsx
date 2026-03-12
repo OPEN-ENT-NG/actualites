@@ -59,7 +59,11 @@ export function KnowMoreModal({
             {t('actualites.knowmore.body.what.title')}
           </Button>
           <Expandable collapse={hideWhat} transitionDurationMs={300}>
-            <p>{t('actualites.knowmore.body.what.body')}</p>
+            <p
+              dangerouslySetInnerHTML={{
+                __html: t('actualites.knowmore.body.what.body'),
+              }}
+            />
           </Expandable>
         </div>
         <div>
@@ -83,7 +87,11 @@ export function KnowMoreModal({
             {t('actualites.knowmore.body.how.title')}
           </Button>
           <Expandable collapse={hideHow} transitionDurationMs={300}>
-            <p>{t('actualites.knowmore.body.how.body')}</p>
+            <p
+              dangerouslySetInnerHTML={{
+                __html: t('actualites.knowmore.body.how.body'),
+              }}
+            />
           </Expandable>
         </div>
       </Flex>
