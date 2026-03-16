@@ -25,6 +25,10 @@ export const InfoCardContent = ({
     setShowFullContent(!collapse);
   };
 
+  const editorContent = showFullContent
+    ? (info?.jsonContent ?? info?.content ?? '')
+    : '';
+
   return (
     <Expandable
       collapse={collapse}
@@ -41,11 +45,7 @@ export const InfoCardContent = ({
         )}
 
         <div className={clsx({ 'd-none': !showFullContent })}>
-          <Editor
-            content={showFullContent ? info.content : ''}
-            mode="read"
-            variant="ghost"
-          />
+          <Editor content={editorContent} mode="read" variant="ghost" />
         </div>
 
         {withComments && canShowComments && showFullContent && (
