@@ -363,7 +363,7 @@ export function initFromCsv(): InitData {
           login: userInfo[1],
           profile: userInfo[3],
           session: session,
-          role: userInfo[4],
+          role: userInfo[4].toUpperCase(),
           threadId: userInfo[5],
           isValidator: false,
         };
