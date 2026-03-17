@@ -12,6 +12,7 @@ import net.atos.entng.actualites.utils.UserUtils;
 import org.entcore.common.neo4j.Neo4j;
 import org.entcore.common.neo4j.Neo4jResult;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,7 +40,7 @@ public class SuperAdmlPreferencesCleanupCron implements Handler<Long> {
             .compose(userIds -> {
                 if (userIds.isEmpty()) {
                     log.info("[Actualites@SuperAdmlPreferencesCleanupCron] No users with preferences, skipping");
-                    return Future.succeededFuture(List.of());
+                    return Future.succeededFuture(Collections.emptyList());
                 }
                 log.info("[Actualites@SuperAdmlPreferencesCleanupCron] Checking " + userIds.size() + " users");
                 return findUsersToClean(userIds);
