@@ -51,6 +51,7 @@ export const ThreadListActions = () => {
           variant="outline"
           onClick={handleManageThreadsClick}
           className="mx-16 mx-md-0"
+          data-testid="manage-threads-button"
         >
           {t('actualites.threadList.manageThreads')}
         </Button>
