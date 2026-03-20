@@ -452,10 +452,23 @@ public class ThreadServiceSqlImpl implements ThreadService {
 			eb.request("directory", action, handlerToAsyncHandler(event -> {
 				JsonArray res = event.body().getJsonArray("result", new JsonArray());
 				if ("ok".equals(event.body().getString("status")) && res != null) {
-					List<Structure> structures = new ArrayList<>();
+					final List<Structure> structures = new ArrayList<>();
 					for (Object oRow : res.getList()) {
-						JsonObject row =  (JsonObject) oRow;
-						structures.add(new Structure(row.getString("id"), row.getString("name")));
+						final String id;
+						final String name;
+						if(oRow instanceof JsonObject) {
+							JsonObject row =  (JsonObject) oRow;
+							id = row.getString("id");
+							name = row.getString("name");
+						} else if(oRow instanceof Map) {
+							final Map row = (Map)oRow;
+							id = (String) row.get("id");
+							name = row.get("name").toString();
+						} else {
+							log.warn("Got an object of type " + oRow.getClass() + "from directory");
+							continue;
+						}
+						structures.add(new Structure(id, name));
 					}
 					promise.complete(structures);
 				} else {
