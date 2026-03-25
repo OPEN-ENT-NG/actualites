@@ -8,7 +8,14 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { Info, InfoExtendedStatus, InfoId, InfoStatus } from '~/models/info';
+import {
+  CreateInfoPayload,
+  Info,
+  InfoExtendedStatus,
+  InfoId,
+  InfoStatus,
+  UpdateInfoPayload,
+} from '~/models/info';
 import { ThreadId } from '~/models/thread';
 import { useInfoAudienceStore } from '~/store/audienceStore';
 import { infoService } from '../api';
@@ -167,14 +174,8 @@ export const useCreateDraftInfo = () => {
   const { updateStatsQueryCache } = useUpdateStatsQueryCache();
 
   return useMutation({
-    mutationFn: (payload: {
-      title: string;
-      content: string;
-      thread_id: number;
-      publication_date?: string;
-      expiration_date?: string;
-      is_headline?: boolean;
-    }) => infoService.createDraft(payload),
+    mutationFn: (payload: CreateInfoPayload) =>
+      infoService.createDraft(payload),
     onMutate: async (payload) => {
       updateStatsQueryCache(payload.thread_id, InfoStatus.DRAFT, 1);
     },
@@ -191,15 +192,10 @@ export const useUpdateInfo = () => {
     }: {
       infoId: InfoId;
       infoStatus: InfoStatus;
-      payload: {
-        thread_id?: ThreadId;
-        title?: string;
-        content?: string;
-        is_headline?: boolean;
-        publication_date?: string;
-        expiration_date?: string;
-      };
-    }) => infoService.update(infoId, infoStatus, payload),
+      payload: UpdateInfoPayload;
+    }) => {
+      return infoService.update(infoId, infoStatus, payload);
+    },
     onSuccess: (params) => {
       queryClient.invalidateQueries({
         queryKey: infoQueryKeys.info({ infoId: params.id }),

@@ -2,6 +2,7 @@ import { odeServices, ShareRight } from '@edifice.io/client';
 import { checkHttpError } from '~/utils/checkHttpError';
 import { baseUrl, baseUrlAPI } from '.';
 import {
+  CreateInfoPayload,
   Info,
   InfoDetails,
   InfoExtendedStatus,
@@ -10,6 +11,7 @@ import {
   InfosStats,
   InfoStatus,
   OriginalInfo,
+  UpdateInfoPayload,
 } from '../../models/info';
 import { Share } from '../../models/share';
 import { ThreadId } from '../../models/thread';
@@ -85,14 +87,7 @@ export const createInfoService = () => {
      * @param payload
      * @returns ID of the newly created Info
      */
-    createDraft(payload: {
-      title: string;
-      content: string;
-      thread_id: ThreadId;
-      publication_date?: string;
-      expiration_date?: string;
-      is_headline?: boolean;
-    }) {
+    createDraft(payload: CreateInfoPayload) {
       return odeServices.http().post<{
         id: InfoId;
       }>(`${baseUrlAPI}/infos`, {
@@ -110,18 +105,7 @@ export const createInfoService = () => {
      * @param payload
      * @returns ID of the updated Info
      */
-    update(
-      infoId: InfoId,
-      infoStatus: InfoStatus,
-      payload: {
-        thread_id?: ThreadId; // FIXME Is uncommenting this line useful, or dangerous ?
-        title?: string;
-        content?: string;
-        is_headline?: boolean;
-        publication_date?: string;
-        expiration_date?: string;
-      },
-    ) {
+    update(infoId: InfoId, infoStatus: InfoStatus, payload: UpdateInfoPayload) {
       const status =
         infoStatus === InfoStatus.DRAFT
           ? 1

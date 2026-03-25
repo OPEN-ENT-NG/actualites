@@ -99,6 +99,23 @@ export interface OriginalInfo {
   shared: [];
 }
 
+export interface CreateInfoPayload {
+  title: string;
+  content: string;
+  thread_id: ThreadId;
+  publication_date?: string;
+  expiration_date?: string;
+  is_headline?: boolean;
+}
+
+export interface UpdateInfoPayload {
+  thread_id?: ThreadId;
+  title?: string;
+  content?: string;
+  is_headline?: boolean;
+  publication_date?: string;
+  expiration_date?: string;
+}
 export interface ThreadInfoStats {
   id: ThreadId | undefined;
   status: {
