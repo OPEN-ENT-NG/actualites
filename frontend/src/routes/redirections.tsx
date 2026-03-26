@@ -14,7 +14,7 @@ export const manageRedirections = (): string | null => {
     const isDefault = matchPath('/default', hashLocation);
     if (isDefault) {
       // Suppress unused hash but do not reload the page.
-      return `/threads`;
+      return `/`;
     }
 
     // Link to a comment ?
