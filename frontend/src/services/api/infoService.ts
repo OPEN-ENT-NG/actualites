@@ -98,7 +98,7 @@ export const createInfoService = () => {
     },
 
     /**
-     * Update an Info (its status cannot change).
+     * Update an Info.
      * @param threadId
      * @param infoId
      * @param infoStatus
