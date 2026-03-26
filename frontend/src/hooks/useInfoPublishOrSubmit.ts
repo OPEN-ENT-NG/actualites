@@ -3,7 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { INFO_DATES_RESET_VALUES } from '~/features';
 import { useI18n } from '~/hooks/useI18n';
-import { InfoDetails, InfoStatus } from '~/models/info';
+import { InfoDetails, InfoStatus, UpdateInfoPayload } from '~/models/info';
 import { invalidateThreadQueries, useUpdateInfo } from '~/services/queries';
 import { useUpdateStatsQueryCache } from '~/services/queries/hooks/useUpdateStatsQueryCache';
 
@@ -21,18 +21,19 @@ export function useInfoPublishOrSubmit() {
     if (!info.id) {
       throw new Error('infoId is undefined');
     }
+    let payload: UpdateInfoPayload = {};
 
     if (!info.publicationDate) {
-      info.publicationDate =
+      payload.publication_date =
         INFO_DATES_RESET_VALUES.publicationDate.toISOString();
-      info.expirationDate =
+      payload.expiration_date =
         INFO_DATES_RESET_VALUES.expirationDate.toISOString();
     }
     updateInfoMutate(
       {
         infoId: info.id,
         infoStatus: status,
-        payload: {},
+        payload: payload,
       },
       {
         onSuccess: () => {

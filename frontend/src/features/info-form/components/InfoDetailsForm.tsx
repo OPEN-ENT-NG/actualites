@@ -22,6 +22,7 @@ export const INFO_DETAILS_DEFAULT_VALUES: InfoDetailsFormParams = {
 
 export const INFO_HOURS_DATE_DEFAULT = 7;
 
+//TODO replace constant by a function to avoid a long-lived tab may set date to an old timestamp instead of “today”
 export const INFO_DATES_RESET_VALUES: {
   publicationDate: Date;
   expirationDate: Date;
