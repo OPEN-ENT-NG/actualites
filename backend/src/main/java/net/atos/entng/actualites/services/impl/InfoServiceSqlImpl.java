@@ -417,7 +417,8 @@ public class InfoServiceSqlImpl implements InfoService {
 								thread,
 								row.getString("username"),
 								row.getString("date"),
-								row.getString("title")
+								row.getString("title"),
+								row.getString("content")
 								);
 					})
 					.collect(Collectors.toList());
@@ -480,7 +481,7 @@ public class InfoServiceSqlImpl implements InfoService {
 				//subquery infos
 				{
 					final StringBuilder subquery = new StringBuilder();
-					subquery.append("SELECT info.id as _id, info.title, users.username, thread.id AS thread_id, thread.title AS thread_title, ");
+					subquery.append("SELECT info.id as _id, info.title, info.content, users.username, thread.id AS thread_id, thread.title AS thread_title, ");
 					subquery.append("thread.icon AS thread_icon, COALESCE(info.publication_date, info.modified)::text AS date ");
 					subquery.append("FROM "+NEWS_INFO_TABLE+" ");
 					subquery.append("INNER JOIN "+NEWS_THREAD_TABLE+" ON (info.thread_id = thread.id) ");
