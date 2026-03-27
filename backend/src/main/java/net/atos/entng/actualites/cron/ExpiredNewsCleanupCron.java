@@ -24,12 +24,14 @@ public class ExpiredNewsCleanupCron implements Handler<Long> {
     public ExpiredNewsCleanupCron(InfoCleanupService cleanupService, JsonObject config) {
         this.cleanupService = cleanupService;
 
-        int configuredThreshold = config.getInteger("newsCleanupMonthsThreshold", DEFAULT_MONTHS_THRESHOLD);
+        int configuredThreshold = config.getInteger("news-cleanup-months-threshold", DEFAULT_MONTHS_THRESHOLD);
         if (configuredThreshold < DEFAULT_MONTHS_THRESHOLD) {
             log.warn("[Actualites@ExpiredNewsCleanupCron] Configured threshold (" + configuredThreshold + " months) is below minimum (" + DEFAULT_MONTHS_THRESHOLD + " months). Using minimum value.");
         }
         this.monthsThreshold = Math.max(configuredThreshold, DEFAULT_MONTHS_THRESHOLD);
-        this.batchSize = config.getInteger("newsCleanupBatchSize", DEFAULT_BATCH_SIZE);
+        this.batchSize = config.getInteger("news-cleanup-batch-size", DEFAULT_BATCH_SIZE);
+        
+        log.info("[Actualites@ExpiredNewsCleanupCron] Cleanup cron configured (threshold: " + this.monthsThreshold + " months, batch size: " + this.batchSize + ")");
     }
 
     @Override

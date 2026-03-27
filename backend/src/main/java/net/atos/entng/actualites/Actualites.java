@@ -245,7 +245,7 @@ public class Actualites extends BaseServer {
         }
         
         // News cleanup cron task
-        String cronExpression = config.getString("NewsCleanupCron");
+        String cronExpression = config.getString("news-cleanup-cron");
 		if (!StringUtils.isEmpty(cronExpression)) {
 			InfoCleanupService cleanupService = new InfoCleanupServiceImpl();
             ExpiredNewsCleanupCron cleanupCron = new ExpiredNewsCleanupCron(cleanupService, config);
@@ -254,7 +254,6 @@ public class Actualites extends BaseServer {
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }
-            log.info("News cleanup cron enabled with expression: " + cronExpression + " (threshold: " + config.getInteger("NewsCleanupMonthsThreshold", 24) + " months)");
         }
         
 		// Super-ADML preferences cleanup cron task
