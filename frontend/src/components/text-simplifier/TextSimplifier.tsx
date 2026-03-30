@@ -65,6 +65,12 @@ const TextSimplifierLayout = ({
   );
 };
 
+// Screeb survey configuration
+const { surveyStart } = useScreeb();
+const SURVEY_ID = 'bb6182a1-0ad1-4862-b6a2-c7bea7d922f7';
+const DISTRIBUTION_ID = 'dbc22e9e-3e9b-4f29-b6ec-c33923f4a67f';
+const TIMEOUT_BEFORE_ASKING_FEEDBACK = 90000; // 90 seconds
+
 export const TextSimplifier = forwardRef(
   (
     { children, editorRef }: TextSimplifierProps,
@@ -76,12 +82,6 @@ export const TextSimplifier = forwardRef(
 
     const [hideSuggestion, toggleSuggestion] = useToggle(true);
     const [showKnowMore, toggleKnowMore] = useToggle(false);
-
-    // Screeb survey configuration
-    const { surveyStart } = useScreeb();
-    const SURVEY_ID = 'bb6182a1-0ad1-4862-b6a2-c7bea7d922f7';
-    const DISTRIBUTION_ID = 'dbc22e9e-3e9b-4f29-b6ec-c33923f4a67f';
-    const TIMEOUT_BEFORE_ASKING_FEEDBACK = 90000; // 90 seconds
 
     const [errorCode, setErrorCode] = useState<ErrorCode>();
     const [contentChanged, setContentChanged] = useState(false);
