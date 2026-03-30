@@ -107,7 +107,8 @@ export const TextSimplifier = forwardRef(
         // To remove when survey is finished
         setTimeout(() => {
           surveyStart(SURVEY_ID, DISTRIBUTION_ID, true, {
-            transactionId: 'transaction-id-text-simplifier',
+            generatedContent: result,
+            originalContent,
             profile: user!.type,
             language: currentLanguage || 'fr',
           });
