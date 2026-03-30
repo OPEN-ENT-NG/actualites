@@ -22,7 +22,9 @@ import {
   Ref,
   RefObject,
   useCallback,
+  useEffect,
   useImperativeHandle,
+  useRef,
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -86,8 +88,17 @@ export const TextSimplifier = forwardRef(
     const [simplifiedContent, setSimplifiedContent] = useState<
       string | undefined
     >();
+    const surveyTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
     const { configuration, generate, isGenerating } = useFalc();
+
+    useEffect(() => {
+      return () => {
+        if (surveyTimeoutRef.current) {
+          clearTimeout(surveyTimeoutRef.current);
+        }
+      };
+    }, []);
 
     const handleGenerateClick = useCallback(async () => {
       // reset any previous error
@@ -105,20 +116,25 @@ export const TextSimplifier = forwardRef(
 
         // Manual trigger of the feedback survey after generating a suggestion, with a delay to let the user read the suggestion and decide if they want to give feedback
         // To remove when survey is finished
-        setTimeout(() => {
-          try {
-            if (user) {
-              surveyStart(SURVEY_ID, DISTRIBUTION_ID, true, {
-                generatedContent: result,
-                originalContent,
-                profile: user.type,
-                language: currentLanguage || 'fr',
-              });
-            }
-          } catch (e) {
-            console.error('Failed to start Screeb survey', e);
+        if (result) {
+          if (surveyTimeoutRef.current) {
+            clearTimeout(surveyTimeoutRef.current);
           }
-        }, TIMEOUT_BEFORE_ASKING_FEEDBACK);
+          surveyTimeoutRef.current = setTimeout(() => {
+            try {
+              if (user) {
+                surveyStart(SURVEY_ID, DISTRIBUTION_ID, true, {
+                  generatedContent: result,
+                  originalContent,
+                  profile: user.type,
+                  language: currentLanguage || 'fr',
+                });
+              }
+            } catch (e) {
+              console.error('Failed to start Screeb survey', e);
+            }
+          }, TIMEOUT_BEFORE_ASKING_FEEDBACK);
+        }
       } catch (e: unknown) {
         setErrorCode(e as ErrorCode);
       }
