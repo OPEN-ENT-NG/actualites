@@ -106,12 +106,16 @@ export const TextSimplifier = forwardRef(
         // Manual trigger of the feedback survey after generating a suggestion, with a delay to let the user read the suggestion and decide if they want to give feedback
         // To remove when survey is finished
         setTimeout(() => {
-          surveyStart(SURVEY_ID, DISTRIBUTION_ID, true, {
-            generatedContent: result,
-            originalContent,
-            profile: user!.type,
-            language: currentLanguage || 'fr',
-          });
+          try {
+            surveyStart(SURVEY_ID, DISTRIBUTION_ID, true, {
+              generatedContent: result,
+              originalContent,
+              profile: user!.type,
+              language: currentLanguage || 'fr',
+            });
+          } catch (e) {
+            console.error('Failed to start Screeb survey', e);
+          }
         }, TIMEOUT_BEFORE_ASKING_FEEDBACK);
       } catch (e: unknown) {
         setErrorCode(e as ErrorCode);
