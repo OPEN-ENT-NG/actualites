@@ -107,12 +107,14 @@ export const TextSimplifier = forwardRef(
         // To remove when survey is finished
         setTimeout(() => {
           try {
-            surveyStart(SURVEY_ID, DISTRIBUTION_ID, true, {
-              generatedContent: result,
-              originalContent,
-              profile: user!.type,
-              language: currentLanguage || 'fr',
-            });
+            if (user) {
+              surveyStart(SURVEY_ID, DISTRIBUTION_ID, true, {
+                generatedContent: result,
+                originalContent,
+                profile: user.type,
+                language: currentLanguage || 'fr',
+              });
+            }
           } catch (e) {
             console.error('Failed to start Screeb survey', e);
           }
