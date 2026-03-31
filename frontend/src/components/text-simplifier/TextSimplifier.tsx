@@ -14,6 +14,7 @@ import {
   IconRafterDown,
   IconRafterUp,
 } from '@edifice.io/react/icons';
+import { useScreeb } from '@screeb/sdk-react';
 import clsx from 'clsx';
 import {
   forwardRef,
@@ -21,7 +22,9 @@ import {
   Ref,
   RefObject,
   useCallback,
+  useEffect,
   useImperativeHandle,
+  useRef,
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -62,12 +65,18 @@ const TextSimplifierLayout = ({
   );
 };
 
+// Screeb survey configuration
+const { surveyStart } = useScreeb();
+const SURVEY_ID = 'bb6182a1-0ad1-4862-b6a2-c7bea7d922f7';
+const DISTRIBUTION_ID = 'dbc22e9e-3e9b-4f29-b6ec-c33923f4a67f';
+const TIMEOUT_BEFORE_ASKING_FEEDBACK = 90000; // 90 seconds
+
 export const TextSimplifier = forwardRef(
   (
     { children, editorRef }: TextSimplifierProps,
     ref: Ref<TextSimplifierRef>,
   ) => {
-    const { appCode } = useEdificeClient();
+    const { appCode, user, currentLanguage } = useEdificeClient();
     const { t } = useTranslation(appCode);
     const { error } = useToast();
 
@@ -79,8 +88,17 @@ export const TextSimplifier = forwardRef(
     const [simplifiedContent, setSimplifiedContent] = useState<
       string | undefined
     >();
+    const surveyTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
     const { configuration, generate, isGenerating } = useFalc();
+
+    useEffect(() => {
+      return () => {
+        if (surveyTimeoutRef.current) {
+          clearTimeout(surveyTimeoutRef.current);
+        }
+      };
+    }, []);
 
     const handleGenerateClick = useCallback(async () => {
       // reset any previous error
@@ -94,6 +112,28 @@ export const TextSimplifier = forwardRef(
         setContentChanged(false);
         if (result) {
           toggleSuggestion(true);
+        }
+
+        // Manual trigger of the feedback survey after generating a suggestion, with a delay to let the user read the suggestion and decide if they want to give feedback
+        // To remove when survey is finished
+        if (result) {
+          if (surveyTimeoutRef.current) {
+            clearTimeout(surveyTimeoutRef.current);
+          }
+          surveyTimeoutRef.current = setTimeout(() => {
+            try {
+              if (user) {
+                surveyStart(SURVEY_ID, DISTRIBUTION_ID, true, {
+                  generatedContent: result,
+                  originalContent,
+                  profile: user.type,
+                  language: currentLanguage || 'fr',
+                });
+              }
+            } catch (e) {
+              console.error('Failed to start Screeb survey', e);
+            }
+          }, TIMEOUT_BEFORE_ASKING_FEEDBACK);
         }
       } catch (e: unknown) {
         setErrorCode(e as ErrorCode);
