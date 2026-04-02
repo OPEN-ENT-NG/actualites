@@ -391,11 +391,7 @@ public class InfoServiceSqlImpl implements InfoService {
 
 	@Override
 	public void listLastPublishedInfos(UserInfos user, int resultSize, boolean optimized, Handler<Either<String, JsonArray>> handler) {
-		if (optimized) {
-			listLastPublishedInfosOptimized(user, resultSize, handler);
-		} else {
-			listLastPublishedInfosNotOptimized(user, resultSize, handler);
-		}
+		listLastPublishedInfosLegacy(user, resultSize, handler);
 	}
 
 	@Override
@@ -426,7 +422,7 @@ public class InfoServiceSqlImpl implements InfoService {
 		return promise.future();
 	}
 
-	private void listLastPublishedInfosNotOptimized(UserInfos user, int resultSize, Handler<Either<String, JsonArray>> handler) {
+	private void listLastPublishedInfosOptimized(UserInfos user, int resultSize, Handler<Either<String, JsonArray>> handler) {
 		if (user != null) {
 			String query;
 			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
@@ -436,20 +432,20 @@ public class InfoServiceSqlImpl implements InfoService {
 				groupsAndUserIds.addAll(user.getGroupsIds());
 			}
 			query = "SELECT i.id as _id, i.title, u.username, t.id AS thread_id, t.title AS thread_title , t.icon AS thread_icon, " +
-				" COALESCE(i.publication_date, i.modified)::text as date" +
-				", json_agg(row_to_json(row(ios.member_id, ios.action)::actualites.share_tuple)) as shared" +
-				", array_to_json(array_agg(group_id)) as groups" +
-				" FROM "+NEWS_INFO_TABLE+" AS i" +
-				" LEFT JOIN "+NEWS_THREAD_TABLE+" AS t ON i.thread_id = t.id" +
-				" LEFT JOIN "+NEWS_USER_TABLE+" AS u ON i.owner = u.id" +
-				" LEFT JOIN "+NEWS_INFO_SHARE_TABLE+" AS ios ON i.id = ios.resource_id" +
-				" LEFT JOIN "+NEWS_MEMBER_TABLE+" AS m ON (ios.member_id = m.id AND m.group_id IS NOT NULL)" +
-				" WHERE ((ios.member_id IN " + Sql.listPrepared(groupsAndUserIds.toArray()) + "AND ios.action = ?) OR i.owner = ?)" +
-				" AND i.status = 3" +
+					" COALESCE(i.publication_date, i.modified)::text as date" +
+					", json_agg(row_to_json(row(ios.member_id, ios.action)::actualites.share_tuple)) as shared" +
+					", array_to_json(array_agg(group_id)) as groups" +
+					" FROM "+NEWS_INFO_TABLE+" AS i" +
+					" LEFT JOIN "+NEWS_THREAD_TABLE+" AS t ON i.thread_id = t.id" +
+					" LEFT JOIN "+NEWS_USER_TABLE+" AS u ON i.owner = u.id" +
+					" LEFT JOIN "+NEWS_INFO_SHARE_TABLE+" AS ios ON i.id = ios.resource_id" +
+					" LEFT JOIN "+NEWS_MEMBER_TABLE+" AS m ON (ios.member_id = m.id AND m.group_id IS NOT NULL)" +
+					" WHERE ((ios.member_id IN " + Sql.listPrepared(groupsAndUserIds.toArray()) + "AND ios.action = ?) OR i.owner = ?)" +
+					" AND i.status = 3" +
 					" AND (i.publication_date <= NOW() OR i.publication_date IS NULL) AND (i.expiration_date > NOW() OR i.expiration_date IS NULL)" +
-				" GROUP BY i.id, u.username, t.id" +
-				" ORDER BY date DESC" +
-				" LIMIT ?";
+					" GROUP BY i.id, u.username, t.id" +
+					" ORDER BY date DESC" +
+					" LIMIT ?";
 
 			for(String value : groupsAndUserIds){
 				values.add(value);
@@ -461,7 +457,7 @@ public class InfoServiceSqlImpl implements InfoService {
 		}
 	}
 
-	private void listLastPublishedInfosOptimized(UserInfos user, int resultSize, Handler<Either<String, JsonArray>> handler) {
+	private void listLastPublishedInfosLegacy(UserInfos user, int resultSize, Handler<Either<String, JsonArray>> handler) {
 		final StopWatch watch1 = new StopWatch();
 		log.debug("Starting optimized query...");
 		helperSql.getInfosIdsByUnion(user, resultSize, 0, Lists.newArrayList(NewsStatus.PUBLISHED), null, null).onComplete(resIds -> {
@@ -480,8 +476,9 @@ public class InfoServiceSqlImpl implements InfoService {
 				//subquery infos
 				{
 					final StringBuilder subquery = new StringBuilder();
-					subquery.append("SELECT info.id as _id, info.title, users.username, thread.id AS thread_id, thread.title AS thread_title, ");
-					subquery.append("thread.icon AS thread_icon, COALESCE(info.publication_date, info.modified)::text AS date ");
+					subquery.append("SELECT info.id as _id, info.title, info.content, users.username, thread.id AS thread_id, thread.title AS thread_title, ");
+					subquery.append("thread.icon AS thread_icon, TO_CHAR(COALESCE(info.publication_date, info.modified) AT TIME ZONE 'UTC' AT TIME ZONE 'EUROPE/PARIS',");
+					subquery.append(" 'YYYY-MM-DD HH24:MI:SS.MS') AS date ");
 					subquery.append("FROM "+NEWS_INFO_TABLE+" ");
 					subquery.append("INNER JOIN "+NEWS_THREAD_TABLE+" ON (info.thread_id = thread.id) ");
 					subquery.append("INNER JOIN "+NEWS_USER_TABLE+" ON (info.owner = users.id) ");
