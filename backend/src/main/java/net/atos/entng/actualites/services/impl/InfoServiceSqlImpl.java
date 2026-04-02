@@ -479,7 +479,7 @@ public class InfoServiceSqlImpl implements InfoService {
 					final StringBuilder subquery = new StringBuilder();
 					subquery.append("SELECT info.id as _id, info.title, info.content, users.username, thread.id AS thread_id, thread.title AS thread_title, ");
 					subquery.append("thread.icon AS thread_icon, TO_CHAR(COALESCE(info.publication_date, info.modified) AT TIME ZONE 'UTC' AT TIME ZONE 'EUROPE/PARIS',");
-					subquery.append(" 'YYYY-MM-DD HH24:MI:SS.MS') AS date ");
+					subquery.append(" 'YYYY-MM-DD\"T\"HH24:MI:SS.MS') AS date ");
 					subquery.append("FROM "+NEWS_INFO_TABLE+" ");
 					subquery.append("INNER JOIN "+NEWS_THREAD_TABLE+" ON (info.thread_id = thread.id) ");
 					subquery.append("INNER JOIN "+NEWS_USER_TABLE+" ON (info.owner = users.id) ");
