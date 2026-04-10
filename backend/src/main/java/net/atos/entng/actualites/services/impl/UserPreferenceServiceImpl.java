@@ -144,7 +144,11 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
             "SELECT user_id FROM " + PREFERENCE_TABLE + " WHERE thread_id = ? AND visible IS NOT TRUE",
             new JsonArray().add(threadId), 
             result -> {
-                if ("ok".equals(result.body().getString("status")) && !result.body().getJsonArray("results").isEmpty()) {
+                if ("ok".equals(result.body().getString("status"))) {
+                    if (result.body().getJsonArray("results").isEmpty()) {
+                        promise.complete( ids );
+                        return;
+                    }
                     JsonArray rows = result.body().getJsonArray("results").getJsonArray(0);
                     final List<String> unwantedIds = rows
                         .stream()
