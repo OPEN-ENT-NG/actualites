@@ -1,6 +1,7 @@
 package net.atos.entng.actualites.services.impl;
 
 import fr.wseduc.webutils.Either;
+import fr.wseduc.webutils.Utils;
 import fr.wseduc.webutils.security.SecuredAction;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -144,12 +145,15 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
             new JsonArray().add(threadId), 
             result -> {
                 if ("ok".equals(result.body().getString("status"))) {
-                    final List<String> unwantedIds = result.body().getJsonArray("results")
+                    if (result.body().getJsonArray("results").isEmpty()) {
+                        promise.complete( ids );
+                        return;
+                    }
+                    JsonArray rows = result.body().getJsonArray("results").getJsonArray(0);
+                    final List<String> unwantedIds = rows
                         .stream()
-                        .filter(o -> o instanceof JsonObject)
-                        .map(JsonObject.class::cast)
-                        .map( row -> row.getString("user_id"))
-                        .filter(id->isNotEmpty(id))
+                        .map(String.class::cast)
+                        .filter(Utils::isNotEmpty)
                         .collect(Collectors.toList());
 
                     promise.complete( ids.stream().filter(id -> !unwantedIds.contains(id)).collect(Collectors.toList()) );
