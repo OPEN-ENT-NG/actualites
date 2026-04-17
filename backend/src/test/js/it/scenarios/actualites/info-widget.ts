@@ -94,6 +94,7 @@ export function setup() {
       status: 3,
       publication_date: "2020-01-02T00:00:00Z",
       expiration_date: futureExpirationDate.toISOString(),
+      is_headline: true,
     } as any);
 
     publishedInfos.push(publishedInfo.id);
@@ -198,6 +199,16 @@ export function testWidget(data: InitData) {
         for(let i = 0; i < result.length; i++) {
           console.log(`info ${i} - ${result[i].id}, ${data.publishedInfos[data.publishedInfos.length - i - 1]}`);
           test &&= result[i].id === data.publishedInfos[data.publishedInfos.length - i - 1];
+        }
+        return test;
+      }
+    });
+    check(infos, {
+      "Should contain an isHeadline boolean field": (list: any[]) => {
+        let test = true;
+        for(let i = 0; i < result.length; i++) {
+          console.log(`info ${i} - ${result[i].id}, isHeadline=${result[i].isHeadline}`);
+          test &&= typeof result[i].isHeadline === 'boolean';
         }
         return test;
       }
