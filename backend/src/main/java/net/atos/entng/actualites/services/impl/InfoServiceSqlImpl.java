@@ -53,6 +53,7 @@ import static net.atos.entng.actualites.filters.RightConstants.THREAD_PUBLISH_RI
 import static net.atos.entng.actualites.to.NewsState.INCOMING;
 import static org.entcore.common.sql.SqlResult.validUniqueResultHandler;
 
+
 public class InfoServiceSqlImpl implements InfoService {
 
 	protected static final Logger log = LoggerFactory.getLogger(Renders.class);
@@ -351,7 +352,8 @@ public class InfoServiceSqlImpl implements InfoService {
 								row.getString("username"),
 								row.getString("date"),
 								row.getString("title"),
-								row.getString("content")
+								row.getString("content"),
+								row.getBoolean("is_headline")
 								);
 					})
 					.collect(Collectors.toList());
