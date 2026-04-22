@@ -48,7 +48,6 @@ import static fr.wseduc.webutils.Utils.handlerToAsyncHandler;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import static org.entcore.common.user.DefaultFunctions.ADMIN_LOCAL;
 
 
 public class ThreadServiceSqlImpl implements ThreadService {
@@ -69,7 +68,6 @@ public class ThreadServiceSqlImpl implements ThreadService {
 		return this;
 	}	
 
-	@Override
 	public void retrieve(String id, Boolean filterAdmlGroup, UserInfos user, Handler<Either<String, JsonObject>> handler) {
 		String query;
 		JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
@@ -92,7 +90,7 @@ public class ThreadServiceSqlImpl implements ThreadService {
 			Sql.getInstance().prepared(query, values, SqlResult.parseSharedUnique(handler));
 		}
 	}
-	
+
 	@Override
 	public Future<NewsThread> retrieve(String id, UserInfos user, Map<String, SecuredAction> securedActions) {
 		String query;
@@ -171,40 +169,6 @@ public class ThreadServiceSqlImpl implements ThreadService {
 		return promise.future();
 	}
 
-	@Override
-	public void list(UserInfos user, Handler<Either<String, JsonArray>> handler) {
-		if (user != null) {
-			String query;
-			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
-			List<String> gu = new ArrayList<>();
-			gu.add(user.getUserId());
-			if (user.getGroupsIds() != null) {
-				gu.addAll(user.getGroupsIds());
-			}
-			// Structures which the user is an ADML of.
-			final List<String> admlStructuresIds = user.isADML() 
-				? user.getFunctions().get(ADMIN_LOCAL).getScope() 
-				: emptyList();
-			final Object[] groupsAndUserIds = gu.toArray();
-			query = "SELECT t.id as _id, t.title, t.icon, t.mode, t.created::text, t.modified::text, t.structure_id, t.owner, u.username" +
-				", json_agg(row_to_json(row(ts.member_id, ts.action)::actualites.share_tuple)) as shared" +
-				", array_to_json(array_agg(group_id)) as groups" +
-				" FROM actualites.thread AS t" +
-				" LEFT JOIN actualites.users AS u ON t.owner = u.id" +
-				" LEFT JOIN actualites.thread_shares AS ts ON t.id = ts.resource_id" +
-				" LEFT JOIN actualites.members AS m ON (ts.member_id = m.id AND m.group_id IS NOT NULL)" +
-				" WHERE ts.member_id IN " + Sql.listPrepared(groupsAndUserIds) +
-				" OR t.owner = ? " +
-				( admlStructuresIds.isEmpty() ? "" : " OR t.structure_id IN "+ Sql.listPrepared(admlStructuresIds)) +
-				" GROUP BY t.id, u.username" +
-				" ORDER BY t.modified DESC";
-			values = new fr.wseduc.webutils.collections.JsonArray(gu).add(user.getUserId());
-			for(String value : admlStructuresIds){
-				values.add(value);
-			}
-			Sql.getInstance().prepared(query, values, SqlResult.parseShared(handler));
-		}
-	}
 
 	@Override
 	public void getPublishSharedWithIds(String threadId, Boolean filterShared, UserInfos user, final Handler<Either<String, JsonArray>> handler) {

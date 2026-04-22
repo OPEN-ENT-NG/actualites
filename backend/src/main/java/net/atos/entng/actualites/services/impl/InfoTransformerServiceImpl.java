@@ -130,23 +130,8 @@ public class InfoTransformerServiceImpl implements InfoService {
     }
 
     @Override
-    public void list(UserInfos user, boolean optimized, Handler<Either<String, JsonArray>> handler) {
-        infoService.list(user, optimized, handler);
-    }
-
-    @Override
     public void listComments(Long infoId, Handler<Either<String, JsonArray>> handler) {
         infoService.listComments(infoId, handler);
-    }
-
-    @Override
-    public void listShared(Long infoId, Handler<Either<String, JsonArray>> handler) {
-        infoService.listShared(infoId, handler);
-    }
-
-    @Override
-    public void listByThreadId(String id, UserInfos user, Handler<Either<String, JsonArray>> handler) {
-        infoService.listByThreadId(id, user, handler);
     }
 
     @Override
@@ -157,11 +142,6 @@ public class InfoTransformerServiceImpl implements InfoService {
     @Override
     public Future<List<NewsLight>> listLastPublishedInfos(UserInfos user, int resultSize) {
         return infoService.listLastPublishedInfos(user, resultSize);
-    }
-
-    @Override
-    public void listForLinker(UserInfos user, Handler<Either<String, JsonArray>> handler) {
-        infoService.listForLinker(user, handler);
     }
 
     @Override

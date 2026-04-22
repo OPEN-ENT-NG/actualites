@@ -142,15 +142,8 @@ public class Actualites extends BaseServer {
 		confThread.setSchema(getSchema());
 
 		//share service
-		ShareService threadShareService = null;
-		ShareService infoShareService = null;
-		if(config.getBoolean("optimized-share-service", false)) {
-			threadShareService = new OptimizedShareService(getSchema(),THREAD_SHARE_TABLE, eb, securedActions, null);
-			infoShareService = new OptimizedShareService(getSchema(),INFO_SHARE_TABLE, eb, securedActions, null);
-		} else {
-			threadShareService = new SqlShareService(getSchema(),THREAD_SHARE_TABLE, eb, securedActions, null);
-			infoShareService = new SqlShareService(getSchema(),INFO_SHARE_TABLE, eb, securedActions, null);
-		}
+		ShareService threadShareService = new SqlShareService(getSchema(),THREAD_SHARE_TABLE, eb, securedActions, null, true);
+		ShareService infoShareService = new SqlShareService(getSchema(),INFO_SHARE_TABLE, eb, securedActions, null, true);
 
 		// thread controller
 		ThreadController threadController = new ThreadController(eb, threadMigrationService);
@@ -194,7 +187,7 @@ public class Actualites extends BaseServer {
 		threadControllerV1.setPublicationCron(publicationCron);
 
 		// info controller
-		InfoController infoController = new InfoController(config, notificationTimelineService);
+		InfoController infoController = new InfoController(config);
 		SqlCrudService infoSqlCrudService = new SqlCrudService(getSchema(), INFO_TABLE, INFO_SHARE_TABLE, new JsonArray().add("*"), new JsonArray().add("*"), true);
 		infoController.setInfoService(infoService);
 		infoController.setCrudService(infoSqlCrudService);
