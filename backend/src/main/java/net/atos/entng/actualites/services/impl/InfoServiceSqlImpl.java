@@ -346,68 +346,8 @@ public class InfoServiceSqlImpl implements InfoService {
 	}
 
 	@Override
-	public void list(UserInfos user, boolean optimized, Handler<Either<String, JsonArray>> handler) {
-		if (user != null) {
-			helperSql.fetchInfos(user, optimized, handler);
-		}else{
-			handler.handle(new Either.Left<>("not authenticated"));
-		}
-	}
-
-	@Override
 	public void listComments(Long infoId, Handler<Either<String, JsonArray>> handler) {
 		helperSql.fetchComments(infoId, handler);
-	}
-
-	@Override
-	public void listShared(Long infoId, Handler<Either<String, JsonArray>> handler) {
-		helperSql.fetchShared(infoId, handler);
-	}
-
-	@Override
-	public void listByThreadId(String id, UserInfos user, Handler<Either<String, JsonArray>> handler) {
-		if (user != null) {
-			String query;
-			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
-			List<String> groupsAndUserIds = new ArrayList<>();
-			groupsAndUserIds.add(user.getUserId());
-			if (user.getGroupsIds() != null) {
-				groupsAndUserIds.addAll(user.getGroupsIds());
-			}
-			query = "SELECT i.id as _id, i.title, i.content, i.status, i.publication_date::text, i.expiration_date::text, i.is_headline, i.thread_id, i.created::text, i.modified::text" +
-				", i.owner, i.content_version, u.username, t.title AS thread_title, t.icon AS thread_icon" +
-				", (SELECT json_agg(cr.*) FROM (" +
-					"SELECT c.id as _id, c.comment, c.owner, c.created, c.modified, au.username, au.deleted" +
-					" FROM "+NEWS_COMMENT_TABLE+" AS c" +
-					" LEFT JOIN "+NEWS_USER_TABLE+" AS au ON c.owner = au.id" +
-					" WHERE i.id = c.info_id" +
-					" ORDER BY c.modified ASC) cr)" +
-					" AS comments" +
-				", json_agg(row_to_json(row(ios.member_id, ios.action)::actualites.share_tuple)) as shared" +
-				", array_to_json(array_agg(group_id)) as groups" +
-				" FROM "+NEWS_INFO_TABLE+" AS i" +
-				" LEFT JOIN "+NEWS_THREAD_TABLE+" AS t ON i.thread_id = t.id" +
-				" LEFT JOIN "+NEWS_THREAD_SHARE_TABLE+" AS ts ON t.id = ts.resource_id" +
-				" LEFT JOIN "+NEWS_USER_TABLE+" AS u ON i.owner = u.id" +
-				" LEFT JOIN "+NEWS_INFO_SHARE_TABLE+" AS ios ON i.id = ios.resource_id" +
-				" LEFT JOIN "+NEWS_MEMBER_TABLE+" AS m ON ((ts.member_id = m.id OR ios.member_id = m.id) AND m.group_id IS NOT NULL)" +
-				" WHERE t.id = ? " +
-				" AND ((i.owner = ? OR (ios.member_id IN " + Sql.listPrepared(groupsAndUserIds.toArray()) + " AND i.status > 2))" +
-				" OR ((t.owner = ? OR (ts.member_id IN " + Sql.listPrepared(groupsAndUserIds.toArray()) + " AND ts.action = ?)) AND i.status > 1))" +
-				" GROUP BY t.id, i.id, u.username" +
-				" ORDER BY i.modified DESC";
-			values.add(Sql.parseId(id));
-			values.add(user.getUserId());
-			for(String value : groupsAndUserIds){
-				values.add(value);
-			}
-			values.add(user.getUserId());
-			for(String value : groupsAndUserIds){
-				values.add(value);
-			}
-			values.add(THREAD_PUBLISH_RIGHT);
-			Sql.getInstance().prepared(query.toString(), values, SqlResult.parseShared(handler));
-		}
 	}
 
 	@Override
@@ -481,90 +421,6 @@ public class InfoServiceSqlImpl implements InfoService {
 		}
 	}
 
-	private void listLastPublishedInfosLegacy(UserInfos user, int resultSize, Handler<Either<String, JsonArray>> handler) {
-		final StopWatch watch1 = new StopWatch();
-		log.debug("Starting optimized query...");
-		helperSql.getInfosIdsByUnion(user, resultSize, 0, Lists.newArrayList(NewsStatus.PUBLISHED), null, null).onComplete(resIds -> {
-			log.debug("Infos IDS query..." + watch1.elapsedTimeSeconds());
-			if (resIds.failed()) {
-				handler.handle(new Either.Left<>(resIds.cause().getMessage()));
-			} else {
-				final Set<Long> ids = resIds.result();
-				if (ids.isEmpty()) {
-					handler.handle(new Either.Right<>(new JsonArray()));
-					return;
-				}
-				final JsonArray jsonIds = new JsonArray(new ArrayList(ids));
-				final String infoIds = Sql.listPrepared(ids.toArray());
-
-				//subquery infos
-				{
-					final StringBuilder subquery = new StringBuilder();
-					subquery.append("SELECT info.id as _id, info.title, info.content, users.username, thread.id AS thread_id, thread.title AS thread_title, ");
-					subquery.append("thread.icon AS thread_icon, TO_CHAR(COALESCE(info.publication_date, info.modified) AT TIME ZONE 'UTC' AT TIME ZONE 'EUROPE/PARIS',");
-					subquery.append(" 'YYYY-MM-DD\"T\"HH24:MI:SS.MS') AS date ");
-					subquery.append("FROM "+NEWS_INFO_TABLE+" ");
-					subquery.append("INNER JOIN "+NEWS_THREAD_TABLE+" ON (info.thread_id = thread.id) ");
-					subquery.append("INNER JOIN "+NEWS_USER_TABLE+" ON (info.owner = users.id) ");
-					subquery.append("WHERE info.id IN ").append(infoIds).append(" ");
-					subquery.append("AND info.status = 3 ");
-					subquery.append("AND (info.publication_date <= NOW() OR info.publication_date IS NULL) ");
-					subquery.append("AND (info.expiration_date > NOW() OR info.expiration_date IS NULL) ");
-					subquery.append("GROUP BY info.id, users.username, thread.id ORDER BY date DESC;");
-
-					final JsonArray subValues = new JsonArray().addAll(jsonIds);
-					final StopWatch watch3 = new StopWatch();
-					Sql.getInstance().prepared(subquery.toString(), subValues, SqlResult.validResultHandler(rInfos -> {
-						log.debug("Infos FINAL query..." + watch3.elapsedTimeSeconds());
-						if (rInfos.isLeft()) {
-							handler.handle(rInfos);
-						} else {
-							handler.handle(new Either.Right<>(rInfos.right().getValue()));
-						}
-					}));
-				}
-			}
-		});
-	}
-
-	@Override
-	public void listForLinker(UserInfos user, Handler<Either<String, JsonArray>> handler) {
-		if (user != null) {
-			String query;
-			JsonArray values = new fr.wseduc.webutils.collections.JsonArray();
-			List<String> groupsAndUserIds = new ArrayList<>();
-			groupsAndUserIds.add(user.getUserId());
-			if (user.getGroupsIds() != null) {
-				groupsAndUserIds.addAll(user.getGroupsIds());
-			}
-			query = "SELECT i.id as _id, i.title, i.thread_id, i.owner, u.username, t.title AS thread_title, t.icon AS thread_icon" +
-				", json_agg(row_to_json(row(ios.member_id, ios.action)::actualites.share_tuple)) as shared" +
-				", array_to_json(array_agg(group_id)) as groups" +
-				" FROM "+NEWS_INFO_TABLE+" AS i" +
-				" LEFT JOIN "+NEWS_THREAD_TABLE+" AS t ON i.thread_id = t.id" +
-				" LEFT JOIN "+NEWS_THREAD_SHARE_TABLE+" AS ts ON t.id = ts.resource_id" +
-				" LEFT JOIN "+NEWS_USER_TABLE+" AS u ON i.owner = u.id" +
-				" LEFT JOIN "+NEWS_INFO_SHARE_TABLE+" AS ios ON i.id = ios.resource_id" +
-				" LEFT JOIN "+NEWS_MEMBER_TABLE+" AS m ON ((ts.member_id = m.id OR ios.member_id = m.id) AND m.group_id IS NOT NULL)" +
-				" WHERE (ios.member_id IN " + Sql.listPrepared(groupsAndUserIds.toArray()) + " OR i.owner = ?" +
-					" OR (ts.member_id IN " + Sql.listPrepared(groupsAndUserIds.toArray()) + " AND ts.action = ?) OR t.owner = ?)" +
-				" AND (i.status = 3" +
-					" AND ((i.publication_date IS NULL OR i.publication_date <= NOW()) AND (i.expiration_date IS NULL OR i.expiration_date + interval '1 days' >= NOW())))" +
-				" GROUP BY i.id, u.username, t.id" +
-				" ORDER BY i.title";
-			for(String value : groupsAndUserIds){
-				values.add(value);
-			}
-			values.add(user.getUserId());
-			for(String value : groupsAndUserIds){
-				values.add(value);
-			}
-			values.add(THREAD_PUBLISH_RIGHT);
-			values.add(user.getUserId());
-			Sql.getInstance().prepared(query.toString(), values, SqlResult.parseShared(handler));
-		}
-	}
-
 	@Override
 	public void getSharedWithIds(String infoId, Boolean filterAdmlGroup, final Handler<Either<String, JsonArray>> handler) {
 		this.retrieve(infoId, filterAdmlGroup, event -> {
@@ -620,6 +476,52 @@ public class InfoServiceSqlImpl implements InfoService {
         Sql.getInstance().prepared(query, new fr.wseduc.webutils.collections.JsonArray().add(infoId),
                 SqlResult.validResultHandler(handler));
     }
+
+	private void listLastPublishedInfosLegacy(UserInfos user, int resultSize, Handler<Either<String, JsonArray>> handler) {
+		final StopWatch watch1 = new StopWatch();
+		log.debug("Starting optimized query...");
+		helperSql.getInfosIdsByUnion(user, resultSize, 0, Lists.newArrayList(NewsStatus.PUBLISHED), null, null).onComplete(resIds -> {
+			log.debug("Infos IDS query..." + watch1.elapsedTimeSeconds());
+			if (resIds.failed()) {
+				handler.handle(new Either.Left<>(resIds.cause().getMessage()));
+			} else {
+				final Set<Long> ids = resIds.result();
+				if (ids.isEmpty()) {
+					handler.handle(new Either.Right<>(new JsonArray()));
+					return;
+				}
+				final JsonArray jsonIds = new JsonArray(new ArrayList(ids));
+				final String infoIds = Sql.listPrepared(ids.toArray());
+
+				//subquery infos
+				{
+					final StringBuilder subquery = new StringBuilder();
+					subquery.append("SELECT info.id as _id, info.title, info.content, users.username, thread.id AS thread_id, thread.title AS thread_title, ");
+					subquery.append("thread.icon AS thread_icon, TO_CHAR(COALESCE(info.publication_date, info.modified) AT TIME ZONE 'UTC' AT TIME ZONE 'EUROPE/PARIS',");
+					subquery.append(" 'YYYY-MM-DD\"T\"HH24:MI:SS.MS') AS date ");
+					subquery.append("FROM "+NEWS_INFO_TABLE+" ");
+					subquery.append("INNER JOIN "+NEWS_THREAD_TABLE+" ON (info.thread_id = thread.id) ");
+					subquery.append("INNER JOIN "+NEWS_USER_TABLE+" ON (info.owner = users.id) ");
+					subquery.append("WHERE info.id IN ").append(infoIds).append(" ");
+					subquery.append("AND info.status = 3 ");
+					subquery.append("AND (info.publication_date <= NOW() OR info.publication_date IS NULL) ");
+					subquery.append("AND (info.expiration_date > NOW() OR info.expiration_date IS NULL) ");
+					subquery.append("GROUP BY info.id, users.username, thread.id ORDER BY date DESC;");
+
+					final JsonArray subValues = new JsonArray().addAll(jsonIds);
+					final StopWatch watch3 = new StopWatch();
+					Sql.getInstance().prepared(subquery.toString(), subValues, SqlResult.validResultHandler(rInfos -> {
+						log.debug("Infos FINAL query..." + watch3.elapsedTimeSeconds());
+						if (rInfos.isLeft()) {
+							handler.handle(rInfos);
+						} else {
+							handler.handle(new Either.Right<>(rInfos.right().getValue()));
+						}
+					}));
+				}
+			}
+		});
+	}
 
 	@Override
 	public Future<List<News>> listPaginated(Map<String, SecuredAction> securedActions, UserInfos user, int page, Integer pageSize, Integer threadId) {
