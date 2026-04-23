@@ -36,10 +36,6 @@ public interface ThreadService {
 
 	Future<String> getStructureId(String threadId);
 
-	public void list(UserInfos user, Handler<Either<String, JsonArray>> handler);
-
-	public void retrieve(String id, Boolean filterAdmlGroup, UserInfos user, Handler<Either<String, JsonObject>> handler);
-	
 	public Future<NewsThread> retrieve(String id, UserInfos user, Map<String, SecuredAction> securedActions);
 
 	public void getPublishSharedWithIds(String threadId, Boolean filterAdmlGroup, UserInfos user, Handler<Either<String, JsonArray>> handler);

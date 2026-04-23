@@ -69,13 +69,7 @@ public interface InfoService {
 	
 	public void retrieve(String id, UserInfos user, boolean originalContent, Handler<Either<String, JsonObject>> handler);
 
-	public void list(UserInfos user, boolean optimized, Handler<Either<String, JsonArray>> handler);
-
 	public void listComments(Long infoId, Handler<Either<String, JsonArray>> handler);
-
-	public void listShared(Long infoId, Handler<Either<String, JsonArray>> handler);
-
-	public void listByThreadId(String id, UserInfos user, Handler<Either<String, JsonArray>> handler);
 
 	public void listLastPublishedInfos(UserInfos user, int resultSize, boolean optimized, Handler<Either<String, JsonArray>> handler);
 
@@ -86,8 +80,6 @@ public interface InfoService {
 	 * @return list of visible published info ordered by modification date or publication date (the sooner).
 	 */
 	public Future<List<NewsLight>> listLastPublishedInfos(UserInfos user, int resultSize);
-
-	public void listForLinker(UserInfos user, Handler<Either<String, JsonArray>> handler);
 
 	public void getSharedWithIds(String infoId, Boolean filterAdmlGroup, Handler<Either<String, JsonArray>> handler);
 
