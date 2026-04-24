@@ -4,6 +4,7 @@
     "main": "net.atos.entng.actualites.Actualites",
     "port": 8022,
     "optimized-query": true,
+    "optimized-share-service": {{ actualites_optimized_share_service|default('true') }},
     "csrf-token": {{ csrfToken | default('true') }},
     "sql": true,
     "mongodb": true,
