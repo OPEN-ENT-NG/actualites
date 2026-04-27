@@ -19,38 +19,7 @@
 
 package net.atos.entng.actualites.services.impl;
 
-import static fr.wseduc.webutils.Utils.isEmpty;
-import static net.atos.entng.actualites.Actualites.COMMENT_TABLE;
-import static net.atos.entng.actualites.Actualites.GROUP_TABLE;
-import static net.atos.entng.actualites.Actualites.INFO_REVISION_TABLE;
-import static net.atos.entng.actualites.Actualites.INFO_SHARE_TABLE;
-import static net.atos.entng.actualites.Actualites.INFO_TABLE;
-import static net.atos.entng.actualites.Actualites.MEMBER_TABLE;
-import static net.atos.entng.actualites.Actualites.NEWS_SCHEMA;
-import static net.atos.entng.actualites.Actualites.THREAD_SHARE_TABLE;
-import static net.atos.entng.actualites.Actualites.THREAD_TABLE;
-import static net.atos.entng.actualites.Actualites.USER_TABLE;
-import static net.atos.entng.actualites.to.NewsState.INCOMING;
-import static org.entcore.common.sql.SqlResult.validUniqueResultHandler;
-
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.entcore.common.sql.Sql;
-import org.entcore.common.sql.SqlResult;
-import org.entcore.common.sql.SqlStatementsBuilder;
-import org.entcore.common.user.UserInfos;
-import org.entcore.common.utils.StopWatch;
-import org.entcore.common.utils.StringUtils;
-
 import com.google.common.collect.Lists;
-
 import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.http.Renders;
 import fr.wseduc.webutils.security.SecuredAction;
@@ -63,17 +32,26 @@ import io.vertx.core.impl.logging.LoggerFactory;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import net.atos.entng.actualites.services.InfoService;
-import net.atos.entng.actualites.to.News;
-import net.atos.entng.actualites.to.NewsComplete;
-import net.atos.entng.actualites.to.NewsLight;
-import net.atos.entng.actualites.to.NewsState;
-import net.atos.entng.actualites.to.NewsStatus;
-import net.atos.entng.actualites.to.NewsThreadInfo;
-import net.atos.entng.actualites.to.ResourceOwner;
-import net.atos.entng.actualites.to.Rights;
+import net.atos.entng.actualites.to.*;
 import net.atos.entng.actualites.utils.DateUtils;
 import net.atos.entng.actualites.utils.Events;
 import net.atos.entng.actualites.utils.UserUtils;
+import org.entcore.common.sql.Sql;
+import org.entcore.common.sql.SqlResult;
+import org.entcore.common.sql.SqlStatementsBuilder;
+import org.entcore.common.user.UserInfos;
+import org.entcore.common.utils.StopWatch;
+import org.entcore.common.utils.StringUtils;
+
+import java.time.format.DateTimeParseException;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static fr.wseduc.webutils.Utils.isEmpty;
+import static net.atos.entng.actualites.Actualites.*;
+import static net.atos.entng.actualites.filters.RightConstants.THREAD_PUBLISH_RIGHT;
+import static net.atos.entng.actualites.to.NewsState.INCOMING;
+import static org.entcore.common.sql.SqlResult.validUniqueResultHandler;
 
 public class InfoServiceSqlImpl implements InfoService {
 
@@ -389,7 +367,15 @@ public class InfoServiceSqlImpl implements InfoService {
 				handler.handle(new Either.Left<>(resIds.cause().getMessage()));
 				return;
 			}
-			query = "SELECT i.id as _id, i.title, i.is_headline, u.username, " +
+			final Set<Long> ids = resIds.result();
+			if (ids.isEmpty()) {
+				handler.handle(new Either.Right<>(new JsonArray()));
+				return;
+			}
+			final JsonArray jsonIds = new JsonArray(new ArrayList(ids));
+			final String infoIds = Sql.listPrepared(ids.toArray());
+
+			String query = "SELECT i.id as _id, i.title, i.is_headline, u.username, " +
 					" t.id AS thread_id, t.title AS thread_title , t.icon AS thread_icon, " +
 					" COALESCE(i.publication_date, i.modified)::text as date" +
 					", json_agg(row_to_json(row(ios.member_id, ios.action)::actualites.share_tuple)) as shared" +
