@@ -115,6 +115,37 @@ public class InfoController extends ControllerHelper {
         infoService.listComments(id, arrayResponseHandler(request));
     }
 
+    @Deprecated
+    @Override
+    @Delete("/thread/:"+Actualites.THREAD_RESOURCE_ID+"/info/:"+Actualites.INFO_RESOURCE_ID)
+    @ApiDoc("Delete : Real delete an Info in thread by thread and by id. DEPRECATED - Used by mobile and web app.")
+    @ResourceFilter(InfoFilter.class)
+    @SecuredAction(value = THREAD_MANAGER_VALUE, type = ActionType.RESOURCE, right = THREAD_MANAGER_ANNOTATION)
+    public void delete(final HttpServerRequest request) {
+        final String infoId = request.params().get(Actualites.INFO_RESOURCE_ID);
+        final String threadId = request.params().get(Actualites.THREAD_RESOURCE_ID);
+        UserUtils.getAuthenticatedUserInfos(eb, request)
+                .compose(user -> {
+                    Promise<Void> promise = Promise.promise();
+                    crudService.delete(infoId, user, event -> {
+                        if (event.isLeft()) {
+                            promise.fail(event.left().getValue());
+                        }
+                        promise.complete();
+                    });
+                    return promise.future();
+                })
+                .compose(result -> timelineMongo.getNotification(threadId, infoId))
+                .compose(timelineMongo::deleteNotification)
+                .onSuccess(success -> ok(request))
+                .onFailure(failure -> {
+                    String message = String.format("[ACTUALITES@%s::delete] Failed to delete info : %s",
+                            this.getClass().getSimpleName(), failure.getMessage());
+                    log.error(message);
+                    badRequest(request);
+                });
+    }
+
 
     @Deprecated
     @Get("/infos/last/:"+RESULT_SIZE_PARAMETER)
