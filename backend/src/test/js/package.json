@@ -36,7 +36,7 @@
   "devDependencies": {
     "@types/k6": "^1.4.0",
     "@types/node": "^20.11.21",
-    "edifice-k6-commons": "^2.1.9",
+    "edifice-k6-commons": "develop",
     "husky": "^9.0.11",
     "prettier": "^3.2.5",
     "semantic-release": "^23.0.2",
