@@ -127,7 +127,7 @@ public class InfoServiceSqlImpl implements InfoService {
 						columns.append(attr);
 						if (Boolean.TRUE.equals(attr.contains("date"))) {
 							if (Boolean.TRUE.equals(isDateFormatOK(data.getString(attr)))) {
-								placeholders.append("?::timestamptz");
+								placeholders.append("?::timestamp");
 							} else {
 								String error = "[Actualites@%s::create] Error in date format";
 								log.error(String.format(error, InfoServiceSqlImpl.this.getClass().getSimpleName()));
@@ -169,7 +169,7 @@ public class InfoServiceSqlImpl implements InfoService {
 			sb.append(attr);
 			if (Boolean.TRUE.equals(attr.contains("date"))) {
 				if (Boolean.TRUE.equals(isDateFormatOK(data.getString(attr)))) {
-					sb.append(" = ?::timestamptz,");
+					sb.append(" = ?::timestamp,");
 				} else {
 					String error = "[Actualites@%s::update] Error in date format";
 					log.error(String.format(error, this.getClass().getSimpleName()));
@@ -535,8 +535,8 @@ public class InfoServiceSqlImpl implements InfoService {
 									"        SELECT id FROM " + GROUPS_TABLE + " WHERE id IN " + 	Sql.listPrepared(groupsAndUserIds.toArray()) +
 									"    	) as u_groups )" +
 									"    SELECT i.id, i.thread_id, i.title, i.content, i.status, i.owner, u.username AS owner_name, " +
-									"        u.deleted as owner_deleted, TO_CHAR(i.created AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as created, TO_CHAR(i.modified AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as modified, " +
-									" 		 TO_CHAR(i.publication_date AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as publication_date, TO_CHAR(i.expiration_date AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as expiration_date, " +
+									"        u.deleted as owner_deleted, TO_CHAR(i.created, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as created, TO_CHAR(i.modified, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as modified, " +
+									" 		 TO_CHAR(i.publication_date, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as publication_date, TO_CHAR(i.expiration_date, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as expiration_date, " +
 									"        i.is_headline, i.number_of_comments," +
 									"        t.icon as thread_icon, " +
 									"        (SELECT array_agg(DISTINCT ish.action) " +
@@ -659,9 +659,9 @@ public class InfoServiceSqlImpl implements InfoService {
 					"    	 GROUP BY t.id, tsh.member_id " +
 					"	 ) " +
 					"SELECT i.id, i.title, " + getContentFieldQuery(originalContent) + " as content, " +
-					"        TO_CHAR(i.created AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as created, TO_CHAR(i.modified AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as modified, " +
+					"        TO_CHAR(i.created, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as created, TO_CHAR(i.modified, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as modified, " +
 					"        i.is_headline, i.number_of_comments, " + // info data
-					"        i.status, TO_CHAR(i.publication_date AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as publication_date,  TO_CHAR(i.expiration_date AT TIME ZONE 'UTC',  'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as expiration_date, " + // info publication data
+					"        i.status, TO_CHAR(i.publication_date, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as publication_date,  TO_CHAR(i.expiration_date,  'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as expiration_date, " + // info publication data
 					"		 i.owner, u.username AS owner_name, u.deleted AS owner_deleted, " + // info owner data
 					"		 i.thread_id, i.content_version as content_version, t.title AS thread_title, t.icon AS thread_icon, " +
 					"		 t.owner AS thread_owner, ut.username AS thread_owner_name, ut.deleted AS thread_owner_deleted, " + // thread owner data
@@ -768,7 +768,7 @@ public class InfoServiceSqlImpl implements InfoService {
 	public Future<JsonObject> getStats(UserInfos user, boolean viewHidden) {
 		final Promise<JsonObject> promise = Promise.promise();
 		if (user == null) {
-			promise.fail("User's infos not provided");
+			promise.fail("User's infos not provided");P
 		} else {
 			List<String> groupsAndUserIds = new ArrayList<>();
 			groupsAndUserIds.add(user.getUserId());
