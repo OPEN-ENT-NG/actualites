@@ -375,7 +375,7 @@ public class InfoServiceSqlImpl implements InfoService {
 			final JsonArray jsonIds = new JsonArray(new ArrayList(ids));
 			final String infoIds = Sql.listPrepared(ids.toArray());
 
-			String query = "SELECT i.id as _id, i.title, i.is_headline, u.username, " +
+			String query = "SELECT i.id as _id, i.title, i.is_headline, u.username, i.content, " +
 					" t.id AS thread_id, t.title AS thread_title , t.icon AS thread_icon, " +
 					" COALESCE(i.publication_date, i.modified)::text as date" +
 					", json_agg(row_to_json(row(ios.member_id, ios.action)::actualites.share_tuple)) as shared" +
