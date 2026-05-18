@@ -182,7 +182,7 @@ public class InfoServiceSqlImpl implements InfoService {
 			values.add(data.getValue(attr));
 		}
 		String query = "UPDATE " + NEWS_INFO_TABLE +
-						" SET " + sb.toString() + "modified = NOW() " +
+						" SET " + sb.toString() + "modified = NOW() AT TIME ZONE 'UTC'" +
 						" WHERE id = ? " +
 						" RETURNING id";
 
@@ -477,8 +477,8 @@ public class InfoServiceSqlImpl implements InfoService {
 					subquery.append("INNER JOIN "+NEWS_USER_TABLE+" ON (info.owner = users.id) ");
 					subquery.append("WHERE info.id IN ").append(infoIds).append(" ");
 					subquery.append("AND info.status = 3 ");
-					subquery.append("AND (info.publication_date <= NOW() OR info.publication_date IS NULL) ");
-					subquery.append("AND (info.expiration_date > NOW() OR info.expiration_date IS NULL) ");
+					subquery.append("AND (info.publication_date <= NOW() AT TIME ZONE 'UTC' OR info.publication_date IS NULL) ");
+					subquery.append("AND (info.expiration_date > NOW() AT TIME ZONE 'UTC' OR info.expiration_date IS NULL) ");
 					subquery.append("GROUP BY info.id, users.username, thread.id ORDER BY date DESC;");
 
 					final JsonArray subValues = new JsonArray().addAll(jsonIds);
@@ -795,7 +795,7 @@ public class InfoServiceSqlImpl implements InfoService {
 				statusAggregation.append("'").append(statuses[i].name()).append("', ");
 				if (statuses[i] == NewsStatus.PUBLISHED) {
 					statusAggregation.append("COUNT(*) FILTER (WHERE i.status = ").append(statuses[i].getValue())
-						.append(" AND (i.publication_date <= NOW() OR i.publication_date IS NULL) AND (i.expiration_date > NOW() OR i.expiration_date IS NULL))");
+						.append(" AND (i.publication_date <= NOW() AT TIME ZONE 'UTC' OR i.publication_date IS NULL) AND (i.expiration_date > NOW() AT TIME ZONE 'UTC' OR i.expiration_date IS NULL))");
 				} else {
 					statusAggregation.append("COUNT(*) FILTER (WHERE i.status = ").append(statuses[i].getValue()).append(")");
 				}
@@ -827,8 +827,8 @@ public class InfoServiceSqlImpl implements InfoService {
 					"SELECT t.id, " +
 					"       COUNT(i.id) AS infos_count, " +
 					"       " + statusAggregation + "::text AS status, " +
-					"       COUNT(*) FILTER (WHERE i.status = " + NewsStatus.PUBLISHED.getValue() + " AND i.expiration_date < NOW()) AS expired_count, " +
-					"       COUNT(*) FILTER (WHERE i.status = " + NewsStatus.PUBLISHED.getValue() + " AND i.publication_date > NOW()) AS incoming_count " +
+					"       COUNT(*) FILTER (WHERE i.status = " + NewsStatus.PUBLISHED.getValue() + " AND i.expiration_date < NOW() AT TIME ZONE 'UTC') AS expired_count, " +
+					"       COUNT(*) FILTER (WHERE i.status = " + NewsStatus.PUBLISHED.getValue() + " AND i.publication_date > NOW() AT TIME ZONE 'UTC') AS incoming_count " +
 					"FROM " + NEWS_THREAD_TABLE + " AS t " +
 					"    LEFT JOIN " + NEWS_INFO_TABLE + " AS i ON t.id = i.thread_id " +
 					"    LEFT JOIN info_for_user ON info_for_user.id = i.id " +
@@ -837,8 +837,8 @@ public class InfoServiceSqlImpl implements InfoService {
 					"WHERE (t.owner = ?  AND i.status >= 2  " +
 					"      OR t.id IN ( SELECT id  FROM thread_for_user ) AND i.status >= 2  " +
 					"      OR i.id IN ( SELECT id FROM info_for_user ) AND i.status >= 3 AND " +
-							"(i.publication_date <= NOW() OR i.publication_date IS NULL) " +
-							"AND (i.expiration_date > NOW() OR i.expiration_date IS NULL)" +
+							"(i.publication_date <= NOW() AT TIME ZONE 'UTC' OR i.publication_date IS NULL) " +
+							"AND (i.expiration_date > NOW() AT TIME ZONE 'UTC' OR i.expiration_date IS NULL)" +
 					"      OR i.owner = ?) " +
 					(viewHidden ? "" : " AND  ( prefs.visible IS NULL OR prefs.visible = true ) ") +
 					"GROUP BY t.id " +

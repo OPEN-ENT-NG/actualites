@@ -1,0 +1,2 @@
+ALTER TABLE actualites.info ALTER COLUMN created SET NOW() AT TIMEZONE 'UTC';
+ALTER TABLE actualites.info ALTER COLUMN modified SET NOW() AT TIMEZONE 'UTC';
