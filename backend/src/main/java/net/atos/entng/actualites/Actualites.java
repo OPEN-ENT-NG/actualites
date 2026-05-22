@@ -234,8 +234,11 @@ public class Actualites extends BaseServer {
 		// News cleanup cron task
 		InfoCleanupService cleanupService = new InfoCleanupServiceImpl();
 		ExpiredNewsCleanupCron cleanupCron = new ExpiredNewsCleanupCron(cleanupService, config);
+		SuperAdmlPreferencesCleanupCron superAdmlCleanupCronTask = new SuperAdmlPreferencesCleanupCron(new UserPreferenceServiceImpl(threadService));
+
 		// Enable cron tasks to be triggered via API
-		addController(new TaskController(publicationCron, cleanupCron));
+		addController(new TaskController(publicationCron, cleanupCron, superAdmlCleanupCronTask));
+
 		// Schedule cron tasks from cron expression
 		if (!StringUtils.isEmpty(publicationCronConf)) {
             try {
@@ -258,7 +261,6 @@ public class Actualites extends BaseServer {
 		// Super-ADML preferences cleanup cron task
 		String superAdmlCleanupCron = config.getString("super-adml-cleanup-cron");
 		if (!StringUtils.isEmpty(superAdmlCleanupCron)) {
-			SuperAdmlPreferencesCleanupCron superAdmlCleanupCronTask = new SuperAdmlPreferencesCleanupCron(new UserPreferenceServiceImpl(threadService));
 			try {
 				new CronTrigger(vertx, superAdmlCleanupCron).schedule(superAdmlCleanupCronTask);
 				log.info("Super-ADML preferences cleanup cron enabled with expression: " + superAdmlCleanupCron);
