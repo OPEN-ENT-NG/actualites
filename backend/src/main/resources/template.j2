@@ -31,7 +31,7 @@
       },
     {% endif %}
     {% if actualitesNewsPublicationCron is defined and actualitesNewsPublicationCron != '' %}
-      "news-publication-cron": "{{ actualitesNewsPublicationCron|default('0 0 * * * ? *') }}",
+      "news-publication-cron": "{{ actualitesNewsPublicationCron|default('0 0 * * * ? *') }}",              "super-adml-cleanup-cron": "{{ actualitesSuperAdmlCleanupCron|default('0 0 1 * * ? *') }}",
     {% endif %}
     "entcore.port": 8009,
     "publicConf": {
