@@ -12,17 +12,17 @@ importers:
         specifier: 6.1.0
         version: 6.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@edifice.io/bootstrap':
-        specifier: develop-b2school
-        version: 2.5.10-develop-b2school.20260226151505
+        specifier: 2.5.17
+        version: 2.5.17
       '@edifice.io/client':
-        specifier: develop-b2school
-        version: 2.5.10-develop-b2school.20260226151505
+        specifier: 2.5.17
+        version: 2.5.17
       '@edifice.io/react':
-        specifier: develop-b2school
-        version: 2.5.10-develop-b2school.20260226151505(rcbul67dvk4ruchqsijoxmi4ze)
+        specifier: 2.5.17
+        version: 2.5.17(rcbul67dvk4ruchqsijoxmi4ze)
       '@edifice.io/utilities':
-        specifier: develop-b2school
-        version: 2.5.10-develop-b2school.20260226151505
+        specifier: 2.5.17
+        version: 2.5.17
       '@react-spring/web':
         specifier: 9.7.5
         version: 9.7.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -357,14 +357,14 @@ packages:
     peerDependencies:
       react: '>=16.8.0'
 
-  '@edifice.io/bootstrap@2.5.10-develop-b2school.20260226151505':
-    resolution: {integrity: sha512-VaEePfYcUF+JyWA+cqt/PuafeBbmsn+cJBIxRiFCfG9Z23HALA02sL7H0OxqbmXHTdc2M7OmIMx0bZjB/b3UsQ==}
+  '@edifice.io/bootstrap@2.5.17':
+    resolution: {integrity: sha512-QGu5jM+JQ7DTaLV3nzGUbpVzVDW3JIE+xO0puZEBWEFT0DJSTq6A2Kj02W5F6SNvFyl+IPZ48mWcpbcwwZB/RQ==}
 
-  '@edifice.io/client@2.5.10-develop-b2school.20260226151505':
-    resolution: {integrity: sha512-rC7EroAMA2USrEx1sroYu8ayGSjEi4FJgHCqEYyvsyBKiZSsFjNJlfKekacIlimE/Y9O+zQJU250dekcf0W1/Q==}
+  '@edifice.io/client@2.5.17':
+    resolution: {integrity: sha512-z4Qv+W/gawd1fAlAjxHfNzh19wQvjQtCFprtIHbPL43ctF0mk9XN/CW5eIWEMRMnWLJiHs9fcL0JrXsRvLUHlQ==}
 
-  '@edifice.io/react@2.5.10-develop-b2school.20260226151505':
-    resolution: {integrity: sha512-09KcFrNBPPHu4Asifjjh9jaOZrX7MfPhtLb3WGOYhxcK82SHh5dAXPIisEtfzdJdmzaRyakacI5mUOJ/yK9DkA==}
+  '@edifice.io/react@2.5.17':
+    resolution: {integrity: sha512-Q8zTVCylZ2rFwf25FGwk7T4wA3c9JOTg+Wvbfq+l6dvsDnQyFC7KmWv6jv2OFiENgpHy3o7XM2RFilDwqESJ2g==}
     peerDependencies:
       '@react-spring/web': ^9.7.5
       '@tanstack/react-query': 5.62.7
@@ -373,11 +373,11 @@ packages:
       react-hook-form: ^7.53.0
       react-i18next: ^14.1.0
 
-  '@edifice.io/tiptap-extensions@2.5.10-develop-b2school.20260226151505':
-    resolution: {integrity: sha512-JY4EmxgFSrEtlgToacr9gAMRfWWEZfdNzSo2eITMP0iZG3Yw8umZg44E6HOyXhULesgf7PxQF2Yzv8JSEZlejA==}
+  '@edifice.io/tiptap-extensions@2.5.17':
+    resolution: {integrity: sha512-bA8BPfROKzKC5CD/bVugS1ZB60rFdzXG152bljo2OuouwyTOJPhNlv3599XefH0McNPUseeXr5h94KOQGLLjJQ==}
 
-  '@edifice.io/utilities@2.5.10-develop-b2school.20260226151505':
-    resolution: {integrity: sha512-AKOzfofJL0eLVp26QHODa0WYbCooxfLeDirrklTw+XIW8h+boNeUMn765+zMZl/xID1OeyBjLzg1elLknw6JIA==}
+  '@edifice.io/utilities@2.5.17':
+    resolution: {integrity: sha512-xA4ptXO+fX3ckkUOpEPNZPoR7WlgHsFmCdXNyxg9cRTP6YFihKmucJ32fY9zoXd0T4wyufdK+WX9F8oxSshIcQ==}
 
   '@emnapi/core@1.8.1':
     resolution: {integrity: sha512-AvT9QFpxK0Zd8J0jopedNm+w/2fIzvtPKPjqyw9jwvBaReTTqPBk9Hixaz7KbjimP+QNz605/XnjFcDAL2pqBg==}
@@ -2233,6 +2233,9 @@ packages:
     resolution: {integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==}
     engines: {node: '>=6'}
 
+  detect-europe-js@0.1.2:
+    resolution: {integrity: sha512-lgdERlL3u0aUdHocoouzT10d9I89VVhk0qNRmll7mXdGfJT1/wqZ2ZLA4oJAjeACPY5fT1wsbq2AT+GkuInsow==}
+
   diff-sequences@29.6.3:
     resolution: {integrity: sha512-EjePK1srD3P08o2j4f0ExnylqRs5B9tJjcp9t1krH2qRi8CCdsYfwe9JgSLurFBWwq4uOlipzfk5fHNvwFKr8Q==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -2617,8 +2620,8 @@ packages:
   headers-polyfill@4.0.3:
     resolution: {integrity: sha512-IScLbePpkvO846sIwOtOTDjutRMWdXdJmXdMvk6gCBHxFO8d+QKOQedyZSxFTTFYRSmlgSTDtXqqq4pcenBXLQ==}
 
-  heic2any@0.0.4:
-    resolution: {integrity: sha512-3lLnZiDELfabVH87htnRolZ2iehX9zwpRyGNz22GKXIu0fznlblf0/ftppXKNqS26dqFSeqfIBhAmAj/uSp0cA==}
+  heic-to@1.4.2:
+    resolution: {integrity: sha512-y69thwxfNcEm2Vk8lbOD/cMabnvMJyOREfJYiCHcXCDqlfcPyJoBhyRc8+iDe1B95LRfpbTOpzxzY1xbRkdwBA==}
 
   html-dom-parser@4.0.0:
     resolution: {integrity: sha512-TUa3wIwi80f5NF8CVWzkopBVqVAtlawUzJoLwVLHns0XSJGynss4jiY0mTWpiDOsuyw+afP+ujjMgRh9CoZcXw==}
@@ -2754,6 +2757,9 @@ packages:
 
   is-potential-custom-element-name@1.0.1:
     resolution: {integrity: sha512-bCYeRA2rVibKZd+s2625gGnGF/t7DSqDs4dP7CrLA1m7jKWz6pps0LpYLJN8Q64HtmPKJ1hrN3nzPNKFEKOUiQ==}
+
+  is-standalone-pwa@0.1.1:
+    resolution: {integrity: sha512-9Cbovsa52vNQCjdXOzeQq5CnCbAcRk05aU62K20WO372NrTv0NxibLFCK6lQ4/iZEFdEA3p3t2VNOn8AJ53F5g==}
 
   is-stream@3.0.0:
     resolution: {integrity: sha512-LnQR4bZ9IADDRSkvpqMGvt/tEJWclzklNgSw48V5EAaAeDd6qGvN8ei6k5p0tvxSR171VmGyHuTiAOfxAbr8kA==}
@@ -4073,8 +4079,15 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
+  ua-is-frozen@0.1.2:
+    resolution: {integrity: sha512-RwKDW2p3iyWn4UbaxpP2+VxwqXh0jpvdxsYpZ5j/MLLiQOfbsV5shpgQiw93+KMYQPcteeMQ289MaAFzs3G9pw==}
+
   ua-parser-js@1.0.41:
     resolution: {integrity: sha512-LbBDqdIC5s8iROCUjMbW1f5dJQTEFB1+KO9ogbvlb3nm9n4YHa5p4KTvFPWvh2Hs8gZMBuiB1/8+pdfe/tDPug==}
+    hasBin: true
+
+  ua-parser-js@2.0.9:
+    resolution: {integrity: sha512-OsqGhxyo/wGdLSXMSJxuMGN6H4gDnKz6Fb3IBm4bxZFMnyy0sdf6MN96Ie8tC6z/btdO+Bsy8guxlvLdwT076w==}
     hasBin: true
 
   uc.micro@2.1.0:
@@ -4584,28 +4597,29 @@ snapshots:
       react: 18.3.1
       tslib: 2.8.1
 
-  '@edifice.io/bootstrap@2.5.10-develop-b2school.20260226151505':
+  '@edifice.io/bootstrap@2.5.17':
     dependencies:
       '@popperjs/core': 2.11.8
       bootstrap: 5.3.2(@popperjs/core@2.11.8)
 
-  '@edifice.io/client@2.5.10-develop-b2school.20260226151505':
+  '@edifice.io/client@2.5.17':
     dependencies:
-      '@edifice.io/utilities': 2.5.10-develop-b2school.20260226151505
+      '@edifice.io/utilities': 2.5.17
       axios: 1.13.5
       core-js: 3.48.0
+      ua-parser-js: 2.0.9
     transitivePeerDependencies:
       - debug
 
-  '@edifice.io/react@2.5.10-develop-b2school.20260226151505(rcbul67dvk4ruchqsijoxmi4ze)':
+  '@edifice.io/react@2.5.17(rcbul67dvk4ruchqsijoxmi4ze)':
     dependencies:
       '@ant-design/icons': 5.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@dnd-kit/core': 6.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@dnd-kit/sortable': 8.0.0(@dnd-kit/core@6.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       '@dnd-kit/utilities': 3.2.2(react@18.3.1)
-      '@edifice.io/bootstrap': 2.5.10-develop-b2school.20260226151505
-      '@edifice.io/tiptap-extensions': 2.5.10-develop-b2school.20260226151505(@types/node@18.19.130)(rollup@4.59.0)(typescript@5.9.3)
-      '@edifice.io/utilities': 2.5.10-develop-b2school.20260226151505
+      '@edifice.io/bootstrap': 2.5.17
+      '@edifice.io/tiptap-extensions': 2.5.17(@types/node@18.19.130)(rollup@4.59.0)(typescript@5.9.3)
+      '@edifice.io/utilities': 2.5.17
       '@floating-ui/react': 0.26.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@pixi/mixin-get-child-by-name': 7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2))
       '@pixi/react': 7.1.2(ynarkkgztp5uclycsuoqcck7lm)
@@ -4654,7 +4668,7 @@ snapshots:
       clsx: 2.1.1
       dayjs: 1.11.19
       emoji-picker-react: 4.5.2(react@18.3.1)
-      heic2any: 0.0.4
+      heic-to: 1.4.2
       html-react-parser: 4.2.1(react@18.3.1)
       ohash: 1.1.3
       pako: 2.1.0
@@ -4706,9 +4720,9 @@ snapshots:
       - terser
       - typescript
 
-  '@edifice.io/tiptap-extensions@2.5.10-develop-b2school.20260226151505(@types/node@18.19.130)(rollup@4.59.0)(typescript@5.9.3)':
+  '@edifice.io/tiptap-extensions@2.5.17(@types/node@18.19.130)(rollup@4.59.0)(typescript@5.9.3)':
     dependencies:
-      '@edifice.io/utilities': 2.5.10-develop-b2school.20260226151505
+      '@edifice.io/utilities': 2.5.17
       '@tiptap/core': 2.11.0(@tiptap/pm@2.11.0)
       '@tiptap/extension-blockquote': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
       '@tiptap/extension-bold': 2.11.0(@tiptap/core@2.11.0(@tiptap/pm@2.11.0))
@@ -4754,7 +4768,7 @@ snapshots:
       - terser
       - typescript
 
-  '@edifice.io/utilities@2.5.10-develop-b2school.20260226151505': {}
+  '@edifice.io/utilities@2.5.17': {}
 
   '@emnapi/core@1.8.1':
     dependencies:
@@ -6565,6 +6579,8 @@ snapshots:
 
   dequal@2.0.3: {}
 
+  detect-europe-js@0.1.2: {}
+
   diff-sequences@29.6.3: {}
 
   diff@8.0.3: {}
@@ -6937,7 +6953,7 @@ snapshots:
 
   headers-polyfill@4.0.3: {}
 
-  heic2any@0.0.4: {}
+  heic-to@1.4.2: {}
 
   html-dom-parser@4.0.0:
     dependencies:
@@ -7075,6 +7091,8 @@ snapshots:
   is-number@7.0.0: {}
 
   is-potential-custom-element-name@1.0.1: {}
+
+  is-standalone-pwa@0.1.1: {}
 
   is-stream@3.0.0: {}
 
@@ -8580,7 +8598,15 @@ snapshots:
 
   typescript@5.9.3: {}
 
+  ua-is-frozen@0.1.2: {}
+
   ua-parser-js@1.0.41: {}
+
+  ua-parser-js@2.0.9:
+    dependencies:
+      detect-europe-js: 0.1.2
+      is-standalone-pwa: 0.1.1
+      ua-is-frozen: 0.1.2
 
   uc.micro@2.1.0: {}
 
