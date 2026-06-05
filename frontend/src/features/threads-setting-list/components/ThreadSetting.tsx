@@ -1,4 +1,10 @@
-import { Checkbox, Divider, Flex, useBreakpoint } from '@edifice.io/react';
+import {
+  Checkbox,
+  Divider,
+  Flex,
+  useBreakpoint,
+  useEdificeClient,
+} from '@edifice.io/react';
 import { clsx } from 'clsx';
 import { ChangeEvent } from 'react';
 import { ThreadIcon } from '~/components/ThreadIcon';
@@ -18,6 +24,7 @@ export function ThreadSetting({
 }) {
   const { t } = useI18n();
   const { xl } = useBreakpoint();
+  const { user } = useEdificeClient();
 
   const handleCheckClick = (e: ChangeEvent<HTMLInputElement>) => {
     onCheckedChange(e.currentTarget.checked);
@@ -27,14 +34,16 @@ export function ThreadSetting({
     'opacity-50': !checked,
   });
 
-  const userRole: 'publish' | 'contributor' | 'manager' | 'read' =
-    thread.sharedRights?.includes('thread.publish')
-      ? 'publish'
-      : thread.sharedRights?.includes('thread.contrib')
-        ? 'contributor'
-        : thread.sharedRights?.includes('thread.manager')
-          ? 'manager'
-          : 'read';
+  const userRole: string =
+    thread.owner.id === user?.userId
+      ? 'owner'
+      : thread.sharedRights?.includes('thread.manager')
+        ? 'manager'
+        : thread.sharedRights?.includes('thread.publish')
+          ? 'publish'
+          : thread.sharedRights?.includes('thread.contrib')
+            ? 'contributor'
+            : 'read';
 
   return (
     <Flex

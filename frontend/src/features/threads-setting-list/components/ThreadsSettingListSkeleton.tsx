@@ -1,6 +1,6 @@
 import { ButtonSkeleton, Flex } from '@edifice.io/react';
 import '../ThreadsSettingList.css';
-import { ThreadsSettingSkeleton } from './ThreadsSettingSkeleton';
+import { ThreadsSettingSkeleton } from './ThreadSettingSkeleton';
 
 export function ThreadsSettingListSkeleton() {
   return (

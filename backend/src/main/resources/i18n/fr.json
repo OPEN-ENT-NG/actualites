@@ -174,6 +174,7 @@
   "actualites.textsimplifier.error.timeOut.button": "Relancer la génération",
   "actualites.threadsSetting.saveButton": "Enregistrer mes préférences",
   "actualites.threadsSetting.displayThread": "Afficher le fil",
+  "actualites.threadsSetting.rights.owner": "Propriétaire",
   "actualites.threadsSetting.rights.manager": "Gestionnaire",
   "actualites.threadsSetting.rights.publish": "Valideur",
   "actualites.threadsSetting.rights.contributor": "Contributeur",

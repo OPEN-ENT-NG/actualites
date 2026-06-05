@@ -11,7 +11,7 @@ import illuEmptyAdminThreads from '@images/emptyscreen/illu-actualites.svg';
 
 import { useI18n } from '~/hooks/useI18n';
 import './ThreadsSettingList.css';
-import { ThreadSetting } from './components/ThreadsSetting';
+import { ThreadSetting } from './components/ThreadSetting';
 import {
   ThreadsSettingFilter,
   useThreadSettingList,
