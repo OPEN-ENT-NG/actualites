@@ -29,6 +29,7 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFalc } from '~/services/queries';
+import { useConfig } from '~/services/queries/config';
 import { Expandable } from '../Expandable';
 import { AiButton } from './AiButton';
 import SvgIconAiFill from './IconAiFill';
@@ -66,19 +67,20 @@ const TextSimplifierLayout = ({
 };
 
 // Screeb survey configuration
-const { surveyStart } = useScreeb();
 const SURVEY_ID = 'bb6182a1-0ad1-4862-b6a2-c7bea7d922f7';
 const DISTRIBUTION_ID = 'dbc22e9e-3e9b-4f29-b6ec-c33923f4a67f';
-const TIMEOUT_BEFORE_ASKING_FEEDBACK = 90000; // 90 seconds
+const TIMEOUT_BEFORE_ASKING_FEEDBACK = 10000; // 10 seconds
 
 export const TextSimplifier = forwardRef(
   (
     { children, editorRef }: TextSimplifierProps,
     ref: Ref<TextSimplifierRef>,
   ) => {
+    const { data: config } = useConfig();
     const { appCode, user, currentLanguage } = useEdificeClient();
     const { t } = useTranslation(appCode);
     const { error } = useToast();
+    const { surveyStart } = useScreeb();
 
     const [hideSuggestion, toggleSuggestion] = useToggle(true);
     const [showKnowMore, toggleKnowMore] = useToggle(false);
@@ -112,28 +114,28 @@ export const TextSimplifier = forwardRef(
         setContentChanged(false);
         if (result) {
           toggleSuggestion(true);
-        }
 
-        // Manual trigger of the feedback survey after generating a suggestion, with a delay to let the user read the suggestion and decide if they want to give feedback
-        // To remove when survey is finished
-        if (result) {
-          if (surveyTimeoutRef.current) {
-            clearTimeout(surveyTimeoutRef.current);
-          }
-          surveyTimeoutRef.current = setTimeout(() => {
-            try {
-              if (user) {
-                surveyStart(SURVEY_ID, DISTRIBUTION_ID, true, {
-                  generatedContent: result,
-                  originalContent,
-                  profile: user.type,
-                  language: currentLanguage || 'fr',
-                });
-              }
-            } catch (e) {
-              console.error('Failed to start Screeb survey', e);
+          if (config?.['screeb-app-id']) {
+            // Manual trigger of the feedback survey after generating a suggestion, with a delay to let the user read the suggestion and decide if they want to give feedback
+            // To remove when survey is finished
+            if (surveyTimeoutRef.current) {
+              clearTimeout(surveyTimeoutRef.current);
             }
-          }, TIMEOUT_BEFORE_ASKING_FEEDBACK);
+            surveyTimeoutRef.current = setTimeout(() => {
+              try {
+                if (user) {
+                  surveyStart(SURVEY_ID, DISTRIBUTION_ID, true, {
+                    generatedContent: result,
+                    originalContent,
+                    profile: user.type,
+                    language: currentLanguage || 'fr',
+                  });
+                }
+              } catch (e) {
+                console.error('Failed to start Screeb survey', e);
+              }
+            }, TIMEOUT_BEFORE_ASKING_FEEDBACK);
+          }
         }
       } catch (e: unknown) {
         setErrorCode(e as ErrorCode);
