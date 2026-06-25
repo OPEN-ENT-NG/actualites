@@ -12,7 +12,7 @@ import { InfoDetailsFormDatesModal } from './InfoDetailsFormDatesModal';
 
 export function InfoDetailsFormDates() {
   const { t } = useI18n();
-  const { formatDate, dateIsToday } = useDate();
+  const { formatDate } = useDate();
   const { getValues, setValue } = useFormContext<InfoDetailsFormParams>();
 
   const [isModalOpen, setModalOpen] = useState(false);
@@ -40,15 +40,8 @@ export function InfoDetailsFormDates() {
     pickedPublicationDate: Date,
     pickedExpirationDate: Date,
   ) => {
-    // Not replace an undefined date if the value hasn't changed on purpose
-    const newPublicationDate =
-      !publicationDate && dateIsToday(pickedPublicationDate)
-        ? undefined
-        : new Date(pickedPublicationDate);
-
-    if (newPublicationDate) {
-      newPublicationDate.setHours(INFO_HOURS_DATE_DEFAULT, 0, 0, 0);
-    }
+    const newPublicationDate = new Date(pickedPublicationDate);
+    newPublicationDate.setHours(INFO_HOURS_DATE_DEFAULT, 0, 0, 0);
     setValue('publicationDate', newPublicationDate, {
       shouldDirty: true,
       shouldValidate: true,
