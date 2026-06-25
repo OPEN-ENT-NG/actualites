@@ -510,12 +510,9 @@ public class InfosControllerV1 extends ControllerHelper {
 	}
 
 	private void initExpirationDate(JsonObject resource) {
-		if(!resource.containsKey("expiration_date")) {
-			ZonedDateTime publicationDate = ZonedDateTime.now(ZoneId.of("UTC")).plusYears(1);
-			if (resource.containsKey("publication_date")) {
-				publicationDate = DateUtils.utcFromString(resource.getString("publication_date"))
+		if(!resource.containsKey("expiration_date") && resource.containsKey("publication_date")) {
+			ZonedDateTime publicationDate = DateUtils.utcFromString(resource.getString("publication_date"))
 											.atZone(ZoneId.of("UTC")).plusYears(1);
-			}
 			resource.put("expiration_date", publicationDate.toInstant().toString());
 		}
 	}

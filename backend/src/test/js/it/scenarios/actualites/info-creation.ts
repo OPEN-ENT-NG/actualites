@@ -323,13 +323,10 @@ export function testInfoCreation(data: InitData) {
     };
 
     const createdInfo = createInfoOrFail(infoData);
-    const now = new Date();
-    const expirationDate = (now.getFullYear() + 1) + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
-
     const retrievedInfo: InfoResponse = getInfoById(createdInfo.id);
 
     check(retrievedInfo, {
-      "Retrieved info has updated expiration_date from now": (info) => info.expirationDate !== undefined && info.expirationDate.includes(expirationDate),
+      "Retrieved info has no expiration_date from now": (info) => info.expirationDate === undefined,
     });
   });
 
