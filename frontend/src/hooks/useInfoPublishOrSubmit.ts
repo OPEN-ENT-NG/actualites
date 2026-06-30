@@ -26,8 +26,10 @@ export function useInfoPublishOrSubmit() {
     if (!info.publicationDate) {
       payload.publication_date =
         INFO_DATES_RESET_VALUES.publicationDate.toISOString();
-      payload.expiration_date =
-        INFO_DATES_RESET_VALUES.expirationDate.toISOString();
+      if (!info.expirationDate) {
+        payload.expiration_date =
+          INFO_DATES_RESET_VALUES.expirationDate.toISOString();
+      }
     }
     updateInfoMutate(
       {
