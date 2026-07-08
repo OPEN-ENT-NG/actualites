@@ -29,8 +29,9 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
-import javax.xml.bind.DatatypeConverter;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ActualitesSearchingEvents implements SearchingEvents {
@@ -86,7 +87,7 @@ public class ActualitesSearchingEvents implements SearchingEvents {
 				jr.put(aHeader.get(0), j.getString("title"));
 				jr.put(aHeader.get(1), j.getString("content"));
 				jr.put(aHeader.get(2), new JsonObject().put("$date",
-						DatatypeConverter.parseDateTime(j.getString("modified")).getTime().getTime()));
+						Date.from(OffsetDateTime.parse(j.getString("modified")).toInstant())));
 				jr.put(aHeader.get(3), j.getString("username"));
 				jr.put(aHeader.get(4), j.getString("owner"));
 				jr.put(aHeader.get(5), "/actualites#/view/thread/"+
