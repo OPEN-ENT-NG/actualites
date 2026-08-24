@@ -368,6 +368,10 @@ public class ThreadServiceSqlImpl implements ThreadService {
 	private Future<List<NewsThread>> handleMultiAdmlThreadRights(List<NewsThread> threads,
 											 UserInfos user, Map<String, SecuredAction> securedActions) {
 
+		if (threads.isEmpty()) {
+			return Future.succeededFuture(threads);
+		}
+
 		Promise<List<NewsThread>> promise = Promise.promise();
 		Map<Integer, NewsThread> threadIdToThread = threads.stream().collect(toMap(NewsThread::getId, Function.identity()));
 
