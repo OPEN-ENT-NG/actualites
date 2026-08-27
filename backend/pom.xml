@@ -15,8 +15,8 @@
     <version>3.2-develop-enabling-SNAPSHOT</version>
     <properties>
         <jacksonDatabindVersion>2.15.2</jacksonDatabindVersion>
-        <entCoreLibsVersion>6.16-SNAPSHOT</entCoreLibsVersion>
-        <entCoreVersion>6.16-SNAPSHOT</entCoreVersion>
+        <entCoreLibsVersion>6.16-develop-enabling-SNAPSHOT</entCoreLibsVersion>
+        <entCoreVersion>6.16-develop-enabling-SNAPSHOT</entCoreVersion>
         <vertxCronTimerVersion>3.0-SNAPSHOT</vertxCronTimerVersion>
         <gatlingHighchartsVersion>2.3.1</gatlingHighchartsVersion>
         <junitVersion>4.13.2</junitVersion>
