@@ -39,6 +39,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ActualitesRepositoryEvents extends SqlRepositoryEvents {
 
 	private static final Logger log = LoggerFactory.getLogger(ActualitesRepositoryEvents.class);
+	private static final String THREAD_TABLE = "thread";
+	private static final int TITLE_MAX_LENGTH = 255;
 	private final boolean shareOldGroupsToUsers;
 
 	public ActualitesRepositoryEvents(boolean shareOldGroupsToUsers, Vertx vertx) {
@@ -167,6 +169,18 @@ public class ActualitesRepositoryEvents extends SqlRepositoryEvents {
 		results.forEach(res -> {
 			((JsonArray)res).getList().set(index,userId);
 		});
+
+		// Threads are duplicated as-is : without a suffix, the copy is strictly indistinguishable
+		// from the original in the thread list.
+		final int indexTitle = fields.getList().indexOf("title");
+		if (forceImportAsDuplication && THREAD_TABLE.equals(table) && indexTitle != -1) {
+			results.forEach(res -> {
+				final JsonArray row = (JsonArray) res;
+				final String title = row.getString(indexTitle) + duplicationSuffix;
+				row.getList().set(indexTitle,
+					title.length() > TITLE_MAX_LENGTH ? title.substring(0, TITLE_MAX_LENGTH) : title);
+			});
+		}
 
 		final int indexId = fields.getList().indexOf("id");
 		Collections.sort(results.getList(), (a,b) -> new JsonArray((List)a).getInteger(indexId).compareTo(new JsonArray((List)b).getInteger(indexId)));
