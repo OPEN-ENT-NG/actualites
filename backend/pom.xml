@@ -12,15 +12,15 @@
 
     <groupId>net.atos</groupId>
     <artifactId>actualites</artifactId>
-    <version>3.2-SNAPSHOT</version>
+    <version>3.2-develop-pedago-SNAPSHOT</version>
     <properties>
         <jacksonDatabindVersion>2.15.2</jacksonDatabindVersion>
-        <entCoreLibsVersion>6.16-SNAPSHOT</entCoreLibsVersion>
-        <entCoreVersion>6.16-SNAPSHOT</entCoreVersion>
+        <entCoreLibsVersion>6.16-develop-pedago-SNAPSHOT</entCoreLibsVersion>
+        <entCoreVersion>6.16-develop-pedago-SNAPSHOT</entCoreVersion>
         <vertxCronTimerVersion>3.0-SNAPSHOT</vertxCronTimerVersion>
         <gatlingHighchartsVersion>2.3.1</gatlingHighchartsVersion>
         <junitVersion>4.13.2</junitVersion>
-        <modMongoVersion>4.2-SNAPSHOT</modMongoVersion>
+        <modMongoVersion>4.2-develop-pedago-SNAPSHOT</modMongoVersion>
         <modPostgresVersion>2.2-SNAPSHOT</modPostgresVersion>
         <modJsonSchemaValidatorVersion>2.2-SNAPSHOT</modJsonSchemaValidatorVersion>
         <mockitoVersion>2.28.2</mockitoVersion>
