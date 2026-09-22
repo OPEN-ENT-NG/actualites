@@ -163,7 +163,7 @@ public class ActualitesRepositoryEvents extends SqlRepositoryEvents {
 
 	@Override
 	public JsonArray transformResults(JsonArray fields, JsonArray results, String userId, String username, SqlStatementsBuilder builder,
-		String table, boolean forceImportAsDuplication, String duplicationPrefix) {
+		String table, boolean forceImportAsDuplication, String duplicationSuffix) {
 
 		final int index = fields.getList().indexOf("owner");
 		results.forEach(res -> {
@@ -176,7 +176,7 @@ public class ActualitesRepositoryEvents extends SqlRepositoryEvents {
 		if (THREAD_TABLE.equals(table) && indexTitle != -1) {
 			results.forEach(res -> {
 				final JsonArray row = (JsonArray) res;
-				final String title = duplicationPrefix + row.getString(indexTitle) ;
+				final String title = "Copie - " + row.getString(indexTitle);
 				row.getList().set(indexTitle,
 					title.length() > TITLE_MAX_LENGTH ? title.substring(0, TITLE_MAX_LENGTH) : title);
 			});
