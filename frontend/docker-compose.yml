@@ -1,7 +1,9 @@
 services:
   node:
-    image: opendigitaleducation/node:20-alpine-pnpm
+    image: opendigitaleducation/node:24-alpine-pnpm
     working_dir: /home/node/app
+    environment:
+      - PNPM_HOME=/.pnpm
     volumes:
       - ./:/home/node/app
       - ~/.pnpm:/.pnpm
