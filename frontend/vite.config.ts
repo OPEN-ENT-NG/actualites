@@ -119,7 +119,7 @@ export default ({ mode }: { mode: string }) => {
     test: {
       watch: false,
       globals: true,
-      environment: 'jsdom',
+      environment: './src/mocks/jsdomEnvironment.ts',
       include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
       setupFiles: ['./src/mocks/setup.ts'],
       reporters: ['default'],
