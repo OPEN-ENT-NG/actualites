@@ -51,7 +51,8 @@ export const uiOverridesHandlers = [
           },
           npmTheme: 'oneconnect',
           uiOverrides: {
-            'edifice-in-product': false,
+            // Enable the HelpZone with deisgn "edifice-in-product" for the layout. Fallback to default (old version) if not available
+            'layout.helpzone': false,
           },
         },
       ],
