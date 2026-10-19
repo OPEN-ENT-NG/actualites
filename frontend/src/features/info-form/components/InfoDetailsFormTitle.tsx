@@ -34,7 +34,7 @@ export function InfoDetailsFormTitle() {
             size="md"
             placeholder={t('actualites.info.createForm.titlePlaceholder')}
             showCounter
-            maxLength={60}
+            maxLength={100}
             data-testid="create-info-title-input"
             defaultValue={defaultTitle}
             {...register('title', { required: true })}
