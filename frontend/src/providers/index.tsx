@@ -37,7 +37,10 @@ export const Providers = ({ children }: { children: ReactNode }) => {
       >
         <EdificeScreebProvider>{children}</EdificeScreebProvider>
       </EdificeClientProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
+      <ReactQueryDevtools
+        initialIsOpen={false}
+        buttonPosition={'bottom-left'}
+      />
     </QueryClientProvider>
   );
 };
