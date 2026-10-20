@@ -106,3 +106,32 @@
 .info-card-dropdown .infocard-header-dropdown-button[aria-expanded='true'] {
   background-color: var(--edifice-primary-200) !important;
 }
+
+.info-card-title-wrapper {
+  display: grid;
+  gap: 1.2rem;
+  grid-template-columns: 1fr;
+}
+
+.info-card-badge:empty {
+  display: none;
+}
+
+@media screen and (min-width: 768px) {
+  .info-card-title-wrapper {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'thread badge'
+      'title title';
+  }
+
+  .info-card-badge {
+    grid-area: badge;
+    text-align: right;
+  }
+
+  .info-card-title {
+    grid-area: title;
+    text-align: center;
+  }
+}

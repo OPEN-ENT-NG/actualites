@@ -6,7 +6,6 @@ import {
   IconButton,
   IconButtonProps,
   Image,
-  useBreakpoint,
 } from '@edifice.io/react';
 import {
   IconClock,
@@ -15,7 +14,6 @@ import {
   IconSubmitToValidate,
   IconWrite,
 } from '@edifice.io/react/icons';
-import clsx from 'clsx';
 import { RefAttributes, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import iconHeadline from '~/assets/icon-headline.svg';
@@ -50,25 +48,12 @@ export const InfoCardHeader = ({
 
   const { t } = useI18n();
   const navigate = useNavigate();
-  const { md } = useBreakpoint();
-
-  const styles = md
-    ? { gridTemplateColumns: '1fr auto 1fr' }
-    : { gridTemplateColumns: '1fr' };
-
-  const classes = clsx({
-    'text-center': md,
-  });
-
-  const badgeClasses = clsx({
-    'text-end': md,
-  });
 
   const badgeContent = () => {
     if (isPrint) return null;
 
     return (
-      <div className={badgeClasses}>
+      <div className="info-card-badge">
         {isDraft && (
           <Badge
             data-testid="info-card-badge-draft"
@@ -129,12 +114,12 @@ export const InfoCardHeader = ({
 
   return (
     <header key={info.id} className="mb-12">
-      <div className="d-grid gap-12" style={styles}>
+      <div className="info-card-title-wrapper">
         <InfoCardThreadHeader thread={thread} />
-        <h3 data-testid="info-name" className={classes}>
+        {badgeContent()}
+        <h3 data-testid="info-name" className="info-card-title">
           {info?.title}
         </h3>
-        {badgeContent()}
       </div>
 
       <Flex className="flex-fill mt-12" align="center" wrap="nowrap" gap="16">
