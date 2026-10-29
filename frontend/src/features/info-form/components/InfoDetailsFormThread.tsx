@@ -76,6 +76,11 @@ export function InfoDetailsFormThread() {
               placeholderOption={t(
                 'actualites.info.createForm.selectThreadPlaceholder',
               )}
+              searchable
+              searchPlaceholder={t(
+                'actualites.info.createForm.searchThreadPlaceholder',
+              )}
+              noResultsLabel={t('actualites.info.createForm.noThreadFound')}
               data-testid="create-info-thread-select"
             />
           )}
