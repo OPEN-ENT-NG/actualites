@@ -326,7 +326,7 @@ export function testInfoCreation(data: InitData) {
     const retrievedInfo: InfoResponse = getInfoById(createdInfo.id);
 
     check(retrievedInfo, {
-      "Retrieved info has no expiration_date from now": (info) => info.expirationDate === undefined,
+      "Retrieved info has no expiration_date from now": (info) => info.expirationDate == null,
     });
   });
 

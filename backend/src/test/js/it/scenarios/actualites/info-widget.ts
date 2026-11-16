@@ -204,11 +204,11 @@ export function testWidget(data: InitData) {
       }
     });
     check(infos, {
-      "Should contain an isHeadline boolean field": (list: any[]) => {
+      "Should contain a headline boolean field": (list: any[]) => {
         let test = true;
-        for(let i = 0; i < result.length; i++) {
-          console.log(`info ${i} - ${result[i].id}, isHeadline=${result[i].isHeadline}`);
-          test &&= typeof result[i].isHeadline === 'boolean';
+        for(let i = 0; i < list.length; i++) {
+          console.log(`info ${i} - ${list[i].id}, headline=${list[i].headline}`);
+          test &&= typeof list[i].headline === 'boolean';
         }
         return test;
       }
