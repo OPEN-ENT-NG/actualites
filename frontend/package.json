@@ -23,7 +23,8 @@
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
     "test:watch": "vitest --watch",
-    "typecheck": "tsc -b --noEmit --pretty"
+    "typecheck": "tsc -b --noEmit --pretty",
+    "update:edifice": "pnpm update \"@edifice.io/*\" --no-save"
   },
   "husky": {
     "hooks": {

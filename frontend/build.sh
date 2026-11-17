@@ -61,15 +61,16 @@ clean () {
   rm -rf dist 
   rm -rf build 
   rm -rf .pnpm-store
-  # rm -f package.json 
-  rm -f pnpm-lock.yaml
 }
 
+# Install strictly from the committed lockfile, then re-resolve only the
+# @edifice.io/* dist-tags (develop-*) without touching package.json.
+# On exact versions (master/release) the update is a no-op.
 init() {
   if [ "$NO_DOCKER" = "true" ] ; then
-    pnpm install
+    pnpm install --frozen-lockfile && pnpm run update:edifice
   else
-    docker compose run -e NPM_TOKEN -e TIPTAP_PRO_TOKEN --rm $USER_OPTION node sh -c "pnpm install"
+    docker compose run -e NPM_TOKEN -e TIPTAP_PRO_TOKEN --rm $USER_OPTION node sh -c "pnpm install --frozen-lockfile && pnpm run update:edifice"
   fi
 }
 
