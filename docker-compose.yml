@@ -1,0 +1,40 @@
+
+name: actualites
+
+services:
+  front-init:
+    image: ${FRONT_IMAGE:-maven.opendigitaleducation.com/ent/actualites-front:${FRONT_VERSION:-3.2.14}}
+    environment:
+      FRONT_TARGET: /front-shared
+    volumes:
+      - front:/front-shared
+
+  back:
+    image: ${BACK_IMAGE:-maven.opendigitaleducation.com/ent/actualites:${BACK_VERSION:-3.2.14}}
+    platform: ${BACK_PLATFORM:-linux/amd64}
+    depends_on:
+      front-init:
+        condition: service_completed_successfully
+    environment:
+      BACK_VERSION: ${BACK_VERSION:-3.2.14}
+      ENABLED_SERVICES: ${BACK_ENABLED_SERVICES:-net.atos~actualites}
+      RUN_SQL_MIGRATION: ${RUN_SQL_MIGRATION:-false}
+    volumes:
+      - type: volume
+        source: front
+        target: /srv/springboard/mods/net.atos~actualites~${BACK_VERSION:-3.2.14}/public
+        read_only: true
+        volume:
+          subpath: public
+      - type: volume
+        source: front
+        target: /srv/springboard/mods/net.atos~actualites~${BACK_VERSION:-3.2.14}/view/index.html
+        read_only: true
+        volume:
+          subpath: view/index.html
+      - ${BACK_CONF:-./docker/back/entcore.json}:/opt/conf/entcore.json:ro
+    ports:
+      - "127.0.0.1:${BACK_PORT:-8022}:8022"
+
+volumes:
+  front:

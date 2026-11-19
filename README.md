@@ -15,9 +15,28 @@
 
 ## Construction
 
+Le frontend et le backend se construisent séparément ; aucun des deux ne lit le résultat de l'autre.
+
 <pre>
-		./build.sh
+		./build.sh front   # produit frontend/dist
+		./build.sh back    # produit le jar du module, sans aucun fichier du frontend
+		./build.sh         # les deux, l'un après l'autre
 </pre>
+
+Le backend sert toujours les pages et les fichiers du frontend, mais son jar ne les contient plus.
+Ils sont livrés par une image à part, construite par `edifice image` à partir de `frontend/dist` :
+lancée comme conteneur d'init, elle les copie dans un volume partagé avec le backend, monté sur les
+dossiers `public/` et `view/index.html` de son module.
+
+<pre>
+		edifice image --local --service=false --upgrader=false   # image du frontend seule, sans Maven
+		edifice image --local --frontend=false                   # image du backend seule
+		docker compose up -d                                     # conteneur d'init du frontend, puis backend
+		docker compose up -d --force-recreate                    # après un changement du frontend
+</pre>
+
+Un changement du frontend ne demande donc que de reconstruire son image et de redémarrer le backend.
+Voir `docker-compose.yml` pour les variables (versions, configuration du backend).
 
 ## Déployer dans ent-core
 

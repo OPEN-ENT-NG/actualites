@@ -1,0 +1,28 @@
+#!/usr/bin/env groovy
+
+// Builds and publishes the backend module and its image on its own. It does not build the frontend.
+pipeline {
+  agent any
+
+  stages {
+    stage('Initialization') {
+      steps {
+        sh './build.sh $BUILD_SH_EXTRA_PARAM init'
+      }
+    }
+
+    stage('Backend') {
+      steps {
+        dir('backend') {
+          sh './build.sh clean init build publish'
+        }
+      }
+    }
+
+    stage('Build image') {
+      steps {
+        sh './edifice image --archs=linux/amd64 --force --rebuild=false --frontend=false'
+      }
+    }
+  }
+}

@@ -10,25 +10,18 @@ else
 	EDIFICE_CLI_DEBUG_OPTION=""
 fi
 
+# The frontend and the backend are built independently: neither build reads the output of the other.
+front() {
+    (cd frontend && ./build.sh clean init build)
+}
+
+back() {
+    (cd backend && ./build.sh clean build)
+}
+
 execute_without_params() {
-    # Frontend
-    cd frontend
-    ./build.sh clean init build
-    cd ..
-
-    # Create directory structure and copy frontend dist
-    cd backend
-    find ./src/main/resources/public/ -maxdepth 1 -type f -exec rm -f {} +
-    cp -R ../frontend/dist/* ./src/main/resources/
-
-    # Copy Files
-    mv ./src/main/resources/*.html ./src/main/resources/view
-
-    # Build .
-    ./build.sh clean build
-
-    # Clean up - remove frontend/dist and backend/src/main/resources
-    rm -rf ../frontend/dist
+    front
+    back
 }
 init() {
   me=`id -u`:`id -g`
@@ -62,6 +55,12 @@ else
     case $param in
         init)
         init
+        ;;
+        front)
+        front
+        ;;
+        back)
+        back
         ;;
         *)
         echo "Invalid argument : $param"

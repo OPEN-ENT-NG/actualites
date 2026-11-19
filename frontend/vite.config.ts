@@ -68,6 +68,9 @@ export default ({ mode }: { mode: string }) => {
     base: mode === 'production' ? '/actualites' : '',
     root: __dirname,
     cacheDir: './node_modules/.vite/actualites',
+    // Production builds ship static/ as is: files other applications load from /actualites/public
+    // (link picker behaviours, news widget). public/ only holds the MSW worker, used in development.
+    publicDir: mode === 'production' ? 'static' : 'public',
 
     resolve: {
       alias: {

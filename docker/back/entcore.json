@@ -1,0 +1,42 @@
+{
+  "name": "actualites-local",
+  "sharedConf": {
+    "signKey": "local-only-not-a-secret",
+    "sameSiteValue": "Strict"
+  },
+  "services": [
+    {
+      "name": "net.atos~actualites~${BACK_VERSION:3.2.14}",
+      "waitDeploy": true,
+      "config": {
+        "main": "net.atos.entng.actualites.Actualites",
+        "port": 8022,
+        "neo4j": false,
+        "sql": true,
+        "mongodb": true,
+        "optimized-query": true,
+        "optimized-share-service": true,
+        "csrf-token": true,
+        "app-name": "Actualites",
+        "app-address": "/actualites",
+        "app-icon": "actualites-large",
+        "app-type": "END_USER",
+        "host": "http://localhost:8022",
+        "ssl": false,
+        "auto-redeploy": false,
+        "userbook-host": "http://localhost:8022",
+        "integration-mode": "HTTP",
+        "app-registry.port": 8012,
+        "mode": "prod",
+        "entcore.port": 8009,
+        "publicConf": {
+          "screeb-app-id": "",
+          "genai": {
+            "falcMinLength": 200,
+            "falcTimeoutMs": 30000
+          }
+        }
+      }
+    }
+  ]
+}
