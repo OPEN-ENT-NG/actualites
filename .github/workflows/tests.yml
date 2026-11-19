@@ -28,15 +28,8 @@ jobs:
           version: 9.4.0
           run_install: false
 
-      - name: Generate .npmrc
-        run: |
-          pnpm config set @tiptap-pro:registry https://registry.tiptap.dev
-          pnpm config set //registry.tiptap.dev/:_authToken ${{ secrets.TIPTAP_PRO_TOKEN }}
-          pnpm config set auto-install-peers true
-
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec nx test
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TIPTAP_PRO_TOKEN: ${{ secrets.TIPTAP_PRO_TOKEN }}
