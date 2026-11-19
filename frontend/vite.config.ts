@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import { resolve } from 'node:path';
 import { defineConfig, loadEnv, ProxyOptions } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import { serveLocalI18nPlugin } from './vite/plugins/serveLocalI18n';
 
 // https://vitejs.dev/config/
 export default ({ mode }: { mode: string }) => {
@@ -40,7 +41,7 @@ export default ({ mode }: { mode: string }) => {
         changeOrigin: false,
       };
 
-  // When VITE_MOCK is true, bypass proxy for i18n and actualites endpoints to let MSW handle them
+  // When VITE_MOCK is true, bypass proxy for actualites endpoints (MSW handles them)
   const isMockMode = envs.VITE_MOCK === 'true';
 
   // Common proxy configuration
@@ -56,7 +57,7 @@ export default ({ mode }: { mode: string }) => {
     '/audience': proxyObj,
   };
 
-  // In mock mode, don't proxy /actualites and /i18n - MSW will handle them
+  // In mock mode, don't proxy /actualites - MSW will handle it
   const proxyConfig = isMockMode
     ? commonProxyConfig
     : {
@@ -98,7 +99,25 @@ export default ({ mode }: { mode: string }) => {
       host: 'localhost',
     },
 
-    plugins: [react(), tsconfigPaths()],
+    plugins: [
+      react(),
+      tsconfigPaths(),
+      // The "actualites" folder has to be next to the "entcore" folder
+      serveLocalI18nPlugin({
+        routes: [
+          {
+            routePath: '/actualites/i18n',
+            filePath: '../backend/src/main/resources/i18n/fr.json',
+          },
+          {
+            routePath: '/i18n',
+            filePath:
+              '../../entcore/portal/backend/src/main/resources/i18n/fr.json',
+          },
+        ],
+        rootDir: __dirname,
+      }),
+    ],
 
     build: {
       outDir: './dist',
