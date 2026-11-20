@@ -105,7 +105,7 @@ export function InfoDetailsForm({
           <InfoDetailsFormTitle />
         </Flex>
         <FormControl id={'headline'}>
-          <Flex align="center" gap="8" className="ms-n8">
+          <Flex align="center" gap="8">
             <Switch
               {...register('headline')}
               label={t('actualites.info.createForm.headlineLabel')}
