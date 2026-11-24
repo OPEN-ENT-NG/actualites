@@ -74,6 +74,10 @@ export function setup() {
     const thread: ThreadIdentifier = createThreadOrFail(`Thread 1 ${seed}`, head.id);
     const now = new Date();
     const futureExpirationDate = new Date(now.getTime() + 3600*24*1000);
+    // Dates relative to now so that infos of this run are always the most recent ones,
+    // even if the (reused) school contains infos created by previous runs.
+    const d = (n: number) => new Date(now.getTime() - (10 - n) * 60 * 1000).toISOString();
+    const farFuture = new Date(now.getTime() + 10 * 365 * 24 * 3600 * 1000).toISOString();
 
     //last published info
     let publishedInfo = createPublishedInfoOrFail({
@@ -81,7 +85,7 @@ export function setup() {
       content: `Incoming content`,
       thread_id: parseInt(thread.id as string),
       status: 3,
-      publication_date: "2020-01-01T00:00:00Z",
+      publication_date: d(1),
       expiration_date: futureExpirationDate.toISOString(),
     } as any);
 
@@ -92,7 +96,7 @@ export function setup() {
       content: `Incoming content`,
       thread_id: parseInt(thread.id as string),
       status: 3,
-      publication_date: "2020-01-02T00:00:00Z",
+      publication_date: d(2),
       expiration_date: futureExpirationDate.toISOString(),
       is_headline: true,
     } as any);
@@ -105,7 +109,7 @@ export function setup() {
       content: `Incoming content`,
       thread_id: parseInt(thread.id as string),
       status: 1,
-      publication_date: "2020-01-03T00:00:00Z",
+      publication_date: d(3),
       expiration_date: futureExpirationDate.toISOString(),
     } as any);
 
@@ -115,7 +119,7 @@ export function setup() {
       content: `Incoming content`,
       thread_id: parseInt(thread.id as string),
       status: 2,
-      publication_date: "2020-01-04T00:00:00Z",
+      publication_date: d(4),
       expiration_date: futureExpirationDate.toISOString(),
     } as any);
 
@@ -124,7 +128,7 @@ export function setup() {
       content: `Incoming content`,
       thread_id: parseInt(thread.id as string),
       status: 3,
-      publication_date: "2020-01-05T00:00:00Z",
+      publication_date: d(5),
       expiration_date: futureExpirationDate.toISOString(),
     } as any);
 
@@ -135,7 +139,7 @@ export function setup() {
       content: `Incoming content`,
       thread_id: parseInt(thread.id as string),
       status: 3,
-      publication_date: "2020-01-06T00:00:00Z",
+      publication_date: d(6),
       expiration_date: futureExpirationDate.toISOString(),
     } as any);
 
@@ -147,8 +151,8 @@ export function setup() {
       content: `Incoming content`,
       thread_id: parseInt(thread.id as string),
       status: 3,
-      publication_date: "2020-01-01T00:00:00Z",
-      expiration_date: "2021-01-01T00:00:00Z",
+      publication_date: d(1),
+      expiration_date: d(2),
     } as any);
 
     //incoming info
@@ -157,7 +161,7 @@ export function setup() {
       content: `Incoming content`,
       thread_id: parseInt(thread.id as string),
       status: 3,
-      publication_date:  futureExpirationDate.toISOString()
+      publication_date: farFuture
     } as any);
 
     publishedInfo = createPublishedInfoOrFail({
@@ -165,7 +169,7 @@ export function setup() {
       content: `Incoming content`,
       thread_id: parseInt(thread.id as string),
       status: 3,
-      publication_date: "2020-01-07T00:00:00Z",
+      publication_date: d(7),
       expiration_date: futureExpirationDate.toISOString(),
     } as any);
 
@@ -191,13 +195,11 @@ export function testWidget(data: InitData) {
     check(infos, {
       "Default query returns an array": (list) => Array.isArray(list),
     });
-    console.log(infos);
     check( infos, {
       "Result should contain 4 elements": (result: any[]) => result.length === 4,
       "Result should contain the last 4 id in reversed order": (result: any[]) => {
         let test = true;
         for(let i = 0; i < result.length; i++) {
-          console.log(`info ${i} - ${result[i].id}, ${data.publishedInfos[data.publishedInfos.length - i - 1]}`);
           test &&= result[i].id === data.publishedInfos[data.publishedInfos.length - i - 1];
         }
         return test;
@@ -207,7 +209,6 @@ export function testWidget(data: InitData) {
       "Should contain a headline boolean field": (list: any[]) => {
         let test = true;
         for(let i = 0; i < list.length; i++) {
-          console.log(`info ${i} - ${list[i].id}, headline=${list[i].headline}`);
           test &&= typeof list[i].headline === 'boolean';
         }
         return test;
